@@ -451,3 +451,62 @@ html, body {
   border-color: rgba(255, 255, 255, 0.3);
   background: rgba(255, 255, 255, 0.15);
 }
+
+/* Header Actions */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Record Button */
+.record-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.record-button:hover {
+  background: rgba(255, 100, 100, 0.2);
+  color: #ff6b6b;
+}
+
+.record-button.recording {
+  background: rgba(255, 60, 60, 0.3);
+  color: #fff;
+  border: 1px solid rgba(255, 60, 60, 0.5);
+}
+
+.record-button.recording:hover {
+  background: rgba(255, 60, 60, 0.4);
+}
+
+.recording-indicator {
+  color: #ff4444;
+  animation: pulse-recording 1s ease-in-out infinite;
+}
+
+@keyframes pulse-recording {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+
+.recording-time {
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Geist', monospace;
+  letter-spacing: 0.5px;
+  color: #ff6b6b;
+}

@@ -59,3 +59,4 @@ const TextLayer = ({ sections, gap }) => {
 
 export default TextLayer
 
+

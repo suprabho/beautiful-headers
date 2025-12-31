@@ -2,7 +2,8 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { AVAILABLE_ICONS } from './TessellationLayer'
 import { 
   Sliders, Palette, GridFour, Sparkle, TextT, 
-  Shuffle, Plus, Trash, CaretDown, CaretUp, DotsSixVertical 
+  Shuffle, Plus, Trash, CaretDown, CaretUp, DotsSixVertical,
+  Record, Stop, Circle
 } from '@phosphor-icons/react'
 
 const ControlPanel = ({
@@ -23,8 +24,121 @@ const ControlPanel = ({
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [position, setPosition] = useState({ x: 20, y: 20 })
   const [isDragging, setIsDragging] = useState(false)
+  const [isRecording, setIsRecording] = useState(false)
+  const [recordingTime, setRecordingTime] = useState(0)
   const dragOffset = useRef({ x: 0, y: 0 })
   const panelRef = useRef(null)
+  const mediaRecorderRef = useRef(null)
+  const recordedChunksRef = useRef([])
+  const streamRef = useRef(null)
+  const timerRef = useRef(null)
+
+  // Recording functionality
+  const startRecording = async () => {
+    try {
+      // Request screen capture - this will show a dialog to select the tab
+      const stream = await navigator.mediaDevices.getDisplayMedia({
+        video: {
+          displaySurface: 'browser',
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+          frameRate: { ideal: 60 }
+        },
+        audio: false,
+        preferCurrentTab: true
+      })
+
+      streamRef.current = stream
+      recordedChunksRef.current = []
+
+      // Check for supported mime types
+      const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+        ? 'video/webm;codecs=vp9'
+        : MediaRecorder.isTypeSupported('video/webm;codecs=vp8')
+          ? 'video/webm;codecs=vp8'
+          : 'video/webm'
+
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType,
+        videoBitsPerSecond: 8000000 // 8 Mbps for high quality
+      })
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          recordedChunksRef.current.push(event.data)
+        }
+      }
+
+      mediaRecorder.onstop = () => {
+        // Create blob and download
+        const blob = new Blob(recordedChunksRef.current, { type: mimeType })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `header-recording-${Date.now()}.webm`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+
+        // Clean up
+        recordedChunksRef.current = []
+      }
+
+      // Handle stream ending (user clicks stop sharing)
+      stream.getVideoTracks()[0].onended = () => {
+        stopRecording()
+      }
+
+      mediaRecorderRef.current = mediaRecorder
+      mediaRecorder.start(100) // Collect data every 100ms
+      setIsRecording(true)
+      setRecordingTime(0)
+
+      // Start timer
+      timerRef.current = setInterval(() => {
+        setRecordingTime(prev => prev + 1)
+      }, 1000)
+
+    } catch (err) {
+      console.error('Error starting recording:', err)
+      alert('Failed to start recording. Please allow screen sharing.')
+    }
+  }
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop()
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop())
+      streamRef.current = null
+    }
+    if (timerRef.current) {
+      clearInterval(timerRef.current)
+      timerRef.current = null
+    }
+    setIsRecording(false)
+    setRecordingTime(0)
+  }
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+  }
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+      }
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop())
+      }
+    }
+  }, [])
 
   const handleMouseDown = useCallback((e) => {
     if (e.target.closest('.panel-content') || e.target.closest('.panel-tabs')) return
@@ -154,13 +268,30 @@ const ControlPanel = ({
         <div className="drag-handle">
           <DotsSixVertical size={16} weight="bold" />
         </div>
-        <button 
-          className="collapse-toggle"
-          onClick={() => setIsCollapsed(!isCollapsed)}
-        >
-          <Sliders size={18} />
-          {isCollapsed ? <CaretUp size={14} /> : <CaretDown size={14} />}
-        </button>
+        <div className="header-actions">
+          <button 
+            className={`record-button ${isRecording ? 'recording' : ''}`}
+            onClick={isRecording ? stopRecording : startRecording}
+            title={isRecording ? 'Stop Recording' : 'Record Tab'}
+          >
+            {isRecording ? (
+              <>
+                <Circle size={10} weight="fill" className="recording-indicator" />
+                <span className="recording-time">{formatTime(recordingTime)}</span>
+                <Stop size={16} weight="fill" />
+              </>
+            ) : (
+              <Record size={18} weight="fill" />
+            )}
+          </button>
+          <button 
+            className="collapse-toggle"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+          >
+            <Sliders size={18} />
+            {isCollapsed ? <CaretUp size={14} /> : <CaretDown size={14} />}
+          </button>
+        </div>
       </div>
 
       {!isCollapsed && (
@@ -308,6 +439,64 @@ const ControlPanel = ({
                 </div>
 
                 <div className="control-group">
+                  <label>Wave 1 Speed: {gradientConfig.wave1Speed.toFixed(2)}</label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="0.5"
+                    step="0.01"
+                    value={gradientConfig.wave1Speed}
+                    onChange={(e) => setGradientConfig({
+                      ...gradientConfig,
+                      wave1Speed: parseFloat(e.target.value)
+                    })}
+                  />
+                </div>
+
+                <div className="control-group">
+                  <label>Wave 1 Direction</label>
+                  <select
+                    value={gradientConfig.wave1Direction}
+                    onChange={(e) => setGradientConfig({
+                      ...gradientConfig,
+                      wave1Direction: parseInt(e.target.value)
+                    })}
+                  >
+                    <option value={1}>Forward</option>
+                    <option value={-1}>Backward</option>
+                  </select>
+                </div>
+
+                <div className="control-group">
+                  <label>Wave 2 Speed: {gradientConfig.wave2Speed.toFixed(2)}</label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="0.5"
+                    step="0.01"
+                    value={gradientConfig.wave2Speed}
+                    onChange={(e) => setGradientConfig({
+                      ...gradientConfig,
+                      wave2Speed: parseFloat(e.target.value)
+                    })}
+                  />
+                </div>
+
+                <div className="control-group">
+                  <label>Wave 2 Direction</label>
+                  <select
+                    value={gradientConfig.wave2Direction}
+                    onChange={(e) => setGradientConfig({
+                      ...gradientConfig,
+                      wave2Direction: parseInt(e.target.value)
+                    })}
+                  >
+                    <option value={1}>Forward</option>
+                    <option value={-1}>Backward</option>
+                  </select>
+                </div>
+
+                <div className="control-group">
                   <label>Mouse Influence: {gradientConfig.mouseInfluence.toFixed(2)}</label>
                   <input
                     type="range"
@@ -439,6 +628,21 @@ const ControlPanel = ({
                     onChange={(e) => setTessellationConfig({
                       ...tessellationConfig,
                       color: e.target.value
+                    })}
+                  />
+                </div>
+
+                <div className="control-group">
+                  <label>Mouse Rotation Influence: {(tessellationConfig.mouseRotationInfluence || 0).toFixed(2)}</label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value={tessellationConfig.mouseRotationInfluence || 0}
+                    onChange={(e) => setTessellationConfig({
+                      ...tessellationConfig,
+                      mouseRotationInfluence: parseFloat(e.target.value)
                     })}
                   />
                 </div>

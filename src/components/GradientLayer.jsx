@@ -70,6 +70,10 @@ const GradientLayer = ({ config, mousePos }) => {
       uniform vec2 u_endPos;
       uniform float u_waveIntensity;
       uniform float u_mouseInfluence;
+      uniform float u_wave1Speed;
+      uniform float u_wave1Direction;
+      uniform float u_wave2Speed;
+      uniform float u_wave2Direction;
       
       // Simplex noise functions
       vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
@@ -163,18 +167,18 @@ const GradientLayer = ({ config, mousePos }) => {
         vec2 uv = v_uv;
         vec2 aspect = vec2(u_resolution.x / u_resolution.y, 1.0);
         
-        // Mouse influence with distance falloff
+        // Mouse influence with distance falloff - stronger effect
         vec2 mouseOffset = u_mouse - uv;
         float mouseDist = length(mouseOffset * aspect);
-        float mouseEffect = exp(-mouseDist * 3.0) * u_mouseInfluence;
+        float mouseEffect = exp(-mouseDist * 1.5) * u_mouseInfluence;
         
-        // Wave distortion
-        float wave1 = fbm(uv * 3.0 + u_time * 0.2);
-        float wave2 = fbm(uv * 2.0 - u_time * 0.15 + 10.0);
+        // Wave distortion - uses configurable speed and direction
+        float wave1 = fbm(uv * 3.0 + u_time * u_wave1Speed * u_wave1Direction);
+        float wave2 = fbm(uv * 2.0 + u_time * u_wave2Speed * u_wave2Direction + 10.0);
         vec2 waveOffset = vec2(wave1, wave2) * u_waveIntensity;
         
-        // Mouse distortion
-        vec2 mouseDistort = mouseOffset * mouseEffect * 0.3;
+        // Mouse distortion - increased strength
+        vec2 mouseDistort = mouseOffset * mouseEffect * 0.8;
         
         // Apply distortions
         vec2 distortedUV = uv + waveOffset + mouseDistort;
@@ -266,9 +270,10 @@ const GradientLayer = ({ config, mousePos }) => {
     const render = () => {
       timeRef.current += 0.016
 
-      // Smooth mouse following with decay
-      currentMouseRef.current.x += (targetMouseRef.current.x - currentMouseRef.current.x) * (1 - config.decaySpeed)
-      currentMouseRef.current.y += (targetMouseRef.current.y - currentMouseRef.current.y) * (1 - config.decaySpeed)
+      // Smooth mouse following - lerp factor (higher = faster following)
+      const lerpFactor = 1 - config.decaySpeed
+      currentMouseRef.current.x += (targetMouseRef.current.x - currentMouseRef.current.x) * lerpFactor
+      currentMouseRef.current.y += (targetMouseRef.current.y - currentMouseRef.current.y) * lerpFactor
 
       gl.viewport(0, 0, canvas.width, canvas.height)
       gl.useProgram(program)
@@ -284,6 +289,10 @@ const GradientLayer = ({ config, mousePos }) => {
       gl.uniform2f(gl.getUniformLocation(program, 'u_endPos'), config.endPos.x, config.endPos.y)
       gl.uniform1f(gl.getUniformLocation(program, 'u_waveIntensity'), config.waveIntensity)
       gl.uniform1f(gl.getUniformLocation(program, 'u_mouseInfluence'), config.mouseInfluence)
+      gl.uniform1f(gl.getUniformLocation(program, 'u_wave1Speed'), config.wave1Speed)
+      gl.uniform1f(gl.getUniformLocation(program, 'u_wave1Direction'), config.wave1Direction)
+      gl.uniform1f(gl.getUniformLocation(program, 'u_wave2Speed'), config.wave2Speed)
+      gl.uniform1f(gl.getUniformLocation(program, 'u_wave2Direction'), config.wave2Direction)
 
       // Set individual color uniforms
       for (let i = 0; i < 8; i++) {

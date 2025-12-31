@@ -1,25 +1,66 @@
-import { useMemo } from 'react'
+import { useMemo, useState, useEffect, useRef, useCallback } from 'react'
 import * as PhosphorIcons from '@phosphor-icons/react'
 
-const TessellationLayer = ({ config }) => {
-  const { icon, rowGap, colGap, size, opacity, rotation, color } = config
-
-  const availableIcons = [
-    'Star', 'Heart', 'Diamond', 'Circle', 'Square', 'Triangle',
-    'Hexagon', 'Octagon', 'Pentagon', 'Cross', 'Plus', 'Minus',
-    'Lightning', 'Sun', 'Moon', 'Cloud', 'Sparkle', 'Fire',
-    'Drop', 'Leaf', 'Flower', 'Tree', 'Mountains', 'Waves',
-    'Eye', 'Hand', 'Crown', 'Gift', 'Gear', 'Atom',
-    'Planet', 'Rocket', 'Alien', 'Ghost', 'Skull', 'Smiley',
-    'MusicNote', 'Headphones', 'Camera', 'GameController',
-    'Butterfly', 'Bird', 'Fish', 'Cat', 'Dog', 'Horse',
-    'Snowflake', 'Rainbow', 'Compass', 'Anchor', 'Infinity'
-  ]
+const TessellationLayer = ({ config, mousePos = { x: 0.5, y: 0.5 } }) => {
+  const { icon, rowGap, colGap, size, opacity, rotation, color, mouseRotationInfluence = 0 } = config
+  
+  // Track smoothed mouse position for smooth animation
+  const currentMouseRef = useRef({ x: 0.5, y: 0.5 })
+  const [smoothedMouse, setSmoothedMouse] = useState({ x: 0.5, y: 0.5 })
+  const animationRef = useRef(null)
 
   const IconComponent = useMemo(() => {
     const iconName = icon || 'Star'
     return PhosphorIcons[iconName] || PhosphorIcons.Star
   }, [icon])
+
+  // Animate mouse smoothing for rotation effect
+  useEffect(() => {
+    if (mouseRotationInfluence <= 0) {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
+      return
+    }
+    
+    const animate = () => {
+      const lerpFactor = 0.1
+      currentMouseRef.current.x += (mousePos.x - currentMouseRef.current.x) * lerpFactor
+      currentMouseRef.current.y += (mousePos.y - currentMouseRef.current.y) * lerpFactor
+      setSmoothedMouse({ x: currentMouseRef.current.x, y: currentMouseRef.current.y })
+      animationRef.current = requestAnimationFrame(animate)
+    }
+    
+    animationRef.current = requestAnimationFrame(animate)
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current)
+      }
+    }
+  }, [mousePos.x, mousePos.y, mouseRotationInfluence])
+
+  // Calculate rotation based on mouse position for each element
+  const getMouseRotation = useCallback((itemX, itemY) => {
+    if (mouseRotationInfluence <= 0) return 0
+    
+    const mouseX = smoothedMouse.x * window.innerWidth
+    const mouseY = smoothedMouse.y * window.innerHeight
+    
+    // Vector from element to mouse
+    const dx = mouseX - itemX
+    const dy = mouseY - itemY
+    
+    // Calculate angle from element to mouse (in degrees)
+    const angle = Math.atan2(dy, dx) * (180 / Math.PI)
+    
+    // Distance-based falloff
+    const distance = Math.sqrt(dx * dx + dy * dy)
+    const maxDistance = 300 // Max influence distance in pixels
+    const falloff = Math.max(0, 1 - distance / maxDistance)
+    
+    // Apply influence with falloff - icons point toward mouse
+    return angle * falloff * mouseRotationInfluence
+  }, [smoothedMouse.x, smoothedMouse.y, mouseRotationInfluence])
 
   const grid = useMemo(() => {
     const items = []
@@ -54,34 +95,27 @@ const TessellationLayer = ({ config }) => {
         overflow: 'hidden',
       }}
     >
-      {grid.map((item) => (
-        <div
-          key={item.key}
-          style={{
-            position: 'absolute',
-            left: item.x,
-            top: item.y,
-            transform: `rotate(${rotation}deg)`,
-            opacity: opacity,
-            color: color,
-            animation: `tessellate-pulse 4s ease-in-out ${item.delay}s infinite`,
-          }}
-        >
-          <IconComponent size={size} weight="regular" />
-        </div>
-      ))}
-      <style>{`
-        @keyframes tessellate-pulse {
-          0%, 100% { 
-            transform: rotate(${rotation}deg) scale(1);
-            opacity: ${opacity};
-          }
-          50% { 
-            transform: rotate(${rotation}deg) scale(1.1);
-            opacity: ${opacity * 0.7};
-          }
-        }
-      `}</style>
+      {grid.map((item) => {
+        const mouseRot = getMouseRotation(item.x + size / 2, item.y + size / 2)
+        const totalRotation = rotation + mouseRot
+        
+        return (
+          <div
+            key={item.key}
+            style={{
+              position: 'absolute',
+              left: item.x,
+              top: item.y,
+              transform: `rotate(${totalRotation}deg)`,
+              opacity: opacity,
+              color: color,
+              transition: mouseRotationInfluence > 0 ? 'transform 0.1s ease-out' : 'none',
+            }}
+          >
+            <IconComponent size={size} weight="regular" />
+          </div>
+        )
+      })}
     </div>
   )
 }
@@ -98,4 +132,3 @@ export const AVAILABLE_ICONS = [
   'Butterfly', 'Bird', 'Fish', 'Cat', 'Dog', 'Horse',
   'Snowflake', 'Rainbow', 'Compass', 'Anchor', 'Infinity'
 ]
-

@@ -21,6 +21,10 @@ function App() {
     waveIntensity: 0.3,
     mouseInfluence: 0.5,
     decaySpeed: 0.95,
+    wave1Speed: 0.2,
+    wave1Direction: 1,  // 1 = forward, -1 = backward
+    wave2Speed: 0.15,
+    wave2Direction: -1,
   })
 
   // Tessellation Layer State
@@ -32,6 +36,7 @@ function App() {
     opacity: 0.15,
     rotation: 0,
     color: '#ffffff',
+    mouseRotationInfluence: 0.5,
   })
 
   // Effects Layer State
@@ -80,6 +85,10 @@ function App() {
       colorStops,
       waveIntensity: Math.random() * 0.5 + 0.1,
       mouseInfluence: Math.random() * 0.8 + 0.2,
+      wave1Speed: Math.random() * 0.4 + 0.05,
+      wave1Direction: Math.random() > 0.5 ? 1 : -1,
+      wave2Speed: Math.random() * 0.4 + 0.05,
+      wave2Direction: Math.random() > 0.5 ? 1 : -1,
     })
   }
 
@@ -122,7 +131,7 @@ function App() {
         </div>
         
         {/* Layer 2: Tessellation (no filter effects) */}
-        <TessellationLayer config={tessellationConfig} />
+        <TessellationLayer config={tessellationConfig} mousePos={mousePos} />
         
         {/* Layer 3: Overlay effects (noise, texture, vignette) */}
         <EffectsLayer config={effectsConfig} />
