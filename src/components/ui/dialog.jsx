@@ -24,9 +24,10 @@ function DialogOverlay({ className, ...props }) {
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
-        "fixed inset-0 z-150 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+        "fixed inset-0 bg-black/50 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         className
       )}
+      style={{ zIndex: 9998 }}
       {...props}
     />
   )
@@ -39,9 +40,10 @@ function DialogContent({ className, children, ...props }) {
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "bg-card fixed bottom-0 left-[50%] z-150 grid w-screen translate-x-[-50%] gap-4 rounded-t-xl border p-2 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-in-from-bottom-4 data-[state=open]:slide-in-from-bottom-4",
+          "bg-card fixed bottom-0 left-[50%] translate-x-[-50%] sm:bottom-auto sm:top-[50%] sm:left-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%] grid w-screen sm:w-auto gap-4 rounded-t-xl sm:rounded-xl border p-2 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-in-from-bottom-4 data-[state=open]:slide-in-from-bottom-4 sm:data-[state=closed]:zoom-out-95 sm:data-[state=open]:zoom-in-95 overflow-visible",
           className
         )}
+        style={{ zIndex: 9998 }}
         {...props}  
       >
         {children}

@@ -3,12 +3,12 @@ import html2canvas from 'html2canvas'
 import { AVAILABLE_ICONS } from './TessellationLayer'
 import { 
   Sliders, Palette, GridFour, Sparkle, TextT, 
-  Shuffle, Plus, Trash, CaretDown, CaretUp, CaretRight, DotsSixVertical, Camera,
+  Shuffle, Plus, Minus, Trash, CaretDown, CaretUp, CaretRight, DotsSixVertical, Camera,
   X, Image, Stack, CircleNotch, ArrowLeft, Check, ArrowCounterClockwise
 } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
+import { prepareForCapture } from '@/lib/colorConversion'
 import { Button } from '@/components/ui/button'
-import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -16,6 +16,102 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
+
+// Control group component for consistent styling - MUST be defined outside ControlPanel to prevent re-renders
+const ControlGroup = ({ label, children, className }) => (
+  <div className={cn(className, "flex flex-row items-center justify-between")}>
+    <Label className="text-xs font-semibold tracking-wide">{label}</Label>
+    <div className="py-2">
+      {children}
+    </div>
+  </div>
+)
+
+// Number input component - MUST be defined outside ControlPanel to prevent focus loss
+const NumberInput = ({ value, onValueChange, min = 0, max = 100, step = 1, className, showButtons = false }) => {
+  const currentValue = value[0]
+  
+  const handleDecrement = () => {
+    const newVal = Math.max(min, currentValue - step)
+    // Round to avoid floating point precision issues
+    const rounded = Math.round(newVal * 1000) / 1000
+    onValueChange([rounded])
+  }
+  
+  const handleIncrement = () => {
+    const newVal = Math.min(max, currentValue + step)
+    // Round to avoid floating point precision issues
+    const rounded = Math.round(newVal * 1000) / 1000
+    onValueChange([rounded])
+  }
+
+  if (showButtons) {
+    return (
+      <div className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-10 w-10 shrink-0 touch-manipulation"
+          onClick={handleDecrement}
+          disabled={currentValue <= min}
+        >
+          <Minus size={18} weight="bold" />
+        </Button>
+        <Input
+          type="number"
+          value={currentValue}
+          onChange={(e) => {
+            const val = parseFloat(e.target.value)
+            if (!isNaN(val)) {
+              onValueChange([Math.max(min, Math.min(max, val))])
+            }
+          }}
+          min={min}
+          max={max}
+          step={step}
+          className={cn("h-10 text-center", className)}
+        />
+        <Button
+          variant="outline"
+          size="icon"
+          className="h-10 w-10 shrink-0 touch-manipulation"
+          onClick={handleIncrement}
+          disabled={currentValue >= max}
+        >
+          <Plus size={18} weight="bold" />
+        </Button>
+      </div>
+    )
+  }
+
+  return (
+    <Input
+      type="number"
+      value={currentValue}
+      onChange={(e) => {
+        const val = parseFloat(e.target.value)
+        if (!isNaN(val)) {
+          onValueChange([Math.max(min, Math.min(max, val))])
+        }
+      }}
+      min={min}
+      max={max}
+      step={step}
+      className={cn("h-9", className)}
+    />
+  )
+}
+
+// Subsection button for mobile - MUST be defined outside ControlPanel
+const SubsectionButton = ({ title, onClick }) => (
+  <Button 
+    variant="outline" 
+    className="w-fit h-11 px-3"
+    onClick={onClick}
+  >
+    <span className="text-sm">{title}</span>
+  </Button>
+)
 
 const ControlPanel = ({
   activePanel,
@@ -143,7 +239,13 @@ const ControlPanel = ({
     
     setIsCapturing(true)
     
+    // Convert oklch colors to RGB for html2canvas compatibility
+    const restoreColors = prepareForCapture(document.body)
+    
     try {
+      // Wait a frame for styles to apply after color conversion
+      await new Promise(resolve => requestAnimationFrame(resolve))
+      
       const container = layersContainerRef.current
       const width = container.offsetWidth
       const height = container.offsetHeight
@@ -217,11 +319,15 @@ const ControlPanel = ({
           link.click()
           URL.revokeObjectURL(url)
         }
+        // Restore colors after capture is complete
+        restoreColors()
         setShowCaptureModal(false)
         setIsCapturing(false)
       }, 'image/png')
     } catch (error) {
       console.error('Failed to capture snapshot:', error)
+      // Always restore colors even on error
+      restoreColors()
       setShowCaptureModal(false)
       setIsCapturing(false)
     }
@@ -303,26 +409,6 @@ const ControlPanel = ({
     }
   }
 
-  // Control group component for consistent styling
-  const ControlGroup = ({ label, children, className }) => (
-    <div className={cn (className)}>
-      <Label className="text-xs font-semibold tracking-wide">{label}</Label>
-      <div className="py-2">
-        {children}
-      </div>
-    </div>
-  )
-
-  // Subsection button for mobile
-  const SubsectionButton = ({ title, sectionKey }) => (
-    <Button 
-      variant="outline" 
-      className="w-fit h-11 px-3"
-        onClick={() => openDialog(sectionKey)}
-      >
-      <span className="text-sm">{title}</span>
-    </Button>
-    )
 
   const getDialogTitle = (key) => {
     const titles = {
@@ -415,77 +501,56 @@ const ControlPanel = ({
       {/* Position Controls */}
       <div className="grid grid-cols-2 gap-4">
         <ControlGroup label={`Start X: ${gradientConfig.startPos.x}%`}>
-          <Slider
+          <NumberInput
             value={[gradientConfig.startPos.x]}
             onValueChange={([val]) => setGradientConfig({
                   ...gradientConfig,
               startPos: { ...gradientConfig.startPos, x: val }
                 })}
             max={100}
-            step={1}
+            step={10}
           />
         </ControlGroup>
         <ControlGroup label={`Start Y: ${gradientConfig.startPos.y}%`}>
-          <Slider
+          <NumberInput
             value={[gradientConfig.startPos.y]}
             onValueChange={([val]) => setGradientConfig({
                   ...gradientConfig,
               startPos: { ...gradientConfig.startPos, y: val }
                 })}
             max={100}
-            step={1}
+            step={10}
               />
         </ControlGroup>
-            </div>
+       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <ControlGroup label={`End X: ${gradientConfig.endPos.x}%`}>
-          <Slider
-            value={[gradientConfig.endPos.x]}
-            onValueChange={([val]) => setGradientConfig({
-                  ...gradientConfig,
-              endPos: { ...gradientConfig.endPos, x: val }
-                })}
-            max={100}
-            step={1}
-          />
-        </ControlGroup>
-        <ControlGroup label={`End Y: ${gradientConfig.endPos.y}%`}>
-          <Slider
-            value={[gradientConfig.endPos.y]}
-            onValueChange={([val]) => setGradientConfig({
-                  ...gradientConfig,
-              endPos: { ...gradientConfig.endPos, y: val }
-                })}
-            max={100}
-            step={1}
-              />
-        </ControlGroup>
-            </div>
+
+      </div>
 
       {/* Wave Settings */}
       <ControlGroup label={`Wave Intensity: ${gradientConfig.waveIntensity.toFixed(2)}`}>
-        <Slider
+        <NumberInput
           value={[gradientConfig.waveIntensity]}
           onValueChange={([val]) => setGradientConfig({
                   ...gradientConfig,
             waveIntensity: val
                 })}
           max={1}
-          step={0.01}
+          step={0.05}
               />
       </ControlGroup>
 
       <div className="grid grid-cols-2 gap-4">
         <ControlGroup label={`Wave 1: ${gradientConfig.wave1Speed.toFixed(2)}`}>
-          <Slider
+          <NumberInput
             value={[gradientConfig.wave1Speed]}
             onValueChange={([val]) => setGradientConfig({
                   ...gradientConfig,
               wave1Speed: val
                 })}
             max={0.5}
-            step={0.01}
+            step={0.05}
               />
         </ControlGroup>
         <ControlGroup label="Direction">
@@ -509,7 +574,7 @@ const ControlPanel = ({
 
       <div className="grid grid-cols-2 gap-4">
         <ControlGroup label={`Wave 2: ${gradientConfig.wave2Speed.toFixed(2)}`}>
-          <Slider
+          <NumberInput
             value={[gradientConfig.wave2Speed]}
             onValueChange={([val]) => setGradientConfig({
                   ...gradientConfig,
@@ -540,7 +605,7 @@ const ControlPanel = ({
 
       {/* Mouse Influence */}
       <ControlGroup label={`Mouse Influence: ${gradientConfig.mouseInfluence.toFixed(2)}`}>
-        <Slider
+        <NumberInput
           value={[gradientConfig.mouseInfluence]}
           onValueChange={([val]) => setGradientConfig({
                   ...gradientConfig,
@@ -552,7 +617,7 @@ const ControlPanel = ({
       </ControlGroup>
 
       <ControlGroup label={`Decay Speed: ${gradientConfig.decaySpeed.toFixed(2)}`}>
-        <Slider
+        <NumberInput
           value={[gradientConfig.decaySpeed]}
           onValueChange={([val]) => setGradientConfig({
                   ...gradientConfig,
@@ -601,7 +666,7 @@ const ControlPanel = ({
 
       <div className="grid grid-cols-2 gap-4">
         <ControlGroup label={`Row Gap: ${tessellationConfig.rowGap}px`}>
-          <Slider
+          <NumberInput
             value={[tessellationConfig.rowGap]}
             onValueChange={([val]) => setTessellationConfig({
                   ...tessellationConfig,
@@ -613,7 +678,7 @@ const ControlPanel = ({
               />
         </ControlGroup>
         <ControlGroup label={`Col Gap: ${tessellationConfig.colGap}px`}>
-          <Slider
+          <NumberInput
             value={[tessellationConfig.colGap]}
             onValueChange={([val]) => setTessellationConfig({
                   ...tessellationConfig,
@@ -627,7 +692,7 @@ const ControlPanel = ({
             </div>
 
       <ControlGroup label={`Icon Size: ${tessellationConfig.size}px`}>
-        <Slider
+        <NumberInput
           value={[tessellationConfig.size]}
           onValueChange={([val]) => setTessellationConfig({
                   ...tessellationConfig,
@@ -640,7 +705,7 @@ const ControlPanel = ({
       </ControlGroup>
 
       <ControlGroup label={`Opacity: ${tessellationConfig.opacity.toFixed(2)}`}>
-        <Slider
+        <NumberInput
           value={[tessellationConfig.opacity]}
           onValueChange={([val]) => setTessellationConfig({
                   ...tessellationConfig,
@@ -652,7 +717,7 @@ const ControlPanel = ({
       </ControlGroup>
 
       <ControlGroup label={`Rotation: ${tessellationConfig.rotation}°`}>
-        <Slider
+        <NumberInput
           value={[tessellationConfig.rotation]}
           onValueChange={([val]) => setTessellationConfig({
             ...tessellationConfig,
@@ -686,7 +751,7 @@ const ControlPanel = ({
       </ControlGroup>
 
       <ControlGroup label={`Mouse Rotation: ${(tessellationConfig.mouseRotationInfluence || 0).toFixed(2)}`}>
-        <Slider
+        <NumberInput
           value={[tessellationConfig.mouseRotationInfluence || 0]}
           onValueChange={([val]) => setTessellationConfig({
                 ...tessellationConfig,
@@ -703,7 +768,7 @@ const ControlPanel = ({
   const renderEffectsPanel = () => (
     <div className="space-y-5">
       <ControlGroup label={`Background Blur: ${effectsConfig.blur}px`}>
-        <Slider
+        <NumberInput
           value={[effectsConfig.blur]}
           onValueChange={([val]) => setEffectsConfig({
                 ...effectsConfig,
@@ -728,7 +793,7 @@ const ControlPanel = ({
             {effectsConfig.noiseEnabled && (
               <>
           <ControlGroup label={`Amount: ${effectsConfig.noise.toFixed(2)}`}>
-            <Slider
+            <NumberInput
               value={[effectsConfig.noise]}
               onValueChange={([val]) => setEffectsConfig({
                       ...effectsConfig,
@@ -739,7 +804,7 @@ const ControlPanel = ({
                   />
           </ControlGroup>
           <ControlGroup label={`Scale: ${effectsConfig.noiseScale.toFixed(1)}`}>
-            <Slider
+            <NumberInput
               value={[effectsConfig.noiseScale]}
               onValueChange={([val]) => setEffectsConfig({
                       ...effectsConfig,
@@ -778,7 +843,7 @@ const ControlPanel = ({
             {effectsConfig.texture !== 'none' && (
               <>
           <ControlGroup label={`Size: ${effectsConfig.textureSize}px`}>
-            <Slider
+            <NumberInput
               value={[effectsConfig.textureSize]}
               onValueChange={([val]) => setEffectsConfig({
                       ...effectsConfig,
@@ -790,7 +855,7 @@ const ControlPanel = ({
             />
           </ControlGroup>
           <ControlGroup label={`Opacity: ${effectsConfig.textureOpacity.toFixed(2)}`}>
-            <Slider
+            <NumberInput
               value={[effectsConfig.textureOpacity]}
               onValueChange={([val]) => setEffectsConfig({
                       ...effectsConfig,
@@ -854,7 +919,7 @@ const ControlPanel = ({
       </ControlGroup>
 
       <ControlGroup label={`Vignette: ${effectsConfig.vignetteIntensity.toFixed(2)}`}>
-        <Slider
+        <NumberInput
           value={[effectsConfig.vignetteIntensity]}
           onValueChange={([val]) => setEffectsConfig({
                 ...effectsConfig,
@@ -866,7 +931,7 @@ const ControlPanel = ({
       </ControlGroup>
 
       <ControlGroup label={`Saturation: ${effectsConfig.saturation}%`}>
-        <Slider
+        <NumberInput
           value={[effectsConfig.saturation]}
           onValueChange={([val]) => setEffectsConfig({
                   ...effectsConfig,
@@ -878,7 +943,7 @@ const ControlPanel = ({
       </ControlGroup>
 
       <ControlGroup label={`Contrast: ${effectsConfig.contrast}%`}>
-        <Slider
+        <NumberInput
           value={[effectsConfig.contrast]}
           onValueChange={([val]) => setEffectsConfig({
                   ...effectsConfig,
@@ -891,7 +956,7 @@ const ControlPanel = ({
       </ControlGroup>
 
       <ControlGroup label={`Brightness: ${effectsConfig.brightness}%`}>
-        <Slider
+        <NumberInput
           value={[effectsConfig.brightness]}
           onValueChange={([val]) => setEffectsConfig({
                   ...effectsConfig,
@@ -916,7 +981,7 @@ const ControlPanel = ({
       </div>
 
       <ControlGroup label={`Section Gap: ${textGap}px`}>
-        <Slider
+        <NumberInput
           value={[textGap]}
           onValueChange={([val]) => setTextGap(val)}
           max={100}
@@ -947,7 +1012,7 @@ const ControlPanel = ({
           />
 
           <ControlGroup label={`Size: ${section.size}px`}>
-            <Slider
+            <NumberInput
               value={[section.size]}
               onValueChange={([val]) => updateTextSection(section.id, 'size', val)}
               min={12}
@@ -979,7 +1044,7 @@ const ControlPanel = ({
           </ControlGroup>
 
           <ControlGroup label={`Spacing: ${section.spacing.toFixed(2)}em`}>
-            <Slider
+            <NumberInput
               value={[section.spacing]}
               onValueChange={([val]) => updateTextSection(section.id, 'spacing', val)}
               min={-0.1}
@@ -1064,29 +1129,29 @@ const ControlPanel = ({
         )
       case 'gradient-stops':
         return (
-          <div className="space-y-4">
-            <ControlGroup label={`Start X: ${gradientConfig.startPos.x}%`}>
-              <Slider value={[gradientConfig.startPos.x]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, startPos: { ...gradientConfig.startPos, x: val } })} max={100} />
+          <div className="space-y-2">
+            <ControlGroup label={`Start X: `}>
+              <NumberInput value={[gradientConfig.startPos.x]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, startPos: { ...gradientConfig.startPos, x: val } })} max={100} step={5} showButtons />
             </ControlGroup>
-            <ControlGroup label={`Start Y: ${gradientConfig.startPos.y}%`}>
-              <Slider value={[gradientConfig.startPos.y]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, startPos: { ...gradientConfig.startPos, y: val } })} max={100} />
+            <ControlGroup label={`Start Y: `}>
+              <NumberInput value={[gradientConfig.startPos.y]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, startPos: { ...gradientConfig.startPos, y: val } })} max={100} step={5} showButtons />
             </ControlGroup>
-            <ControlGroup label={`End X: ${gradientConfig.endPos.x}%`}>
-              <Slider value={[gradientConfig.endPos.x]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, endPos: { ...gradientConfig.endPos, x: val } })} max={100} />
+            <ControlGroup label={`End X: `}>
+              <NumberInput value={[gradientConfig.endPos.x]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, endPos: { ...gradientConfig.endPos, x: val } })} max={100} step={5} showButtons />
             </ControlGroup>
-            <ControlGroup label={`End Y: ${gradientConfig.endPos.y}%`}>
-              <Slider value={[gradientConfig.endPos.y]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, endPos: { ...gradientConfig.endPos, y: val } })} max={100} />
+            <ControlGroup label={`End Y: `}>
+              <NumberInput value={[gradientConfig.endPos.y]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, endPos: { ...gradientConfig.endPos, y: val } })} max={100} step={5} showButtons />
             </ControlGroup>
           </div>
         )
       case 'gradient-wave':
         return (
-          <div className="space-y-4">
-            <ControlGroup label={`Wave Intensity: ${gradientConfig.waveIntensity.toFixed(2)}`}>
-              <Slider value={[gradientConfig.waveIntensity]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, waveIntensity: val })} max={1} step={0.01} />
+          <div className="space-y-2 ">
+            <ControlGroup label={`Wave Intensity: `}>
+              <NumberInput value={[gradientConfig.waveIntensity]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, waveIntensity: val })} max={1} step={0.05} showButtons />
             </ControlGroup>
-            <ControlGroup label={`Wave 1 Speed: ${gradientConfig.wave1Speed.toFixed(2)}`}>
-              <Slider value={[gradientConfig.wave1Speed]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, wave1Speed: val })} max={0.5} step={0.01} />
+            <ControlGroup label={`Wave 1 Speed: `}>
+              <NumberInput value={[gradientConfig.wave1Speed]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, wave1Speed: val })} max={0.5} step={0.05} showButtons />
             </ControlGroup>
             <ControlGroup label="Wave 1 Direction">
               <Select value={String(gradientConfig.wave1Direction)} onValueChange={(v) => setGradientConfig({ ...gradientConfig, wave1Direction: parseInt(v) })}>
@@ -1097,8 +1162,8 @@ const ControlPanel = ({
                 </SelectContent>
               </Select>
             </ControlGroup>
-            <ControlGroup label={`Wave 2 Speed: ${gradientConfig.wave2Speed.toFixed(2)}`}>
-              <Slider value={[gradientConfig.wave2Speed]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, wave2Speed: val })} max={0.5} step={0.01} />
+            <ControlGroup label={`Wave 2 Speed: `}>
+              <NumberInput value={[gradientConfig.wave2Speed]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, wave2Speed: val })} max={0.5} step={0.05} showButtons />
             </ControlGroup>
             <ControlGroup label="Wave 2 Direction">
               <Select value={String(gradientConfig.wave2Direction)} onValueChange={(v) => setGradientConfig({ ...gradientConfig, wave2Direction: parseInt(v) })}>
@@ -1113,75 +1178,75 @@ const ControlPanel = ({
         )
       case 'gradient-mouse':
         return (
-          <div className="space-y-4">
-            <ControlGroup label={`Mouse Influence: ${gradientConfig.mouseInfluence.toFixed(2)}`}>
-              <Slider value={[gradientConfig.mouseInfluence]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, mouseInfluence: val })} max={1} step={0.01} />
+          <div className="space-y-2">
+            <ControlGroup label={`Mouse Influence: `}>
+              <NumberInput value={[gradientConfig.mouseInfluence]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, mouseInfluence: val })} max={1} step={0.05} showButtons />
             </ControlGroup>
-            <ControlGroup label={`Decay Speed: ${gradientConfig.decaySpeed.toFixed(2)}`}>
-              <Slider value={[gradientConfig.decaySpeed]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, decaySpeed: val })} min={0.8} max={0.99} step={0.01} />
+            <ControlGroup label={`Decay Speed: `}>
+              <NumberInput value={[gradientConfig.decaySpeed]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, decaySpeed: val })} min={0.8} max={0.99} step={0.01} showButtons />
             </ControlGroup>
           </div>
         )
       case 'pattern-icon':
         return (
-          <div className="space-y-4">
+          <div className="space-y-2">
             <ControlGroup label="Icon">
               <Select value={tessellationConfig.icon} onValueChange={(v) => setTessellationConfig({ ...tessellationConfig, icon: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>{AVAILABLE_ICONS.map(icon => <SelectItem key={icon} value={icon}>{icon}</SelectItem>)}</SelectContent>
               </Select>
             </ControlGroup>
-            <ControlGroup label={`Size: ${tessellationConfig.size}px`}>
-              <Slider value={[tessellationConfig.size]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, size: val })} min={8} max={100} />
+            <ControlGroup label={`Size: `}>
+              <NumberInput value={[tessellationConfig.size]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, size: val })} min={8} max={100} step={4} showButtons />
             </ControlGroup>
             <ControlGroup label="Color">
-              <input type="color" value={tessellationConfig.color} onChange={(e) => setTessellationConfig({ ...tessellationConfig, color: e.target.value })} className="w-full h-10 rounded-md border border-border cursor-pointer" />
+              <input type="color" value={tessellationConfig.color} onChange={(e) => setTessellationConfig({ ...tessellationConfig, color: e.target.value })} className="w-24 h-10 rounded-md border border-border cursor-pointer" />
             </ControlGroup>
-            <ControlGroup label={`Opacity: ${tessellationConfig.opacity.toFixed(2)}`}>
-              <Slider value={[tessellationConfig.opacity]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, opacity: val })} max={1} step={0.01} />
+            <ControlGroup label={`Opacity: `}>
+              <NumberInput value={[tessellationConfig.opacity]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, opacity: val })} max={1} step={0.05} showButtons />
             </ControlGroup>
             <ControlGroup label={`Rotation: ${tessellationConfig.rotation}°`}>
-              <Slider value={[tessellationConfig.rotation]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, rotation: val })} max={360} />
+              <NumberInput value={[tessellationConfig.rotation]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, rotation: val })} max={360} step={15} showButtons />
             </ControlGroup>
           </div>
         )
       case 'pattern-spacing':
         return (
-          <div className="space-y-4">
-            <ControlGroup label={`Row Gap: ${tessellationConfig.rowGap}px`}>
-              <Slider value={[tessellationConfig.rowGap]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, rowGap: val })} min={20} max={200} />
+          <div className="space-y-2">
+            <ControlGroup label={`Row Gap: `}>
+              <NumberInput value={[tessellationConfig.rowGap]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, rowGap: val })} min={20} max={200} step={10} showButtons />
             </ControlGroup>
-            <ControlGroup label={`Col Gap: ${tessellationConfig.colGap}px`}>
-              <Slider value={[tessellationConfig.colGap]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, colGap: val })} min={20} max={200} />
+            <ControlGroup label={`Col Gap: `}>
+              <NumberInput value={[tessellationConfig.colGap]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, colGap: val })} min={20} max={200} step={10} showButtons />
             </ControlGroup>
           </div>
         )
       case 'pattern-mouse':
         return (
-          <ControlGroup label={`Mouse Rotation: ${(tessellationConfig.mouseRotationInfluence || 0).toFixed(2)}`}>
-            <Slider value={[tessellationConfig.mouseRotationInfluence || 0]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, mouseRotationInfluence: val })} max={1} step={0.01} />
+          <ControlGroup label={`Mouse Rotation: `}>
+            <NumberInput value={[tessellationConfig.mouseRotationInfluence || 0]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, mouseRotationInfluence: val })} max={1} step={0.05} showButtons />
           </ControlGroup>
         )
       case 'effects-blur':
         return (
-          <ControlGroup label={`Blur: ${effectsConfig.blur}px`}>
-            <Slider value={[effectsConfig.blur]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, blur: val })} max={30} />
+          <ControlGroup label={`Blur: `}>
+            <NumberInput value={[effectsConfig.blur]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, blur: val })} max={30} step={2} showButtons />
           </ControlGroup>
         )
       case 'effects-noise':
         return (
-          <div className="space-y-4">
+          <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label>Enable Noise</Label>
               <Switch checked={effectsConfig.noiseEnabled} onCheckedChange={(c) => setEffectsConfig({ ...effectsConfig, noiseEnabled: c })} />
             </div>
             {effectsConfig.noiseEnabled && (
               <>
-                <ControlGroup label={`Amount: ${effectsConfig.noise.toFixed(2)}`}>
-                  <Slider value={[effectsConfig.noise]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, noise: val })} max={0.5} step={0.01} />
+                <ControlGroup label={`Amount: `}>
+                  <NumberInput value={[effectsConfig.noise]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, noise: val })} max={0.5} step={0.05} showButtons />
                 </ControlGroup>
-                <ControlGroup label={`Scale: ${effectsConfig.noiseScale.toFixed(1)}`}>
-                  <Slider value={[effectsConfig.noiseScale]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, noiseScale: val })} min={0.5} max={3} step={0.1} />
+                <ControlGroup label={`Scale: `}>
+                  <NumberInput value={[effectsConfig.noiseScale]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, noiseScale: val })} min={0.5} max={3} step={0.25} showButtons />
                 </ControlGroup>
               </>
             )}
@@ -1189,7 +1254,7 @@ const ControlPanel = ({
         )
       case 'effects-texture':
         return (
-          <div className="space-y-4">
+          <div className="space-y-2">
             <ControlGroup label="Texture Type">
               <Select value={effectsConfig.texture} onValueChange={(v) => setEffectsConfig({ ...effectsConfig, texture: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
@@ -1205,11 +1270,11 @@ const ControlPanel = ({
             </ControlGroup>
             {effectsConfig.texture !== 'none' && (
               <>
-                <ControlGroup label={`Size: ${effectsConfig.textureSize}px`}>
-                  <Slider value={[effectsConfig.textureSize]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, textureSize: val })} min={4} max={100} />
+                <ControlGroup label={`Size: `}>
+                  <NumberInput value={[effectsConfig.textureSize]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, textureSize: val })} min={4} max={100} step={4} showButtons />
                 </ControlGroup>
-                <ControlGroup label={`Opacity: ${effectsConfig.textureOpacity.toFixed(2)}`}>
-                  <Slider value={[effectsConfig.textureOpacity]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, textureOpacity: val })} max={1} step={0.01} />
+                <ControlGroup label={`Opacity: `}>
+                  <NumberInput value={[effectsConfig.textureOpacity]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, textureOpacity: val })} max={1} step={0.05} showButtons />
                 </ControlGroup>
               </>
             )}
@@ -1217,7 +1282,7 @@ const ControlPanel = ({
         )
       case 'effects-colormap':
         return (
-          <ControlGroup label="Color Map">
+          <ControlGroup label="Color Map:">
             <Select value={effectsConfig.colorMap} onValueChange={(v) => setEffectsConfig({ ...effectsConfig, colorMap: v })}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -1234,21 +1299,21 @@ const ControlPanel = ({
         )
       case 'effects-vignette':
         return (
-          <ControlGroup label={`Intensity: ${effectsConfig.vignetteIntensity.toFixed(2)}`}>
-            <Slider value={[effectsConfig.vignetteIntensity]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, vignetteIntensity: val })} max={0.8} step={0.01} />
+          <ControlGroup label={`Intensity: `}>
+            <NumberInput value={[effectsConfig.vignetteIntensity]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, vignetteIntensity: val })} max={0.8} step={0.05} showButtons />
           </ControlGroup>
         )
       case 'effects-color':
         return (
-          <div className="space-y-4">
-            <ControlGroup label={`Saturation: ${effectsConfig.saturation}%`}>
-              <Slider value={[effectsConfig.saturation]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, saturation: val })} max={200} />
+            <div className="space-y-2">
+            <ControlGroup label={`Saturation: `}>
+              <NumberInput value={[effectsConfig.saturation]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, saturation: val })} max={200} step={10} showButtons />
             </ControlGroup>
-            <ControlGroup label={`Contrast: ${effectsConfig.contrast}%`}>
-              <Slider value={[effectsConfig.contrast]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, contrast: val })} min={50} max={150} />
+              <ControlGroup label={`Contrast: `}>
+              <NumberInput value={[effectsConfig.contrast]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, contrast: val })} min={50} max={150} step={5} showButtons />
             </ControlGroup>
-            <ControlGroup label={`Brightness: ${effectsConfig.brightness}%`}>
-              <Slider value={[effectsConfig.brightness]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, brightness: val })} min={50} max={150} />
+            <ControlGroup label={`Brightness: `}>
+              <NumberInput value={[effectsConfig.brightness]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, brightness: val })} min={50} max={150} step={5} showButtons />
             </ControlGroup>
           </div>
         )
@@ -1264,7 +1329,7 @@ const ControlPanel = ({
       <div 
         ref={panelRef}
           className={cn(
-            "fixed left-0 right-0 bottom-0 z-[100] bg-card/95 backdrop-blur-xl border-t border-border",
+            "fixed left-0 right-0 bottom-0 z-50 bg-card/95 backdrop-blur-xl border-t border-border",
             "transition-transform duration-300 ease-out",
             isMobileCollapsed ? "translate-y-[calc(100%-60px)]" : ""
           )}
@@ -1307,11 +1372,11 @@ const ControlPanel = ({
             <ScrollArea className="max-h-[50vh] p-1 gap-2">
             {activePanel === 'gradient' && (
                 <div className="space-y-1 flex flex-row gap-1">
-                <SubsectionButton title="Colors" sectionKey="gradient-colors" />
-                <SubsectionButton title="Type" sectionKey="gradient-type" />
-                <SubsectionButton title="Stops" sectionKey="gradient-stops" />
-                <SubsectionButton title="Wave" sectionKey="gradient-wave" />
-                <SubsectionButton title="Mouse Influence" sectionKey="gradient-mouse" />
+                <SubsectionButton title="Colors" onClick={() => openDialog('gradient-colors')} />
+                <SubsectionButton title="Type" onClick={() => openDialog('gradient-type')} />
+                <SubsectionButton title="Stops" onClick={() => openDialog('gradient-stops')} />
+                <SubsectionButton title="Wave" onClick={() => openDialog('gradient-wave')} />
+                <SubsectionButton title="Mouse Influence" onClick={() => openDialog('gradient-mouse')} />
               </div>
             )}
             {activePanel === 'tessellation' && (
@@ -1323,19 +1388,19 @@ const ControlPanel = ({
                       onCheckedChange={(c) => setTessellationConfig({ ...tessellationConfig, enabled: c })}
                     />
                 </div>
-                <SubsectionButton title="Icon" sectionKey="pattern-icon" />
-                <SubsectionButton title="Spacing" sectionKey="pattern-spacing" />
-                <SubsectionButton title="Mouse Influence" sectionKey="pattern-mouse" />
+                <SubsectionButton title="Icon" onClick={() => openDialog('pattern-icon')} />
+                <SubsectionButton title="Spacing" onClick={() => openDialog('pattern-spacing')} />
+                <SubsectionButton title="Mouse Influence" onClick={() => openDialog('pattern-mouse')} />
               </div>
             )}
             {activePanel === 'effects' && (
                 <div className="space-y-1">
-                <SubsectionButton title="Background Blur" sectionKey="effects-blur" />
-                <SubsectionButton title="Noise" sectionKey="effects-noise" />
-                <SubsectionButton title="Texture" sectionKey="effects-texture" />
-                <SubsectionButton title="Color Map" sectionKey="effects-colormap" />
-                <SubsectionButton title="Vignette" sectionKey="effects-vignette" />
-                <SubsectionButton title="Color Correction" sectionKey="effects-color" />
+                <SubsectionButton title="Background Blur" onClick={() => openDialog('effects-blur')} />
+                <SubsectionButton title="Noise" onClick={() => openDialog('effects-noise')} />
+                <SubsectionButton title="Texture" onClick={() => openDialog('effects-texture')} />
+                <SubsectionButton title="Color Map" onClick={() => openDialog('effects-colormap')} />
+                <SubsectionButton title="Vignette" onClick={() => openDialog('effects-vignette')} />
+                <SubsectionButton title="Color Correction" onClick={() => openDialog('effects-color')} />
               </div>
             )}
               {activePanel === 'text' && renderTextPanel()}
@@ -1345,13 +1410,13 @@ const ControlPanel = ({
 
         {/* Mobile Dialog */}
         <Dialog open={!!activeDialog} onOpenChange={(open) => !open && backDialog()}>
-          <DialogContent className="max-h-[80vh] overflow-auto">
+          <DialogContent className="max-h-[80vh]">
             <DialogHeader>
               <DialogTitle>{getDialogTitle(activeDialog)}</DialogTitle>
             </DialogHeader>
-            <div className="py-4">
+            <ScrollArea className="max-h-[60vh] py-4">
                 {renderDialogContent()}
-              </div>
+            </ScrollArea>
             <DialogFooter className="flex-row gap-2">
               <Button variant="outline" className="flex-1" onClick={resetDialog}>
                 <ArrowCounterClockwise size={16} className="mr-2" />
@@ -1418,11 +1483,12 @@ const ControlPanel = ({
     <div 
       ref={panelRef}
         className={cn(
-          "fixed z-[100] bg-card/95 backdrop-blur-xl border border-border rounded-2xl w-[340px] max-h-[85vh] overflow-hidden",
+          "fixed z-50 bg-card/95 backdrop-blur-xl border border-border rounded-2xl w-[340px] max-h-[85vh]",
           "shadow-2xl shadow-black/50 transition-shadow duration-200",
           "font-[Geist,system-ui,sans-serif] text-foreground",
           isDragging && "shadow-3xl shadow-black/60",
-          isCollapsed && "w-auto max-h-none"
+          isCollapsed && "w-auto max-h-none overflow-hidden",
+          !isCollapsed && "flex flex-col overflow-hidden"
         )}
         style={{
           left: `${position.x}px`,
@@ -1462,8 +1528,8 @@ const ControlPanel = ({
       </div>
 
       {!isCollapsed && (
-          <Tabs value={activePanel} onValueChange={setActivePanel}>
-            <TabsList className="w-full rounded-none border-b border-border bg-transparent p-1 gap-1">
+          <Tabs value={activePanel} onValueChange={setActivePanel} className="flex flex-col flex-1 min-h-0">
+            <TabsList className="w-full rounded-none border-b border-border bg-transparent p-1 gap-1 shrink-0">
             {tabs.map(tab => (
                 <TabsTrigger
                 key={tab.id}
@@ -1476,20 +1542,22 @@ const ControlPanel = ({
             ))}
             </TabsList>
 
-            <ScrollArea className="max-h-[calc(85vh-120px)] p-5">
-              <TabsContent value="gradient" className="m-0">
-                {renderGradientPanel()}
-              </TabsContent>
-              <TabsContent value="tessellation" className="m-0">
-                {renderPatternPanel()}
-              </TabsContent>
-              <TabsContent value="effects" className="m-0">
-                {renderEffectsPanel()}
-              </TabsContent>
-              <TabsContent value="text" className="m-0">
-                {renderTextPanel()}
-              </TabsContent>
-            </ScrollArea>
+            <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
+              <ScrollArea className="flex-1 min-h-0 p-5">
+                <TabsContent value="gradient" className="m-0">
+                  {renderGradientPanel()}
+                </TabsContent>
+                <TabsContent value="tessellation" className="m-0">
+                  {renderPatternPanel()}
+                </TabsContent>
+                <TabsContent value="effects" className="m-0">
+                  {renderEffectsPanel()}
+                </TabsContent>
+                <TabsContent value="text" className="m-0">
+                  {renderTextPanel()}
+                </TabsContent>
+              </ScrollArea>
+            </div>
           </Tabs>
                   )}
                 </div>
