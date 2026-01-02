@@ -70,6 +70,9 @@ function App() {
     opacity: 1,
   })
 
+  // Custom color palette state (uploaded by user)
+  const [colorPalette, setColorPalette] = useState(null)
+
   const handleMouseMove = useCallback((e) => {
     const x = e.clientX / window.innerWidth
     const y = e.clientY / window.innerHeight
@@ -196,6 +199,8 @@ function App() {
         textConfig={textConfig}
         setTextConfig={setTextConfig}
         layersContainerRef={layersContainerRef}
+        colorPalette={colorPalette}
+        setColorPalette={setColorPalette}
       />
     </div>
   )

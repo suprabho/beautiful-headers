@@ -4,10 +4,10 @@ import { AVAILABLE_ICONS } from './TessellationLayer'
 import { 
   Sliders, Palette, GridFour, Sparkle, TextT, 
   Shuffle, Plus, Minus, Trash, CaretDown, CaretUp, CaretRight, DotsSixVertical, Camera,
-  X, Image, Stack, CircleNotch, ArrowLeft, Check, ArrowCounterClockwise
+  X, Image, Stack, CircleNotch, ArrowLeft, ArrowRight, Check, ArrowCounterClockwise, Upload, Eyedropper
 } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
-import { prepareForCapture } from '@/lib/colorConversion'
+import { prepareForCapture, validatePaletteJson, parsePaletteJson, filterPaletteByContrast, checkContrastAgainstGradient } from '@/lib/colorConversion'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -113,6 +113,259 @@ const SubsectionButton = ({ title, onClick }) => (
   </Button>
 )
 
+// Palette Color Picker component - shows palette swatches when palette is uploaded
+const PaletteColorPicker = ({ value, onChange, palette, className }) => {
+  const [showPalette, setShowPalette] = useState(false)
+  const containerRef = useRef(null)
+  
+  // Close palette when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setShowPalette(false)
+      }
+    }
+    if (showPalette) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showPalette])
+  
+  // If no palette, show native color picker
+  if (!palette) {
+    return (
+      <input
+        type="color"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className={cn("w-8 h-8 rounded-md border border-border cursor-pointer bg-transparent", className)}
+      />
+    )
+  }
+  
+  const { colorsByName } = palette
+  
+  return (
+    <div className="relative" ref={containerRef}>
+      <button
+        type="button"
+        onClick={() => setShowPalette(!showPalette)}
+        className={cn(
+          "w-8 h-8 rounded-md border border-border cursor-pointer flex items-center justify-center",
+          className
+        )}
+        style={{ backgroundColor: value }}
+      >
+        <Eyedropper size={14} className="text-white mix-blend-difference" />
+      </button>
+      
+      {showPalette && (
+        <div className="absolute z-50 top-full left-0 mt-2 p-3 bg-popover border border-border rounded-lg shadow-xl max-h-[300px] overflow-auto w-[280px]">
+          <div className="space-y-3">
+            {Object.entries(colorsByName).map(([name, shades]) => (
+              <div key={name}>
+                <div className="text-xs font-medium text-muted-foreground mb-1.5 capitalize">{name}</div>
+                <div className="flex flex-wrap gap-1">
+                  {shades.map((shade, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        onChange(shade.hex)
+                        setShowPalette(false)
+                      }}
+                      className={cn(
+                        "w-6 h-6 rounded border border-border/50 hover:scale-110 transition-transform",
+                        value === shade.hex && "ring-2 ring-primary ring-offset-1"
+                      )}
+                      style={{ backgroundColor: shade.hex }}
+                      title={shade.shade ? `${name}-${shade.shade}` : name}
+                    />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {/* Still allow custom color input */}
+          <div className="mt-3 pt-3 border-t border-border">
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={value}
+                onChange={(e) => {
+                  onChange(e.target.value)
+                  setShowPalette(false)
+                }}
+                className="w-8 h-8 rounded-md border border-border cursor-pointer bg-transparent"
+              />
+              <span className="text-xs text-muted-foreground">Custom color</span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Contrast-aware Palette Color Picker - filters colors by AA contrast against gradient
+const ContrastAwarePaletteColorPicker = ({ value, onChange, palette, gradientColors, className }) => {
+  const [showPalette, setShowPalette] = useState(false)
+  const containerRef = useRef(null)
+  
+  // Close palette when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setShowPalette(false)
+      }
+    }
+    if (showPalette) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showPalette])
+  
+  // Filter palette colors by contrast with gradient colors
+  const filteredPalette = palette && gradientColors?.length > 0
+    ? filterPaletteByContrast(palette, gradientColors, 'AA', true)
+    : palette
+  
+  // Check current value's contrast
+  const currentContrast = gradientColors?.length > 0
+    ? checkContrastAgainstGradient(value, gradientColors, 'AA', true)
+    : { passes: true, minRatio: Infinity }
+  
+  // If no palette, show native color picker with contrast indicator
+  if (!palette) {
+    return (
+      <div className="flex items-center gap-2">
+        <input
+          type="color"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className={cn("w-8 h-8 rounded-md border border-border cursor-pointer bg-transparent", className)}
+        />
+        {gradientColors?.length > 0 && (
+          <span className={cn(
+            "text-xs px-1.5 py-0.5 rounded font-medium",
+            currentContrast.passes 
+              ? "bg-green-500/20 text-green-600 dark:text-green-400" 
+              : "bg-amber-500/20 text-amber-600 dark:text-amber-400"
+          )}>
+            {currentContrast.minRatio.toFixed(1)}:1
+          </span>
+        )}
+      </div>
+    )
+  }
+  
+  const { colorsByName } = filteredPalette
+  const hasAccessibleColors = Object.keys(colorsByName).length > 0
+  
+  return (
+    <div className="relative" ref={containerRef}>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => setShowPalette(!showPalette)}
+          className={cn(
+            "w-8 h-8 rounded-md border cursor-pointer flex items-center justify-center",
+            currentContrast.passes ? "border-border" : "border-amber-500",
+            className
+          )}
+          style={{ backgroundColor: value }}
+        >
+          <Eyedropper size={14} className="text-white mix-blend-difference" />
+        </button>
+        {gradientColors?.length > 0 && (
+          <span className={cn(
+            "text-xs px-1.5 py-0.5 rounded font-medium",
+            currentContrast.passes 
+              ? "bg-green-500/20 text-green-600 dark:text-green-400" 
+              : "bg-amber-500/20 text-amber-600 dark:text-amber-400"
+          )}>
+            {currentContrast.minRatio === Infinity ? "—" : `${currentContrast.minRatio.toFixed(1)}:1`}
+          </span>
+        )}
+      </div>
+      
+      {showPalette && (
+        <div className="absolute z-50 top-full left-0 mt-2 p-3 bg-popover border border-border rounded-lg shadow-xl max-h-[300px] overflow-auto w-[280px]">
+          {/* Header with info */}
+          <div className="mb-3 pb-2 border-b border-border">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <div className="w-3 h-3 rounded-full bg-green-500/30 border border-green-500/50" />
+              <span>Colors with AA contrast (≥3:1)</span>
+            </div>
+          </div>
+          
+          {hasAccessibleColors ? (
+            <div className="space-y-3">
+              {Object.entries(colorsByName).map(([name, shades]) => (
+                <div key={name}>
+                  <div className="text-xs font-medium text-muted-foreground mb-1.5 capitalize">{name}</div>
+                  <div className="flex flex-wrap gap-1">
+                    {shades.map((shade, idx) => {
+                      const contrast = checkContrastAgainstGradient(shade.hex, gradientColors, 'AA', true)
+                      return (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => {
+                            onChange(shade.hex)
+                            setShowPalette(false)
+                          }}
+                          className={cn(
+                            "w-6 h-6 rounded border hover:scale-110 transition-transform relative group",
+                            value === shade.hex && "ring-2 ring-primary ring-offset-1",
+                            "border-green-500/50"
+                          )}
+                          style={{ backgroundColor: shade.hex }}
+                          title={`${shade.shade ? `${name}-${shade.shade}` : name} (${contrast.minRatio.toFixed(1)}:1)`}
+                        >
+                          <span className="absolute -top-6 left-1/2 -translate-x-1/2 px-1 py-0.5 bg-popover text-[10px] rounded opacity-0 group-hover:opacity-100 whitespace-nowrap border border-border shadow-sm pointer-events-none">
+                            {contrast.minRatio.toFixed(1)}:1
+                          </span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="py-4 text-center text-sm text-muted-foreground">
+              <p>No colors in your palette meet AA contrast requirements with the current gradient.</p>
+              <p className="mt-2 text-xs">Try adjusting your gradient colors or use a custom color below.</p>
+            </div>
+          )}
+          
+          {/* Custom color input with contrast check */}
+          <div className="mt-3 pt-3 border-t border-border">
+            <div className="flex items-center gap-2">
+              <input
+                type="color"
+                value={value}
+                onChange={(e) => {
+                  onChange(e.target.value)
+                }}
+                className="w-8 h-8 rounded-md border border-border cursor-pointer bg-transparent"
+              />
+              <div className="flex flex-col">
+                <span className="text-xs text-muted-foreground">Custom color</span>
+                {!currentContrast.passes && (
+                  <span className="text-[10px] text-amber-500">Low contrast ({currentContrast.minRatio.toFixed(1)}:1)</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 const ControlPanel = ({
   activePanel,
   setActivePanel,
@@ -130,6 +383,8 @@ const ControlPanel = ({
   textConfig,
   setTextConfig,
   layersContainerRef,
+  colorPalette,
+  setColorPalette,
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileCollapsed, setIsMobileCollapsed] = useState(true)
@@ -139,8 +394,57 @@ const ControlPanel = ({
   const [activeDialog, setActiveDialog] = useState(null)
   const [originalValues, setOriginalValues] = useState(null)
   const [collapsedSections, setCollapsedSections] = useState({})
+  const [showPaletteDialog, setShowPaletteDialog] = useState(false)
+  const [paletteJson, setPaletteJson] = useState('')
+  const [paletteError, setPaletteError] = useState('')
   const dragOffset = useRef({ x: 0, y: 0 })
   const panelRef = useRef(null)
+  
+  // Parse the palette for the color picker
+  const parsedPalette = colorPalette ? parsePaletteJson(colorPalette) : null
+  
+  // Handle palette upload
+  const handlePaletteUpload = () => {
+    if (!paletteJson.trim()) {
+      setPaletteError('Please paste a JSON palette')
+      return
+    }
+    
+    const result = validatePaletteJson(paletteJson)
+    if (!result.valid) {
+      setPaletteError(result.error)
+      return
+    }
+    
+    setColorPalette(result.palette)
+    setPaletteError('')
+    setShowPaletteDialog(false)
+    setPaletteJson('')
+    
+    // Shuffle gradient colors using the new palette
+    const paletteColors = result.colors.map(c => c.hex)
+    if (paletteColors.length >= 2) {
+      // Pick 2-4 random colors from the palette
+      const numColors = Math.min(Math.floor(Math.random() * 3) + 2, paletteColors.length)
+      const shuffled = [...paletteColors].sort(() => Math.random() - 0.5)
+      const selectedColors = shuffled.slice(0, numColors)
+      const colorStops = selectedColors.map((_, i) => Math.round((i / (selectedColors.length - 1)) * 100))
+      
+      setGradientConfig(prev => ({
+        ...prev,
+        colors: selectedColors,
+        colorStops,
+        numColors: selectedColors.length,
+      }))
+    }
+  }
+  
+  // Clear palette
+  const handleClearPalette = () => {
+    setColorPalette(null)
+    setPaletteJson('')
+    setPaletteError('')
+  }
 
   useEffect(() => {
     const checkMobile = () => {
@@ -566,14 +870,11 @@ const ControlPanel = ({
         <div className="space-y-2">
               {gradientConfig.colors.map((color, index) => (
             <div key={index} className="flex items-center gap-2">
-              <div className="relative">
-                  <input
-                    type="color"
-                    value={color}
-                    onChange={(e) => updateGradientColor(index, e.target.value)}
-                  className="w-8 h-8 rounded-md border border-border cursor-pointer bg-transparent"
-                  />
-              </div>
+              <PaletteColorPicker
+                value={color}
+                onChange={(newColor) => updateGradientColor(index, newColor)}
+                palette={parsedPalette}
+              />
               <Input
                     type="number"
                     min="0"
@@ -650,22 +951,22 @@ const ControlPanel = ({
       </div>
 
       {/* Wave Settings */}
-      <ControlGroup label={`Wave Intensity: ${gradientConfig.waveIntensity.toFixed(2)}`}>
-        <NumberInput
-          value={[gradientConfig.waveIntensity]}
-          onValueChange={([val]) => setGradientConfig({
-                  ...gradientConfig,
-            waveIntensity: val
-                })}
-          max={1}
-          step={0.05}
-              />
+      <ControlGroup label={`Wave Intensity`}>
+      <NumberInput
+         value={[Math.round(gradientConfig.waveIntensity * 100) / 100]}
+         onValueChange={([val]) => setGradientConfig({
+                 ...gradientConfig,
+           waveIntensity: val
+               })}
+         max={1}
+         step={0.05}
+             />
       </ControlGroup>
 
       <div className="grid grid-cols-2 gap-4">
-        <ControlGroup label={`Wave 1: ${gradientConfig.wave1Speed.toFixed(2)}`}>
+        <ControlGroup label={`Wave 1`}>
           <NumberInput
-            value={[gradientConfig.wave1Speed]}
+            value={[Math.round(gradientConfig.wave1Speed * 100) / 100]}
             onValueChange={([val]) => setGradientConfig({
                   ...gradientConfig,
               wave1Speed: val
@@ -675,28 +976,28 @@ const ControlPanel = ({
               />
         </ControlGroup>
         <ControlGroup label="Direction">
-          <Select
-            value={String(gradientConfig.wave1Direction)}
-            onValueChange={(value) => setGradientConfig({
-                  ...gradientConfig,
-              wave1Direction: parseInt(value)
-                })}
-              >
-            <SelectTrigger className="h-9">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1">Forward</SelectItem>
-              <SelectItem value="-1">Backward</SelectItem>
-            </SelectContent>
-          </Select>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-9 w-9"
+            onClick={() => setGradientConfig({
+              ...gradientConfig,
+              wave1Direction: gradientConfig.wave1Direction === 1 ? -1 : 1
+            })}
+          >
+            {gradientConfig.wave1Direction === 1 ? (
+              <ArrowRight className="h-4 w-4" />
+            ) : (
+              <ArrowLeft className="h-4 w-4" />
+            )}
+          </Button>
         </ControlGroup>
             </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <ControlGroup label={`Wave 2: ${gradientConfig.wave2Speed.toFixed(2)}`}>
+        <ControlGroup label={`Wave 2`}>
           <NumberInput
-            value={[gradientConfig.wave2Speed]}
+            value={[Math.round(gradientConfig.wave2Speed * 100) / 100]}
             onValueChange={([val]) => setGradientConfig({
                   ...gradientConfig,
               wave2Speed: val
@@ -706,28 +1007,28 @@ const ControlPanel = ({
               />
         </ControlGroup>
         <ControlGroup label="Direction">
-          <Select
-            value={String(gradientConfig.wave2Direction)}
-            onValueChange={(value) => setGradientConfig({
-                  ...gradientConfig,
-              wave2Direction: parseInt(value)
-                })}
-              >
-            <SelectTrigger className="h-9">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1">Forward</SelectItem>
-              <SelectItem value="-1">Backward</SelectItem>
-            </SelectContent>
-          </Select>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-9 w-9"
+            onClick={() => setGradientConfig({
+              ...gradientConfig,
+              wave2Direction: gradientConfig.wave2Direction === 1 ? -1 : 1
+            })}
+          >
+            {gradientConfig.wave2Direction === 1 ? (
+              <ArrowRight className="h-4 w-4" />
+            ) : (
+              <ArrowLeft className="h-4 w-4" />
+            )}
+          </Button>
         </ControlGroup>
             </div>
 
       {/* Mouse Influence */}
-      <ControlGroup label={`Mouse Influence: ${gradientConfig.mouseInfluence.toFixed(2)}`}>
+      <ControlGroup label={`Mouse Influence`}>
         <NumberInput
-          value={[gradientConfig.mouseInfluence]}
+          value={[Math.round(gradientConfig.mouseInfluence * 100) / 100]}
           onValueChange={([val]) => setGradientConfig({
                   ...gradientConfig,
             mouseInfluence: val
@@ -737,9 +1038,9 @@ const ControlPanel = ({
         />
       </ControlGroup>
 
-      <ControlGroup label={`Decay Speed: ${gradientConfig.decaySpeed.toFixed(2)}`}>
+      <ControlGroup label={`Decay Speed`}>
         <NumberInput
-          value={[gradientConfig.decaySpeed]}
+          value={[Math.round(gradientConfig.decaySpeed * 100) / 100]}
           onValueChange={([val]) => setGradientConfig({
                   ...gradientConfig,
             decaySpeed: val
@@ -826,15 +1127,15 @@ const ControlPanel = ({
       </ControlGroup>
 
       <ControlGroup label={`Opacity`}>
-        <NumberInput
-          value={[tessellationConfig.opacity]}
-          onValueChange={([val]) => setTessellationConfig({
-                  ...tessellationConfig,
-            opacity: val
-                })}
-          max={1}
-          step={0.01}
-        />
+<NumberInput
+         value={[Math.round(tessellationConfig.opacity * 100) / 100]}
+         onValueChange={([val]) => setTessellationConfig({
+                 ...tessellationConfig,
+           opacity: val
+               })}
+         max={1}
+         step={0.01}
+       />
       </ControlGroup>
 
       <ControlGroup label={`Rotation (in degrees)`}>
@@ -851,14 +1152,14 @@ const ControlPanel = ({
 
       <ControlGroup label="Color">
         <div className="flex items-center gap-2">
-              <input
-            type="color"
+          <PaletteColorPicker
             value={tessellationConfig.color}
-                onChange={(e) => setTessellationConfig({
-                  ...tessellationConfig,
-              color: e.target.value
+            onChange={(newColor) => setTessellationConfig({
+              ...tessellationConfig,
+              color: newColor
             })}
-            className="w-10 h-9 rounded-md border border-border cursor-pointer bg-transparent"
+            palette={parsedPalette}
+            className="w-10 h-9"
           />
           <Input 
             value={tessellationConfig.color}
@@ -888,7 +1189,7 @@ const ControlPanel = ({
   // Render Effects Panel Content
   const renderEffectsPanel = () => (
     <div className="space-y-2">
-      <ControlGroup label={`Background Blur: ${effectsConfig.blur}px`}>
+      <ControlGroup label={`Background Blur (in px)`}>
         <NumberInput
           value={[effectsConfig.blur]}
           onValueChange={([val]) => setEffectsConfig({
@@ -1040,7 +1341,7 @@ const ControlPanel = ({
         </Select>
       </ControlGroup>
 
-      <ControlGroup label={`Vignette: `}>
+      <ControlGroup label={`Vignette`}> 
         <NumberInput
           value={[effectsConfig.vignetteIntensity]}
           onValueChange={([val]) => setEffectsConfig({
@@ -1052,7 +1353,7 @@ const ControlPanel = ({
             />
       </ControlGroup>
 
-      <ControlGroup label={`Saturation: `}>
+      <ControlGroup label={`Saturation`}>
         <NumberInput
           value={[effectsConfig.saturation]}
           onValueChange={([val]) => setEffectsConfig({
@@ -1064,7 +1365,7 @@ const ControlPanel = ({
               />
       </ControlGroup>
 
-      <ControlGroup label={`Contrast: `}>
+      <ControlGroup label={`Contrast`}>
         <NumberInput
           value={[effectsConfig.contrast]}
           onValueChange={([val]) => setEffectsConfig({
@@ -1077,7 +1378,7 @@ const ControlPanel = ({
               />
       </ControlGroup>
 
-      <ControlGroup label={`Brightness: `}>
+      <ControlGroup label={`Brightness`}>
         <NumberInput
           value={[effectsConfig.brightness]}
           onValueChange={([val]) => setEffectsConfig({
@@ -1107,11 +1408,12 @@ const ControlPanel = ({
       </ControlGroup>
 
       <ControlGroup label="Text Color">
-        <input
-          type="color"
+        <ContrastAwarePaletteColorPicker
           value={textConfig.color}
-          onChange={(e) => setTextConfig({ ...textConfig, color: e.target.value })}
-          className="w-24 h-10 rounded-md border border-border cursor-pointer bg-transparent"
+          onChange={(newColor) => setTextConfig({ ...textConfig, color: newColor })}
+          palette={parsedPalette}
+          gradientColors={gradientConfig.colors}
+          className="w-10 h-10"
         />
       </ControlGroup>
 
@@ -1253,11 +1555,11 @@ const ControlPanel = ({
             <div className="flex flex-row gap-1 w-[calc(100vw-2rem)] overflow-x-auto">
             {gradientConfig.colors.map((color, index) => (
               <div key={index} className="flex flex-col max-w-full items-center gap-2">
-                <input
-                  type="color"
+                <PaletteColorPicker
                   value={color}
-                  onChange={(e) => updateGradientColor(index, e.target.value)}
-                  className="w-full h-10 rounded-md border cursor-pointer"
+                  onChange={(newColor) => updateGradientColor(index, newColor)}
+                  palette={parsedPalette}
+                  className="w-full h-10"
                 />
                 <div className="flex flex-row gap-1 w-full items-center">
                   <Input
@@ -1328,42 +1630,34 @@ const ControlPanel = ({
       case 'gradient-wave':
         return (
           <div className="space-y-2 ">
-            <ControlGroup label={`Wave Intensity: `}>
+            <ControlGroup label={`Wave Intensity`}>
               <NumberInput value={[gradientConfig.waveIntensity]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, waveIntensity: val })} max={1} step={0.05} showButtons />
             </ControlGroup>
-            <ControlGroup label={`Wave 1 Speed: `}>
+            <ControlGroup label={`Wave 1 Speed`}>
               <NumberInput value={[gradientConfig.wave1Speed]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, wave1Speed: val })} max={0.5} step={0.05} showButtons />
             </ControlGroup>
             <ControlGroup label="Wave 1 Direction">
-              <Select value={String(gradientConfig.wave1Direction)} onValueChange={(v) => setGradientConfig({ ...gradientConfig, wave1Direction: parseInt(v) })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">Forward</SelectItem>
-                  <SelectItem value="-1">Backward</SelectItem>
-                </SelectContent>
-              </Select>
+              <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => setGradientConfig({ ...gradientConfig, wave1Direction: gradientConfig.wave1Direction === 1 ? -1 : 1 })}>
+                {gradientConfig.wave1Direction === 1 ? <ArrowRight className="h-4 w-4" /> : <ArrowLeft className="h-4 w-4" />}
+              </Button>
             </ControlGroup>
-            <ControlGroup label={`Wave 2 Speed: `}>
+            <ControlGroup label={`Wave 2 Speed`}>
               <NumberInput value={[gradientConfig.wave2Speed]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, wave2Speed: val })} max={0.5} step={0.05} showButtons />
             </ControlGroup>
             <ControlGroup label="Wave 2 Direction">
-              <Select value={String(gradientConfig.wave2Direction)} onValueChange={(v) => setGradientConfig({ ...gradientConfig, wave2Direction: parseInt(v) })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">Forward</SelectItem>
-                  <SelectItem value="-1">Backward</SelectItem>
-                </SelectContent>
-              </Select>
+              <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => setGradientConfig({ ...gradientConfig, wave2Direction: gradientConfig.wave2Direction === 1 ? -1 : 1 })}>
+                {gradientConfig.wave2Direction === 1 ? <ArrowRight className="h-4 w-4" /> : <ArrowLeft className="h-4 w-4" />}
+              </Button>
             </ControlGroup>
           </div>
         )
       case 'gradient-mouse':
         return (
           <div className="space-y-2">
-            <ControlGroup label={`Mouse Influence: `}>
+            <ControlGroup label={`Mouse Influence`}>
               <NumberInput value={[gradientConfig.mouseInfluence]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, mouseInfluence: val })} max={1} step={0.05} showButtons />
             </ControlGroup>
-            <ControlGroup label={`Decay Speed: `}>
+            <ControlGroup label={`Decay Speed`}>
               <NumberInput value={[gradientConfig.decaySpeed]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, decaySpeed: val })} min={0.8} max={0.99} step={0.01} showButtons />
             </ControlGroup>
           </div>
@@ -1377,16 +1671,16 @@ const ControlPanel = ({
                 <SelectContent>{AVAILABLE_ICONS.map(icon => <SelectItem key={icon} value={icon}>{icon}</SelectItem>)}</SelectContent>
               </Select>
             </ControlGroup>
-            <ControlGroup label={`Size: `}>
+            <ControlGroup label={`Size`}>
               <NumberInput value={[tessellationConfig.size]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, size: val })} min={8} max={100} step={4} showButtons />
             </ControlGroup>
             <ControlGroup label="Color">
-              <input type="color" value={tessellationConfig.color} onChange={(e) => setTessellationConfig({ ...tessellationConfig, color: e.target.value })} className="w-24 h-10 rounded-md border border-border cursor-pointer" />
+              <PaletteColorPicker value={tessellationConfig.color} onChange={(newColor) => setTessellationConfig({ ...tessellationConfig, color: newColor })} palette={parsedPalette} className="w-10 h-10" />
             </ControlGroup>
-            <ControlGroup label={`Opacity: `}>
+            <ControlGroup label={`Opacity`}>
               <NumberInput value={[tessellationConfig.opacity]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, opacity: val })} max={1} step={0.05} showButtons />
             </ControlGroup>
-            <ControlGroup label={`Rotation: ${tessellationConfig.rotation}°`}>
+            <ControlGroup label={`Rotation`}>
               <NumberInput value={[tessellationConfig.rotation]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, rotation: val })} max={360} step={15} showButtons />
             </ControlGroup>
           </div>
@@ -1394,23 +1688,23 @@ const ControlPanel = ({
       case 'pattern-spacing':
         return (
           <div className="space-y-2">
-            <ControlGroup label={`Row Gap: `}>
+            <ControlGroup label={`Row Gap`}>
               <NumberInput value={[tessellationConfig.rowGap]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, rowGap: val })} min={20} max={200} step={10} showButtons />
             </ControlGroup>
-            <ControlGroup label={`Col Gap: `}>
+            <ControlGroup label={`Col Gap`}>
               <NumberInput value={[tessellationConfig.colGap]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, colGap: val })} min={20} max={200} step={10} showButtons />
             </ControlGroup>
           </div>
         )
       case 'pattern-mouse':
         return (
-          <ControlGroup label={`Mouse Rotation: `}>
+          <ControlGroup label={`Mouse Rotation`}>
             <NumberInput value={[tessellationConfig.mouseRotationInfluence || 0]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, mouseRotationInfluence: val })} max={1} step={0.05} showButtons />
           </ControlGroup>
         )
       case 'effects-blur':
         return (
-          <ControlGroup label={`Blur: `}>
+            <ControlGroup label={`Blur`}>
             <NumberInput value={[effectsConfig.blur]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, blur: val })} max={30} step={2} showButtons />
           </ControlGroup>
         )
@@ -1423,10 +1717,10 @@ const ControlPanel = ({
             </div>
             {effectsConfig.noiseEnabled && (
               <>
-                <ControlGroup label={`Amount: `}>
+                <ControlGroup label={`Amount`}>
                   <NumberInput value={[effectsConfig.noise]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, noise: val })} max={0.5} step={0.05} showButtons />
                 </ControlGroup>
-                <ControlGroup label={`Scale: `}>
+                <ControlGroup label={`Scale`}>
                   <NumberInput value={[effectsConfig.noiseScale]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, noiseScale: val })} min={0.5} max={3} step={0.25} showButtons />
                 </ControlGroup>
               </>
@@ -1451,10 +1745,10 @@ const ControlPanel = ({
             </ControlGroup>
             {effectsConfig.texture !== 'none' && (
               <>
-                <ControlGroup label={`Size: `}>
+                <ControlGroup label={`Size`}>
                   <NumberInput value={[effectsConfig.textureSize]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, textureSize: val })} min={4} max={100} step={4} showButtons />
                 </ControlGroup>
-                <ControlGroup label={`Opacity: `}>
+                <ControlGroup label={`Opacity`}>
                   <NumberInput value={[effectsConfig.textureOpacity]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, textureOpacity: val })} max={1} step={0.05} showButtons />
                 </ControlGroup>
               </>
@@ -1480,20 +1774,20 @@ const ControlPanel = ({
         )
       case 'effects-vignette':
         return (
-          <ControlGroup label={`Intensity: `}>
+          <ControlGroup label={`Intensity`}>
             <NumberInput value={[effectsConfig.vignetteIntensity]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, vignetteIntensity: val })} max={0.8} step={0.05} showButtons />
           </ControlGroup>
         )
       case 'effects-color':
         return (
             <div className="space-y-2">
-            <ControlGroup label={`Saturation: `}>
+            <ControlGroup label={`Saturation`}>
               <NumberInput value={[effectsConfig.saturation]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, saturation: val })} max={200} step={10} showButtons />
             </ControlGroup>
-              <ControlGroup label={`Contrast: `}>
+              <ControlGroup label={`Contrast`}>
               <NumberInput value={[effectsConfig.contrast]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, contrast: val })} min={50} max={150} step={5} showButtons />
             </ControlGroup>
-            <ControlGroup label={`Brightness: `}>
+            <ControlGroup label={`Brightness`}>
               <NumberInput value={[effectsConfig.brightness]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, brightness: val })} min={50} max={150} step={5} showButtons />
             </ControlGroup>
           </div>
@@ -1536,6 +1830,16 @@ const ControlPanel = ({
               </Button>
           ))}
             <div className="w-px h-8 bg-border mx-1" />
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex flex-col gap-1 h-auto p-1"
+              onClick={() => setShowPaletteDialog(true)}
+              title={colorPalette ? "Edit Palette" : "Upload Palette"}
+            >
+              <Upload size={18} weight={colorPalette ? 'fill' : 'regular'} />
+              <span className="text-[10px] uppercase tracking-wide">Palette</span>
+            </Button>
             <Button
               variant="ghost"
               size="sm"
@@ -1703,6 +2007,15 @@ const ControlPanel = ({
               variant="ghost"
               size="icon"
               className="h-8 w-8"
+              onClick={() => setShowPaletteDialog(true)}
+              title={colorPalette ? "Edit Palette" : "Upload Palette"}
+            >
+              <Upload size={16} weight={colorPalette ? 'fill' : 'regular'} />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
               onClick={randomizeGradient}
               disabled={isCapturing}
               title="Shuffle Gradient"
@@ -1806,6 +2119,144 @@ const ControlPanel = ({
               </Button>
         </div>
       )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Palette Upload Dialog */}
+      <Dialog open={showPaletteDialog} onOpenChange={(open) => {
+        setShowPaletteDialog(open)
+        if (!open) {
+          setPaletteError('')
+        }
+      }}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>
+              <div className="flex items-center gap-2">
+                <Palette size={20} weight="duotone" />
+                Upload Color Palette
+              </div>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-2">
+            {/* File Upload Option */}
+            <div className="space-y-2">
+              <Label>Upload a JSON file</Label>
+              <p className="text-xs text-muted-foreground">
+                <a className="text-blue-500 hover:underline" href="https://colors.promad.design/" target="_blank" rel="noopener noreferrer">
+                  Use to generate compatible color JSON.
+                </a>
+              </p>
+              <div className="flex items-center gap-2">
+                <input
+                  type="file"
+                  accept=".json,application/json"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) {
+                      const reader = new FileReader()
+                      reader.onload = (event) => {
+                        const content = event.target?.result
+                        if (typeof content === 'string') {
+                          setPaletteJson(content)
+                          setPaletteError('')
+                        }
+                      }
+                      reader.onerror = () => {
+                        setPaletteError('Failed to read file')
+                      }
+                      reader.readAsText(file)
+                    }
+                    // Reset the input so the same file can be selected again
+                    e.target.value = ''
+                  }}
+                  className="hidden"
+                  id="palette-file-input"
+                />
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => document.getElementById('palette-file-input')?.click()}
+                >
+                  <Upload size={16} className="mr-2" />
+                  Choose .json file
+                </Button>
+              </div>
+            </div>
+            
+            {/* Divider */}
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-px bg-border" />
+              <span className="text-xs text-muted-foreground uppercase">or paste JSON</span>
+              <div className="flex-1 h-px bg-border" />
+            </div>
+            
+            {/* Paste JSON Option */}
+            <div className="space-y-2">
+              <Label>Paste your JSON color palette</Label>
+              <textarea
+                value={paletteJson}
+                onChange={(e) => {
+                  setPaletteJson(e.target.value)
+                  setPaletteError('')
+                }}
+                placeholder={`{
+  "blue": {
+    "500": "#3b82f6",
+    "600": "#2563eb"
+  },
+  "green": {
+    "500": "#22c55e"
+  }
+}`}
+                className="w-full h-36 p-3 text-sm font-mono bg-muted border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              {paletteError && (
+                <p className="text-sm text-destructive">{paletteError}</p>
+              )}
+            </div>
+            
+            {colorPalette && (
+              <div className="p-3 bg-muted/50 rounded-lg border border-border">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium">Current Palette</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 text-xs text-destructive hover:text-destructive"
+                    onClick={handleClearPalette}
+                  >
+                    <Trash size={12} className="mr-1" />
+                    Remove
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-1">
+                  {parsedPalette?.colors.slice(0, 30).map((color, idx) => (
+                    <div
+                      key={idx}
+                      className="w-5 h-5 rounded border border-border/50"
+                      style={{ backgroundColor: color.hex }}
+                      title={color.shade ? `${color.name}-${color.shade}` : color.name}
+                    />
+                  ))}
+                  {parsedPalette?.colors.length > 30 && (
+                    <span className="text-xs text-muted-foreground self-center ml-1">
+                      +{parsedPalette.colors.length - 30} more
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+          <DialogFooter className="flex-row gap-2">
+            <Button variant="outline" className="flex-1" onClick={() => setShowPaletteDialog(false)}>
+              Cancel
+            </Button>
+            <Button className="flex-1" onClick={handlePaletteUpload}>
+              <Upload size={16} className="mr-2" />
+              {colorPalette ? 'Update Palette' : 'Upload Palette'}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
