@@ -29,7 +29,7 @@ const GradientLayer = ({ config, mousePos }) => {
   }
 
   const initWebGL = useCallback((canvas) => {
-    const gl = canvas.getContext('webgl')
+    const gl = canvas.getContext('webgl', { preserveDrawingBuffer: true })
     if (!gl) return null
 
     const vertexShaderSource = `

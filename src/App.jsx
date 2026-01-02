@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import GradientLayer from './components/GradientLayer'
 import TessellationLayer from './components/TessellationLayer'
 import EffectsLayer from './components/EffectsLayer'
@@ -9,6 +9,7 @@ import './App.css'
 function App() {
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 })
   const [activePanel, setActivePanel] = useState('gradient')
+  const layersContainerRef = useRef(null)
 
   // Gradient Layer State
   const [gradientConfig, setGradientConfig] = useState({
@@ -29,6 +30,7 @@ function App() {
 
   // Tessellation Layer State
   const [tessellationConfig, setTessellationConfig] = useState({
+    enabled: true,
     icon: 'Star',
     rowGap: 60,
     colGap: 60,
@@ -116,7 +118,7 @@ function App() {
 
   return (
     <div className="app" onMouseMove={handleMouseMove}>
-      <div className="layers-container">
+      <div className="layers-container" ref={layersContainerRef}>
         {/* Layer 1: Gradient with effects (blur, saturation, contrast, brightness, colorMap) */}
         <div 
           className="gradient-effects-wrapper"
@@ -131,7 +133,9 @@ function App() {
         </div>
         
         {/* Layer 2: Tessellation (no filter effects) */}
-        <TessellationLayer config={tessellationConfig} mousePos={mousePos} />
+        {tessellationConfig.enabled && (
+          <TessellationLayer config={tessellationConfig} mousePos={mousePos} />
+        )}
         
         {/* Layer 3: Overlay effects (noise, texture, vignette) */}
         <EffectsLayer config={effectsConfig} />
@@ -154,6 +158,7 @@ function App() {
         setTextSections={setTextSections}
         textGap={textGap}
         setTextGap={setTextGap}
+        layersContainerRef={layersContainerRef}
       />
     </div>
   )
