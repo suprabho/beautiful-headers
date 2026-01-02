@@ -561,10 +561,7 @@ const ControlPanel = ({
       <div className="space-y-1 ">
         <div className="flex items-center justify-between">
           <Label className="text-xs uppercase tracking-wide font-semibold">Gradient Colors</Label>
-          <Button variant="ghost" size="icon" className="h-7 w-7" onClick={randomizeGradient}>
-            <Shuffle size={14} />
-          </Button>
-            </div>
+        </div>
         
         <div className="space-y-2">
               {gradientConfig.colors.map((color, index) => (
@@ -1252,9 +1249,6 @@ const ControlPanel = ({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <Label>Gradient Colors</Label>
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={randomizeGradient}>
-                <Shuffle size={16} />
-              </Button>
             </div>
             <div className="flex flex-row gap-1 w-[calc(100vw-2rem)] overflow-x-auto">
             {gradientConfig.colors.map((color, index) => (
@@ -1517,18 +1511,17 @@ const ControlPanel = ({
         ref={panelRef}
           className={cn(
             "fixed left-0 right-0 bottom-0 z-50 bg-card/95 backdrop-blur-xl border-t border-border",
-            "transition-transform duration-300 ease-out",
-            isMobileCollapsed ? "translate-y-[calc(100%-60px)]" : ""
+            "transition-transform duration-300 ease-out"
           )}
       >
           {/* Mobile tabs */}
-          <div className="flex items-center gap-1 px-2 py-2 border-b border-border/50">
+          <div className="flex items-center gap-1 p-1 border-b border-border/50 pb-env-safe(4px)">
           {tabs.map(tab => (
               <Button
               key={tab.id}
                 variant={activePanel === tab.id && !isMobileCollapsed ? "secondary" : "ghost"}
                 size="sm"
-                className="flex-1 flex flex-col gap-1 h-auto py-2"
+                className="flex-1 flex flex-col gap-1 h-auto p-1"
               onClick={() => {
                 if (activePanel === tab.id && !isMobileCollapsed) {
                   setIsMobileCollapsed(true)
@@ -1546,12 +1539,23 @@ const ControlPanel = ({
             <Button
               variant="ghost"
               size="sm"
-              className="flex flex-col gap-1 h-auto py-2 px-3"
+              className="flex flex-col gap-1 h-auto p-1"
+              onClick={randomizeGradient}
+              title="Shuffle Gradient"
+            >
+              <Shuffle size={18} />
+              <span className="text-[10px] uppercase tracking-wide">Shuffle</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex flex-col gap-1 h-auto p-1"
             onClick={() => setShowCaptureModal(true)}
           >
               <Camera size={18} />
               <span className="text-[10px] uppercase tracking-wide">Capture</span>
             </Button>
+            
         </div>
 
           {/* Mobile content */}
@@ -1687,7 +1691,7 @@ const ControlPanel = ({
       >
         {/* Header */}
       <div 
-          className="flex items-center justify-between px-4 py-3 border-b border-border select-none"
+          className="flex items-center justify-between p-2 border-b border-border select-none"
         onMouseDown={handleMouseDown}
         style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
       >
@@ -1695,6 +1699,16 @@ const ControlPanel = ({
           <DotsSixVertical size={16} weight="bold" />
         </div>
           <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={randomizeGradient}
+              disabled={isCapturing}
+              title="Shuffle Gradient"
+            >
+              <Shuffle size={16} weight="regular" />
+            </Button>
             <Button
               variant="ghost"
               size="icon"

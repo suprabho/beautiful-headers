@@ -77,13 +77,16 @@ function App() {
   }, [])
 
   const randomizeGradient = () => {
-    const randomColor = () => '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')
+    const randomHex = () => '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')
+    const randomInRange = (min, max) => Math.random() * (max - min) + min
+    const pickOne = (arr) => arr[Math.floor(Math.random() * arr.length)]
+
     const numColors = Math.floor(Math.random() * 4) + 2
-    const colors = Array.from({ length: numColors }, randomColor)
+    const colors = Array.from({ length: numColors }, randomHex)
     const colorStops = colors.map((_, i) => Math.round((i / (numColors - 1)) * 100))
-    
-    setGradientConfig({
-      ...gradientConfig,
+
+    setGradientConfig((prev) => ({
+      ...prev,
       colors,
       numColors,
       type: ['linear', 'radial', 'conic'][Math.floor(Math.random() * 3)],
@@ -96,7 +99,27 @@ function App() {
       wave1Direction: Math.random() > 0.5 ? 1 : -1,
       wave2Speed: Math.random() * 0.4 + 0.05,
       wave2Direction: Math.random() > 0.5 ? 1 : -1,
-    })
+    }))
+
+    // Also randomize related layer styling
+    setTessellationConfig((prev) => ({
+      ...prev,
+      // "Icon color" is tessellation icon color
+      color: pickOne([...colors, '#ffffff', '#000000']),
+      // Keep it subtle by default
+      opacity: randomInRange(0.05, 0.35),
+    }))
+
+    setEffectsConfig((prev) => ({
+      ...prev,
+      textureOpacity: randomInRange(0.1, 0.9),
+    }))
+
+    setTextConfig((prev) => ({
+      ...prev,
+      // Single text color applies to all sections (current design)
+      color: pickOne([...colors, '#ffffff', '#000000']),
+    }))
   }
 
   // Build the gradient filter string
