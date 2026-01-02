@@ -64,6 +64,11 @@ function App() {
     { id: 2, text: 'EXPERIENCE', size: 80, weight: 300, spacing: 0.2 },
   ])
   const [textGap, setTextGap] = useState(20)
+  const [textConfig, setTextConfig] = useState({
+    enabled: true,
+    color: '#ffffff',
+    opacity: 1,
+  })
 
   const handleMouseMove = useCallback((e) => {
     const x = e.clientX / window.innerWidth
@@ -141,7 +146,14 @@ function App() {
         <EffectsLayer config={effectsConfig} />
         
         {/* Layer 4: Text */}
-        <TextLayer sections={textSections} gap={textGap} />
+        {textConfig.enabled && (
+          <TextLayer
+            sections={textSections}
+            gap={textGap}
+            color={textConfig.color}
+            opacity={textConfig.opacity}
+          />
+        )}
       </div>
 
       <ControlPanel
@@ -158,6 +170,8 @@ function App() {
         setTextSections={setTextSections}
         textGap={textGap}
         setTextGap={setTextGap}
+        textConfig={textConfig}
+        setTextConfig={setTextConfig}
         layersContainerRef={layersContainerRef}
       />
     </div>

@@ -140,11 +140,13 @@ const EffectsLayer = ({ config }) => {
               position: 'absolute',
               top: '-50%',
               left: '-50%',
-              width: `${200 * noiseScale}%`,
-              height: `${200 * noiseScale}%`,
+              width: '200%',
+              height: '200%',
               opacity: noise,
               mixBlendMode: 'overlay',
               imageRendering: 'pixelated',
+              transform: `scale(${noiseScale})`,
+              transformOrigin: 'center center',
             }}
           />
         </div>

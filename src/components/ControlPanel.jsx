@@ -21,7 +21,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 const ControlGroup = ({ label, children, className }) => (
   <div className={cn(className, "flex flex-row items-center justify-between")}>
     <Label className="text-xs font-semibold tracking-wide">{label}</Label>
-    <div className="py-2">
+    <div className="py-2 flex items-center gap-1">
       {children}
     </div>
   </div>
@@ -127,6 +127,8 @@ const ControlPanel = ({
   setTextSections,
   textGap,
   setTextGap,
+  textConfig,
+  setTextConfig,
   layersContainerRef,
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -136,6 +138,7 @@ const ControlPanel = ({
   const [isMobile, setIsMobile] = useState(false)
   const [activeDialog, setActiveDialog] = useState(null)
   const [originalValues, setOriginalValues] = useState(null)
+  const [collapsedSections, setCollapsedSections] = useState({})
   const dragOffset = useRef({ x: 0, y: 0 })
   const panelRef = useRef(null)
 
@@ -157,7 +160,7 @@ const ControlPanel = ({
     } else if (dialogKey.startsWith('effects-')) {
       setOriginalValues({ type: 'effects', data: { ...effectsConfig } })
     } else if (dialogKey.startsWith('text-')) {
-      setOriginalValues({ type: 'text', data: { sections: [...textSections], gap: textGap } })
+      setOriginalValues({ type: 'text', data: { sections: [...textSections], gap: textGap, config: { ...textConfig } } })
     }
   }
 
@@ -177,6 +180,7 @@ const ControlPanel = ({
       } else if (originalValues.type === 'text') {
         setTextSections(originalValues.data.sections)
         setTextGap(originalValues.data.gap)
+        setTextConfig(originalValues.data.config)
       }
     }
     setActiveDialog(null)
@@ -194,6 +198,7 @@ const ControlPanel = ({
       } else if (originalValues.type === 'text') {
         setTextSections(originalValues.data.sections)
         setTextGap(originalValues.data.gap)
+        setTextConfig(originalValues.data.config)
       }
     }
   }
@@ -234,6 +239,110 @@ const ControlPanel = ({
   const [isCapturing, setIsCapturing] = useState(false)
   const [showCaptureModal, setShowCaptureModal] = useState(false)
 
+  // Helper function to draw texture patterns directly to canvas
+  // (html2canvas doesn't properly capture CSS gradient patterns)
+  const drawTextureToCanvas = (ctx, width, height, textureType, textureSize, textureOpacity, blendMode) => {
+    if (textureType === 'none') return
+    
+    // Create a temporary canvas for the texture
+    const textureCanvas = document.createElement('canvas')
+    textureCanvas.width = width
+    textureCanvas.height = height
+    const textureCtx = textureCanvas.getContext('2d')
+    
+    const lineWidth = Math.max(1, textureSize * 0.1)
+    const dotSize = Math.max(1, textureSize * 0.15)
+    
+    switch (textureType) {
+      case 'grain': {
+        // Generate grain/noise pattern
+        const imageData = textureCtx.createImageData(width, height)
+        const data = imageData.data
+        for (let i = 0; i < data.length; i += 4) {
+          const value = Math.random() * 255
+          data[i] = value
+          data[i + 1] = value
+          data[i + 2] = value
+          data[i + 3] = 255
+        }
+        textureCtx.putImageData(imageData, 0, 0)
+        break
+      }
+      case 'scanlines': {
+        // Horizontal scanlines
+        textureCtx.fillStyle = 'rgba(0, 0, 0, 0.3)'
+        for (let y = 0; y < height; y += textureSize) {
+          textureCtx.fillRect(0, y + textureSize - lineWidth, width, lineWidth)
+        }
+        break
+      }
+      case 'dots': {
+        // Dot pattern
+        textureCtx.fillStyle = 'rgba(255, 255, 255, 0.4)'
+        for (let y = dotSize; y < height; y += textureSize) {
+          for (let x = dotSize; x < width; x += textureSize) {
+            textureCtx.beginPath()
+            textureCtx.arc(x, y, dotSize, 0, Math.PI * 2)
+            textureCtx.fill()
+          }
+        }
+        break
+      }
+      case 'grid': {
+        // Grid pattern - horizontal and vertical lines
+        textureCtx.fillStyle = 'rgba(255, 255, 255, 0.15)'
+        // Horizontal lines
+        for (let y = 0; y < height; y += textureSize) {
+          textureCtx.fillRect(0, y, width, lineWidth)
+        }
+        // Vertical lines
+        for (let x = 0; x < width; x += textureSize) {
+          textureCtx.fillRect(x, 0, lineWidth, height)
+        }
+        break
+      }
+      case 'diagonal': {
+        // Diagonal lines at 45 degrees
+        textureCtx.strokeStyle = 'rgba(255, 255, 255, 0.1)'
+        textureCtx.lineWidth = lineWidth
+        // Draw diagonal lines from bottom-left to top-right direction
+        const spacing = textureSize + lineWidth
+        const totalDiagonals = Math.ceil((width + height) / spacing)
+        for (let i = -Math.ceil(height / spacing); i < totalDiagonals; i++) {
+          const startX = i * spacing
+          textureCtx.beginPath()
+          textureCtx.moveTo(startX, height)
+          textureCtx.lineTo(startX + height, 0)
+          textureCtx.stroke()
+        }
+        break
+      }
+    }
+    
+    // Apply blend mode and opacity
+    ctx.save()
+    ctx.globalAlpha = textureOpacity
+    ctx.globalCompositeOperation = blendMode
+    ctx.drawImage(textureCanvas, 0, 0)
+    ctx.restore()
+  }
+
+  // Helper function to draw vignette to canvas
+  const drawVignetteToCanvas = (ctx, width, height, intensity) => {
+    if (intensity <= 0) return
+    
+    const gradient = ctx.createRadialGradient(
+      width / 2, height / 2, 0,
+      width / 2, height / 2, Math.max(width, height) * 0.7
+    )
+    gradient.addColorStop(0, 'transparent')
+    gradient.addColorStop(0.3, 'transparent')
+    gradient.addColorStop(1, `rgba(0, 0, 0, ${intensity})`)
+    
+    ctx.fillStyle = gradient
+    ctx.fillRect(0, 0, width, height)
+  }
+
   const captureSnapshot = async (mode = 'all') => {
     if (!layersContainerRef?.current || isCapturing) return
     
@@ -268,17 +377,32 @@ const ControlPanel = ({
         ctx.filter = 'none'
       }
       
-      const effectsLayer = container.querySelector('.effects-layer')
-      if (effectsLayer) {
-        const effectsCanvas = await html2canvas(effectsLayer, {
-          useCORS: true,
-          allowTaint: true,
-          scale: scale,
-          backgroundColor: null,
-          logging: false,
-        })
-        ctx.drawImage(effectsCanvas, 0, 0)
+      // Draw texture patterns manually (html2canvas doesn't capture CSS gradients properly)
+      drawTextureToCanvas(
+        ctx,
+        outputCanvas.width,
+        outputCanvas.height,
+        effectsConfig.texture,
+        effectsConfig.textureSize * scale,
+        effectsConfig.textureOpacity,
+        effectsConfig.textureBlendMode
+      )
+      
+      // Draw noise canvas if enabled
+      if (effectsConfig.noiseEnabled && effectsConfig.noise > 0) {
+        const noiseCanvas = container.querySelector('.effects-layer canvas')
+        if (noiseCanvas) {
+          ctx.save()
+          ctx.globalAlpha = effectsConfig.noise
+          ctx.globalCompositeOperation = 'overlay'
+          // Draw the noise canvas tiled/scaled to cover the output
+          ctx.drawImage(noiseCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
+          ctx.restore()
+        }
       }
+      
+      // Draw vignette manually
+      drawVignetteToCanvas(ctx, outputCanvas.width, outputCanvas.height, effectsConfig.vignetteIntensity)
       
       if (mode === 'all') {
         const tessellationLayer = container.querySelector('.tessellation-layer')
@@ -290,7 +414,7 @@ const ControlPanel = ({
             backgroundColor: null,
             logging: false,
           })
-          ctx.drawImage(tessCanvas, 0, 0)
+          ctx.drawImage(tessCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
         }
         
         const textLayer = container.querySelector('.text-layer')
@@ -302,7 +426,7 @@ const ControlPanel = ({
             backgroundColor: null,
             logging: false,
           })
-          ctx.drawImage(textCanvas, 0, 0)
+          ctx.drawImage(textCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
         }
       }
       
@@ -500,7 +624,7 @@ const ControlPanel = ({
 
       {/* Position Controls */}
       <div className="grid grid-cols-2 gap-4">
-        <ControlGroup label={`Start X: ${gradientConfig.startPos.x}%`}>
+        <ControlGroup label={`Start X (in %)`}>
           <NumberInput
             value={[gradientConfig.startPos.x]}
             onValueChange={([val]) => setGradientConfig({
@@ -511,7 +635,7 @@ const ControlPanel = ({
             step={10}
           />
         </ControlGroup>
-        <ControlGroup label={`Start Y: ${gradientConfig.startPos.y}%`}>
+        <ControlGroup label={`Start Y (in %)`}>
           <NumberInput
             value={[gradientConfig.startPos.y]}
             onValueChange={([val]) => setGradientConfig({
@@ -633,7 +757,7 @@ const ControlPanel = ({
 
   // Render Tessellation/Pattern Panel Content
   const renderPatternPanel = () => (
-    <div className="space-y-5">
+    <div className="space-y-2">
       <div className="flex items-center justify-between">
         <Label className="text-sm">Enable Pattern</Label>
         <Switch
@@ -665,7 +789,7 @@ const ControlPanel = ({
       </ControlGroup>
 
       <div className="grid grid-cols-2 gap-4">
-        <ControlGroup label={`Row Gap: ${tessellationConfig.rowGap}px`}>
+        <ControlGroup label={`Row Gap (in px)`}>
           <NumberInput
             value={[tessellationConfig.rowGap]}
             onValueChange={([val]) => setTessellationConfig({
@@ -674,10 +798,10 @@ const ControlPanel = ({
                 })}
             min={20}
             max={200}
-            step={1}
+            step={10}
               />
         </ControlGroup>
-        <ControlGroup label={`Col Gap: ${tessellationConfig.colGap}px`}>
+        <ControlGroup label={`Col Gap (in px)`}>
           <NumberInput
             value={[tessellationConfig.colGap]}
             onValueChange={([val]) => setTessellationConfig({
@@ -686,12 +810,12 @@ const ControlPanel = ({
                 })}
             min={20}
             max={200}
-            step={1}
+            step={10}
               />
         </ControlGroup>
             </div>
 
-      <ControlGroup label={`Icon Size: ${tessellationConfig.size}px`}>
+      <ControlGroup label={`Icon Size (in px)`}>
         <NumberInput
           value={[tessellationConfig.size]}
           onValueChange={([val]) => setTessellationConfig({
@@ -700,11 +824,11 @@ const ControlPanel = ({
                 })}
           min={8}
           max={100}
-          step={1}
+          step={4}
               />
       </ControlGroup>
 
-      <ControlGroup label={`Opacity: ${tessellationConfig.opacity.toFixed(2)}`}>
+      <ControlGroup label={`Opacity`}>
         <NumberInput
           value={[tessellationConfig.opacity]}
           onValueChange={([val]) => setTessellationConfig({
@@ -716,7 +840,7 @@ const ControlPanel = ({
         />
       </ControlGroup>
 
-      <ControlGroup label={`Rotation: ${tessellationConfig.rotation}°`}>
+      <ControlGroup label={`Rotation (in degrees)`}>
         <NumberInput
           value={[tessellationConfig.rotation]}
           onValueChange={([val]) => setTessellationConfig({
@@ -766,7 +890,7 @@ const ControlPanel = ({
 
   // Render Effects Panel Content
   const renderEffectsPanel = () => (
-    <div className="space-y-5">
+    <div className="space-y-2">
       <ControlGroup label={`Background Blur: ${effectsConfig.blur}px`}>
         <NumberInput
           value={[effectsConfig.blur]}
@@ -792,7 +916,7 @@ const ControlPanel = ({
 
             {effectsConfig.noiseEnabled && (
               <>
-          <ControlGroup label={`Amount: ${effectsConfig.noise.toFixed(2)}`}>
+          <ControlGroup label={`Amount`}>
             <NumberInput
               value={[effectsConfig.noise]}
               onValueChange={([val]) => setEffectsConfig({
@@ -800,10 +924,10 @@ const ControlPanel = ({
                 noise: val
                     })}
               max={0.5}
-              step={0.01}
+              step={0.1}
                   />
           </ControlGroup>
-          <ControlGroup label={`Scale: ${effectsConfig.noiseScale.toFixed(1)}`}>
+          <ControlGroup label={`Scale`}>
             <NumberInput
               value={[effectsConfig.noiseScale]}
               onValueChange={([val]) => setEffectsConfig({
@@ -811,8 +935,9 @@ const ControlPanel = ({
                 noiseScale: val
                     })}
               min={0.5}
-              max={3}
-              step={0.1}
+              max={5}
+              step={0.25}
+              showButtons={true}
                   />
           </ControlGroup>
               </>
@@ -842,7 +967,7 @@ const ControlPanel = ({
 
             {effectsConfig.texture !== 'none' && (
               <>
-          <ControlGroup label={`Size: ${effectsConfig.textureSize}px`}>
+          <ControlGroup label={`Size: `}>
             <NumberInput
               value={[effectsConfig.textureSize]}
               onValueChange={([val]) => setEffectsConfig({
@@ -854,7 +979,7 @@ const ControlPanel = ({
               step={1}
             />
           </ControlGroup>
-          <ControlGroup label={`Opacity: ${effectsConfig.textureOpacity.toFixed(2)}`}>
+          <ControlGroup label={`Opacity: `}>
             <NumberInput
               value={[effectsConfig.textureOpacity]}
               onValueChange={([val]) => setEffectsConfig({
@@ -862,7 +987,7 @@ const ControlPanel = ({
                 textureOpacity: val
                     })}
               max={1}
-              step={0.01}
+              step={0.1}
                   />
           </ControlGroup>
           <ControlGroup label="Blend Mode">
@@ -918,7 +1043,7 @@ const ControlPanel = ({
         </Select>
       </ControlGroup>
 
-      <ControlGroup label={`Vignette: ${effectsConfig.vignetteIntensity.toFixed(2)}`}>
+      <ControlGroup label={`Vignette: `}>
         <NumberInput
           value={[effectsConfig.vignetteIntensity]}
           onValueChange={([val]) => setEffectsConfig({
@@ -930,7 +1055,7 @@ const ControlPanel = ({
             />
       </ControlGroup>
 
-      <ControlGroup label={`Saturation: ${effectsConfig.saturation}%`}>
+      <ControlGroup label={`Saturation: `}>
         <NumberInput
           value={[effectsConfig.saturation]}
           onValueChange={([val]) => setEffectsConfig({
@@ -942,7 +1067,7 @@ const ControlPanel = ({
               />
       </ControlGroup>
 
-      <ControlGroup label={`Contrast: ${effectsConfig.contrast}%`}>
+      <ControlGroup label={`Contrast: `}>
         <NumberInput
           value={[effectsConfig.contrast]}
           onValueChange={([val]) => setEffectsConfig({
@@ -955,7 +1080,7 @@ const ControlPanel = ({
               />
       </ControlGroup>
 
-      <ControlGroup label={`Brightness: ${effectsConfig.brightness}%`}>
+      <ControlGroup label={`Brightness: `}>
         <NumberInput
           value={[effectsConfig.brightness]}
           onValueChange={([val]) => setEffectsConfig({
@@ -964,7 +1089,7 @@ const ControlPanel = ({
                 })}
           min={50}
           max={150}
-          step={1}
+          step={10}
               />
       </ControlGroup>
             </div>
@@ -972,7 +1097,38 @@ const ControlPanel = ({
 
   // Render Text Panel Content
   const renderTextPanel = () => (
-    <div className="space-y-5">
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <Label className="text-xs uppercase tracking-wide font-semibold">Text</Label>
+      </div>
+
+      <ControlGroup label="Enable Text">
+        <Switch
+          checked={textConfig.enabled}
+          onCheckedChange={(checked) => setTextConfig({ ...textConfig, enabled: checked })}
+        />
+      </ControlGroup>
+
+      <ControlGroup label="Text Color">
+        <input
+          type="color"
+          value={textConfig.color}
+          onChange={(e) => setTextConfig({ ...textConfig, color: e.target.value })}
+          className="w-24 h-10 rounded-md border border-border cursor-pointer bg-transparent"
+        />
+      </ControlGroup>
+
+      <ControlGroup label="Text Opacity">
+        <NumberInput
+          value={[textConfig.opacity]}
+          onValueChange={([val]) => setTextConfig({ ...textConfig, opacity: val })}
+          min={0}
+          max={1}
+          step={0.05}
+          showButtons={true}
+        />
+      </ControlGroup>
+
       <div className="flex items-center justify-between">
         <Label className="text-xs uppercase tracking-wide font-semibold">Text Sections</Label>
         <Button variant="ghost" size="icon" className="h-7 w-7" onClick={addTextSection}>
@@ -980,78 +1136,109 @@ const ControlPanel = ({
         </Button>
       </div>
 
-      <ControlGroup label={`Section Gap: ${textGap}px`}>
+      <ControlGroup label={`Section Gap:`}>
         <NumberInput
           value={[textGap]}
           onValueChange={([val]) => setTextGap(val)}
           max={100}
-          step={1}
+          step={4}  
         />
       </ControlGroup>
 
       {textSections.map((section, index) => (
-        <div key={section.id} className="p-4 rounded-lg bg-muted/50 space-y-3.5">
-          <div className="flex items-center justify-between">
-            <Label className="text-xs font-semibold">Section {index + 1}</Label>
+        <div key={section.id} className="rounded-lg bg-muted/50 overflow-hidden">
+          <div 
+            className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/70 transition-colors"
+            onClick={() => setCollapsedSections(prev => ({ ...prev, [section.id]: !prev[section.id] }))}
+          >
+            <div className="flex items-center gap-2">
+              <CaretRight 
+                size={12} 
+                className={cn(
+                  "transition-transform duration-200",
+                  !collapsedSections[section.id] && "rotate-90"
+                )}
+              />
+              <Label className="text-xs font-semibold cursor-pointer">Section {index + 1}</Label>
+              <span className="text-xs text-muted-foreground truncate max-w-[100px]">
+                {section.text || "Empty"}
+              </span>
+            </div>
             <Button
               variant="ghost"
               size="icon"
               className="h-6 w-6"
-              onClick={() => removeTextSection(section.id)}
+              onClick={(e) => {
+                e.stopPropagation()
+                removeTextSection(section.id)
+              }}
               disabled={textSections.length <= 1}
             >
               <Trash size={12} />
             </Button>
           </div>
 
-          <Input
-            value={section.text}
-            onChange={(e) => updateTextSection(section.id, 'text', e.target.value)}
-            className="h-9 text-sm"
-            placeholder="Enter text..."
-          />
+          <div 
+            className={cn(
+              "grid transition-all duration-200 ease-in-out",
+              collapsedSections[section.id] ? "grid-rows-[0fr]" : "grid-rows-[1fr]"
+            )}
+          >
+            <div className="overflow-hidden">
+              <div className="p-2 pt-0 space-y-1">
+                <Input
+                  value={section.text}
+                  onChange={(e) => updateTextSection(section.id, 'text', e.target.value)}
+                  className="h-9 text-sm"
+                  placeholder="Enter text..."
+                />
 
-          <ControlGroup label={`Size: ${section.size}px`}>
-            <NumberInput
-              value={[section.size]}
-              onValueChange={([val]) => updateTextSection(section.id, 'size', val)}
-              min={12}
-              max={200}
-              step={1}
-            />
-          </ControlGroup>
+                <ControlGroup label={`Size (in px)`}>
+                  <NumberInput
+                    value={[section.size]}
+                    onValueChange={([val]) => updateTextSection(section.id, 'size', val)}
+                    min={12}
+                    max={200}
+                    step={4}
+                    showButtons={true}
+                  />
+                </ControlGroup>
 
-          <ControlGroup label="Weight">
-            <Select
-              value={String(section.weight)}
-              onValueChange={(value) => updateTextSection(section.id, 'weight', parseInt(value))}
-            >
-              <SelectTrigger className="h-9">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="100">Thin</SelectItem>
-                <SelectItem value="200">Extra Light</SelectItem>
-                <SelectItem value="300">Light</SelectItem>
-                <SelectItem value="400">Regular</SelectItem>
-                <SelectItem value="500">Medium</SelectItem>
-                <SelectItem value="600">Semi Bold</SelectItem>
-                <SelectItem value="700">Bold</SelectItem>
-                <SelectItem value="800">Extra Bold</SelectItem>
-                <SelectItem value="900">Black</SelectItem>
-              </SelectContent>
-            </Select>
-          </ControlGroup>
+                <ControlGroup label="Weight">
+                  <Select
+                    value={String(section.weight)}
+                    onValueChange={(value) => updateTextSection(section.id, 'weight', parseInt(value))}
+                  >
+                    <SelectTrigger className="h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="100">Thin</SelectItem>
+                      <SelectItem value="200">Extra Light</SelectItem>
+                      <SelectItem value="300">Light</SelectItem>
+                      <SelectItem value="400">Regular</SelectItem>
+                      <SelectItem value="500">Medium</SelectItem>
+                      <SelectItem value="600">Semi Bold</SelectItem>
+                      <SelectItem value="700">Bold</SelectItem>
+                      <SelectItem value="800">Extra Bold</SelectItem>
+                      <SelectItem value="900">Black</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </ControlGroup>
 
-          <ControlGroup label={`Spacing: ${section.spacing.toFixed(2)}em`}>
-            <NumberInput
-              value={[section.spacing]}
-              onValueChange={([val]) => updateTextSection(section.id, 'spacing', val)}
-              min={-0.1}
-              max={0.5}
-              step={0.01}
-            />
-          </ControlGroup>
+                <ControlGroup label={`Spacing (in em)`}>
+                  <NumberInput
+                    value={[section.spacing]}
+                    onValueChange={([val]) => updateTextSection(section.id, 'spacing', val)}
+                    min={-0.1}
+                    max={0.5}
+                    step={0.01}
+                    showButtons={true}
+                  />
+                </ControlGroup>
+              </div>
+            </div>
+          </div>
         </div>
       ))}
     </div>
@@ -1371,7 +1558,7 @@ const ControlPanel = ({
         {!isMobileCollapsed && (
             <ScrollArea className="max-h-[50vh] p-1 gap-2">
             {activePanel === 'gradient' && (
-                <div className="space-y-1 flex flex-row gap-1">
+                <div className="space-y-1 flex flex-row flex-wrap gap-1">
                 <SubsectionButton title="Colors" onClick={() => openDialog('gradient-colors')} />
                 <SubsectionButton title="Type" onClick={() => openDialog('gradient-type')} />
                 <SubsectionButton title="Stops" onClick={() => openDialog('gradient-stops')} />
@@ -1388,13 +1575,15 @@ const ControlPanel = ({
                       onCheckedChange={(c) => setTessellationConfig({ ...tessellationConfig, enabled: c })}
                     />
                 </div>
-                <SubsectionButton title="Icon" onClick={() => openDialog('pattern-icon')} />
-                <SubsectionButton title="Spacing" onClick={() => openDialog('pattern-spacing')} />
-                <SubsectionButton title="Mouse Influence" onClick={() => openDialog('pattern-mouse')} />
+                <div className="space-y-1 flex flex-row gap-1">
+                  <SubsectionButton title="Icon" onClick={() => openDialog('pattern-icon')} />
+                  <SubsectionButton title="Spacing (in em)" onClick={() => openDialog('pattern-spacing')} />
+                  <SubsectionButton title="Mouse Influence" onClick={() => openDialog('pattern-mouse')} />
+                </div>
               </div>
             )}
             {activePanel === 'effects' && (
-                <div className="space-y-1">
+                <div className="space-y-1 flex flex-row flex-wrap gap-1">
                 <SubsectionButton title="Background Blur" onClick={() => openDialog('effects-blur')} />
                 <SubsectionButton title="Noise" onClick={() => openDialog('effects-noise')} />
                 <SubsectionButton title="Texture" onClick={() => openDialog('effects-texture')} />
