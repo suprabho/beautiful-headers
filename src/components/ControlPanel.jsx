@@ -1970,6 +1970,146 @@ const ControlPanel = ({
         )}
           </DialogContent>
         </Dialog>
+
+        {/* Palette Upload Dialog */}
+        <Dialog open={showPaletteDialog} onOpenChange={(open) => {
+          setShowPaletteDialog(open)
+          if (!open) {
+            setPaletteError('')
+          }
+        }}>
+          <DialogContent className="max-w-lg max-h-[85vh]">
+            <DialogHeader>
+              <DialogTitle>
+                <div className="flex items-center gap-2">
+                  <Palette size={20} weight="duotone" />
+                  Upload Color Palette
+                </div>
+              </DialogTitle>
+            </DialogHeader>
+            <ScrollArea className="max-h-[60vh]">
+              <div className="space-y-2 pr-4">
+                {/* File Upload Option */}
+                <div className="space-y-2">
+                  <Label>Upload a JSON file</Label>
+                  <p className="text-xs text-muted-foreground">
+                    <a className="text-blue-500 hover:underline" href="https://colors.promad.design/" target="_blank" rel="noopener noreferrer">
+                      Use to generate compatible color JSON.
+                    </a>
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="file"
+                      accept=".json,application/json"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          const reader = new FileReader()
+                          reader.onload = (event) => {
+                            const content = event.target?.result
+                            if (typeof content === 'string') {
+                              setPaletteJson(content)
+                              setPaletteError('')
+                            }
+                          }
+                          reader.onerror = () => {
+                            setPaletteError('Failed to read file')
+                          }
+                          reader.readAsText(file)
+                        }
+                        // Reset the input so the same file can be selected again
+                        e.target.value = ''
+                      }}
+                      className="hidden"
+                      id="palette-file-input-mobile"
+                    />
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => document.getElementById('palette-file-input-mobile')?.click()}
+                    >
+                      <Upload size={16} className="mr-2" />
+                      Choose .json file
+                    </Button>
+                  </div>
+                </div>
+                
+                {/* Divider */}
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 h-px bg-border" />
+                  <span className="text-xs text-muted-foreground uppercase">or paste JSON</span>
+                  <div className="flex-1 h-px bg-border" />
+                </div>
+                
+                {/* Paste JSON Option */}
+                <div className="space-y-2">
+                  <Label>Paste your JSON color palette</Label>
+                  <textarea
+                    value={paletteJson}
+                    onChange={(e) => {
+                      setPaletteJson(e.target.value)
+                      setPaletteError('')
+                    }}
+                    placeholder={`{
+  "blue": {
+    "500": "#3b82f6",
+    "600": "#2563eb"
+  },
+  "green": {
+    "500": "#22c55e"
+  }
+}`}
+                    className="w-full h-36 p-3 text-sm font-mono bg-muted border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                  {paletteError && (
+                    <p className="text-sm text-destructive">{paletteError}</p>
+                  )}
+                </div>
+                
+                {colorPalette && (
+                  <div className="p-3 bg-muted/50 rounded-lg border border-border">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium">Current Palette</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 text-xs text-destructive hover:text-destructive"
+                        onClick={handleClearPalette}
+                      >
+                        <Trash size={12} className="mr-1" />
+                        Remove
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {parsedPalette?.colors.slice(0, 30).map((color, idx) => (
+                        <div
+                          key={idx}
+                          className="w-5 h-5 rounded border border-border/50"
+                          style={{ backgroundColor: color.hex }}
+                          title={color.shade ? `${color.name}-${color.shade}` : color.name}
+                        />
+                      ))}
+                      {parsedPalette?.colors.length > 30 && (
+                        <span className="text-xs text-muted-foreground self-center ml-1">
+                          +{parsedPalette.colors.length - 30} more
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </ScrollArea>
+            <DialogFooter className="flex-row gap-2">
+              <Button variant="outline" className="flex-1" onClick={() => setShowPaletteDialog(false)}>
+                Cancel
+              </Button>
+              <Button className="flex-1" onClick={handlePaletteUpload}>
+                <Upload size={16} className="mr-2" />
+                {colorPalette ? 'Update Palette' : 'Upload Palette'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </>
     )
   }
@@ -2201,14 +2341,14 @@ const ControlPanel = ({
                   setPaletteError('')
                 }}
                 placeholder={`{
-  "blue": {
-    "500": "#3b82f6",
-    "600": "#2563eb"
-  },
-  "green": {
-    "500": "#22c55e"
-  }
-}`}
+                  "blue": {
+                    "500": "#3b82f6",
+                    "600": "#2563eb"
+                  },
+                  "green": {
+                    "500": "#22c55e"
+                  }
+                }`}
                 className="w-full h-36 p-3 text-sm font-mono bg-muted border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary"
               />
               {paletteError && (
