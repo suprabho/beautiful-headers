@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Geist:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
 * {
   box-sizing: border-box;
@@ -133,9 +133,13 @@ html, body {
   mix-blend-mode: difference;
 }
 
-/* Responsive adjustments */
-@media (max-width: 767px) {
-  .text-section {
-    font-size: 60px !important;
-  }
+/* Responsive adjustments - handled by TextLayer component with clamp() */
+
+/* Safe area padding for mobile devices with notches */
+.safe-area-top {
+  padding-top: max(8px, env(safe-area-inset-top));
+}
+
+.safe-area-bottom {
+  padding-bottom: max(4px, env(safe-area-inset-bottom));
 }

@@ -98,8 +98,8 @@ function App() {
 
   // Text Layer State
   const [textSections, setTextSections] = useState([
-    { id: 1, text: 'VISUAL', size: 120, weight: 900, spacing: 0.1 },
-    { id: 2, text: 'EXPERIENCE', size: 80, weight: 300, spacing: 0.2 },
+    { id: 1, text: 'AURA', size: 120, weight: 900, spacing: 0.1 },
+    { id: 2, text: 'by Promad', size: 20, weight: 300, spacing: 0.2 },
   ])
   const [textGap, setTextGap] = useState(20)
   const [textConfig, setTextConfig] = useState({

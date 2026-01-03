@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react'
+
 const hexToRgb = (hex) => {
   if (typeof hex !== 'string') return null
   const cleaned = hex.replace('#', '').trim()
@@ -11,6 +13,48 @@ const hexToRgb = (hex) => {
 
 const TextLayer = ({ sections, gap, color = '#ffffff', opacity = 1 }) => {
   const rgb = hexToRgb(color) || { r: 255, g: 255, b: 255 }
+  const [windowWidth, setWindowWidth] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth
+    }
+    return 1920 // Default to desktop size for SSR
+  })
+  
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth)
+    }
+    
+    // Set initial width
+    setWindowWidth(window.innerWidth)
+    
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+  
+  // Calculate responsive font size based on viewport width
+  const getResponsiveFontSize = (baseSize) => {
+    // Scale down proportionally on smaller screens
+    // Mobile (320px): ~35% of base size
+    // Tablet (768px): ~65% of base size  
+    // Desktop (1920px+): full size
+    if (windowWidth <= 480) {
+      // Mobile phones
+      return Math.max(14, Math.round(baseSize * 0.35))
+    } else if (windowWidth <= 768) {
+      // Tablets
+      return Math.round(baseSize * 0.65)
+    } else if (windowWidth <= 1024) {
+      // Small desktops
+      return Math.round(baseSize * 0.85)
+    } else {
+      // Large desktops - full size
+      return baseSize
+    }
+  }
+  
   return (
     <div
       className="text-layer"
@@ -34,7 +78,7 @@ const TextLayer = ({ sections, gap, color = '#ffffff', opacity = 1 }) => {
           key={section.id}
           className="text-section"
           style={{
-            fontSize: `${section.size}px`,
+            fontSize: `${getResponsiveFontSize(section.size)}px`,
             fontWeight: section.weight,
             letterSpacing: `${section.spacing}em`,
             color,

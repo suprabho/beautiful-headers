@@ -4,7 +4,7 @@ import { AVAILABLE_ICONS } from './TessellationLayer'
 import { 
   Sliders, Palette, GridFour, Sparkle, TextT, 
   Shuffle, Plus, Minus, Trash, CaretDown, CaretUp, CaretRight, DotsSixVertical, Camera,
-  X, Image, Stack, CircleNotch, ArrowLeft, ArrowRight, Check, ArrowCounterClockwise, Upload, Eyedropper
+  X, Image, Stack, CircleNotch, ArrowLeft, ArrowRight, Check, ArrowCounterClockwise, Upload, Eyedropper, CaretCircleUp, CaretCircleDown
 } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
 import { prepareForCapture, validatePaletteJson, parsePaletteJson, filterPaletteByContrast, checkContrastAgainstGradient } from '@/lib/colorConversion'
@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -401,6 +401,8 @@ const ControlPanel = ({
   const [originalValues, setOriginalValues] = useState(null)
   const [collapsedSections, setCollapsedSections] = useState({})
   const [showPaletteDialog, setShowPaletteDialog] = useState(false)
+  const [showTextSettingsDialog, setShowTextSettingsDialog] = useState(false)
+  const [openSectionDialog, setOpenSectionDialog] = useState(null)
   const [paletteJson, setPaletteJson] = useState('')
   const [paletteError, setPaletteError] = useState('')
   const dragOffset = useRef({ x: 0, y: 0 })
@@ -1844,10 +1846,7 @@ const ControlPanel = ({
   // Render Text Panel Content
   const renderTextPanel = () => (
     <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <Label className="text-xs uppercase tracking-wide font-semibold">Text</Label>
-      </div>
-
+      
       <ControlGroup label="Enable Text">
         <Switch
           checked={textConfig.enabled}
@@ -1855,139 +1854,151 @@ const ControlPanel = ({
         />
       </ControlGroup>
 
-      <ControlGroup label="Text Color">
-        <ContrastAwarePaletteColorPicker
-          value={textConfig.color}
-          onChange={(newColor) => setTextConfig({ ...textConfig, color: newColor })}
-          palette={parsedPalette}
-          gradientColors={gradientConfig.colors}
-          className="w-10 h-10"
-        />
-      </ControlGroup>
+      <Dialog open={showTextSettingsDialog} onOpenChange={setShowTextSettingsDialog}>
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm" className="w-full">
+            Text Settings
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle>Text Settings</DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="max-h-[60vh] py-4">
+            <div className="space-y-2 pr-4">
+              <ControlGroup label="Text Color">
+                <ContrastAwarePaletteColorPicker
+                  value={textConfig.color}
+                  onChange={(newColor) => setTextConfig({ ...textConfig, color: newColor })}
+                  palette={parsedPalette}
+                  gradientColors={gradientConfig.colors}
+                  className="w-16 h-8 r"
+                />
+              </ControlGroup>
 
-      <ControlGroup label="Text Opacity">
-        <NumberInput
-          value={[textConfig.opacity]}
-          onValueChange={([val]) => setTextConfig({ ...textConfig, opacity: val })}
-          min={0}
-          max={1}
-          step={0.05}
-          showButtons={true}
-        />
-      </ControlGroup>
+              <ControlGroup label="Text Opacity">
+                <NumberInput
+                  value={[textConfig.opacity]}
+                  onValueChange={([val]) => setTextConfig({ ...textConfig, opacity: val })}
+                  min={0}
+                  max={1}
+                  step={0.05}
+                  showButtons={true}
+                />
+              </ControlGroup>
 
-      <div className="flex items-center justify-between">
-        <Label className="text-xs uppercase tracking-wide font-semibold">Text Sections</Label>
-        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={addTextSection}>
-          <Plus size={14} />
+              <ControlGroup label={`Section Gap:`}>
+                <NumberInput
+                  value={[textGap]}
+                  onValueChange={([val]) => setTextGap(val)}
+                  max={100}
+                  step={4}  
+                />
+              </ControlGroup>
+            </div>
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+
+      <div className="flex flex-wrap gap-2">
+        {textSections.map((section, index) => (
+          <Dialog 
+            key={section.id} 
+            open={openSectionDialog === section.id} 
+            onOpenChange={(open) => setOpenSectionDialog(open ? section.id : null)}
+          >
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm" className="rounded-full h-8 px-4 text-xs">
+                Section {index + 1}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-h-[80vh]">
+              <DialogHeader>
+                <div className="flex items-center justify-start gap-4">
+                  <DialogTitle>Section {index + 1}</DialogTitle>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8 text-destructive border-destructive bg-destructive/20"
+                    onClick={() => {
+                      removeTextSection(section.id)
+                      setOpenSectionDialog(null)
+                    }}
+                    disabled={textSections.length <= 1}
+                  >
+                    <Trash size={14} />
+                  </Button>
+                </div>
+              </DialogHeader>
+              <ScrollArea className="max-h-[60vh] py-4">
+                <div className="space-y-2 pr-4">
+                  <ControlGroup label="Text">
+                    <Input
+                      value={section.text}
+                      onChange={(e) => updateTextSection(section.id, 'text', e.target.value)}
+                      className="h-9 text-sm"
+                      placeholder="Enter text..."
+                    />
+                  </ControlGroup>
+
+                  <ControlGroup label={`Size (in px)`}>
+                    <NumberInput
+                      value={[section.size]}
+                      onValueChange={([val]) => updateTextSection(section.id, 'size', val)}
+                      min={12}
+                      max={200}
+                      step={4}
+                      showButtons={true}
+                    />
+                  </ControlGroup>
+
+                  <ControlGroup label="Weight">
+                    <Select
+                      value={String(section.weight)}
+                      onValueChange={(value) => updateTextSection(section.id, 'weight', parseInt(value))}
+                    >
+                      <SelectTrigger className="h-9">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="100">Thin</SelectItem>
+                        <SelectItem value="200">Extra Light</SelectItem>
+                        <SelectItem value="300">Light</SelectItem>
+                        <SelectItem value="400">Regular</SelectItem>
+                        <SelectItem value="500">Medium</SelectItem>
+                        <SelectItem value="600">Semi Bold</SelectItem>
+                        <SelectItem value="700">Bold</SelectItem>
+                        <SelectItem value="800">Extra Bold</SelectItem>
+                        <SelectItem value="900">Black</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </ControlGroup>
+
+                  <ControlGroup label={`Spacing (in em)`}>
+                    <NumberInput
+                      value={[section.spacing]}
+                      onValueChange={([val]) => updateTextSection(section.id, 'spacing', val)}
+                      min={-0.1}
+                      max={0.5}
+                      step={0.01}
+                      showButtons={true}
+                    />
+                  </ControlGroup>
+                </div>
+              </ScrollArea>
+            </DialogContent>
+          </Dialog>
+        ))}
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="rounded-full h-8 px-4 text-xs"
+          onClick={addTextSection}
+        >
+          <Plus size={14} className="mr-1" />
+          Add Section
         </Button>
       </div>
-
-      <ControlGroup label={`Section Gap:`}>
-        <NumberInput
-          value={[textGap]}
-          onValueChange={([val]) => setTextGap(val)}
-          max={100}
-          step={4}  
-        />
-      </ControlGroup>
-
-      {textSections.map((section, index) => (
-        <div key={section.id} className="rounded-lg bg-muted/50 overflow-hidden">
-          <div 
-            className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/70 transition-colors"
-            onClick={() => setCollapsedSections(prev => ({ ...prev, [section.id]: !prev[section.id] }))}
-          >
-            <div className="flex items-center gap-2">
-              <CaretRight 
-                size={12} 
-                className={cn(
-                  "transition-transform duration-200",
-                  !collapsedSections[section.id] && "rotate-90"
-                )}
-              />
-              <Label className="text-xs font-semibold cursor-pointer">Section {index + 1}</Label>
-              <span className="text-xs text-muted-foreground truncate max-w-[100px]">
-                {section.text || "Empty"}
-              </span>
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6"
-              onClick={(e) => {
-                e.stopPropagation()
-                removeTextSection(section.id)
-              }}
-              disabled={textSections.length <= 1}
-            >
-              <Trash size={12} />
-            </Button>
-          </div>
-
-          <div 
-            className={cn(
-              "grid transition-all duration-200 ease-in-out",
-              collapsedSections[section.id] ? "grid-rows-[0fr]" : "grid-rows-[1fr]"
-            )}
-          >
-            <div className="overflow-hidden">
-              <div className="p-2 pt-0 space-y-1">
-                <Input
-                  value={section.text}
-                  onChange={(e) => updateTextSection(section.id, 'text', e.target.value)}
-                  className="h-9 text-sm"
-                  placeholder="Enter text..."
-                />
-
-                <ControlGroup label={`Size (in px)`}>
-                  <NumberInput
-                    value={[section.size]}
-                    onValueChange={([val]) => updateTextSection(section.id, 'size', val)}
-                    min={12}
-                    max={200}
-                    step={4}
-                    showButtons={true}
-                  />
-                </ControlGroup>
-
-                <ControlGroup label="Weight">
-                  <Select
-                    value={String(section.weight)}
-                    onValueChange={(value) => updateTextSection(section.id, 'weight', parseInt(value))}
-                  >
-                    <SelectTrigger className="h-9">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="100">Thin</SelectItem>
-                      <SelectItem value="200">Extra Light</SelectItem>
-                      <SelectItem value="300">Light</SelectItem>
-                      <SelectItem value="400">Regular</SelectItem>
-                      <SelectItem value="500">Medium</SelectItem>
-                      <SelectItem value="600">Semi Bold</SelectItem>
-                      <SelectItem value="700">Bold</SelectItem>
-                      <SelectItem value="800">Extra Bold</SelectItem>
-                      <SelectItem value="900">Black</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </ControlGroup>
-
-                <ControlGroup label={`Spacing (in em)`}>
-                  <NumberInput
-                    value={[section.spacing]}
-                    onValueChange={([val]) => updateTextSection(section.id, 'spacing', val)}
-                    min={-0.1}
-                    max={0.5}
-                    step={0.01}
-                    showButtons={true}
-                  />
-                </ControlGroup>
-              </div>
-            </div>
-          </div>
-        </div>
-      ))}
     </div>
   )
 
@@ -2445,66 +2456,83 @@ const ControlPanel = ({
   if (isMobile) {
     return (
       <>
-      <div 
-        ref={panelRef}
-          className={cn(
-            "fixed left-0 right-0 bottom-0 z-50 bg-card/95 backdrop-blur-xl border-t border-border",
-            "transition-transform duration-300 ease-out"
-          )}
-      >
-          {/* Mobile tabs */}
-          <div className="flex items-center gap-1 p-1 border-b border-border/50 pb-env-safe(4px)">
-          {tabs.map(tab => (
-              <Button
-              key={tab.id}
-                variant={activePanel === tab.id && !isMobileCollapsed ? "secondary" : "ghost"}
-                size="sm"
-                className="flex-1 flex flex-col gap-1 h-auto p-1"
-              onClick={() => {
-                if (activePanel === tab.id && !isMobileCollapsed) {
-                  setIsMobileCollapsed(true)
-                } else {
-                  setActivePanel(tab.id)
-                  setIsMobileCollapsed(false)
-                }
-              }}
-            >
-                <tab.icon size={18} weight={activePanel === tab.id && !isMobileCollapsed ? 'fill' : 'regular'} />
-                <span className="text-[10px] uppercase tracking-wide">{tab.label}</span>
-              </Button>
-          ))}
-            <div className="w-px h-8 bg-border mx-1" />
+        {/* Mobile Top Bar - Palette, Shuffle, Capture */}
+        <div 
+          className="fixed left-0 right-0 top-0 z-50 bg-card/5 backdrop-blur-4xl"
+        >
+          <div className="flex items-center justify-between gap-2 p-2 safe-area-top">
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
-              className="flex flex-col gap-1 h-auto p-1"
+              className="flex items-center gap-2 h-10 px-4 border-primary/50"
               onClick={() => setShowPaletteDialog(true)}
               title={colorPalette ? "Edit Palette" : "Upload Palette"}
             >
               <Upload size={18} weight={colorPalette ? 'fill' : 'regular'} />
-              <span className="text-[10px] uppercase tracking-wide">Palette</span>
             </Button>
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
-              className="flex flex-col gap-1 h-auto p-1"
+              className="flex items-center gap-2 h-10 px-4 border-primary/50"
               onClick={randomizeGradient}
               title="Shuffle Gradient"
             >
               <Shuffle size={18} />
-              <span className="text-[10px] uppercase tracking-wide">Shuffle</span>
             </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 h-10 px-4 border-primary/50"
+              onClick={() => setShowCaptureModal(true)}
+            >
+              <Camera size={18} />
+            </Button>
+          </div>
+        </div>
+
+        {/* Mobile Bottom Panel */}
+        <div 
+          ref={panelRef}
+          className={cn(
+            "fixed left-0 right-0 bottom-0 z-50 bg-card/50 backdrop-blur-xl border-t border-border",
+            "transition-transform duration-300 ease-out"
+          )}
+        >
+          {/* Mobile tabs */}
+          <div className="flex items-center gap-1 p-1 border-b border-border/50 safe-area-bottom">
+            {tabs.map(tab => (
+              <Button
+                key={tab.id}
+                variant={activePanel === tab.id && !isMobileCollapsed ? "secondary" : "ghost"}
+                size="sm"
+                className="flex-1 flex flex-col gap-1 h-auto p-2"
+                onClick={() => {
+                  if (activePanel === tab.id && !isMobileCollapsed) {
+                    setIsMobileCollapsed(true)
+                  } else {
+                    setActivePanel(tab.id)
+                    setIsMobileCollapsed(false)
+                  }
+                }}
+              >
+                <tab.icon size={18} weight={activePanel === tab.id && !isMobileCollapsed ? 'fill' : 'regular'} />
+                <span className="text-[10px] uppercase tracking-wide">{tab.label}</span>
+              </Button>
+            ))}
+            {/* Toggle expand/collapse button */}
             <Button
               variant="ghost"
               size="sm"
-              className="flex flex-col gap-1 h-auto p-1"
-            onClick={() => setShowCaptureModal(true)}
-          >
-              <Camera size={18} />
-              <span className="text-[10px] uppercase tracking-wide">Capture</span>
+              className="flex flex-col gap-1 h-auto p-2 shrink-0 text-muted-foreground"
+              onClick={() => setIsMobileCollapsed(!isMobileCollapsed)}
+            >
+              {isMobileCollapsed ? (
+                <CaretCircleUp size={18} weight="bold" />
+              ) : (
+                <CaretCircleDown size={18} weight="bold" />
+              )}
             </Button>
-            
-        </div>
+          </div>
 
           {/* Mobile content */}
         {!isMobileCollapsed && (
@@ -2735,14 +2763,14 @@ const ControlPanel = ({
                       setPaletteError('')
                     }}
                     placeholder={`{
-  "blue": {
-    "500": "#3b82f6",
-    "600": "#2563eb"
-  },
-  "green": {
-    "500": "#22c55e"
-  }
-}`}
+                      "blue": {
+                        "500": "#3b82f6",
+                        "600": "#2563eb"
+                      },
+                      "green": {
+                        "500": "#22c55e"
+                      }
+                    }`}
                     className="w-full h-36 p-3 text-sm font-mono bg-muted border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                   {paletteError && (
