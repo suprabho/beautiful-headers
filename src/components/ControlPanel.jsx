@@ -819,6 +819,27 @@ const ControlPanel = ({
     }
   }
 
+  // Blob color management functions
+  const updateBlobColor = (index, color) => {
+    const newColors = [...(blobConfig.colors || ['#ff006e', '#8338ec', '#3a86ff', '#06d6a0'])]
+    newColors[index] = color
+    setBlobConfig({ ...blobConfig, colors: newColors })
+  }
+
+  const addBlobColor = () => {
+    const currentColors = blobConfig.colors || ['#ff006e', '#8338ec', '#3a86ff', '#06d6a0']
+    if (currentColors.length < 8) {
+      setBlobConfig({ ...blobConfig, colors: [...currentColors, '#ffffff'] })
+    }
+  }
+
+  const removeBlobColor = (index) => {
+    const currentColors = blobConfig.colors || ['#ff006e', '#8338ec', '#3a86ff', '#06d6a0']
+    if (currentColors.length > 2) {
+      setBlobConfig({ ...blobConfig, colors: currentColors.filter((_, i) => i !== index) })
+    }
+  }
+
   const updateColorStop = (index, value) => {
     const newStops = [...gradientConfig.colorStops]
     newStops[index] = parseInt(value)
@@ -1364,6 +1385,40 @@ const ControlPanel = ({
               />
             </div>
           </ControlGroup>
+
+          {/* Blob Colors */}
+          <div className="space-y-2">
+            <Label className="text-xs uppercase tracking-wide font-semibold">Blob Colors</Label>
+            {(blobConfig.colors || ['#ff006e', '#8338ec', '#3a86ff', '#06d6a0']).map((color, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <PaletteColorPicker
+                  value={color}
+                  onChange={(newColor) => updateBlobColor(index, newColor)}
+                  palette={parsedPalette}
+                  className="w-10 h-9"
+                />
+                <Input 
+                  value={color}
+                  onChange={(e) => updateBlobColor(index, e.target.value)}
+                  className="h-9 font-mono text-xs flex-1"
+                />
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  className="h-7 w-7 ml-auto"
+                  onClick={() => removeBlobColor(index)}
+                  disabled={(blobConfig.colors || []).length <= 2}
+                >
+                  <Trash size={12} />
+                </Button>
+              </div>
+            ))}
+            {(blobConfig.colors || []).length < 8 && (
+              <Button variant="outline" size="sm" className="w-full h-8 text-xs" onClick={addBlobColor}>
+                <Plus size={12} className="mr-1" /> Add Color
+              </Button>
+            )}
+          </div>
         </>
       )}
 
@@ -2387,21 +2442,57 @@ const ControlPanel = ({
                 </p>
               </div>
             ) : (
-              <ControlGroup label="Background">
-                <div className="flex items-center gap-2">
-                  <PaletteColorPicker
-                    value={blobConfig.backgroundColor}
-                    onChange={(newColor) => setBlobConfig({ ...blobConfig, backgroundColor: newColor })}
-                    palette={parsedPalette}
-                    className="w-10 h-9"
-                  />
-                  <Input 
-                    value={blobConfig.backgroundColor}
-                    onChange={(e) => setBlobConfig({ ...blobConfig, backgroundColor: e.target.value })}
-                    className="h-9 font-mono text-xs flex-1"
-                  />
+              <>
+                <ControlGroup label="Background">
+                  <div className="flex items-center gap-2">
+                    <PaletteColorPicker
+                      value={blobConfig.backgroundColor}
+                      onChange={(newColor) => setBlobConfig({ ...blobConfig, backgroundColor: newColor })}
+                      palette={parsedPalette}
+                      className="w-10 h-9"
+                    />
+                    <Input 
+                      value={blobConfig.backgroundColor}
+                      onChange={(e) => setBlobConfig({ ...blobConfig, backgroundColor: e.target.value })}
+                      className="h-9 font-mono text-xs flex-1"
+                    />
+                  </div>
+                </ControlGroup>
+
+                {/* Blob Colors */}
+                <div className="space-y-2">
+                  <Label className="text-xs uppercase tracking-wide font-semibold">Blob Colors</Label>
+                  {(blobConfig.colors || ['#ff006e', '#8338ec', '#3a86ff', '#06d6a0']).map((color, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <PaletteColorPicker
+                        value={color}
+                        onChange={(newColor) => updateBlobColor(index, newColor)}
+                        palette={parsedPalette}
+                        className="w-10 h-9"
+                      />
+                      <Input 
+                        value={color}
+                        onChange={(e) => updateBlobColor(index, e.target.value)}
+                        className="h-9 font-mono text-xs flex-1"
+                      />
+                      <Button 
+                        variant="ghost" 
+                        size="icon"
+                        className="h-7 w-7 ml-auto"
+                        onClick={() => removeBlobColor(index)}
+                        disabled={(blobConfig.colors || []).length <= 2}
+                      >
+                        <Trash size={12} />
+                      </Button>
+                    </div>
+                  ))}
+                  {(blobConfig.colors || []).length < 8 && (
+                    <Button variant="outline" size="sm" className="w-full h-8 text-xs" onClick={addBlobColor}>
+                      <Plus size={12} className="mr-1" /> Add Color
+                    </Button>
+                  )}
                 </div>
-              </ControlGroup>
+              </>
             )}
           </div>
         )
