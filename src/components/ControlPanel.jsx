@@ -680,12 +680,20 @@ const ControlPanel = ({
       ctx.fillStyle = '#000000'
       ctx.fillRect(0, 0, outputCanvas.width, outputCanvas.height)
       
-      const webglCanvas = container.querySelector('.gradient-layer')
-      if (webglCanvas) {
+      // Find the background canvas based on background type
+      // - Liquid/gradient: .gradient-layer (canvas element directly)
+      // - Aurora: .aurora-layer canvas (canvas inside container div)
+      // - Blob: .blob-layer canvas (canvas inside container div)
+      const backgroundCanvas = 
+        container.querySelector('.gradient-layer') ||
+        container.querySelector('.aurora-layer canvas') ||
+        container.querySelector('.blob-layer canvas')
+      
+      if (backgroundCanvas) {
         const wrapper = container.querySelector('.gradient-effects-wrapper')
         const filterStyle = wrapper ? getComputedStyle(wrapper).filter : 'none'
         ctx.filter = filterStyle !== 'none' ? filterStyle : 'none'
-        ctx.drawImage(webglCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
+        ctx.drawImage(backgroundCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
         ctx.filter = 'none'
       }
       
