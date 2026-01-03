@@ -870,13 +870,6 @@ const ControlPanel = ({
       'effects-colormap': 'Color Map',
       'effects-vignette': 'Vignette',
       'effects-color': 'Color Correction',
-      'text-settings': 'Text Settings',
-    }
-    if (key && key.startsWith('text-section-')) {
-      const sectionId = parseInt(key.replace('text-section-', '')); 
-      const sectionIndex = textSections.findIndex(s => s.id === sectionId); 
-      const section = textSections.find(s => s.id === sectionId); 
-      return section ? `Section ${sectionIndex + 1}: ${section.text?.slice(0, 15) || 'Empty'}${section.text?.length > 15 ? '...' : ''}` : 'Text Section'; 
     }
     return titles[key] || 'Settings'
   }
@@ -1850,7 +1843,7 @@ const ControlPanel = ({
             </div>
   )
 
-  // Render Text Panel Content (Desktop - with accordions)
+  // Render Text Panel Content
   const renderTextPanel = () => (
     <div className="space-y-2">
       
@@ -1861,139 +1854,149 @@ const ControlPanel = ({
         />
       </ControlGroup>
 
-      <ControlGroup label="Text Color">
-        <ContrastAwarePaletteColorPicker
-          value={textConfig.color}
-          onChange={(newColor) => setTextConfig({ ...textConfig, color: newColor })}
-          palette={parsedPalette}
-          gradientColors={gradientConfig.colors}
-          className="w-16 h-8 r"
-        />
-      </ControlGroup>
-
-      <ControlGroup label="Text Opacity">
-        <NumberInput
-          value={[textConfig.opacity]}
-          onValueChange={([val]) => setTextConfig({ ...textConfig, opacity: val })}
-          min={0}
-          max={1}
-          step={0.05}
-          showButtons={true}
-        />
-      </ControlGroup>
-
-      <ControlGroup label="Section Gap">
-        <NumberInput
-          value={[textGap]}
-          onValueChange={([val]) => setTextGap(val)}
-          max={100}
-          step={4}  
-        />
-      </ControlGroup>
-
-      {textSections.map((section, index) => (
-        <div key={section.id} className="rounded-lg bg-muted/50 overflow-hidden">
-          <div 
-            className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/70 transition-colors"
-            onClick={() => setCollapsedSections(prev => ({ ...prev, [section.id]: !prev[section.id] }))}
-          >
-            <div className="flex items-center gap-2">
-              <CaretRight 
-                size={12} 
-                className={cn(
-                  "transition-transform duration-200",
-                  !collapsedSections[section.id] && "rotate-90"
-                )}
-              />
-              <Label className="text-xs font-semibold cursor-pointer">Section {index + 1}</Label>
-              <span className="text-xs text-muted-foreground truncate max-w-[100px]">
-                {section.text || "Empty"}
-              </span>
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6"
-              onClick={(e) => {
-                e.stopPropagation()
-                removeTextSection(section.id)
-              }}
-              disabled={textSections.length <= 1}
-            >
-              <Trash size={12} />
-            </Button>
-          </div>
-
-          <div 
-            className={cn(
-              "grid transition-all duration-200 ease-in-out",
-              collapsedSections[section.id] ? "grid-rows-[0fr]" : "grid-rows-[1fr]"
-            )}
-          >
-            <div className="overflow-hidden">
-              <div className="p-2 pt-0 space-y-1">
-                <Input
-                  value={section.text}
-                  onChange={(e) => updateTextSection(section.id, 'text', e.target.value)}
-                  className="h-9 text-sm"
-                  placeholder="Enter text..."
+      <Dialog open={showTextSettingsDialog} onOpenChange={setShowTextSettingsDialog}>
+        <DialogTrigger asChild>
+          <Button variant="outline" size="sm" className="w-full">
+            Text Settings
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle>Text Settings</DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="max-h-[60vh] py-4">
+            <div className="space-y-2 pr-4">
+              <ControlGroup label="Text Color">
+                <ContrastAwarePaletteColorPicker
+                  value={textConfig.color}
+                  onChange={(newColor) => setTextConfig({ ...textConfig, color: newColor })}
+                  palette={parsedPalette}
+                  gradientColors={gradientConfig.colors}
+                  className="w-16 h-8 r"
                 />
+              </ControlGroup>
 
-                <ControlGroup label="Size (in px)">
-                  <NumberInput
-                    value={[section.size]}
-                    onValueChange={([val]) => updateTextSection(section.id, 'size', val)}
-                    min={12}
-                    max={200}
-                    step={4}
-                    showButtons={true}
-                  />
-                </ControlGroup>
+              <ControlGroup label="Text Opacity">
+                <NumberInput
+                  value={[textConfig.opacity]}
+                  onValueChange={([val]) => setTextConfig({ ...textConfig, opacity: val })}
+                  min={0}
+                  max={1}
+                  step={0.05}
+                  showButtons={true}
+                />
+              </ControlGroup>
 
-                <ControlGroup label="Weight">
-                  <Select
-                    value={String(section.weight)}
-                    onValueChange={(value) => updateTextSection(section.id, 'weight', parseInt(value))}
-                  >
-                    <SelectTrigger className="h-9">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="100">Thin</SelectItem>
-                      <SelectItem value="200">Extra Light</SelectItem>
-                      <SelectItem value="300">Light</SelectItem>
-                      <SelectItem value="400">Regular</SelectItem>
-                      <SelectItem value="500">Medium</SelectItem>
-                      <SelectItem value="600">Semi Bold</SelectItem>
-                      <SelectItem value="700">Bold</SelectItem>
-                      <SelectItem value="800">Extra Bold</SelectItem>
-                      <SelectItem value="900">Black</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </ControlGroup>
-
-                <ControlGroup label="Spacing (in em)">
-                  <NumberInput
-                    value={[section.spacing]}
-                    onValueChange={([val]) => updateTextSection(section.id, 'spacing', val)}
-                    min={-0.1}
-                    max={0.5}
-                    step={0.01}
-                    showButtons={true}
-                  />
-                </ControlGroup>
-                
-              </div>
-              
+              <ControlGroup label={`Section Gap:`}>
+                <NumberInput
+                  value={[textGap]}
+                  onValueChange={([val]) => setTextGap(val)}
+                  max={100}
+                  step={4}  
+                />
+              </ControlGroup>
             </div>
-          </div>
-          
-        </div>
-      ))}
-      <div className="flex items-center justify-center">
-        <Label className="text-xs uppercase tracking-wide font-semibold">Text Sections</Label>
-        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={addTextSection}>
-          <Plus size={14} />
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
+
+      <div className="flex flex-wrap gap-2">
+        {textSections.map((section, index) => (
+          <Dialog 
+            key={section.id} 
+            open={openSectionDialog === section.id} 
+            onOpenChange={(open) => setOpenSectionDialog(open ? section.id : null)}
+          >
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm" className="rounded-full h-8 px-4 text-xs">
+                Section {index + 1}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-h-[80vh]">
+              <DialogHeader>
+                <div className="flex items-center justify-start gap-4">
+                  <DialogTitle>Section {index + 1}</DialogTitle>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8 text-destructive border-destructive bg-destructive/20"
+                    onClick={() => {
+                      removeTextSection(section.id)
+                      setOpenSectionDialog(null)
+                    }}
+                    disabled={textSections.length <= 1}
+                  >
+                    <Trash size={14} />
+                  </Button>
+                </div>
+              </DialogHeader>
+              <ScrollArea className="max-h-[60vh] py-4">
+                <div className="space-y-2 pr-4">
+                  <ControlGroup label="Text">
+                    <Input
+                      value={section.text}
+                      onChange={(e) => updateTextSection(section.id, 'text', e.target.value)}
+                      className="h-9 text-sm"
+                      placeholder="Enter text..."
+                    />
+                  </ControlGroup>
+
+                  <ControlGroup label={`Size (in px)`}>
+                    <NumberInput
+                      value={[section.size]}
+                      onValueChange={([val]) => updateTextSection(section.id, 'size', val)}
+                      min={12}
+                      max={200}
+                      step={4}
+                      showButtons={true}
+                    />
+                  </ControlGroup>
+
+                  <ControlGroup label="Weight">
+                    <Select
+                      value={String(section.weight)}
+                      onValueChange={(value) => updateTextSection(section.id, 'weight', parseInt(value))}
+                    >
+                      <SelectTrigger className="h-9">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="100">Thin</SelectItem>
+                        <SelectItem value="200">Extra Light</SelectItem>
+                        <SelectItem value="300">Light</SelectItem>
+                        <SelectItem value="400">Regular</SelectItem>
+                        <SelectItem value="500">Medium</SelectItem>
+                        <SelectItem value="600">Semi Bold</SelectItem>
+                        <SelectItem value="700">Bold</SelectItem>
+                        <SelectItem value="800">Extra Bold</SelectItem>
+                        <SelectItem value="900">Black</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </ControlGroup>
+
+                  <ControlGroup label={`Spacing (in em)`}>
+                    <NumberInput
+                      value={[section.spacing]}
+                      onValueChange={([val]) => updateTextSection(section.id, 'spacing', val)}
+                      min={-0.1}
+                      max={0.5}
+                      step={0.01}
+                      showButtons={true}
+                    />
+                  </ControlGroup>
+                </div>
+              </ScrollArea>
+            </DialogContent>
+          </Dialog>
+        ))}
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="rounded-full h-8 px-4 text-xs"
+          onClick={addTextSection}
+        >
+          <Plus size={14} className="mr-1" />
+          Add Section
         </Button>
       </div>
     </div>
@@ -2444,109 +2447,7 @@ const ControlPanel = ({
             </ControlGroup>
           </div>
         )
-      case 'text-settings':
-        return (
-          <div className="space-y-2">
-            <ControlGroup label="Text Color">
-              <ContrastAwarePaletteColorPicker
-                value={textConfig.color}
-                onChange={(newColor) => setTextConfig({ ...textConfig, color: newColor })}
-                palette={parsedPalette}
-                gradientColors={gradientConfig.colors}
-                className="w-16 h-8"
-              />
-            </ControlGroup>
-            <ControlGroup label="Text Opacity">
-              <NumberInput
-                value={[textConfig.opacity]}
-                onValueChange={([val]) => setTextConfig({ ...textConfig, opacity: val })}
-                min={0}
-                max={1}
-                step={0.05}
-                showButtons={true}
-              />
-            </ControlGroup>
-            <ControlGroup label="Section Gap">
-              <NumberInput
-                value={[textGap]}
-                onValueChange={([val]) => setTextGap(val)}
-                max={100}
-                step={4}
-              />
-            </ControlGroup>
-          </div>
-        )
       default:
-        // Handle dynamic text section dialogs
-        if (activeDialog && activeDialog.startsWith('text-section-')) {
-          const sectionId = parseInt(activeDialog.replace('text-section-', ''))
-          const section = textSections.find(s => s.id === sectionId)
-          if (section) {
-            return (
-              <div className="space-y-2">
-                <Input
-                  value={section.text}
-                  onChange={(e) => updateTextSection(section.id, 'text', e.target.value)}
-                  className="h-11 text-base"
-                  placeholder="Enter text..."
-                />
-                <ControlGroup label="Size (in px)">
-                  <NumberInput
-                    value={[section.size]}
-                    onValueChange={([val]) => updateTextSection(section.id, 'size', val)}
-                    min={12}
-                    max={200}
-                    step={4}
-                    showButtons={true}
-                  />
-                </ControlGroup>
-                <ControlGroup label="Weight">
-                  <Select
-                    value={String(section.weight)}
-                    onValueChange={(value) => updateTextSection(section.id, 'weight', parseInt(value))}
-                  >
-                    <SelectTrigger className="h-9">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="100">Thin</SelectItem>
-                      <SelectItem value="200">Extra Light</SelectItem>
-                      <SelectItem value="300">Light</SelectItem>
-                      <SelectItem value="400">Regular</SelectItem>
-                      <SelectItem value="500">Medium</SelectItem>
-                      <SelectItem value="600">Semi Bold</SelectItem>
-                      <SelectItem value="700">Bold</SelectItem>
-                      <SelectItem value="800">Extra Bold</SelectItem>
-                      <SelectItem value="900">Black</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </ControlGroup>
-                <ControlGroup label="Spacing (in em)">
-                  <NumberInput
-                    value={[section.spacing]}
-                    onValueChange={([val]) => updateTextSection(section.id, 'spacing', val)}
-                    min={-0.1}
-                    max={0.5}
-                    step={0.01}
-                    showButtons={true}
-                  />
-                </ControlGroup>
-                <Button
-                  variant="destructive"
-                  className="w-full mt-4"
-                  onClick={() => {
-                    removeTextSection(section.id)
-                    setActiveDialog(null)
-                  }}
-                  disabled={textSections.length <= 1}
-                >
-                  <Trash size={16} className="mr-2" />
-                  Delete Section
-                </Button>
-              </div>
-            )
-          }
-        }
         return null
     }
   }
@@ -2711,31 +2612,7 @@ const ControlPanel = ({
                 <SubsectionButton title="Color Correction" onClick={() => openDialog('effects-color')} />
               </div>
             )}
-            {activePanel === 'text' && (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between px-3 py-2">
-                  <Label>Enable Text</Label>
-                  <Switch
-                    checked={textConfig.enabled}
-                    onCheckedChange={(checked) => setTextConfig({ ...textConfig, enabled: checked })}
-                  />
-                </div>
-                <div className="space-y-1 flex flex-row flex-wrap gap-1 px-1">
-                  <SubsectionButton title="Settings" onClick={() => openDialog('text-settings')} />
-                  {textSections.map((section, index) => (
-                    <SubsectionButton 
-                      key={section.id}
-                      title={`${index + 1}: ${section.text?.slice(0, 8) || 'Empty'}${section.text?.length > 8 ? '...' : ''}`}
-                      onClick={() => openDialog(`text-section-${section.id}`)} 
-                    />
-                  ))}
-                  <Button variant="outline" className="w-fit h-11 px-3" onClick={addTextSection}>
-                    <Plus size={14} className="mr-1" />
-                    <span className="text-sm">Add</span>
-                  </Button>
-                </div>
-              </div>
-            )}
+              {activePanel === 'text' && renderTextPanel()}
             </ScrollArea>
             )}
           </div>
