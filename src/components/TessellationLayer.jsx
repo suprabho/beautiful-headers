@@ -4,10 +4,29 @@ import * as PhosphorIcons from '@phosphor-icons/react'
 const TessellationLayer = ({ config, mousePos = { x: 0.5, y: 0.5 } }) => {
   const { icon, rowGap, colGap, size, opacity, rotation, color, mouseRotationInfluence = 0 } = config
   
+  // Track viewport size to re-render grid on resize
+  const [viewportSize, setViewportSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight
+  })
+  
   // Track smoothed mouse position for smooth animation
   const currentMouseRef = useRef({ x: 0.5, y: 0.5 })
   const [smoothedMouse, setSmoothedMouse] = useState({ x: 0.5, y: 0.5 })
   const animationRef = useRef(null)
+  
+  // Listen for viewport resize
+  useEffect(() => {
+    const handleResize = () => {
+      setViewportSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      })
+    }
+    
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const IconComponent = useMemo(() => {
     const iconName = icon || 'Star'
@@ -43,8 +62,8 @@ const TessellationLayer = ({ config, mousePos = { x: 0.5, y: 0.5 } }) => {
   const getMouseRotation = useCallback((itemX, itemY) => {
     if (mouseRotationInfluence <= 0) return 0
     
-    const mouseX = smoothedMouse.x * window.innerWidth
-    const mouseY = smoothedMouse.y * window.innerHeight
+    const mouseX = smoothedMouse.x * viewportSize.width
+    const mouseY = smoothedMouse.y * viewportSize.height
     
     // Vector from element to mouse
     const dx = mouseX - itemX
@@ -60,12 +79,12 @@ const TessellationLayer = ({ config, mousePos = { x: 0.5, y: 0.5 } }) => {
     
     // Apply influence with falloff - icons point toward mouse
     return angle * falloff * mouseRotationInfluence
-  }, [smoothedMouse.x, smoothedMouse.y, mouseRotationInfluence])
+  }, [smoothedMouse.x, smoothedMouse.y, mouseRotationInfluence, viewportSize.width, viewportSize.height])
 
   const grid = useMemo(() => {
     const items = []
-    const cols = Math.ceil(window.innerWidth / colGap) + 2
-    const rows = Math.ceil(window.innerHeight / rowGap) + 2
+    const cols = Math.ceil(viewportSize.width / colGap) + 2
+    const rows = Math.ceil(viewportSize.height / rowGap) + 2
     
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
@@ -79,7 +98,7 @@ const TessellationLayer = ({ config, mousePos = { x: 0.5, y: 0.5 } }) => {
       }
     }
     return items
-  }, [rowGap, colGap])
+  }, [rowGap, colGap, viewportSize.width, viewportSize.height])
 
   return (
     <div

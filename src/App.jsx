@@ -1,5 +1,7 @@
 import { useState, useCallback, useRef } from 'react'
 import GradientLayer from './components/GradientLayer'
+import AuroraLayer from './components/AuroraLayer'
+import BlobLayer from './components/BlobLayer'
 import TessellationLayer from './components/TessellationLayer'
 import EffectsLayer from './components/EffectsLayer'
 import TextLayer from './components/TextLayer'
@@ -11,7 +13,10 @@ function App() {
   const [activePanel, setActivePanel] = useState('gradient')
   const layersContainerRef = useRef(null)
 
-  // Gradient Layer State
+  // Background Type State
+  const [backgroundType, setBackgroundType] = useState('liquid') // 'liquid', 'aurora', or 'blob'
+
+  // Gradient Layer State (Liquid effect)
   const [gradientConfig, setGradientConfig] = useState({
     colors: ['#ff006e', '#8338ec', '#3a86ff', '#06d6a0'],
     numColors: 4,
@@ -26,6 +31,39 @@ function App() {
     wave1Direction: 1,  // 1 = forward, -1 = backward
     wave2Speed: 0.15,
     wave2Direction: -1,
+  })
+
+  // Aurora Layer State
+  const [auroraConfig, setAuroraConfig] = useState({
+    minWidth: 10,
+    maxWidth: 30,
+    minHeight: 200,
+    maxHeight: 600,
+    minTTL: 100,
+    maxTTL: 300,
+    blurAmount: 13,
+    hueStart: 120,
+    hueEnd: 180,
+    backgroundColor: '#000000',
+    lineCount: 0, // 0 = auto-calculate
+    decaySpeed: 0.95,
+    useGradientColors: true, // Use colors from gradient palette
+  })
+
+  // Blob Layer State (Gooey metaball effect)
+  const [blobConfig, setBlobConfig] = useState({
+    blobCount: 5,
+    minRadius: 40,
+    maxRadius: 120,
+    speed: 0.5,
+    orbitRadius: 150,
+    blurAmount: 12,
+    threshold: 180,
+    mouseInfluence: 0.3,
+    decaySpeed: 0.95,
+    useGradientColors: true, // Use colors from gradient palette
+    colors: ['#40204c', '#a3225c', '#e24926'], // Fallback colors
+    backgroundColor: '#152a8e',
   })
 
   // Tessellation Layer State
@@ -150,7 +188,7 @@ function App() {
   return (
     <div className="app" onMouseMove={handleMouseMove}>
       <div className="layers-container" ref={layersContainerRef}>
-        {/* Layer 1: Gradient with effects (blur, saturation, contrast, brightness, colorMap) */}
+        {/* Layer 1: Background with effects (blur, saturation, contrast, brightness, colorMap) */}
         <div 
           className="gradient-effects-wrapper"
           style={{
@@ -160,7 +198,15 @@ function App() {
             filter: getGradientFilter(),
           }}
         >
-          <GradientLayer config={gradientConfig} mousePos={mousePos} />
+          {backgroundType === 'liquid' && (
+            <GradientLayer config={gradientConfig} mousePos={mousePos} />
+          )}
+          {backgroundType === 'aurora' && (
+            <AuroraLayer config={auroraConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} />
+          )}
+          {backgroundType === 'blob' && (
+            <BlobLayer config={blobConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} />
+          )}
         </div>
         
         {/* Layer 2: Tessellation (no filter effects) */}
@@ -185,8 +231,14 @@ function App() {
       <ControlPanel
         activePanel={activePanel}
         setActivePanel={setActivePanel}
+        backgroundType={backgroundType}
+        setBackgroundType={setBackgroundType}
         gradientConfig={gradientConfig}
         setGradientConfig={setGradientConfig}
+        auroraConfig={auroraConfig}
+        setAuroraConfig={setAuroraConfig}
+        blobConfig={blobConfig}
+        setBlobConfig={setBlobConfig}
         randomizeGradient={randomizeGradient}
         tessellationConfig={tessellationConfig}
         setTessellationConfig={setTessellationConfig}

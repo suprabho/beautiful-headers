@@ -369,8 +369,14 @@ const ContrastAwarePaletteColorPicker = ({ value, onChange, palette, gradientCol
 const ControlPanel = ({
   activePanel,
   setActivePanel,
+  backgroundType,
+  setBackgroundType,
   gradientConfig,
   setGradientConfig,
+  auroraConfig,
+  setAuroraConfig,
+  blobConfig,
+  setBlobConfig,
   randomizeGradient,
   tessellationConfig,
   setTessellationConfig,
@@ -845,6 +851,14 @@ const ControlPanel = ({
       'gradient-stops': 'Position Stops',
       'gradient-wave': 'Wave Settings',
       'gradient-mouse': 'Mouse Influence',
+      'aurora-background': 'Background Color',
+      'aurora-hue': 'Hue Range',
+      'aurora-lines': 'Line Settings',
+      'aurora-animation': 'Animation',
+      'blob-colors': 'Blob Colors',
+      'blob-size': 'Blob Size & Count',
+      'blob-animation': 'Blob Animation',
+      'blob-effect': 'Gooey Effect',
       'pattern-icon': 'Icon Settings',
       'pattern-spacing': 'Spacing',
       'pattern-mouse': 'Mouse Influence',
@@ -858,17 +872,17 @@ const ControlPanel = ({
     return titles[key] || 'Settings'
   }
 
-  // Render Gradient Panel Content
-  const renderGradientPanel = () => (
-    <div className="space-y-2">
+  // Render Liquid controls
+  const renderLiquidControls = () => (
+    <>
       {/* Colors Section */}
-      <div className="space-y-1 ">
+      <div className="space-y-1">
         <div className="flex items-center justify-between">
           <Label className="text-xs uppercase tracking-wide font-semibold">Gradient Colors</Label>
         </div>
         
         <div className="space-y-2">
-              {gradientConfig.colors.map((color, index) => (
+          {gradientConfig.colors.map((color, index) => (
             <div key={index} className="flex items-center gap-2">
               <PaletteColorPicker
                 value={color}
@@ -876,37 +890,37 @@ const ControlPanel = ({
                 palette={parsedPalette}
               />
               <Input
-                    type="number"
-                    min="0"
-                    max="100"
-                    value={gradientConfig.colorStops[index] || 0}
-                    onChange={(e) => updateColorStop(index, e.target.value)}
+                type="number"
+                min="0"
+                max="100"
+                value={gradientConfig.colorStops[index] || 0}
+                onChange={(e) => updateColorStop(index, e.target.value)}
                 className="w-16 h-8 text-xs"
-                  />
+              />
               <span className="text-xs text-muted-foreground">%</span>
               <Button 
                 variant="ghost" 
                 size="icon"
                 className="h-7 w-7 ml-auto"
-                    onClick={() => removeGradientColor(index)}
-                    disabled={gradientConfig.colors.length <= 2}
-                  >
+                onClick={() => removeGradientColor(index)}
+                disabled={gradientConfig.colors.length <= 2}
+              >
                 <Trash size={12} />
               </Button>
-                </div>
-              ))}
-              {gradientConfig.colors.length < 8 && (
+            </div>
+          ))}
+          {gradientConfig.colors.length < 8 && (
             <Button variant="outline" size="sm" className="w-full h-8 text-xs" onClick={addGradientColor}>
               <Plus size={12} className="mr-1" /> Add Color
             </Button>
-              )}
-            </div>
+          )}
+        </div>
       </div>
 
       {/* Gradient Type */}
       <ControlGroup label="Gradient Type">
         <Select
-              value={gradientConfig.type}
+          value={gradientConfig.type}
           onValueChange={(value) => setGradientConfig({ ...gradientConfig, type: value })}
         >
           <SelectTrigger className="h-9">
@@ -926,9 +940,9 @@ const ControlPanel = ({
           <NumberInput
             value={[gradientConfig.startPos.x]}
             onValueChange={([val]) => setGradientConfig({
-                  ...gradientConfig,
+              ...gradientConfig,
               startPos: { ...gradientConfig.startPos, x: val }
-                })}
+            })}
             max={100}
             step={10}
           />
@@ -937,30 +951,51 @@ const ControlPanel = ({
           <NumberInput
             value={[gradientConfig.startPos.y]}
             onValueChange={([val]) => setGradientConfig({
-                  ...gradientConfig,
+              ...gradientConfig,
               startPos: { ...gradientConfig.startPos, y: val }
-                })}
+            })}
             max={100}
             step={10}
-              />
+          />
         </ControlGroup>
-       </div>
+      </div>
 
       <div className="grid grid-cols-2 gap-4">
-
+        <ControlGroup label={`End X (in %)`}>
+          <NumberInput
+            value={[gradientConfig.endPos.x]}
+            onValueChange={([val]) => setGradientConfig({
+              ...gradientConfig,
+              endPos: { ...gradientConfig.endPos, x: val }
+            })}
+            max={100}
+            step={10}
+          />
+        </ControlGroup>
+        <ControlGroup label={`End Y (in %)`}>
+          <NumberInput
+            value={[gradientConfig.endPos.y]}
+            onValueChange={([val]) => setGradientConfig({
+              ...gradientConfig,
+              endPos: { ...gradientConfig.endPos, y: val }
+            })}
+            max={100}
+            step={10}
+          />
+        </ControlGroup>
       </div>
 
       {/* Wave Settings */}
       <ControlGroup label={`Wave Intensity`}>
-      <NumberInput
-         value={[Math.round(gradientConfig.waveIntensity * 100) / 100]}
-         onValueChange={([val]) => setGradientConfig({
-                 ...gradientConfig,
-           waveIntensity: val
-               })}
-         max={1}
-         step={0.05}
-             />
+        <NumberInput
+          value={[Math.round(gradientConfig.waveIntensity * 100) / 100]}
+          onValueChange={([val]) => setGradientConfig({
+            ...gradientConfig,
+            waveIntensity: val
+          })}
+          max={1}
+          step={0.05}
+        />
       </ControlGroup>
 
       <div className="grid grid-cols-2 gap-4">
@@ -968,12 +1003,12 @@ const ControlPanel = ({
           <NumberInput
             value={[Math.round(gradientConfig.wave1Speed * 100) / 100]}
             onValueChange={([val]) => setGradientConfig({
-                  ...gradientConfig,
+              ...gradientConfig,
               wave1Speed: val
-                })}
+            })}
             max={0.5}
             step={0.05}
-              />
+          />
         </ControlGroup>
         <ControlGroup label="Direction">
           <Button
@@ -992,19 +1027,19 @@ const ControlPanel = ({
             )}
           </Button>
         </ControlGroup>
-            </div>
+      </div>
 
       <div className="grid grid-cols-2 gap-4">
         <ControlGroup label={`Wave 2`}>
           <NumberInput
             value={[Math.round(gradientConfig.wave2Speed * 100) / 100]}
             onValueChange={([val]) => setGradientConfig({
-                  ...gradientConfig,
+              ...gradientConfig,
               wave2Speed: val
-                })}
+            })}
             max={0.5}
             step={0.01}
-              />
+          />
         </ControlGroup>
         <ControlGroup label="Direction">
           <Button
@@ -1023,16 +1058,16 @@ const ControlPanel = ({
             )}
           </Button>
         </ControlGroup>
-            </div>
+      </div>
 
       {/* Mouse Influence */}
       <ControlGroup label={`Mouse Influence`}>
         <NumberInput
           value={[Math.round(gradientConfig.mouseInfluence * 100) / 100]}
           onValueChange={([val]) => setGradientConfig({
-                  ...gradientConfig,
+            ...gradientConfig,
             mouseInfluence: val
-                })}
+          })}
           max={1}
           step={0.01}
         />
@@ -1042,15 +1077,428 @@ const ControlPanel = ({
         <NumberInput
           value={[Math.round(gradientConfig.decaySpeed * 100) / 100]}
           onValueChange={([val]) => setGradientConfig({
-                  ...gradientConfig,
+            ...gradientConfig,
             decaySpeed: val
-                })}
+          })}
           min={0.8}
           max={0.99}
           step={0.01}
-              />
+        />
       </ControlGroup>
+    </>
+  )
+
+  // Render Aurora controls
+  const renderAuroraControls = () => (
+    <>
+      {/* Use Gradient Colors Toggle */}
+      <div className="flex items-center justify-between">
+        <Label className="text-sm">Use Gradient Colors</Label>
+        <Switch
+          checked={auroraConfig.useGradientColors}
+          onCheckedChange={(checked) => setAuroraConfig({
+            ...auroraConfig,
+            useGradientColors: checked
+          })}
+        />
+      </div>
+
+      {auroraConfig.useGradientColors ? (
+        /* Show color palette preview when using gradient colors */
+        <div className="p-3 rounded-lg bg-muted/50 border border-border">
+          <Label className="text-xs text-muted-foreground mb-2 block">Colors from Gradient Palette</Label>
+          <div className="flex gap-1 flex-wrap">
+            {gradientConfig.colors.map((color, idx) => (
+              <div
+                key={idx}
+                className="w-8 h-8 rounded-md border border-border"
+                style={{ backgroundColor: color }}
+                title={color}
+              />
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            Aurora will use hues from these colors. Edit them in Liquid mode.
+          </p>
+        </div>
+      ) : (
+        <>
+          {/* Background Color */}
+          <ControlGroup label="Background">
+            <div className="flex items-center gap-2">
+              <PaletteColorPicker
+                value={auroraConfig.backgroundColor}
+                onChange={(newColor) => setAuroraConfig({
+                  ...auroraConfig,
+                  backgroundColor: newColor
+                })}
+                palette={parsedPalette}
+                className="w-10 h-9"
+              />
+              <Input 
+                value={auroraConfig.backgroundColor}
+                onChange={(e) => setAuroraConfig({
+                  ...auroraConfig,
+                  backgroundColor: e.target.value
+                })}
+                className="h-9 font-mono text-xs flex-1"
+              />
             </div>
+          </ControlGroup>
+
+          {/* Hue Range */}
+          <div className="space-y-1">
+            <Label className="text-xs uppercase tracking-wide font-semibold">Hue Range</Label>
+            <div className="grid grid-cols-2 gap-4">
+              <ControlGroup label={`Start`}>
+                <NumberInput
+                  value={[auroraConfig.hueStart]}
+                  onValueChange={([val]) => setAuroraConfig({
+                    ...auroraConfig,
+                    hueStart: val
+                  })}
+                  max={360}
+                  step={10}
+                />
+              </ControlGroup>
+              <ControlGroup label={`End`}>
+                <NumberInput
+                  value={[auroraConfig.hueEnd]}
+                  onValueChange={([val]) => setAuroraConfig({
+                    ...auroraConfig,
+                    hueEnd: val
+                  })}
+                  max={360}
+                  step={10}
+                />
+              </ControlGroup>
+            </div>
+            {/* Hue preview bar */}
+            <div 
+              className="h-4 rounded-md border border-border"
+              style={{
+                background: `linear-gradient(to right, hsl(${auroraConfig.hueStart}, 100%, 65%), hsl(${auroraConfig.hueEnd}, 100%, 65%))`
+              }}
+            />
+          </div>
+        </>
+      )}
+
+      {/* Line Width */}
+      <div className="grid grid-cols-2 gap-4">
+        <ControlGroup label={`Min Width`}>
+          <NumberInput
+            value={[auroraConfig.minWidth]}
+            onValueChange={([val]) => setAuroraConfig({
+              ...auroraConfig,
+              minWidth: val
+            })}
+            min={1}
+            max={100}
+            step={5}
+          />
+        </ControlGroup>
+        <ControlGroup label={`Max Width`}>
+          <NumberInput
+            value={[auroraConfig.maxWidth]}
+            onValueChange={([val]) => setAuroraConfig({
+              ...auroraConfig,
+              maxWidth: val
+            })}
+            min={1}
+            max={100}
+            step={5}
+          />
+        </ControlGroup>
+      </div>
+
+      {/* Line Height */}
+      <div className="grid grid-cols-2 gap-4">
+        <ControlGroup label={`Min Height`}>
+          <NumberInput
+            value={[auroraConfig.minHeight]}
+            onValueChange={([val]) => setAuroraConfig({
+              ...auroraConfig,
+              minHeight: val
+            })}
+            min={50}
+            max={1000}
+            step={50}
+          />
+        </ControlGroup>
+        <ControlGroup label={`Max Height`}>
+          <NumberInput
+            value={[auroraConfig.maxHeight]}
+            onValueChange={([val]) => setAuroraConfig({
+              ...auroraConfig,
+              maxHeight: val
+            })}
+            min={50}
+            max={1000}
+            step={50}
+          />
+        </ControlGroup>
+      </div>
+
+      {/* Animation Speed (TTL) */}
+      <div className="grid grid-cols-2 gap-4">
+        <ControlGroup label={`Min TTL`}>
+          <NumberInput
+            value={[auroraConfig.minTTL]}
+            onValueChange={([val]) => setAuroraConfig({
+              ...auroraConfig,
+              minTTL: val
+            })}
+            min={10}
+            max={500}
+            step={10}
+          />
+        </ControlGroup>
+        <ControlGroup label={`Max TTL`}>
+          <NumberInput
+            value={[auroraConfig.maxTTL]}
+            onValueChange={([val]) => setAuroraConfig({
+              ...auroraConfig,
+              maxTTL: val
+            })}
+            min={10}
+            max={500}
+            step={10}
+          />
+        </ControlGroup>
+      </div>
+
+      {/* Blur Amount */}
+      <ControlGroup label={`Blur Amount`}>
+        <NumberInput
+          value={[auroraConfig.blurAmount]}
+          onValueChange={([val]) => setAuroraConfig({
+            ...auroraConfig,
+            blurAmount: val
+          })}
+          min={0}
+          max={50}
+          step={1}
+        />
+      </ControlGroup>
+
+      {/* Line Count */}
+      <ControlGroup label={`Line Count (0 = auto)`}>
+        <NumberInput
+          value={[auroraConfig.lineCount]}
+          onValueChange={([val]) => setAuroraConfig({
+            ...auroraConfig,
+            lineCount: val
+          })}
+          min={0}
+          max={500}
+          step={10}
+        />
+      </ControlGroup>
+    </>
+  )
+
+  // Render Blob controls
+  const renderBlobControls = () => (
+    <>
+      {/* Use Gradient Colors Toggle */}
+      <div className="flex items-center justify-between">
+        <Label className="text-sm">Use Gradient Colors</Label>
+        <Switch
+          checked={blobConfig.useGradientColors}
+          onCheckedChange={(checked) => setBlobConfig({
+            ...blobConfig,
+            useGradientColors: checked
+          })}
+        />
+      </div>
+
+      {blobConfig.useGradientColors ? (
+        /* Show color palette preview when using gradient colors */
+        <div className="p-3 rounded-lg bg-muted/50 border border-border">
+          <Label className="text-xs text-muted-foreground mb-2 block">Colors from Gradient Palette</Label>
+          <div className="flex gap-1 flex-wrap">
+            {gradientConfig.colors.map((color, idx) => (
+              <div
+                key={idx}
+                className="w-8 h-8 rounded-md border border-border"
+                style={{ backgroundColor: color }}
+                title={color}
+              />
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            Blobs will use these colors. Edit them in Liquid mode.
+          </p>
+        </div>
+      ) : (
+        <>
+          {/* Background Color */}
+          <ControlGroup label="Background">
+            <div className="flex items-center gap-2">
+              <PaletteColorPicker
+                value={blobConfig.backgroundColor}
+                onChange={(newColor) => setBlobConfig({
+                  ...blobConfig,
+                  backgroundColor: newColor
+                })}
+                palette={parsedPalette}
+                className="w-10 h-9"
+              />
+              <Input 
+                value={blobConfig.backgroundColor}
+                onChange={(e) => setBlobConfig({
+                  ...blobConfig,
+                  backgroundColor: e.target.value
+                })}
+                className="h-9 font-mono text-xs flex-1"
+              />
+            </div>
+          </ControlGroup>
+        </>
+      )}
+
+      {/* Blob Count */}
+      <ControlGroup label={`Blob Count`}>
+        <NumberInput
+          value={[blobConfig.blobCount]}
+          onValueChange={([val]) => setBlobConfig({
+            ...blobConfig,
+            blobCount: val
+          })}
+          min={2}
+          max={20}
+          step={1}
+        />
+      </ControlGroup>
+
+      {/* Blob Size Range */}
+      <div className="grid grid-cols-2 gap-4">
+        <ControlGroup label={`Min Radius`}>
+          <NumberInput
+            value={[blobConfig.minRadius]}
+            onValueChange={([val]) => setBlobConfig({
+              ...blobConfig,
+              minRadius: val
+            })}
+            min={10}
+            max={200}
+            step={10}
+          />
+        </ControlGroup>
+        <ControlGroup label={`Max Radius`}>
+          <NumberInput
+            value={[blobConfig.maxRadius]}
+            onValueChange={([val]) => setBlobConfig({
+              ...blobConfig,
+              maxRadius: val
+            })}
+            min={10}
+            max={300}
+            step={10}
+          />
+        </ControlGroup>
+      </div>
+
+      {/* Orbit Radius (position spread) */}
+      <ControlGroup label={`Orbit Radius`}>
+        <NumberInput
+          value={[blobConfig.orbitRadius]}
+          onValueChange={([val]) => setBlobConfig({
+            ...blobConfig,
+            orbitRadius: val
+          })}
+          min={50}
+          max={500}
+          step={25}
+        />
+      </ControlGroup>
+
+      {/* Animation Speed */}
+      <ControlGroup label={`Speed`}>
+        <NumberInput
+          value={[blobConfig.speed]}
+          onValueChange={([val]) => setBlobConfig({
+            ...blobConfig,
+            speed: val
+          })}
+          min={0.1}
+          max={2}
+          step={0.1}
+        />
+      </ControlGroup>
+
+      {/* Blur Amount */}
+      <ControlGroup label={`Blur Amount`}>
+        <NumberInput
+          value={[blobConfig.blurAmount]}
+          onValueChange={([val]) => setBlobConfig({
+            ...blobConfig,
+            blurAmount: val
+          })}
+          min={5}
+          max={50}
+          step={1}
+        />
+      </ControlGroup>
+
+      {/* Threshold (gooey strength) */}
+      <ControlGroup label={`Gooey Threshold`}>
+        <NumberInput
+          value={[blobConfig.threshold]}
+          onValueChange={([val]) => setBlobConfig({
+            ...blobConfig,
+            threshold: val
+          })}
+          min={100}
+          max={250}
+          step={10}
+        />
+      </ControlGroup>
+
+      {/* Mouse Influence */}
+      <ControlGroup label={`Mouse Influence`}>
+        <NumberInput
+          value={[blobConfig.mouseInfluence]}
+          onValueChange={([val]) => setBlobConfig({
+            ...blobConfig,
+            mouseInfluence: val
+          })}
+          min={0}
+          max={1}
+          step={0.1}
+        />
+      </ControlGroup>
+    </>
+  )
+
+  // Render Gradient Panel Content
+  const renderGradientPanel = () => (
+    <div className="space-y-2">
+      {/* Background Type Selector */}
+      <ControlGroup label="Background Type">
+        <Select
+          value={backgroundType}
+          onValueChange={(value) => setBackgroundType(value)}
+        >
+          <SelectTrigger className="h-9">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="liquid">Liquid</SelectItem>
+            <SelectItem value="aurora">Aurora</SelectItem>
+            <SelectItem value="blob">Blob</SelectItem>
+          </SelectContent>
+        </Select>
+      </ControlGroup>
+
+      <div className="h-px bg-border my-3" />
+
+      {/* Conditional controls based on background type */}
+      {backgroundType === 'liquid' && renderLiquidControls()}
+      {backgroundType === 'aurora' && renderAuroraControls()}
+      {backgroundType === 'blob' && renderBlobControls()}
+    </div>
   )
 
   // Render Tessellation/Pattern Panel Content
@@ -1792,6 +2240,202 @@ const ControlPanel = ({
             </ControlGroup>
           </div>
         )
+      case 'aurora-background':
+        return (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>Use Gradient Colors</Label>
+              <Switch 
+                checked={auroraConfig.useGradientColors} 
+                onCheckedChange={(c) => setAuroraConfig({ ...auroraConfig, useGradientColors: c })} 
+              />
+            </div>
+            {auroraConfig.useGradientColors ? (
+              <div className="p-3 rounded-lg bg-muted/50 border border-border">
+                <Label className="text-xs text-muted-foreground mb-2 block">Colors from Gradient</Label>
+                <div className="flex gap-1 flex-wrap">
+                  {gradientConfig.colors.map((color, idx) => (
+                    <div
+                      key={idx}
+                      className="w-8 h-8 rounded-md border border-border"
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <ControlGroup label="Background Color">
+                <div className="flex items-center gap-2">
+                  <PaletteColorPicker
+                    value={auroraConfig.backgroundColor}
+                    onChange={(newColor) => setAuroraConfig({ ...auroraConfig, backgroundColor: newColor })}
+                    palette={parsedPalette}
+                    className="w-10 h-10"
+                  />
+                  <Input 
+                    value={auroraConfig.backgroundColor}
+                    onChange={(e) => setAuroraConfig({ ...auroraConfig, backgroundColor: e.target.value })}
+                    className="h-9 font-mono text-xs flex-1"
+                  />
+                </div>
+              </ControlGroup>
+            )}
+          </div>
+        )
+      case 'aurora-hue':
+        return (
+          <div className="space-y-2">
+            {auroraConfig.useGradientColors ? (
+              <div className="p-3 rounded-lg bg-muted/50 border border-border">
+                <Label className="text-xs text-muted-foreground mb-2 block">Using hues from Gradient Colors</Label>
+                <div className="flex gap-1 flex-wrap">
+                  {gradientConfig.colors.map((color, idx) => (
+                    <div
+                      key={idx}
+                      className="w-8 h-8 rounded-md border border-border"
+                      style={{ backgroundColor: color }}
+                    />
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">Disable "Use Gradient Colors" to set custom hue range.</p>
+              </div>
+            ) : (
+              <>
+                <ControlGroup label={`Hue Start`}>
+                  <NumberInput value={[auroraConfig.hueStart]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, hueStart: val })} max={360} step={10} showButtons />
+                </ControlGroup>
+                <ControlGroup label={`Hue End`}>
+                  <NumberInput value={[auroraConfig.hueEnd]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, hueEnd: val })} max={360} step={10} showButtons />
+                </ControlGroup>
+                <div 
+                  className="h-6 rounded-md border border-border mt-2"
+                  style={{
+                    background: `linear-gradient(to right, hsl(${auroraConfig.hueStart}, 100%, 65%), hsl(${auroraConfig.hueEnd}, 100%, 65%))`
+                  }}
+                />
+              </>
+            )}
+          </div>
+        )
+      case 'aurora-lines':
+        return (
+          <div className="space-y-2">
+            <ControlGroup label={`Min Width`}>
+              <NumberInput value={[auroraConfig.minWidth]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, minWidth: val })} min={1} max={100} step={5} showButtons />
+            </ControlGroup>
+            <ControlGroup label={`Max Width`}>
+              <NumberInput value={[auroraConfig.maxWidth]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, maxWidth: val })} min={1} max={100} step={5} showButtons />
+            </ControlGroup>
+            <ControlGroup label={`Min Height`}>
+              <NumberInput value={[auroraConfig.minHeight]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, minHeight: val })} min={50} max={1000} step={50} showButtons />
+            </ControlGroup>
+            <ControlGroup label={`Max Height`}>
+              <NumberInput value={[auroraConfig.maxHeight]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, maxHeight: val })} min={50} max={1000} step={50} showButtons />
+            </ControlGroup>
+            <ControlGroup label={`Line Count (0 = auto)`}>
+              <NumberInput value={[auroraConfig.lineCount]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, lineCount: val })} min={0} max={500} step={10} showButtons />
+            </ControlGroup>
+          </div>
+        )
+      case 'aurora-animation':
+        return (
+          <div className="space-y-2">
+            <ControlGroup label={`Min TTL`}>
+              <NumberInput value={[auroraConfig.minTTL]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, minTTL: val })} min={10} max={500} step={10} showButtons />
+            </ControlGroup>
+            <ControlGroup label={`Max TTL`}>
+              <NumberInput value={[auroraConfig.maxTTL]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, maxTTL: val })} min={10} max={500} step={10} showButtons />
+            </ControlGroup>
+            <ControlGroup label={`Blur Amount`}>
+              <NumberInput value={[auroraConfig.blurAmount]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, blurAmount: val })} min={0} max={50} step={1} showButtons />
+            </ControlGroup>
+          </div>
+        )
+      case 'blob-colors':
+        return (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>Use Gradient Colors</Label>
+              <Switch
+                checked={blobConfig.useGradientColors}
+                onCheckedChange={(checked) => setBlobConfig({ ...blobConfig, useGradientColors: checked })}
+              />
+            </div>
+            {blobConfig.useGradientColors ? (
+              <div className="p-3 rounded-lg bg-muted/50 border border-border">
+                <Label className="text-xs text-muted-foreground mb-2 block">Colors from Gradient Palette</Label>
+                <div className="flex gap-1 flex-wrap">
+                  {gradientConfig.colors.map((color, idx) => (
+                    <div
+                      key={idx}
+                      className="w-8 h-8 rounded-md border border-border"
+                      style={{ backgroundColor: color }}
+                      title={color}
+                    />
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Blobs will use these colors. Edit them in Liquid mode.
+                </p>
+              </div>
+            ) : (
+              <ControlGroup label="Background">
+                <div className="flex items-center gap-2">
+                  <PaletteColorPicker
+                    value={blobConfig.backgroundColor}
+                    onChange={(newColor) => setBlobConfig({ ...blobConfig, backgroundColor: newColor })}
+                    palette={parsedPalette}
+                    className="w-10 h-9"
+                  />
+                  <Input 
+                    value={blobConfig.backgroundColor}
+                    onChange={(e) => setBlobConfig({ ...blobConfig, backgroundColor: e.target.value })}
+                    className="h-9 font-mono text-xs flex-1"
+                  />
+                </div>
+              </ControlGroup>
+            )}
+          </div>
+        )
+      case 'blob-size':
+        return (
+          <div className="space-y-2">
+            <ControlGroup label={`Blob Count`}>
+              <NumberInput value={[blobConfig.blobCount]} onValueChange={([val]) => setBlobConfig({ ...blobConfig, blobCount: val })} min={2} max={20} step={1} showButtons />
+            </ControlGroup>
+            <ControlGroup label={`Min Radius`}>
+              <NumberInput value={[blobConfig.minRadius]} onValueChange={([val]) => setBlobConfig({ ...blobConfig, minRadius: val })} min={10} max={200} step={10} showButtons />
+            </ControlGroup>
+            <ControlGroup label={`Max Radius`}>
+              <NumberInput value={[blobConfig.maxRadius]} onValueChange={([val]) => setBlobConfig({ ...blobConfig, maxRadius: val })} min={10} max={300} step={10} showButtons />
+            </ControlGroup>
+            <ControlGroup label={`Orbit Radius`}>
+              <NumberInput value={[blobConfig.orbitRadius]} onValueChange={([val]) => setBlobConfig({ ...blobConfig, orbitRadius: val })} min={50} max={500} step={25} showButtons />
+            </ControlGroup>
+          </div>
+        )
+      case 'blob-animation':
+        return (
+          <div className="space-y-2">
+            <ControlGroup label={`Speed`}>
+              <NumberInput value={[blobConfig.speed]} onValueChange={([val]) => setBlobConfig({ ...blobConfig, speed: val })} min={0.1} max={2} step={0.1} showButtons />
+            </ControlGroup>
+            <ControlGroup label={`Mouse Influence`}>
+              <NumberInput value={[blobConfig.mouseInfluence]} onValueChange={([val]) => setBlobConfig({ ...blobConfig, mouseInfluence: val })} min={0} max={1} step={0.1} showButtons />
+            </ControlGroup>
+          </div>
+        )
+      case 'blob-effect':
+        return (
+          <div className="space-y-2">
+            <ControlGroup label={`Blur Amount`}>
+              <NumberInput value={[blobConfig.blurAmount]} onValueChange={([val]) => setBlobConfig({ ...blobConfig, blurAmount: val })} min={5} max={50} step={1} showButtons />
+            </ControlGroup>
+            <ControlGroup label={`Gooey Threshold`}>
+              <NumberInput value={[blobConfig.threshold]} onValueChange={([val]) => setBlobConfig({ ...blobConfig, threshold: val })} min={100} max={250} step={10} showButtons />
+            </ControlGroup>
+          </div>
+        )
       default:
         return null
     }
@@ -1866,12 +2510,52 @@ const ControlPanel = ({
         {!isMobileCollapsed && (
             <ScrollArea className="max-h-[50vh] p-1 gap-2">
             {activePanel === 'gradient' && (
-                <div className="space-y-1 flex flex-row flex-wrap gap-1">
-                <SubsectionButton title="Colors" onClick={() => openDialog('gradient-colors')} />
-                <SubsectionButton title="Type" onClick={() => openDialog('gradient-type')} />
-                <SubsectionButton title="Stops" onClick={() => openDialog('gradient-stops')} />
-                <SubsectionButton title="Wave" onClick={() => openDialog('gradient-wave')} />
-                <SubsectionButton title="Mouse Influence" onClick={() => openDialog('gradient-mouse')} />
+              <div className="space-y-2">
+                {/* Background Type Selector */}
+                <div className="flex items-center justify-between px-3 py-2">
+                  <Label className="text-sm">Background</Label>
+                  <Select
+                    value={backgroundType}
+                    onValueChange={(value) => setBackgroundType(value)}
+                  >
+                    <SelectTrigger className="w-[120px] h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="liquid">Liquid</SelectItem>
+                      <SelectItem value="aurora">Aurora</SelectItem>
+                      <SelectItem value="blob">Blob</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                {/* Subsection buttons based on background type */}
+                <div className="space-y-1 flex flex-row flex-wrap gap-1 px-1">
+                  {backgroundType === 'liquid' && (
+                    <>
+                      <SubsectionButton title="Colors" onClick={() => openDialog('gradient-colors')} />
+                      <SubsectionButton title="Type" onClick={() => openDialog('gradient-type')} />
+                      <SubsectionButton title="Stops" onClick={() => openDialog('gradient-stops')} />
+                      <SubsectionButton title="Wave" onClick={() => openDialog('gradient-wave')} />
+                      <SubsectionButton title="Mouse" onClick={() => openDialog('gradient-mouse')} />
+                    </>
+                  )}
+                  {backgroundType === 'aurora' && (
+                    <>
+                      <SubsectionButton title="Background" onClick={() => openDialog('aurora-background')} />
+                      <SubsectionButton title="Hue" onClick={() => openDialog('aurora-hue')} />
+                      <SubsectionButton title="Lines" onClick={() => openDialog('aurora-lines')} />
+                      <SubsectionButton title="Animation" onClick={() => openDialog('aurora-animation')} />
+                    </>
+                  )}
+                  {backgroundType === 'blob' && (
+                    <>
+                      <SubsectionButton title="Colors" onClick={() => openDialog('blob-colors')} />
+                      <SubsectionButton title="Size" onClick={() => openDialog('blob-size')} />
+                      <SubsectionButton title="Animation" onClick={() => openDialog('blob-animation')} />
+                      <SubsectionButton title="Effect" onClick={() => openDialog('blob-effect')} />
+                    </>
+                  )}
+                </div>
               </div>
             )}
             {activePanel === 'tessellation' && (
