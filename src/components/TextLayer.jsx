@@ -11,6 +11,14 @@ const hexToRgb = (hex) => {
   return { r, g, b }
 }
 
+// Font family mapping for the 4 supported font types
+const FONT_FAMILIES = {
+  'sans-serif': "'Manrope', sans-serif",
+  'serif': "'Playfair Display', serif",
+  'mono': "'Space Grotesk', monospace",
+  'scribble': "'Pacifico', cursive",
+}
+
 const TextLayer = ({ sections, gap, color = '#ffffff', opacity = 1 }) => {
   const rgb = hexToRgb(color) || { r: 255, g: 255, b: 255 }
   const [windowWidth, setWindowWidth] = useState(() => {
@@ -88,8 +96,7 @@ const TextLayer = ({ sections, gap, color = '#ffffff', opacity = 1 }) => {
               0 0 80px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.2),
               0 4px 20px rgba(0, 0, 0, 0.5)
             `,
-            textTransform: 'uppercase',
-            fontFamily: "'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
+            fontFamily: FONT_FAMILIES[section.font] || FONT_FAMILIES['sans-serif'],
             mixBlendMode: 'difference',
             animation: `text-float 6s ease-in-out ${index * 0.5}s infinite`,
             textAlign: 'center',

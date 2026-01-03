@@ -125,10 +125,9 @@ html, body {
 }
 
 .text-section {
-  font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
   color: #fff;
   text-align: center;
-  text-transform: uppercase;
   line-height: 1;
   mix-blend-mode: difference;
 }
