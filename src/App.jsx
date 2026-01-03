@@ -2,7 +2,7 @@ import { useState, useCallback, useRef } from 'react'
 import GradientLayer from './components/GradientLayer'
 import AuroraLayer from './components/AuroraLayer'
 import BlobLayer from './components/BlobLayer'
-import TessellationLayer from './components/TessellationLayer'
+import TessellationLayer, { AVAILABLE_ICONS } from './components/TessellationLayer'
 import EffectsLayer from './components/EffectsLayer'
 import TextLayer from './components/TextLayer'
 import ControlPanel from './components/ControlPanel'
@@ -145,6 +145,8 @@ function App() {
     // Also randomize related layer styling
     setTessellationConfig((prev) => ({
       ...prev,
+      // Randomize the tessellation icon
+      icon: pickOne(AVAILABLE_ICONS),
       // "Icon color" is tessellation icon color
       color: pickOne([...colors, '#ffffff', '#000000']),
       // Keep it subtle by default
