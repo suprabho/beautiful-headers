@@ -41,6 +41,8 @@ const ControlPanel = ({
   setAuroraConfig,
   blobConfig,
   setBlobConfig,
+  fluidConfig,
+  setFluidConfig,
   randomizeGradient,
   tessellationConfig,
   setTessellationConfig,
@@ -125,8 +127,8 @@ const ControlPanel = ({
 
   const openDialog = (dialogKey) => {
     setActiveDialog(dialogKey)
-    if (dialogKey.startsWith('gradient-') || dialogKey.startsWith('aurora-') || dialogKey.startsWith('blob-')) {
-      setOriginalValues({ type: 'gradient', data: { gradientConfig: { ...gradientConfig }, auroraConfig: { ...auroraConfig }, blobConfig: { ...blobConfig } } })
+    if (dialogKey.startsWith('gradient-') || dialogKey.startsWith('aurora-') || dialogKey.startsWith('blob-') || dialogKey.startsWith('fluid-')) {
+      setOriginalValues({ type: 'gradient', data: { gradientConfig: { ...gradientConfig }, auroraConfig: { ...auroraConfig }, blobConfig: { ...blobConfig }, fluidConfig: { ...fluidConfig } } })
     } else if (dialogKey.startsWith('pattern-')) {
       setOriginalValues({ type: 'pattern', data: { ...tessellationConfig } })
     } else if (dialogKey.startsWith('effects-')) {
@@ -147,6 +149,7 @@ const ControlPanel = ({
         setGradientConfig(originalValues.data.gradientConfig)
         setAuroraConfig(originalValues.data.auroraConfig)
         setBlobConfig(originalValues.data.blobConfig)
+        setFluidConfig(originalValues.data.fluidConfig)
       } else if (originalValues.type === 'pattern') {
         setTessellationConfig(originalValues.data)
       } else if (originalValues.type === 'effects') {
@@ -167,6 +170,7 @@ const ControlPanel = ({
         setGradientConfig(originalValues.data.gradientConfig)
         setAuroraConfig(originalValues.data.auroraConfig)
         setBlobConfig(originalValues.data.blobConfig)
+        setFluidConfig(originalValues.data.fluidConfig)
       } else if (originalValues.type === 'pattern') {
         setTessellationConfig(originalValues.data)
       } else if (originalValues.type === 'effects') {
@@ -530,6 +534,9 @@ const ControlPanel = ({
       'blob-size': 'Blob Size & Count',
       'blob-animation': 'Blob Animation',
       'blob-effect': 'Gooey Effect',
+      'fluid-colors': 'Fluid Colors',
+      'fluid-animation': 'Animation Speed',
+      'fluid-settings': 'Fluid Settings',
       'pattern-icon': 'Icon Settings',
       'pattern-spacing': 'Spacing',
       'pattern-mouse': 'Mouse Influence',
@@ -799,6 +806,65 @@ const ControlPanel = ({
           <div className="space-y-2">
             <ControlGroup label={`Blur Amount`}><NumberInput value={[blobConfig.blurAmount]} onValueChange={([val]) => setBlobConfig({ ...blobConfig, blurAmount: val })} min={5} max={50} step={1} showButtons /></ControlGroup>
             <ControlGroup label={`Gooey Threshold`}><NumberInput value={[blobConfig.threshold]} onValueChange={([val]) => setBlobConfig({ ...blobConfig, threshold: val })} min={100} max={250} step={10} showButtons /></ControlGroup>
+          </div>
+        )
+      case 'fluid-colors':
+        return (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>Use Gradient Colors</Label>
+              <Switch checked={fluidConfig.useGradientColors} onCheckedChange={(checked) => setFluidConfig({ ...fluidConfig, useGradientColors: checked })} />
+            </div>
+            {fluidConfig.useGradientColors ? (
+              <div className="p-3 rounded-lg bg-muted/50 border border-border">
+                <Label className="text-xs text-muted-foreground mb-2 block">Colors from Gradient Palette</Label>
+                <div className="flex gap-1 flex-wrap">
+                  {gradientConfig.colors.slice(0, 4).map((color, idx) => (
+                    <div key={idx} className="w-8 h-8 rounded-md border border-border" style={{ backgroundColor: color }} title={color} />
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">First 4 colors will be used. Edit them in Liquid mode.</p>
+              </div>
+            ) : (
+              <>
+                <ControlGroup label="Background">
+                  <div className="flex items-center gap-2">
+                    <PaletteColorPicker value={fluidConfig.backgroundColor} onChange={(newColor) => setFluidConfig({ ...fluidConfig, backgroundColor: newColor })} palette={parsedPalette} className="w-10 h-9" />
+                    <Input value={fluidConfig.backgroundColor} onChange={(e) => setFluidConfig({ ...fluidConfig, backgroundColor: e.target.value })} className="h-9 font-mono text-xs flex-1" />
+                  </div>
+                </ControlGroup>
+                <div className="space-y-2">
+                  <Label className="text-xs uppercase tracking-wide font-semibold">Fluid Colors (4 colors)</Label>
+                  {(fluidConfig.colors || ['#71ECFF', '#39F58A', '#71ECFF', '#F0CBA8']).map((color, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <PaletteColorPicker value={color} onChange={(newColor) => {
+                        const newColors = [...fluidConfig.colors]
+                        newColors[index] = newColor
+                        setFluidConfig({ ...fluidConfig, colors: newColors })
+                      }} palette={parsedPalette} className="w-10 h-9" />
+                      <Input value={color} onChange={(e) => {
+                        const newColors = [...fluidConfig.colors]
+                        newColors[index] = e.target.value
+                        setFluidConfig({ ...fluidConfig, colors: newColors })
+                      }} className="h-9 font-mono text-xs flex-1" />
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        )
+      case 'fluid-animation':
+        return (
+          <div className="space-y-2">
+            <ControlGroup label={`Speed`}><NumberInput value={[fluidConfig.speed]} onValueChange={([val]) => setFluidConfig({ ...fluidConfig, speed: val })} min={0.1} max={3} step={0.1} showButtons /></ControlGroup>
+          </div>
+        )
+      case 'fluid-settings':
+        return (
+          <div className="space-y-2">
+            <ControlGroup label={`Intensity`}><NumberInput value={[fluidConfig.intensity]} onValueChange={([val]) => setFluidConfig({ ...fluidConfig, intensity: val })} min={0.1} max={1} step={0.05} showButtons /></ControlGroup>
+            <ControlGroup label={`Blur`}><NumberInput value={[fluidConfig.blurAmount]} onValueChange={([val]) => setFluidConfig({ ...fluidConfig, blurAmount: val })} min={0} max={20} step={1} showButtons /></ControlGroup>
           </div>
         )
       case 'pattern-icon':
@@ -1146,6 +1212,7 @@ const ControlPanel = ({
                         <SelectItem value="liquid">Liquid</SelectItem>
                         <SelectItem value="aurora">Aurora</SelectItem>
                         <SelectItem value="blob">Blob</SelectItem>
+                        <SelectItem value="fluid">Fluid</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -1173,6 +1240,13 @@ const ControlPanel = ({
                         <SubsectionButton title="Size" onClick={() => openDialog('blob-size')} />
                         <SubsectionButton title="Animation" onClick={() => openDialog('blob-animation')} />
                         <SubsectionButton title="Effect" onClick={() => openDialog('blob-effect')} />
+                      </>
+                    )}
+                    {backgroundType === 'fluid' && (
+                      <>
+                        <SubsectionButton title="Colors" onClick={() => openDialog('fluid-colors')} />
+                        <SubsectionButton title="Animation" onClick={() => openDialog('fluid-animation')} />
+                        <SubsectionButton title="Settings" onClick={() => openDialog('fluid-settings')} />
                       </>
                     )}
                   </div>
@@ -1306,6 +1380,8 @@ const ControlPanel = ({
                     setAuroraConfig={setAuroraConfig}
                     blobConfig={blobConfig}
                     setBlobConfig={setBlobConfig}
+                    fluidConfig={fluidConfig}
+                    setFluidConfig={setFluidConfig}
                     parsedPalette={parsedPalette}
                   />
                 </TabsContent>

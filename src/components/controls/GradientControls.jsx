@@ -483,6 +483,144 @@ export const AuroraControls = ({
   )
 }
 
+// Fluid gradient controls (animated SVG radial gradients)
+export const FluidControls = ({
+  fluidConfig,
+  setFluidConfig,
+  gradientConfig,
+  parsedPalette,
+}) => {
+  const updateFluidColor = (index, color) => {
+    const newColors = [...(fluidConfig.colors || ['#71ECFF', '#39F58A', '#71ECFF', '#F0CBA8'])]
+    newColors[index] = color
+    setFluidConfig({ ...fluidConfig, colors: newColors })
+  }
+
+  return (
+    <>
+      {/* Use Gradient Colors Toggle */}
+      <div className="flex items-center justify-between">
+        <Label className="text-sm">Use Gradient Colors</Label>
+        <Switch
+          checked={fluidConfig.useGradientColors}
+          onCheckedChange={(checked) => setFluidConfig({
+            ...fluidConfig,
+            useGradientColors: checked
+          })}
+        />
+      </div>
+
+      {fluidConfig.useGradientColors ? (
+        /* Show color palette preview when using gradient colors */
+        <div className="p-3 rounded-lg bg-muted/50 border border-border">
+          <Label className="text-xs text-muted-foreground mb-2 block">Colors from Gradient Palette</Label>
+          <div className="flex gap-1 flex-wrap">
+            {gradientConfig.colors.slice(0, 4).map((color, idx) => (
+              <div
+                key={idx}
+                className="w-8 h-8 rounded-md border border-border"
+                style={{ backgroundColor: color }}
+                title={color}
+              />
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            First 4 colors will be used. Edit them in Liquid mode.
+          </p>
+        </div>
+      ) : (
+        <>
+          {/* Background Color */}
+          <ControlGroup label="Background">
+            <div className="flex items-center gap-2">
+              <PaletteColorPicker
+                value={fluidConfig.backgroundColor}
+                onChange={(newColor) => setFluidConfig({
+                  ...fluidConfig,
+                  backgroundColor: newColor
+                })}
+                palette={parsedPalette}
+                className="w-10 h-9"
+              />
+              <Input 
+                value={fluidConfig.backgroundColor}
+                onChange={(e) => setFluidConfig({
+                  ...fluidConfig,
+                  backgroundColor: e.target.value
+                })}
+                className="h-9 font-mono text-xs flex-1"
+              />
+            </div>
+          </ControlGroup>
+
+          {/* Fluid Colors */}
+          <div className="space-y-2">
+            <Label className="text-xs uppercase tracking-wide font-semibold">Fluid Colors (4 colors)</Label>
+            {(fluidConfig.colors || ['#71ECFF', '#39F58A', '#71ECFF', '#F0CBA8']).map((color, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <PaletteColorPicker
+                  value={color}
+                  onChange={(newColor) => updateFluidColor(index, newColor)}
+                  palette={parsedPalette}
+                  className="w-10 h-9"
+                />
+                <Input 
+                  value={color}
+                  onChange={(e) => updateFluidColor(index, e.target.value)}
+                  className="h-9 font-mono text-xs flex-1"
+                />
+                <span className="text-xs text-muted-foreground w-4">{index + 1}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Animation Speed */}
+      <ControlGroup label={`Animation Speed`}>
+        <NumberInput
+          value={[fluidConfig.speed]}
+          onValueChange={([val]) => setFluidConfig({
+            ...fluidConfig,
+            speed: val
+          })}
+          min={0.1}
+          max={3}
+          step={0.1}
+        />
+      </ControlGroup>
+
+      {/* Gradient Intensity */}
+      <ControlGroup label={`Gradient Intensity`}>
+        <NumberInput
+          value={[fluidConfig.intensity]}
+          onValueChange={([val]) => setFluidConfig({
+            ...fluidConfig,
+            intensity: val
+          })}
+          min={0.1}
+          max={1}
+          step={0.05}
+        />
+      </ControlGroup>
+
+      {/* Blur Amount */}
+      <ControlGroup label={`Blur Amount`}>
+        <NumberInput
+          value={[fluidConfig.blurAmount]}
+          onValueChange={([val]) => setFluidConfig({
+            ...fluidConfig,
+            blurAmount: val
+          })}
+          min={0}
+          max={20}
+          step={1}
+        />
+      </ControlGroup>
+    </>
+  )
+}
+
 // Blob controls
 export const BlobControls = ({
   blobConfig,
@@ -718,7 +856,7 @@ export const BlobControls = ({
   )
 }
 
-// Main Gradient Panel that combines all three background types
+// Main Gradient Panel that combines all four background types
 export const GradientPanel = ({
   backgroundType,
   setBackgroundType,
@@ -728,6 +866,8 @@ export const GradientPanel = ({
   setAuroraConfig,
   blobConfig,
   setBlobConfig,
+  fluidConfig,
+  setFluidConfig,
   parsedPalette,
 }) => {
   return (
@@ -745,6 +885,7 @@ export const GradientPanel = ({
             <SelectItem value="liquid">Liquid</SelectItem>
             <SelectItem value="aurora">Aurora</SelectItem>
             <SelectItem value="blob">Blob</SelectItem>
+            <SelectItem value="fluid">Fluid</SelectItem>
           </SelectContent>
         </Select>
       </ControlGroup>
@@ -771,6 +912,14 @@ export const GradientPanel = ({
         <BlobControls
           blobConfig={blobConfig}
           setBlobConfig={setBlobConfig}
+          gradientConfig={gradientConfig}
+          parsedPalette={parsedPalette}
+        />
+      )}
+      {backgroundType === 'fluid' && (
+        <FluidControls
+          fluidConfig={fluidConfig}
+          setFluidConfig={setFluidConfig}
           gradientConfig={gradientConfig}
           parsedPalette={parsedPalette}
         />

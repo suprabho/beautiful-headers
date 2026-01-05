@@ -2,6 +2,7 @@ import { useState, useCallback, useRef } from 'react'
 import GradientLayer from './components/GradientLayer'
 import AuroraLayer from './components/AuroraLayer'
 import BlobLayer from './components/BlobLayer'
+import FluidGradientLayer from './components/FluidGradientLayer'
 import TessellationLayer, { AVAILABLE_ICONS } from './components/TessellationLayer'
 import EffectsLayer from './components/EffectsLayer'
 import TextLayer from './components/TextLayer'
@@ -64,6 +65,16 @@ function App() {
     useGradientColors: true, // Use colors from gradient palette
     colors: ['#40204c', '#a3225c', '#e24926'], // Fallback colors
     backgroundColor: '#152a8e',
+  })
+
+  // Fluid Gradient Layer State (animated SVG gradients)
+  const [fluidConfig, setFluidConfig] = useState({
+    useGradientColors: true,
+    backgroundColor: '#1C89FF',
+    colors: ['#71ECFF', '#39F58A', '#71ECFF', '#F0CBA8'],
+    speed: 1,
+    intensity: 0.5,
+    blurAmount: 0,
   })
 
   // Tessellation Layer State
@@ -209,6 +220,9 @@ function App() {
           {backgroundType === 'blob' && (
             <BlobLayer config={blobConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} />
           )}
+          {backgroundType === 'fluid' && (
+            <FluidGradientLayer config={fluidConfig} paletteColors={gradientConfig.colors} />
+          )}
         </div>
         
         {/* Layer 2: Tessellation (no filter effects) */}
@@ -241,6 +255,8 @@ function App() {
         setAuroraConfig={setAuroraConfig}
         blobConfig={blobConfig}
         setBlobConfig={setBlobConfig}
+        fluidConfig={fluidConfig}
+        setFluidConfig={setFluidConfig}
         randomizeGradient={randomizeGradient}
         tessellationConfig={tessellationConfig}
         setTessellationConfig={setTessellationConfig}
