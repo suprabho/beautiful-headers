@@ -336,7 +336,8 @@ const ControlPanel = ({
       ctx.fillRect(0, 0, outputCanvas.width, outputCanvas.height)
       
       const backgroundCanvas = 
-        container.querySelector('.gradient-layer') ||
+        container.querySelector('.gradient-layer canvas') ||
+        container.querySelector('.fluid-gradient-layer canvas') ||
         container.querySelector('.aurora-layer canvas') ||
         container.querySelector('.blob-layer canvas')
       
