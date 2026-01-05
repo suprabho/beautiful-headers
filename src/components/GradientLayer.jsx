@@ -1,11 +1,317 @@
-import { useRef, useEffect, useCallback } from 'react'
+import { useRef, useEffect, useMemo } from 'react'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import * as THREE from 'three'
 
-const GradientLayer = ({ config, mousePos }) => {
-  const canvasRef = useRef(null)
-  const animationRef = useRef(null)
+// Custom shader material that combines gradient generation with fluted glass effect
+const FlutedGradientMaterial = ({ config, effectsConfig, mousePos }) => {
+  const materialRef = useRef()
+  const { size } = useThree()
   const timeRef = useRef(0)
-  const targetMouseRef = useRef({ x: 0.5, y: 0.5 })
   const currentMouseRef = useRef({ x: 0.5, y: 0.5 })
+  const targetMouseRef = useRef({ x: 0.5, y: 0.5 })
+
+  // Update target mouse position
+  useEffect(() => {
+    targetMouseRef.current = mousePos
+  }, [mousePos])
+
+  const uniforms = useMemo(() => ({
+    u_time: { value: 0 },
+    u_mouse: { value: new THREE.Vector2(0.5, 0.5) },
+    u_resolution: { value: new THREE.Vector2(size.width, size.height) },
+    u_color0: { value: new THREE.Vector3(1, 0, 0.43) },
+    u_color1: { value: new THREE.Vector3(0.51, 0.22, 0.93) },
+    u_color2: { value: new THREE.Vector3(0.23, 0.53, 1) },
+    u_color3: { value: new THREE.Vector3(0.02, 0.84, 0.63) },
+    u_color4: { value: new THREE.Vector3(0, 0, 0) },
+    u_color5: { value: new THREE.Vector3(0, 0, 0) },
+    u_color6: { value: new THREE.Vector3(0, 0, 0) },
+    u_color7: { value: new THREE.Vector3(0, 0, 0) },
+    u_stop0: { value: 0 },
+    u_stop1: { value: 33 },
+    u_stop2: { value: 66 },
+    u_stop3: { value: 100 },
+    u_stop4: { value: 100 },
+    u_stop5: { value: 100 },
+    u_stop6: { value: 100 },
+    u_stop7: { value: 100 },
+    u_numColors: { value: 4 },
+    u_gradientType: { value: 1 }, // 0=linear, 1=radial, 2=conic
+    u_startPos: { value: new THREE.Vector2(0, 0) },
+    u_endPos: { value: new THREE.Vector2(100, 100) },
+    u_waveIntensity: { value: 0.3 },
+    u_mouseInfluence: { value: 0.5 },
+    u_wave1Speed: { value: 0.2 },
+    u_wave1Direction: { value: 1 },
+    u_wave2Speed: { value: 0.15 },
+    u_wave2Direction: { value: -1 },
+    // Fluted glass uniforms
+    u_flutedEnabled: { value: false },
+    u_segments: { value: 80 },
+    u_rotation: { value: 0 },
+    u_motionValue: { value: 0.5 },
+    u_overlayOpacity: { value: 0 },
+    u_flutedMotionSpeed: { value: 0.5 },
+    u_distortionStrength: { value: 0.02 },
+    u_waveFrequency: { value: 1 },
+  }), [size.width, size.height])
+
+  const vertexShader = `
+    varying vec2 vUv;
+    void main() {
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  `
+
+  const fragmentShader = `
+    precision highp float;
+    varying vec2 vUv;
+    
+    uniform float u_time;
+    uniform vec2 u_mouse;
+    uniform vec2 u_resolution;
+    uniform vec3 u_color0;
+    uniform vec3 u_color1;
+    uniform vec3 u_color2;
+    uniform vec3 u_color3;
+    uniform vec3 u_color4;
+    uniform vec3 u_color5;
+    uniform vec3 u_color6;
+    uniform vec3 u_color7;
+    uniform float u_stop0;
+    uniform float u_stop1;
+    uniform float u_stop2;
+    uniform float u_stop3;
+    uniform float u_stop4;
+    uniform float u_stop5;
+    uniform float u_stop6;
+    uniform float u_stop7;
+    uniform int u_numColors;
+    uniform int u_gradientType;
+    uniform vec2 u_startPos;
+    uniform vec2 u_endPos;
+    uniform float u_waveIntensity;
+    uniform float u_mouseInfluence;
+    uniform float u_wave1Speed;
+    uniform float u_wave1Direction;
+    uniform float u_wave2Speed;
+    uniform float u_wave2Direction;
+    
+    // Fluted glass uniforms
+    uniform bool u_flutedEnabled;
+    uniform float u_segments;
+    uniform float u_rotation;
+    uniform float u_motionValue;
+    uniform float u_overlayOpacity;
+    uniform float u_flutedMotionSpeed;
+    uniform float u_distortionStrength;
+    uniform float u_waveFrequency;
+    
+    // Simplex noise functions
+    vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+    vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+    vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+    
+    float snoise(vec2 v) {
+      const vec4 C = vec4(0.211324865405187, 0.366025403784439,
+                         -0.577350269189626, 0.024390243902439);
+      vec2 i = floor(v + dot(v, C.yy));
+      vec2 x0 = v - i + dot(i, C.xx);
+      vec2 i1;
+      i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+      vec4 x12 = x0.xyxy + C.xxzz;
+      x12.xy -= i1;
+      i = mod289(i);
+      vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0))
+                      + i.x + vec3(0.0, i1.x, 1.0));
+      vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy),
+                             dot(x12.zw,x12.zw)), 0.0);
+      m = m*m;
+      m = m*m;
+      vec3 x = 2.0 * fract(p * C.www) - 1.0;
+      vec3 h = abs(x) - 0.5;
+      vec3 ox = floor(x + 0.5);
+      vec3 a0 = x - ox;
+      m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+      vec3 g;
+      g.x = a0.x * x0.x + h.x * x0.y;
+      g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+      return 130.0 * dot(m, g);
+    }
+    
+    float fbm(vec2 p) {
+      float value = 0.0;
+      float amplitude = 0.5;
+      float frequency = 1.0;
+      for (int i = 0; i < 5; i++) {
+        value += amplitude * snoise(p * frequency);
+        amplitude *= 0.5;
+        frequency *= 2.0;
+      }
+      return value;
+    }
+    
+    vec3 getColor(int idx) {
+      if (idx == 0) return u_color0;
+      if (idx == 1) return u_color1;
+      if (idx == 2) return u_color2;
+      if (idx == 3) return u_color3;
+      if (idx == 4) return u_color4;
+      if (idx == 5) return u_color5;
+      if (idx == 6) return u_color6;
+      return u_color7;
+    }
+    
+    float getStop(int idx) {
+      if (idx == 0) return u_stop0;
+      if (idx == 1) return u_stop1;
+      if (idx == 2) return u_stop2;
+      if (idx == 3) return u_stop3;
+      if (idx == 4) return u_stop4;
+      if (idx == 5) return u_stop5;
+      if (idx == 6) return u_stop6;
+      return u_stop7;
+    }
+    
+    vec3 getGradientColor(float t) {
+      vec3 color = u_color0;
+      
+      for (int i = 1; i < 8; i++) {
+        if (i >= u_numColors) break;
+        float stop0 = getStop(i - 1) / 100.0;
+        float stop1 = getStop(i) / 100.0;
+        if (t >= stop0 && t <= stop1) {
+          float localT = (t - stop0) / max(stop1 - stop0, 0.001);
+          color = mix(getColor(i - 1), getColor(i), smoothstep(0.0, 1.0, localT));
+        }
+      }
+      
+      // Handle case where t is beyond the last stop
+      float lastStop = getStop(u_numColors - 1) / 100.0;
+      if (t >= lastStop) {
+        color = getColor(u_numColors - 1);
+      }
+      
+      return color;
+    }
+    
+    // Apply fluted glass distortion to UV coordinates
+    vec2 applyFlutedGlass(vec2 uv, out float sliceProgress) {
+      float numSlices = u_segments;
+      float rotationRadians = u_rotation * (3.14159265 / 180.0);
+      
+      // Animated motion value based on time
+      float animatedMotion = u_motionValue + sin(u_time * u_flutedMotionSpeed) * 0.3;
+      
+      // Rotate the UV coordinates to align with warping axis
+      vec2 rotatedUV = vec2(
+        cos(rotationRadians) * (uv.x - 0.5) - sin(rotationRadians) * (uv.y - 0.5) + 0.5,
+        sin(rotationRadians) * (uv.x - 0.5) + cos(rotationRadians) * (uv.y - 0.5) + 0.5
+      );
+      
+      // Apply the warping effect along the aligned axis
+      sliceProgress = fract(rotatedUV.x * numSlices + animatedMotion);
+      float amplitude = u_distortionStrength; // Amplitude of the sine wave distortion
+      rotatedUV.x += amplitude * sin(sliceProgress * 3.14159265 * 2.0 * u_waveFrequency) * (1.0 - 0.5 * abs(sliceProgress - 0.5));
+      
+      // Rotate the UVs back to the original orientation
+      vec2 finalUV = vec2(
+        cos(-rotationRadians) * (rotatedUV.x - 0.5) - sin(-rotationRadians) * (rotatedUV.y - 0.5) + 0.5,
+        sin(-rotationRadians) * (rotatedUV.x - 0.5) + cos(-rotationRadians) * (rotatedUV.y - 0.5) + 0.5
+      );
+      
+      // Mirror UV at edges for seamless tiling
+      vec2 tileIndex = floor(finalUV);
+      vec2 oddTile = mod(tileIndex, 2.0);
+      vec2 mirroredUV = mix(fract(finalUV), 1.0 - fract(finalUV), oddTile);
+      
+      return mirroredUV;
+    }
+    
+    void main() {
+      vec2 uv = vUv;
+      vec2 aspect = vec2(u_resolution.x / u_resolution.y, 1.0);
+      
+      float sliceProgress = 0.0;
+      
+      // Apply fluted glass distortion if enabled
+      if (u_flutedEnabled) {
+        uv = applyFlutedGlass(uv, sliceProgress);
+      }
+      
+      // Mouse influence with distance falloff
+      vec2 mouseOffset = u_mouse - uv;
+      float mouseDist = length(mouseOffset * aspect);
+      float mouseEffect = exp(-mouseDist * 1.5) * u_mouseInfluence;
+      
+      // Wave distortion
+      float wave1 = fbm(uv * 3.0 + u_time * u_wave1Speed * u_wave1Direction);
+      float wave2 = fbm(uv * 2.0 + u_time * u_wave2Speed * u_wave2Direction + 10.0);
+      vec2 waveOffset = vec2(wave1, wave2) * u_waveIntensity;
+      
+      // Mouse distortion
+      vec2 mouseDistort = mouseOffset * mouseEffect * 0.8;
+      
+      // Apply distortions
+      vec2 distortedUV = uv + waveOffset + mouseDistort;
+      
+      // Calculate gradient position
+      float t = 0.0;
+      vec2 start = u_startPos / 100.0;
+      vec2 end = u_endPos / 100.0;
+      
+      if (u_gradientType == 0) { // Linear
+        vec2 dir = end - start;
+        float len = length(dir);
+        if (len > 0.001) {
+          t = dot(distortedUV - start, dir) / (len * len);
+        }
+      } else if (u_gradientType == 1) { // Radial
+        vec2 center = (start + end) * 0.5;
+        float radius = length(end - start) * 0.5;
+        if (radius > 0.001) {
+          t = length((distortedUV - center) * aspect) / radius;
+        }
+      } else { // Conic
+        vec2 center = (start + end) * 0.5;
+        vec2 d = distortedUV - center;
+        t = (atan(d.y, d.x) / 3.14159 + 1.0) * 0.5;
+      }
+      
+      t = clamp(t, 0.0, 1.0);
+      
+      // Add dynamic movement to t
+      t += snoise(distortedUV * 2.0 + u_time * 0.1) * 0.1;
+      t = clamp(t, 0.0, 1.0);
+      
+      vec3 color = getGradientColor(t);
+      
+      // Add subtle shimmer
+      float shimmer = snoise(vUv * 10.0 + u_time) * 0.05;
+      color += shimmer;
+      
+      // Vignette - only apply when fluted glass is disabled
+      // When fluted glass is enabled, the distortion can push content to edges
+      if (!u_flutedEnabled) {
+        float vignette = 1.0 - length((vUv - 0.5) * 1.2);
+        color *= smoothstep(0.0, 0.7, vignette);
+      }
+      
+      // Apply fluted glass overlays for 3D effect
+      if (u_flutedEnabled && u_overlayOpacity > 0.0) {
+        // Black overlay for depth
+        float blackOverlayAlpha = 0.08 * (1.0 - abs(sin(sliceProgress * 3.14159265 * 0.5 + 1.57))) * (u_overlayOpacity / 100.0);
+        color.rgb *= (1.0 - blackOverlayAlpha);
+        
+        // White highlight overlay
+        float whiteOverlayAlpha = 0.2 * (1.0 - abs(sin(sliceProgress * 3.14159265 * 0.7 - 0.7))) * (u_overlayOpacity / 100.0);
+        color.rgb = mix(color.rgb, vec3(1.0), whiteOverlayAlpha);
+      }
+      
+      gl_FragColor = vec4(color, 1.0);
+    }
+  `
 
   const hexToRgb = (hex) => {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
@@ -16,323 +322,81 @@ const GradientLayer = ({ config, mousePos }) => {
     } : { r: 0, g: 0, b: 0 }
   }
 
-  const createShader = (gl, type, source) => {
-    const shader = gl.createShader(type)
-    gl.shaderSource(shader, source)
-    gl.compileShader(shader)
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-      console.error('Shader compile error:', gl.getShaderInfoLog(shader))
-      gl.deleteShader(shader)
-      return null
-    }
-    return shader
-  }
+  useFrame((state, delta) => {
+    if (!materialRef.current) return
 
-  const initWebGL = useCallback((canvas) => {
-    const gl = canvas.getContext('webgl', { preserveDrawingBuffer: true })
-    if (!gl) return null
+    timeRef.current += delta
 
-    const vertexShaderSource = `
-      attribute vec2 a_position;
-      varying vec2 v_uv;
-      void main() {
-        v_uv = a_position * 0.5 + 0.5;
-        gl_Position = vec4(a_position, 0.0, 1.0);
-      }
-    `
+    // Smooth mouse following
+    const lerpFactor = 1 - config.decaySpeed
+    currentMouseRef.current.x += (targetMouseRef.current.x - currentMouseRef.current.x) * lerpFactor
+    currentMouseRef.current.y += (targetMouseRef.current.y - currentMouseRef.current.y) * lerpFactor
 
-    const fragmentShaderSource = `
-      precision highp float;
-      varying vec2 v_uv;
-      
-      uniform float u_time;
-      uniform vec2 u_mouse;
-      uniform vec2 u_resolution;
-      uniform vec3 u_color0;
-      uniform vec3 u_color1;
-      uniform vec3 u_color2;
-      uniform vec3 u_color3;
-      uniform vec3 u_color4;
-      uniform vec3 u_color5;
-      uniform vec3 u_color6;
-      uniform vec3 u_color7;
-      uniform float u_stop0;
-      uniform float u_stop1;
-      uniform float u_stop2;
-      uniform float u_stop3;
-      uniform float u_stop4;
-      uniform float u_stop5;
-      uniform float u_stop6;
-      uniform float u_stop7;
-      uniform int u_numColors;
-      uniform int u_gradientType;
-      uniform vec2 u_startPos;
-      uniform vec2 u_endPos;
-      uniform float u_waveIntensity;
-      uniform float u_mouseInfluence;
-      uniform float u_wave1Speed;
-      uniform float u_wave1Direction;
-      uniform float u_wave2Speed;
-      uniform float u_wave2Direction;
-      
-      // Simplex noise functions
-      vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-      vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-      vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
-      
-      float snoise(vec2 v) {
-        const vec4 C = vec4(0.211324865405187, 0.366025403784439,
-                           -0.577350269189626, 0.024390243902439);
-        vec2 i = floor(v + dot(v, C.yy));
-        vec2 x0 = v - i + dot(i, C.xx);
-        vec2 i1;
-        i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
-        vec4 x12 = x0.xyxy + C.xxzz;
-        x12.xy -= i1;
-        i = mod289(i);
-        vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0))
-                        + i.x + vec3(0.0, i1.x, 1.0));
-        vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy),
-                               dot(x12.zw,x12.zw)), 0.0);
-        m = m*m;
-        m = m*m;
-        vec3 x = 2.0 * fract(p * C.www) - 1.0;
-        vec3 h = abs(x) - 0.5;
-        vec3 ox = floor(x + 0.5);
-        vec3 a0 = x - ox;
-        m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
-        vec3 g;
-        g.x = a0.x * x0.x + h.x * x0.y;
-        g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-        return 130.0 * dot(m, g);
-      }
-      
-      float fbm(vec2 p) {
-        float value = 0.0;
-        float amplitude = 0.5;
-        float frequency = 1.0;
-        for (int i = 0; i < 5; i++) {
-          value += amplitude * snoise(p * frequency);
-          amplitude *= 0.5;
-          frequency *= 2.0;
-        }
-        return value;
-      }
-      
-      vec3 getColor(int idx) {
-        if (idx == 0) return u_color0;
-        if (idx == 1) return u_color1;
-        if (idx == 2) return u_color2;
-        if (idx == 3) return u_color3;
-        if (idx == 4) return u_color4;
-        if (idx == 5) return u_color5;
-        if (idx == 6) return u_color6;
-        return u_color7;
-      }
-      
-      float getStop(int idx) {
-        if (idx == 0) return u_stop0;
-        if (idx == 1) return u_stop1;
-        if (idx == 2) return u_stop2;
-        if (idx == 3) return u_stop3;
-        if (idx == 4) return u_stop4;
-        if (idx == 5) return u_stop5;
-        if (idx == 6) return u_stop6;
-        return u_stop7;
-      }
-      
-      vec3 getGradientColor(float t) {
-        vec3 color = u_color0;
-        
-        for (int i = 1; i < 8; i++) {
-          if (i >= u_numColors) break;
-          float stop0 = getStop(i - 1) / 100.0;
-          float stop1 = getStop(i) / 100.0;
-          if (t >= stop0 && t <= stop1) {
-            float localT = (t - stop0) / max(stop1 - stop0, 0.001);
-            color = mix(getColor(i - 1), getColor(i), smoothstep(0.0, 1.0, localT));
-          }
-        }
-        
-        // Handle case where t is beyond the last stop
-        float lastStop = getStop(u_numColors - 1) / 100.0;
-        if (t >= lastStop) {
-          color = getColor(u_numColors - 1);
-        }
-        
-        return color;
-      }
-      
-      void main() {
-        vec2 uv = v_uv;
-        vec2 aspect = vec2(u_resolution.x / u_resolution.y, 1.0);
-        
-        // Mouse influence with distance falloff - stronger effect
-        vec2 mouseOffset = u_mouse - uv;
-        float mouseDist = length(mouseOffset * aspect);
-        float mouseEffect = exp(-mouseDist * 1.5) * u_mouseInfluence;
-        
-        // Wave distortion - uses configurable speed and direction
-        float wave1 = fbm(uv * 3.0 + u_time * u_wave1Speed * u_wave1Direction);
-        float wave2 = fbm(uv * 2.0 + u_time * u_wave2Speed * u_wave2Direction + 10.0);
-        vec2 waveOffset = vec2(wave1, wave2) * u_waveIntensity;
-        
-        // Mouse distortion - increased strength
-        vec2 mouseDistort = mouseOffset * mouseEffect * 0.8;
-        
-        // Apply distortions
-        vec2 distortedUV = uv + waveOffset + mouseDistort;
-        
-        // Calculate gradient position
-        float t = 0.0;
-        vec2 start = u_startPos / 100.0;
-        vec2 end = u_endPos / 100.0;
-        
-        if (u_gradientType == 0) { // Linear
-          vec2 dir = end - start;
-          float len = length(dir);
-          if (len > 0.001) {
-            t = dot(distortedUV - start, dir) / (len * len);
-          }
-        } else if (u_gradientType == 1) { // Radial
-          vec2 center = (start + end) * 0.5;
-          float radius = length(end - start) * 0.5;
-          if (radius > 0.001) {
-            t = length((distortedUV - center) * aspect) / radius;
-          }
-        } else { // Conic
-          vec2 center = (start + end) * 0.5;
-          vec2 d = distortedUV - center;
-          t = (atan(d.y, d.x) / 3.14159 + 1.0) * 0.5;
-        }
-        
-        t = clamp(t, 0.0, 1.0);
-        
-        // Add some dynamic movement to t
-        t += snoise(distortedUV * 2.0 + u_time * 0.1) * 0.1;
-        t = clamp(t, 0.0, 1.0);
-        
-        vec3 color = getGradientColor(t);
-        
-        // Add subtle shimmer
-        float shimmer = snoise(uv * 10.0 + u_time) * 0.05;
-        color += shimmer;
-        
-        // Vignette
-        float vignette = 1.0 - length((uv - 0.5) * 1.2);
-        color *= smoothstep(0.0, 0.7, vignette);
-        
-        gl_FragColor = vec4(color, 1.0);
-      }
-    `
+    const mat = materialRef.current
 
-    const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource)
-    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource)
+    // Update time and mouse
+    mat.uniforms.u_time.value = timeRef.current
+    mat.uniforms.u_mouse.value.set(currentMouseRef.current.x, 1 - currentMouseRef.current.y)
+    mat.uniforms.u_resolution.value.set(size.width, size.height)
 
-    if (!vertexShader || !fragmentShader) return null
+    // Update gradient uniforms
+    mat.uniforms.u_numColors.value = config.numColors
+    mat.uniforms.u_gradientType.value = config.type === 'linear' ? 0 : config.type === 'radial' ? 1 : 2
+    mat.uniforms.u_startPos.value.set(config.startPos.x, config.startPos.y)
+    mat.uniforms.u_endPos.value.set(config.endPos.x, config.endPos.y)
+    mat.uniforms.u_waveIntensity.value = config.waveIntensity
+    mat.uniforms.u_mouseInfluence.value = config.mouseInfluence
+    mat.uniforms.u_wave1Speed.value = config.wave1Speed
+    mat.uniforms.u_wave1Direction.value = config.wave1Direction
+    mat.uniforms.u_wave2Speed.value = config.wave2Speed
+    mat.uniforms.u_wave2Direction.value = config.wave2Direction
 
-    const program = gl.createProgram()
-    gl.attachShader(program, vertexShader)
-    gl.attachShader(program, fragmentShader)
-    gl.linkProgram(program)
-
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      console.error('Program link error:', gl.getProgramInfoLog(program))
-      return null
-    }
-
-    const positionBuffer = gl.createBuffer()
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-      -1, -1, 1, -1, -1, 1,
-      -1, 1, 1, -1, 1, 1,
-    ]), gl.STATIC_DRAW)
-
-    return { gl, program, positionBuffer }
-  }, [])
-
-  useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-
-    const handleResize = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
-    }
-    handleResize()
-    window.addEventListener('resize', handleResize)
-
-    const webgl = initWebGL(canvas)
-    if (!webgl) return
-
-    const { gl, program, positionBuffer } = webgl
-
-    const render = () => {
-      timeRef.current += 0.016
-
-      // Smooth mouse following - lerp factor (higher = faster following)
-      const lerpFactor = 1 - config.decaySpeed
-      currentMouseRef.current.x += (targetMouseRef.current.x - currentMouseRef.current.x) * lerpFactor
-      currentMouseRef.current.y += (targetMouseRef.current.y - currentMouseRef.current.y) * lerpFactor
-
-      gl.viewport(0, 0, canvas.width, canvas.height)
-      gl.useProgram(program)
-
-      // Set uniforms
-      gl.uniform1f(gl.getUniformLocation(program, 'u_time'), timeRef.current)
-      gl.uniform2f(gl.getUniformLocation(program, 'u_mouse'), currentMouseRef.current.x, 1 - currentMouseRef.current.y)
-      gl.uniform2f(gl.getUniformLocation(program, 'u_resolution'), canvas.width, canvas.height)
-      gl.uniform1i(gl.getUniformLocation(program, 'u_numColors'), config.numColors)
-      gl.uniform1i(gl.getUniformLocation(program, 'u_gradientType'), 
-        config.type === 'linear' ? 0 : config.type === 'radial' ? 1 : 2)
-      gl.uniform2f(gl.getUniformLocation(program, 'u_startPos'), config.startPos.x, config.startPos.y)
-      gl.uniform2f(gl.getUniformLocation(program, 'u_endPos'), config.endPos.x, config.endPos.y)
-      gl.uniform1f(gl.getUniformLocation(program, 'u_waveIntensity'), config.waveIntensity)
-      gl.uniform1f(gl.getUniformLocation(program, 'u_mouseInfluence'), config.mouseInfluence)
-      gl.uniform1f(gl.getUniformLocation(program, 'u_wave1Speed'), config.wave1Speed)
-      gl.uniform1f(gl.getUniformLocation(program, 'u_wave1Direction'), config.wave1Direction)
-      gl.uniform1f(gl.getUniformLocation(program, 'u_wave2Speed'), config.wave2Speed)
-      gl.uniform1f(gl.getUniformLocation(program, 'u_wave2Direction'), config.wave2Direction)
-
-      // Set individual color uniforms
-      for (let i = 0; i < 8; i++) {
-        if (i < config.colors.length) {
-          const rgb = hexToRgb(config.colors[i])
-          gl.uniform3f(gl.getUniformLocation(program, `u_color${i}`), rgb.r, rgb.g, rgb.b)
-          gl.uniform1f(gl.getUniformLocation(program, `u_stop${i}`), config.colorStops[i] || (i * 100 / (config.colors.length - 1)))
-        } else {
-          gl.uniform3f(gl.getUniformLocation(program, `u_color${i}`), 0, 0, 0)
-          gl.uniform1f(gl.getUniformLocation(program, `u_stop${i}`), 100)
-        }
-      }
-
-      // Draw
-      const positionLoc = gl.getAttribLocation(program, 'a_position')
-      gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-      gl.enableVertexAttribArray(positionLoc)
-      gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0)
-      gl.drawArrays(gl.TRIANGLES, 0, 6)
-
-      animationRef.current = requestAnimationFrame(render)
-    }
-
-    render()
-
-    return () => {
-      window.removeEventListener('resize', handleResize)
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current)
+    // Update color uniforms
+    for (let i = 0; i < 8; i++) {
+      if (i < config.colors.length) {
+        const rgb = hexToRgb(config.colors[i])
+        mat.uniforms[`u_color${i}`].value.set(rgb.r, rgb.g, rgb.b)
+        mat.uniforms[`u_stop${i}`].value = config.colorStops[i] || (i * 100 / (config.colors.length - 1))
+      } else {
+        mat.uniforms[`u_color${i}`].value.set(0, 0, 0)
+        mat.uniforms[`u_stop${i}`].value = 100
       }
     }
-  }, [config, initWebGL])
 
-  useEffect(() => {
-    targetMouseRef.current = mousePos
-  }, [mousePos])
+    // Update fluted glass uniforms from effectsConfig
+    const fluted = effectsConfig?.flutedGlass ?? {}
+    mat.uniforms.u_flutedEnabled.value = fluted.enabled ?? false
+    mat.uniforms.u_segments.value = fluted.segments ?? 80
+    mat.uniforms.u_rotation.value = fluted.rotation ?? 0
+    mat.uniforms.u_motionValue.value = fluted.motionValue ?? 0.5
+    mat.uniforms.u_overlayOpacity.value = fluted.overlayOpacity ?? 0
+    mat.uniforms.u_flutedMotionSpeed.value = fluted.motionSpeed ?? 0.5
+    mat.uniforms.u_distortionStrength.value = fluted.distortionStrength ?? 0.02
+    mat.uniforms.u_waveFrequency.value = fluted.waveFrequency ?? 1
+  })
 
   return (
-    <canvas
-      ref={canvasRef}
+    <shaderMaterial
+      ref={materialRef}
+      uniforms={uniforms}
+      vertexShader={vertexShader}
+      fragmentShader={fragmentShader}
+    />
+  )
+}
+
+const GradientScene = ({ config, effectsConfig, mousePos }) => {
+  return (
+    <mesh>
+      <planeGeometry args={[2, 2]} />
+      <FlutedGradientMaterial config={config} effectsConfig={effectsConfig} mousePos={mousePos} />
+    </mesh>
+  )
+}
+
+const GradientLayer = ({ config, effectsConfig, mousePos }) => {
+  return (
+    <div
       className="gradient-layer"
       style={{
         position: 'absolute',
@@ -342,7 +406,17 @@ const GradientLayer = ({ config, mousePos }) => {
         height: '100%',
         zIndex: 1,
       }}
-    />
+    >
+      <Canvas
+        gl={{ preserveDrawingBuffer: true, antialias: true }}
+        orthographic
+        camera={{ position: [0, 0, 1], left: -1, right: 1, top: 1, bottom: -1, near: 0.1, far: 10 }}
+        style={{ width: '100%', height: '100%' }}
+        dpr={Math.min(window.devicePixelRatio, 2)}
+      >
+        <GradientScene config={config} effectsConfig={effectsConfig} mousePos={mousePos} />
+      </Canvas>
+    </div>
   )
 }
 

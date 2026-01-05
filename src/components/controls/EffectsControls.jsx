@@ -2,6 +2,8 @@ import { ControlGroup, NumberInput } from './SharedControls'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@radix-ui/react-collapsible'
+import { Rows, CaretRight } from '@phosphor-icons/react'
 
 export const EffectsPanel = ({
   effectsConfig,
@@ -210,6 +212,147 @@ export const EffectsPanel = ({
           step={10}
         />
       </ControlGroup>
+
+      {/* Fluted Glass Section */}
+      <div className="h-px bg-border my-4" />
+      
+      <Collapsible defaultOpen={effectsConfig.flutedGlass?.enabled}>
+        <div className="flex items-center justify-between mb-3">
+          <CollapsibleTrigger className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide hover:text-primary transition-colors group">
+            <CaretRight size={14} weight="bold" className="group-data-[state=open]:rotate-90 transition-transform" />
+            <Rows size={16} weight="bold" />
+            Fluted Glass
+          </CollapsibleTrigger>
+          <Switch
+            checked={effectsConfig.flutedGlass?.enabled ?? false}
+            onCheckedChange={(checked) => setEffectsConfig({
+              ...effectsConfig,
+              flutedGlass: {
+                ...effectsConfig.flutedGlass,
+                enabled: checked
+              }
+            })}
+          />
+        </div>
+        
+        <CollapsibleContent className="space-y-3">
+          {effectsConfig.flutedGlass?.enabled && (
+            <>
+              <ControlGroup label={`Ridges / Segments`}>
+                <NumberInput
+                  value={[effectsConfig.flutedGlass?.segments ?? 80]}
+                  onValueChange={([val]) => setEffectsConfig({
+                    ...effectsConfig,
+                    flutedGlass: {
+                      ...effectsConfig.flutedGlass,
+                      segments: val
+                    }
+                  })}
+                  min={5}
+                  max={300}
+                  step={5}
+                />
+              </ControlGroup>
+
+              <ControlGroup label={`Distortion Strength`}>
+                <NumberInput
+                  value={[effectsConfig.flutedGlass?.distortionStrength ?? 0.02]}
+                  onValueChange={([val]) => setEffectsConfig({
+                    ...effectsConfig,
+                    flutedGlass: {
+                      ...effectsConfig.flutedGlass,
+                      distortionStrength: val
+                    }
+                  })}
+                  min={0.005}
+                  max={0.1}
+                  step={0.005}
+                />
+              </ControlGroup>
+
+              <ControlGroup label={`Wave Frequency`}>
+                <NumberInput
+                  value={[effectsConfig.flutedGlass?.waveFrequency ?? 1]}
+                  onValueChange={([val]) => setEffectsConfig({
+                    ...effectsConfig,
+                    flutedGlass: {
+                      ...effectsConfig.flutedGlass,
+                      waveFrequency: val
+                    }
+                  })}
+                  min={0.5}
+                  max={5}
+                  step={0.5}
+                />
+              </ControlGroup>
+
+              <ControlGroup label={`Rotation (°)`}>
+                <NumberInput
+                  value={[effectsConfig.flutedGlass?.rotation ?? 0]}
+                  onValueChange={([val]) => setEffectsConfig({
+                    ...effectsConfig,
+                    flutedGlass: {
+                      ...effectsConfig.flutedGlass,
+                      rotation: val
+                    }
+                  })}
+                  min={0}
+                  max={180}
+                  step={5}
+                />
+              </ControlGroup>
+
+              <ControlGroup label={`Motion Value`}>
+                <NumberInput
+                  value={[effectsConfig.flutedGlass?.motionValue ?? 0.5]}
+                  onValueChange={([val]) => setEffectsConfig({
+                    ...effectsConfig,
+                    flutedGlass: {
+                      ...effectsConfig.flutedGlass,
+                      motionValue: val
+                    }
+                  })}
+                  min={0}
+                  max={2}
+                  step={0.1}
+                />
+              </ControlGroup>
+
+              <ControlGroup label={`Motion Speed`}>
+                <NumberInput
+                  value={[effectsConfig.flutedGlass?.motionSpeed ?? 0.5]}
+                  onValueChange={([val]) => setEffectsConfig({
+                    ...effectsConfig,
+                    flutedGlass: {
+                      ...effectsConfig.flutedGlass,
+                      motionSpeed: val
+                    }
+                  })}
+                  min={0}
+                  max={3}
+                  step={0.1}
+                />
+              </ControlGroup>
+
+              <ControlGroup label={`3D Overlay`}>
+                <NumberInput
+                  value={[effectsConfig.flutedGlass?.overlayOpacity ?? 0]}
+                  onValueChange={([val]) => setEffectsConfig({
+                    ...effectsConfig,
+                    flutedGlass: {
+                      ...effectsConfig.flutedGlass,
+                      overlayOpacity: val
+                    }
+                  })}
+                  min={0}
+                  max={100}
+                  step={5}
+                />
+              </ControlGroup>
+            </>
+          )}
+        </CollapsibleContent>
+      </Collapsible>
     </div>
   )
 }

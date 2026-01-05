@@ -13,3 +13,4 @@ export { PatternPanel } from './PatternControls'
 export { EffectsPanel } from './EffectsControls'
 export { TextPanel } from './TextControls'
 
+

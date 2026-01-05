@@ -546,6 +546,7 @@ const ControlPanel = ({
       'effects-colormap': 'Color Map',
       'effects-vignette': 'Vignette',
       'effects-color': 'Color Correction',
+      'effects-fluted': 'Fluted Glass',
       'text-settings': 'Text Settings',
     }
     if (key && key.startsWith('text-section-')) {
@@ -961,6 +962,85 @@ const ControlPanel = ({
             <ControlGroup label={`Brightness`}><NumberInput value={[effectsConfig.brightness]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, brightness: val })} min={50} max={150} step={5} showButtons /></ControlGroup>
           </div>
         )
+      case 'effects-fluted':
+        return (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>Enable Fluted Glass</Label>
+              <Switch 
+                checked={effectsConfig.flutedGlass?.enabled ?? false} 
+                onCheckedChange={(checked) => setEffectsConfig({ 
+                  ...effectsConfig, 
+                  flutedGlass: { ...effectsConfig.flutedGlass, enabled: checked } 
+                })} 
+              />
+            </div>
+            {effectsConfig.flutedGlass?.enabled && (
+              <>
+                <ControlGroup label={`Ridges / Segments`}>
+                  <NumberInput 
+                    value={[effectsConfig.flutedGlass?.segments ?? 80]} 
+                    onValueChange={([val]) => setEffectsConfig({ 
+                      ...effectsConfig, 
+                      flutedGlass: { ...effectsConfig.flutedGlass, segments: val } 
+                    })} 
+                    min={5} max={300} step={5} showButtons 
+                  />
+                </ControlGroup>
+                <ControlGroup label={`Distortion`}>
+                  <NumberInput 
+                    value={[effectsConfig.flutedGlass?.distortionStrength ?? 0.02]} 
+                    onValueChange={([val]) => setEffectsConfig({ 
+                      ...effectsConfig, 
+                      flutedGlass: { ...effectsConfig.flutedGlass, distortionStrength: val } 
+                    })} 
+                    min={0.005} max={0.1} step={0.005} showButtons 
+                  />
+                </ControlGroup>
+                <ControlGroup label={`Wave Frequency`}>
+                  <NumberInput 
+                    value={[effectsConfig.flutedGlass?.waveFrequency ?? 1]} 
+                    onValueChange={([val]) => setEffectsConfig({ 
+                      ...effectsConfig, 
+                      flutedGlass: { ...effectsConfig.flutedGlass, waveFrequency: val } 
+                    })} 
+                    min={0.5} max={5} step={0.5} showButtons 
+                  />
+                </ControlGroup>
+                <ControlGroup label={`Rotation (°)`}>
+                  <NumberInput 
+                    value={[effectsConfig.flutedGlass?.rotation ?? 0]} 
+                    onValueChange={([val]) => setEffectsConfig({ 
+                      ...effectsConfig, 
+                      flutedGlass: { ...effectsConfig.flutedGlass, rotation: val } 
+                    })} 
+                    min={0} max={180} step={5} showButtons 
+                  />
+                </ControlGroup>
+                <ControlGroup label={`Motion Speed`}>
+                  <NumberInput 
+                    value={[effectsConfig.flutedGlass?.motionSpeed ?? 0.5]} 
+                    onValueChange={([val]) => setEffectsConfig({ 
+                      ...effectsConfig, 
+                      flutedGlass: { ...effectsConfig.flutedGlass, motionSpeed: val } 
+                    })} 
+                    min={0} max={3} step={0.1} showButtons 
+                  />
+                </ControlGroup>
+                <ControlGroup label={`3D Overlay`}>
+                  <NumberInput 
+                    value={[effectsConfig.flutedGlass?.overlayOpacity ?? 0]} 
+                    onValueChange={([val]) => setEffectsConfig({ 
+                      ...effectsConfig, 
+                      flutedGlass: { ...effectsConfig.flutedGlass, overlayOpacity: val } 
+                    })} 
+                    min={0} max={100} step={5} showButtons 
+                  />
+                </ControlGroup>
+              </>
+            )}
+          </div>
+        )
       case 'text-settings':
         return (
           <div className="space-y-2">
@@ -1273,6 +1353,7 @@ const ControlPanel = ({
                   <SubsectionButton title="Color Map" onClick={() => openDialog('effects-colormap')} />
                   <SubsectionButton title="Vignette" onClick={() => openDialog('effects-vignette')} />
                   <SubsectionButton title="Color" onClick={() => openDialog('effects-color')} />
+                  <SubsectionButton title="Fluted Glass" onClick={() => openDialog('effects-fluted')} />
                 </div>
               )}
               {activePanel === 'text' && (

@@ -105,6 +105,17 @@ function App() {
     saturation: 100,
     contrast: 100,
     brightness: 100,
+    // Fluted glass effect settings
+    flutedGlass: {
+      enabled: false,
+      segments: 80,           // Number of glass ridges/segments
+      rotation: 0,            // Rotation angle in degrees
+      motionValue: 0.5,       // Base motion offset value
+      motionSpeed: 0.5,       // Animation speed
+      overlayOpacity: 0,      // 3D overlay effect intensity (0-100)
+      distortionStrength: 0.02, // How much the glass bends light
+      waveFrequency: 1,       // Frequency of the sine wave distortion
+    },
   })
 
   // Text Layer State
@@ -212,16 +223,16 @@ function App() {
           }}
         >
           {backgroundType === 'liquid' && (
-            <GradientLayer config={gradientConfig} mousePos={mousePos} />
+            <GradientLayer config={gradientConfig} effectsConfig={effectsConfig} mousePos={mousePos} />
           )}
           {backgroundType === 'aurora' && (
-            <AuroraLayer config={auroraConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} />
+            <AuroraLayer config={auroraConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} />
           )}
           {backgroundType === 'blob' && (
-            <BlobLayer config={blobConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} />
+            <BlobLayer config={blobConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} />
           )}
           {backgroundType === 'fluid' && (
-            <FluidGradientLayer config={fluidConfig} paletteColors={gradientConfig.colors} />
+            <FluidGradientLayer config={fluidConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} />
           )}
         </div>
         

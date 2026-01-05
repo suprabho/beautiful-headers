@@ -1,4 +1,5 @@
-import { useRef, useEffect, useCallback, useMemo } from 'react'
+import { useRef, useEffect, useCallback, useMemo, useState } from 'react'
+import FlutedGlassCanvas from './FlutedGlassCanvas'
 
 // Convert hex color to HSL
 const hexToHsl = (hex) => {
@@ -42,10 +43,11 @@ const darkenHex = (hex, amount = 0.7) => {
   return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
 }
 
-const AuroraLayer = ({ config, mousePos, paletteColors = [] }) => {
+const AuroraLayer = ({ config, mousePos, paletteColors = [], effectsConfig }) => {
   const containerRef = useRef(null)
   const canvasARef = useRef(null)
   const canvasBRef = useRef(null)
+  const [canvasReady, setCanvasReady] = useState(false)
   const ctxARef = useRef(null)
   const ctxBRef = useRef(null)
   const linesRef = useRef([])
@@ -205,6 +207,7 @@ const AuroraLayer = ({ config, mousePos, paletteColors = [] }) => {
     }
 
     handleResize()
+    setCanvasReady(true)
     window.addEventListener('resize', handleResize)
 
     const animate = () => {
@@ -261,6 +264,8 @@ const AuroraLayer = ({ config, mousePos, paletteColors = [] }) => {
     targetMouseRef.current = mousePos
   }, [mousePos])
 
+  const flutedEnabled = effectsConfig?.flutedGlass?.enabled ?? false
+
   return (
     <div
       ref={containerRef}
@@ -273,7 +278,14 @@ const AuroraLayer = ({ config, mousePos, paletteColors = [] }) => {
         height: '100%',
         zIndex: 1,
       }}
-    />
+    >
+      {flutedEnabled && canvasReady && canvasBRef.current && (
+        <FlutedGlassCanvas 
+          sourceCanvasRef={canvasBRef} 
+          effectsConfig={effectsConfig}
+        />
+      )}
+    </div>
   )
 }
 

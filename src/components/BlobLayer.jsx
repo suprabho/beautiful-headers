@@ -1,4 +1,5 @@
-import { useRef, useEffect, useCallback, useMemo } from 'react'
+import { useRef, useEffect, useCallback, useMemo, useState } from 'react'
+import FlutedGlassCanvas from './FlutedGlassCanvas'
 
 // Convert hex to RGB
 const hexToRgb = (hex) => {
@@ -45,9 +46,10 @@ const darkenColor = (hex, amount = 0.7) => {
   }
 }
 
-const BlobLayer = ({ config, mousePos, paletteColors = [] }) => {
+const BlobLayer = ({ config, mousePos, paletteColors = [], effectsConfig }) => {
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
+  const [canvasReady, setCanvasReady] = useState(false)
   const offscreenCanvasRef = useRef(null)
   const animationRef = useRef(null)
   const timeRef = useRef(0)
@@ -190,6 +192,7 @@ const BlobLayer = ({ config, mousePos, paletteColors = [] }) => {
     }
 
     handleResize()
+    setCanvasReady(true)
     window.addEventListener('resize', handleResize)
 
     const animate = () => {
@@ -314,6 +317,8 @@ const BlobLayer = ({ config, mousePos, paletteColors = [] }) => {
     targetMouseRef.current = mousePos
   }, [mousePos])
 
+  const flutedEnabled = effectsConfig?.flutedGlass?.enabled ?? false
+
   return (
     <div
       ref={containerRef}
@@ -326,7 +331,14 @@ const BlobLayer = ({ config, mousePos, paletteColors = [] }) => {
         height: '100%',
         zIndex: 1,
       }}
-    />
+    >
+      {flutedEnabled && canvasReady && canvasRef.current && (
+        <FlutedGlassCanvas 
+          sourceCanvasRef={canvasRef} 
+          effectsConfig={effectsConfig}
+        />
+      )}
+    </div>
   )
 }
 
