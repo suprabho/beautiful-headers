@@ -24,7 +24,7 @@ export const TextPanel = ({
     const newId = Math.max(...textSections.map(s => s.id), 0) + 1
     setTextSections([
       ...textSections,
-      { id: newId, text: 'New Text', size: 60, weight: 400, spacing: 0.1, font: 'sans-serif' }
+      { id: newId, text: 'New Text', size: 60, weight: 400, spacing: 0.1, font: 'sans-serif', italic: false }
     ])
   }
 
@@ -154,6 +154,15 @@ export const TextPanel = ({
                     </SelectContent>
                   </Select>
                 </ControlGroup>
+
+                {(section.font === 'serif' || section.font === 'scribble') && (
+                  <ControlGroup label="Italic">
+                    <Switch
+                      checked={section.italic || false}
+                      onCheckedChange={(checked) => updateTextSection(section.id, 'italic', checked)}
+                    />
+                  </ControlGroup>
+                )}
 
                 <ControlGroup label="Weight">
                   <Select

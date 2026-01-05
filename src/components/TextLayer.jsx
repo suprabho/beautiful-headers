@@ -88,6 +88,7 @@ const TextLayer = ({ sections, gap, color = '#ffffff', opacity = 1 }) => {
           style={{
             fontSize: `${getResponsiveFontSize(section.size)}px`,
             fontWeight: section.weight,
+            fontStyle: section.italic ? 'italic' : 'normal',
             letterSpacing: `${section.spacing}em`,
             color,
             opacity,
