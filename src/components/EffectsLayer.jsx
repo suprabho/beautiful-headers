@@ -1,55 +1,11 @@
-import { useRef, useEffect } from 'react'
-
 const EffectsLayer = ({ config }) => {
-  const noiseCanvasRef = useRef(null)
   const {
-    noiseEnabled = false,
-    noise,
-    noiseScale,
     texture,
     textureSize = 20,
     textureOpacity = 0.5,
     textureBlendMode = 'overlay',
     vignetteIntensity,
   } = config
-
-  // Generate animated noise
-  useEffect(() => {
-    const canvas = noiseCanvasRef.current
-    if (!canvas || !noiseEnabled || noise <= 0) return
-
-    const ctx = canvas.getContext('2d')
-    const width = 256
-    const height = 256
-    canvas.width = width
-    canvas.height = height
-
-    let animationId
-
-    const generateNoise = () => {
-      const imageData = ctx.createImageData(width, height)
-      const data = imageData.data
-
-      for (let i = 0; i < data.length; i += 4) {
-        const value = Math.random() * 255
-        data[i] = value
-        data[i + 1] = value
-        data[i + 2] = value
-        data[i + 3] = 255
-      }
-
-      ctx.putImageData(imageData, 0, 0)
-      animationId = requestAnimationFrame(generateNoise)
-    }
-
-    generateNoise()
-
-    return () => {
-      if (animationId) {
-        cancelAnimationFrame(animationId)
-      }
-    }
-  }, [noise, noiseEnabled])
 
   const getTexturePattern = () => {
     const lineWidth = Math.max(1, textureSize * 0.1)
@@ -123,33 +79,6 @@ const EffectsLayer = ({ config }) => {
             mixBlendMode: textureBlendMode,
           }}
         />
-      )}
-
-      {/* Noise Layer */}
-      {noiseEnabled && noise > 0 && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            overflow: 'hidden',
-          }}
-        >
-          <canvas
-            ref={noiseCanvasRef}
-            style={{
-              position: 'absolute',
-              top: '-50%',
-              left: '-50%',
-              width: '200%',
-              height: '200%',
-              opacity: noise,
-              mixBlendMode: 'overlay',
-              imageRendering: 'pixelated',
-              transform: `scale(${noiseScale})`,
-              transformOrigin: 'center center',
-            }}
-          />
-        </div>
       )}
 
       {/* Vignette Layer */}

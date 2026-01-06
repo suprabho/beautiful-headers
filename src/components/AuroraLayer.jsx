@@ -55,9 +55,9 @@ const AuroraLayer = ({ config, mousePos, paletteColors = [], effectsConfig }) =>
   const targetMouseRef = useRef({ x: 0.5, y: 0.5 })
   const currentMouseRef = useRef({ x: 0.5, y: 0.5 })
 
-  // Derive hues from palette colors if useGradientColors is enabled
+  // Always derive hues from palette colors
   const derivedColors = useMemo(() => {
-    if (!config.useGradientColors || !paletteColors || paletteColors.length === 0) {
+    if (!paletteColors || paletteColors.length === 0) {
       return null
     }
     
@@ -76,7 +76,7 @@ const AuroraLayer = ({ config, mousePos, paletteColors = [], effectsConfig }) =>
       // Store all hues for random selection
       hues: hues
     }
-  }, [config.useGradientColors, paletteColors])
+  }, [paletteColors])
 
   // Config defaults with user overrides (or derived from palette)
   const minWidth = config.minWidth ?? 10

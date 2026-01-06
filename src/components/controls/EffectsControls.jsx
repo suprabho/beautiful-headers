@@ -5,6 +5,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@radix-ui/react-collapsible'
 import { Rows, CaretRight } from '@phosphor-icons/react'
 
+// NOTE: Noise effect has been removed from this component
+
 export const EffectsPanel = ({
   effectsConfig,
   setEffectsConfig,
@@ -22,46 +24,6 @@ export const EffectsPanel = ({
           step={1}
         />
       </ControlGroup>
-
-      <div className="flex items-center justify-between">
-        <Label className="text-sm">Enable Noise</Label>
-        <Switch
-          checked={effectsConfig.noiseEnabled}
-          onCheckedChange={(checked) => setEffectsConfig({
-            ...effectsConfig,
-            noiseEnabled: checked
-          })}
-        />
-      </div>
-
-      {effectsConfig.noiseEnabled && (
-        <>
-          <ControlGroup label={`Amount`}>
-            <NumberInput
-              value={[effectsConfig.noise]}
-              onValueChange={([val]) => setEffectsConfig({
-                ...effectsConfig,
-                noise: val
-              })}
-              max={0.5}
-              step={0.1}
-            />
-          </ControlGroup>
-          <ControlGroup label={`Scale`}>
-            <NumberInput
-              value={[effectsConfig.noiseScale]}
-              onValueChange={([val]) => setEffectsConfig({
-                ...effectsConfig,
-                noiseScale: val
-              })}
-              min={0.5}
-              max={5}
-              step={0.25}
-              showButtons={true}
-            />
-          </ControlGroup>
-        </>
-      )}
 
       <ControlGroup label="Texture">
         <Select

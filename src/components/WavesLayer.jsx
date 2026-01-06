@@ -3,7 +3,6 @@ import FlutedGlassCanvas from './FlutedGlassCanvas'
 
 const WavesLayer = ({ config, paletteColors = [], effectsConfig }) => {
   const {
-    useGradientColors = true,
     colors = ['#06b6d4', '#a855f7', '#ec4899', '#3b82f6'],
     waveHeight = 0.15,
     waveFrequency = 3,
@@ -22,13 +21,13 @@ const WavesLayer = ({ config, paletteColors = [], effectsConfig }) => {
 
   const flutedEnabled = effectsConfig?.flutedGlass?.enabled ?? false
 
-  // Determine which colors to use
+  // Always use palette colors
   const waveColors = useMemo(() => {
-    if (useGradientColors && paletteColors.length >= 2) {
+    if (paletteColors.length >= 2) {
       return paletteColors
     }
     return colors
-  }, [useGradientColors, paletteColors, colors])
+  }, [paletteColors, colors])
 
   // Convert hex to RGB
   const hexToRgb = (hex) => {

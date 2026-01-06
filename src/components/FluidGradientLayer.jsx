@@ -4,7 +4,6 @@ import FlutedGlassCanvas from './FlutedGlassCanvas'
 const FluidGradientLayer = ({ config, paletteColors = [], effectsConfig }) => {
   const {
     backgroundColor = '#1C89FF',
-    useGradientColors = true,
     colors = ['#71ECFF', '#39F58A', '#71ECFF', '#F0CBA8'],
     speed = 1,
     intensity = 1,
@@ -19,12 +18,12 @@ const FluidGradientLayer = ({ config, paletteColors = [], effectsConfig }) => {
 
   const flutedEnabled = effectsConfig?.flutedGlass?.enabled ?? false
 
-  // Determine which colors to use
+  // Always use palette colors
   const gradientColors = useMemo(() => {
-    if (useGradientColors && paletteColors.length >= 4) {
+    if (paletteColors.length >= 4) {
       return paletteColors.slice(0, 4)
     }
-    if (useGradientColors && paletteColors.length >= 2) {
+    if (paletteColors.length >= 2) {
       const repeated = []
       for (let i = 0; i < 4; i++) {
         repeated.push(paletteColors[i % paletteColors.length])
@@ -32,15 +31,15 @@ const FluidGradientLayer = ({ config, paletteColors = [], effectsConfig }) => {
       return repeated
     }
     return colors
-  }, [useGradientColors, paletteColors, colors])
+  }, [paletteColors, colors])
 
-  // Get background color
+  // Get background color from palette or config
   const bgColor = useMemo(() => {
-    if (useGradientColors && paletteColors.length > 0) {
+    if (paletteColors.length > 0) {
       return paletteColors[0]
     }
     return backgroundColor
-  }, [useGradientColors, paletteColors, backgroundColor])
+  }, [paletteColors, backgroundColor])
 
   // Convert hex to rgba
   const hexToRgba = (hex, alpha = 1) => {

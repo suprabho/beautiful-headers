@@ -3,11 +3,12 @@ import { ControlGroup, NumberInput, PaletteColorPicker } from './SharedControls'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
-// Liquid gradient controls
-export const LiquidControls = ({
+// ============================================
+// COLORS SECTION - Shared by all background types
+// ============================================
+export const ColorsSection = ({
   gradientConfig,
   setGradientConfig,
   parsedPalette,
@@ -51,49 +52,55 @@ export const LiquidControls = ({
   }
 
   return (
-    <>
-      {/* Colors Section */}
-      <div className="space-y-1">
-        <div className="flex items-center justify-between">
-          <Label className="text-xs uppercase tracking-wide font-semibold">Gradient Colors</Label>
-        </div>
-        
-        <div className="space-y-2">
-          {gradientConfig.colors.map((color, index) => (
-            <div key={index} className="flex items-center gap-2">
-              <PaletteColorPicker
-                value={color}
-                onChange={(newColor) => updateGradientColor(index, newColor)}
-                palette={parsedPalette}
-              />
-              <Input
-                type="number"
-                min="0"
-                max="100"
-                value={gradientConfig.colorStops[index] || 0}
-                onChange={(e) => updateColorStop(index, e.target.value)}
-                className="w-16 h-8 text-xs"
-              />
-              <span className="text-xs text-muted-foreground">%</span>
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className="h-7 w-7 ml-auto"
-                onClick={() => removeGradientColor(index)}
-                disabled={gradientConfig.colors.length <= 2}
-              >
-                <Trash size={12} />
-              </Button>
-            </div>
-          ))}
-          {gradientConfig.colors.length < 8 && (
-            <Button variant="outline" size="sm" className="w-full h-8 text-xs" onClick={addGradientColor}>
-              <Plus size={12} className="mr-1" /> Add Color
+    <div className="flex flex-col gap-2">
+      <Label className="text-xs uppercase tracking-wide font-semibold mb-2">Background Colors</Label>
+      <div className="space-y-2">
+        {gradientConfig.colors.map((color, index) => (
+          <div key={index} className="flex items-center gap-2">
+            <PaletteColorPicker
+              value={color}
+              onChange={(newColor) => updateGradientColor(index, newColor)}
+              palette={parsedPalette}
+            />
+            <Input
+              type="number"
+              min="0"
+              max="100"
+              value={gradientConfig.colorStops[index] || 0}
+              onChange={(e) => updateColorStop(index, e.target.value)}
+              className="w-16 h-8 text-xs"
+            />
+            <span className="text-xs text-muted-foreground">%</span>
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="h-7 w-7 ml-auto"
+              onClick={() => removeGradientColor(index)}
+              disabled={gradientConfig.colors.length <= 2}
+            >
+              <Trash size={12} />
             </Button>
-          )}
-        </div>
+          </div>
+        ))}
+        {gradientConfig.colors.length < 8 && (
+          <Button variant="outline" size="sm" className="w-full h-8 text-xs" onClick={addGradientColor}>
+            <Plus size={12} className="mr-1" /> Add Color
+          </Button>
+        )}
       </div>
+    </div>
+  )
+}
 
+// ============================================
+// FOG/LIQUID SETTINGS (without colors)
+// ============================================
+export const LiquidControls = ({
+  gradientConfig,
+  setGradientConfig,
+}) => {
+  return (
+    <>
       {/* Gradient Type */}
       <ControlGroup label="Gradient Type">
         <Select
@@ -162,7 +169,7 @@ export const LiquidControls = ({
         </ControlGroup>
       </div>
 
-      {/* Wave Settings */}
+      {/* Wave Intensity */}
       <ControlGroup label={`Wave Intensity`}>
         <NumberInput
           value={[Math.round(gradientConfig.waveIntensity * 100) / 100]}
@@ -171,10 +178,11 @@ export const LiquidControls = ({
             waveIntensity: val
           })}
           max={1}
-          step={0.05}
+          step={0.01}
         />
       </ControlGroup>
 
+      {/* Wave 1 Settings */}
       <div className="grid grid-cols-2 gap-4">
         <ControlGroup label={`Wave 1`}>
           <NumberInput
@@ -184,7 +192,7 @@ export const LiquidControls = ({
               wave1Speed: val
             })}
             max={0.5}
-            step={0.05}
+            step={0.01}
           />
         </ControlGroup>
         <ControlGroup label="Direction">
@@ -266,107 +274,38 @@ export const LiquidControls = ({
   )
 }
 
-// Aurora controls
+// ============================================
+// AURORA SETTINGS (without colors toggle)
+// ============================================
 export const AuroraControls = ({
   auroraConfig,
   setAuroraConfig,
-  gradientConfig,
   parsedPalette,
 }) => {
   return (
     <>
-      {/* Use Gradient Colors Toggle */}
-      <div className="flex items-center justify-between">
-        <Label className="text-sm">Use Gradient Colors</Label>
-        <Switch
-          checked={auroraConfig.useGradientColors}
-          onCheckedChange={(checked) => setAuroraConfig({
-            ...auroraConfig,
-            useGradientColors: checked
-          })}
-        />
-      </div>
-
-      {auroraConfig.useGradientColors ? (
-        /* Show color palette preview when using gradient colors */
-        <div className="p-3 rounded-lg bg-muted/50 border border-border">
-          <Label className="text-xs text-muted-foreground mb-2 block">Colors from Gradient Palette</Label>
-          <div className="flex gap-1 flex-wrap">
-            {gradientConfig.colors.map((color, idx) => (
-              <div
-                key={idx}
-                className="w-8 h-8 rounded-md border border-border"
-                style={{ backgroundColor: color }}
-                title={color}
-              />
-            ))}
-          </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            Aurora will use hues from these colors. Edit them in Liquid mode.
-          </p>
+      {/* Background Color */}
+      <ControlGroup label="Background">
+        <div className="flex items-center gap-2">
+          <PaletteColorPicker
+            value={auroraConfig.backgroundColor}
+            onChange={(newColor) => setAuroraConfig({
+              ...auroraConfig,
+              backgroundColor: newColor
+            })}
+            palette={parsedPalette}
+            className="w-10 h-9"
+          />
+          <Input 
+            value={auroraConfig.backgroundColor}
+            onChange={(e) => setAuroraConfig({
+              ...auroraConfig,
+              backgroundColor: e.target.value
+            })}
+            className="h-9 font-mono text-xs flex-1"
+          />
         </div>
-      ) : (
-        <>
-          {/* Background Color */}
-          <ControlGroup label="Background">
-            <div className="flex items-center gap-2">
-              <PaletteColorPicker
-                value={auroraConfig.backgroundColor}
-                onChange={(newColor) => setAuroraConfig({
-                  ...auroraConfig,
-                  backgroundColor: newColor
-                })}
-                palette={parsedPalette}
-                className="w-10 h-9"
-              />
-              <Input 
-                value={auroraConfig.backgroundColor}
-                onChange={(e) => setAuroraConfig({
-                  ...auroraConfig,
-                  backgroundColor: e.target.value
-                })}
-                className="h-9 font-mono text-xs flex-1"
-              />
-            </div>
-          </ControlGroup>
-
-          {/* Hue Range */}
-          <div className="space-y-1">
-            <Label className="text-xs uppercase tracking-wide font-semibold">Hue Range</Label>
-            <div className="grid grid-cols-2 gap-4">
-              <ControlGroup label={`Start`}>
-                <NumberInput
-                  value={[auroraConfig.hueStart]}
-                  onValueChange={([val]) => setAuroraConfig({
-                    ...auroraConfig,
-                    hueStart: val
-                  })}
-                  max={360}
-                  step={10}
-                />
-              </ControlGroup>
-              <ControlGroup label={`End`}>
-                <NumberInput
-                  value={[auroraConfig.hueEnd]}
-                  onValueChange={([val]) => setAuroraConfig({
-                    ...auroraConfig,
-                    hueEnd: val
-                  })}
-                  max={360}
-                  step={10}
-                />
-              </ControlGroup>
-            </div>
-            {/* Hue preview bar */}
-            <div 
-              className="h-4 rounded-md border border-border"
-              style={{
-                background: `linear-gradient(to right, hsl(${auroraConfig.hueStart}, 100%, 65%), hsl(${auroraConfig.hueEnd}, 100%, 65%))`
-              }}
-            />
-          </div>
-        </>
-      )}
+      </ControlGroup>
 
       {/* Line Width */}
       <div className="grid grid-cols-2 gap-4">
@@ -483,98 +422,38 @@ export const AuroraControls = ({
   )
 }
 
-// Fluid gradient controls (animated SVG radial gradients)
+// ============================================
+// FLUID/MESH SETTINGS (without colors toggle)
+// ============================================
 export const FluidControls = ({
   fluidConfig,
   setFluidConfig,
-  gradientConfig,
   parsedPalette,
 }) => {
-  const updateFluidColor = (index, color) => {
-    const newColors = [...(fluidConfig.colors || ['#71ECFF', '#39F58A', '#71ECFF', '#F0CBA8'])]
-    newColors[index] = color
-    setFluidConfig({ ...fluidConfig, colors: newColors })
-  }
-
   return (
     <>
-      {/* Use Gradient Colors Toggle */}
-      <div className="flex items-center justify-between">
-        <Label className="text-sm">Use Gradient Colors</Label>
-        <Switch
-          checked={fluidConfig.useGradientColors}
-          onCheckedChange={(checked) => setFluidConfig({
-            ...fluidConfig,
-            useGradientColors: checked
-          })}
-        />
-      </div>
-
-      {fluidConfig.useGradientColors ? (
-        /* Show color palette preview when using gradient colors */
-        <div className="p-3 rounded-lg bg-muted/50 border border-border">
-          <Label className="text-xs text-muted-foreground mb-2 block">Colors from Gradient Palette</Label>
-          <div className="flex gap-1 flex-wrap">
-            {gradientConfig.colors.slice(0, 4).map((color, idx) => (
-              <div
-                key={idx}
-                className="w-8 h-8 rounded-md border border-border"
-                style={{ backgroundColor: color }}
-                title={color}
-              />
-            ))}
-          </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            First 4 colors will be used. Edit them in Liquid mode.
-          </p>
+      {/* Background Color */}
+      <ControlGroup label="Background">
+        <div className="flex items-center gap-2">
+          <PaletteColorPicker
+            value={fluidConfig.backgroundColor}
+            onChange={(newColor) => setFluidConfig({
+              ...fluidConfig,
+              backgroundColor: newColor
+            })}
+            palette={parsedPalette}
+            className="w-10 h-9"
+          />
+          <Input 
+            value={fluidConfig.backgroundColor}
+            onChange={(e) => setFluidConfig({
+              ...fluidConfig,
+              backgroundColor: e.target.value
+            })}
+            className="h-9 font-mono text-xs flex-1"
+          />
         </div>
-      ) : (
-        <>
-          {/* Background Color */}
-          <ControlGroup label="Background">
-            <div className="flex items-center gap-2">
-              <PaletteColorPicker
-                value={fluidConfig.backgroundColor}
-                onChange={(newColor) => setFluidConfig({
-                  ...fluidConfig,
-                  backgroundColor: newColor
-                })}
-                palette={parsedPalette}
-                className="w-10 h-9"
-              />
-              <Input 
-                value={fluidConfig.backgroundColor}
-                onChange={(e) => setFluidConfig({
-                  ...fluidConfig,
-                  backgroundColor: e.target.value
-                })}
-                className="h-9 font-mono text-xs flex-1"
-              />
-            </div>
-          </ControlGroup>
-
-          {/* Fluid Colors */}
-          <div className="space-y-2">
-            <Label className="text-xs uppercase tracking-wide font-semibold">Fluid Colors (4 colors)</Label>
-            {(fluidConfig.colors || ['#71ECFF', '#39F58A', '#71ECFF', '#F0CBA8']).map((color, index) => (
-              <div key={index} className="flex items-center gap-2">
-                <PaletteColorPicker
-                  value={color}
-                  onChange={(newColor) => updateFluidColor(index, newColor)}
-                  palette={parsedPalette}
-                  className="w-10 h-9"
-                />
-                <Input 
-                  value={color}
-                  onChange={(e) => updateFluidColor(index, e.target.value)}
-                  className="h-9 font-mono text-xs flex-1"
-                />
-                <span className="text-xs text-muted-foreground w-4">{index + 1}</span>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
+      </ControlGroup>
 
       {/* Animation Speed */}
       <ControlGroup label={`Animation Speed`}>
@@ -597,6 +476,20 @@ export const FluidControls = ({
           onValueChange={([val]) => setFluidConfig({
             ...fluidConfig,
             intensity: val
+          })}
+          min={0.5}
+          max={2}
+          step={0.1}
+        />
+      </ControlGroup>
+
+      {/* Scale */}
+      <ControlGroup label={`Scale`}>
+        <NumberInput
+          value={[fluidConfig.scale]}
+          onValueChange={([val]) => setFluidConfig({
+            ...fluidConfig,
+            scale: val
           })}
           min={0.1}
           max={10}
@@ -621,125 +514,38 @@ export const FluidControls = ({
   )
 }
 
-// Blob controls
+// ============================================
+// BLOB SETTINGS (without colors toggle)
+// ============================================
 export const BlobControls = ({
   blobConfig,
   setBlobConfig,
-  gradientConfig,
   parsedPalette,
 }) => {
-  const updateBlobColor = (index, color) => {
-    const newColors = [...(blobConfig.colors || ['#ff006e', '#8338ec', '#3a86ff', '#06d6a0'])]
-    newColors[index] = color
-    setBlobConfig({ ...blobConfig, colors: newColors })
-  }
-
-  const addBlobColor = () => {
-    const currentColors = blobConfig.colors || ['#ff006e', '#8338ec', '#3a86ff', '#06d6a0']
-    if (currentColors.length < 8) {
-      setBlobConfig({ ...blobConfig, colors: [...currentColors, '#ffffff'] })
-    }
-  }
-
-  const removeBlobColor = (index) => {
-    const currentColors = blobConfig.colors || ['#ff006e', '#8338ec', '#3a86ff', '#06d6a0']
-    if (currentColors.length > 2) {
-      setBlobConfig({ ...blobConfig, colors: currentColors.filter((_, i) => i !== index) })
-    }
-  }
-
   return (
     <>
-      {/* Use Gradient Colors Toggle */}
-      <div className="flex items-center justify-between">
-        <Label className="text-sm">Use Gradient Colors</Label>
-        <Switch
-          checked={blobConfig.useGradientColors}
-          onCheckedChange={(checked) => setBlobConfig({
-            ...blobConfig,
-            useGradientColors: checked
-          })}
-        />
-      </div>
-
-      {blobConfig.useGradientColors ? (
-        /* Show color palette preview when using gradient colors */
-        <div className="p-3 rounded-lg bg-muted/50 border border-border">
-          <Label className="text-xs text-muted-foreground mb-2 block">Colors from Gradient Palette</Label>
-          <div className="flex gap-1 flex-wrap">
-            {gradientConfig.colors.map((color, idx) => (
-              <div
-                key={idx}
-                className="w-8 h-8 rounded-md border border-border"
-                style={{ backgroundColor: color }}
-                title={color}
-              />
-            ))}
-          </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            Blobs will use these colors. Edit them in Liquid mode.
-          </p>
+      {/* Background Color */}
+      <ControlGroup label="Background">
+        <div className="flex items-center gap-2">
+          <PaletteColorPicker
+            value={blobConfig.backgroundColor}
+            onChange={(newColor) => setBlobConfig({
+              ...blobConfig,
+              backgroundColor: newColor
+            })}
+            palette={parsedPalette}
+            className="w-10 h-9"
+          />
+          <Input 
+            value={blobConfig.backgroundColor}
+            onChange={(e) => setBlobConfig({
+              ...blobConfig,
+              backgroundColor: e.target.value
+            })}
+            className="h-9 font-mono text-xs flex-1"
+          />
         </div>
-      ) : (
-        <>
-          {/* Background Color */}
-          <ControlGroup label="Background">
-            <div className="flex items-center gap-2">
-              <PaletteColorPicker
-                value={blobConfig.backgroundColor}
-                onChange={(newColor) => setBlobConfig({
-                  ...blobConfig,
-                  backgroundColor: newColor
-                })}
-                palette={parsedPalette}
-                className="w-10 h-9"
-              />
-              <Input 
-                value={blobConfig.backgroundColor}
-                onChange={(e) => setBlobConfig({
-                  ...blobConfig,
-                  backgroundColor: e.target.value
-                })}
-                className="h-9 font-mono text-xs flex-1"
-              />
-            </div>
-          </ControlGroup>
-
-          {/* Blob Colors */}
-          <div className="space-y-2">
-            <Label className="text-xs uppercase tracking-wide font-semibold">Blob Colors</Label>
-            {(blobConfig.colors || ['#ff006e', '#8338ec', '#3a86ff', '#06d6a0']).map((color, index) => (
-              <div key={index} className="flex items-center gap-2">
-                <PaletteColorPicker
-                  value={color}
-                  onChange={(newColor) => updateBlobColor(index, newColor)}
-                  palette={parsedPalette}
-                  className="w-10 h-9"
-                />
-                <Input 
-                  value={color}
-                  onChange={(e) => updateBlobColor(index, e.target.value)}
-                  className="h-9 font-mono text-xs flex-1"
-                />
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  className="h-7 w-7 ml-auto"
-                  onClick={() => removeBlobColor(index)}
-                  disabled={(blobConfig.colors || []).length <= 2}
-                >
-                  <Trash size={12} />
-                </Button>
-              </div>
-            ))}
-            {(blobConfig.colors || []).length < 8 && (
-              <Button variant="outline" size="sm" className="w-full h-8 text-xs" onClick={addBlobColor}>
-                <Plus size={12} className="mr-1" /> Add Color
-              </Button>
-            )}
-          </div>
-        </>
-      )}
+      </ControlGroup>
 
       {/* Blob Count */}
       <ControlGroup label={`Blob Count`}>
@@ -856,99 +662,15 @@ export const BlobControls = ({
   )
 }
 
-// Waves controls (animated gradient waves)
+// ============================================
+// WAVES SETTINGS (without colors toggle)
+// ============================================
 export const WavesControls = ({
   wavesConfig,
   setWavesConfig,
-  gradientConfig,
-  parsedPalette,
 }) => {
-  const updateWavesColor = (index, color) => {
-    const newColors = [...(wavesConfig.colors || ['#06b6d4', '#a855f7', '#ec4899', '#3b82f6'])]
-    newColors[index] = color
-    setWavesConfig({ ...wavesConfig, colors: newColors })
-  }
-
-  const addWavesColor = () => {
-    const currentColors = wavesConfig.colors || ['#06b6d4', '#a855f7', '#ec4899', '#3b82f6']
-    if (currentColors.length < 8) {
-      setWavesConfig({ ...wavesConfig, colors: [...currentColors, '#ffffff'] })
-    }
-  }
-
-  const removeWavesColor = (index) => {
-    const currentColors = wavesConfig.colors || ['#06b6d4', '#a855f7', '#ec4899', '#3b82f6']
-    if (currentColors.length > 2) {
-      setWavesConfig({ ...wavesConfig, colors: currentColors.filter((_, i) => i !== index) })
-    }
-  }
-
   return (
     <>
-      {/* Use Gradient Colors Toggle */}
-      <div className="flex items-center justify-between">
-        <Label className="text-sm">Use Gradient Colors</Label>
-        <Switch
-          checked={wavesConfig.useGradientColors}
-          onCheckedChange={(checked) => setWavesConfig({
-            ...wavesConfig,
-            useGradientColors: checked
-          })}
-        />
-      </div>
-
-      {wavesConfig.useGradientColors ? (
-        <div className="p-3 rounded-lg bg-muted/50 border border-border">
-          <Label className="text-xs text-muted-foreground mb-2 block">Colors from Gradient Palette</Label>
-          <div className="flex gap-1 flex-wrap">
-            {gradientConfig.colors.map((color, idx) => (
-              <div
-                key={idx}
-                className="w-8 h-8 rounded-md border border-border"
-                style={{ backgroundColor: color }}
-                title={color}
-              />
-            ))}
-          </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            Waves will use these colors. Edit them in Liquid mode.
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-2">
-          <Label className="text-xs uppercase tracking-wide font-semibold">Wave Colors</Label>
-          {(wavesConfig.colors || ['#06b6d4', '#a855f7', '#ec4899', '#3b82f6']).map((color, index) => (
-            <div key={index} className="flex items-center gap-2">
-              <PaletteColorPicker
-                value={color}
-                onChange={(newColor) => updateWavesColor(index, newColor)}
-                palette={parsedPalette}
-                className="w-10 h-9"
-              />
-              <Input 
-                value={color}
-                onChange={(e) => updateWavesColor(index, e.target.value)}
-                className="h-9 font-mono text-xs flex-1"
-              />
-              <Button 
-                variant="ghost" 
-                size="icon"
-                className="h-7 w-7 ml-auto"
-                onClick={() => removeWavesColor(index)}
-                disabled={(wavesConfig.colors || []).length <= 2}
-              >
-                <Trash size={12} />
-              </Button>
-            </div>
-          ))}
-          {(wavesConfig.colors || []).length < 8 && (
-            <Button variant="outline" size="sm" className="w-full h-8 text-xs" onClick={addWavesColor}>
-              <Plus size={12} className="mr-1" /> Add Color
-            </Button>
-          )}
-        </div>
-      )}
-
       {/* Wave Height */}
       <ControlGroup label={`Wave Height`}>
         <NumberInput
@@ -1050,7 +772,9 @@ export const WavesControls = ({
   )
 }
 
-// Main Gradient Panel that combines all five background types
+// ============================================
+// MAIN GRADIENT PANEL - Restructured
+// ============================================
 export const GradientPanel = ({
   backgroundType,
   setBackgroundType,
@@ -1067,8 +791,17 @@ export const GradientPanel = ({
   parsedPalette,
 }) => {
   return (
-    <div className="space-y-2">
-      {/* Background Type Selector */}
+    <div className="space-y-0">
+      {/* SECTION 1: Background Colors - Always visible */}
+      <ColorsSection
+        gradientConfig={gradientConfig}
+        setGradientConfig={setGradientConfig}
+        parsedPalette={parsedPalette}
+      />
+
+      <div className="h-px bg-border my-2" />
+
+      {/* SECTION 2: Background Type Selector */}
       <ControlGroup label="Background Type">
         <Select
           value={backgroundType}
@@ -1078,30 +811,26 @@ export const GradientPanel = ({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="liquid">Liquid</SelectItem>
+            <SelectItem value="liquid">Fog</SelectItem>
             <SelectItem value="aurora">Aurora</SelectItem>
             <SelectItem value="blob">Blob</SelectItem>
-            <SelectItem value="fluid">Fluid</SelectItem>
+            <SelectItem value="fluid">Mesh</SelectItem>
             <SelectItem value="waves">Waves</SelectItem>
           </SelectContent>
         </Select>
       </ControlGroup>
 
-      <div className="h-px bg-border my-3" />
-
-      {/* Conditional controls based on background type */}
+      {/* SECTION 3: Type-specific controls */}
       {backgroundType === 'liquid' && (
         <LiquidControls
           gradientConfig={gradientConfig}
           setGradientConfig={setGradientConfig}
-          parsedPalette={parsedPalette}
         />
       )}
       {backgroundType === 'aurora' && (
         <AuroraControls
           auroraConfig={auroraConfig}
           setAuroraConfig={setAuroraConfig}
-          gradientConfig={gradientConfig}
           parsedPalette={parsedPalette}
         />
       )}
@@ -1109,7 +838,6 @@ export const GradientPanel = ({
         <BlobControls
           blobConfig={blobConfig}
           setBlobConfig={setBlobConfig}
-          gradientConfig={gradientConfig}
           parsedPalette={parsedPalette}
         />
       )}
@@ -1117,7 +845,6 @@ export const GradientPanel = ({
         <FluidControls
           fluidConfig={fluidConfig}
           setFluidConfig={setFluidConfig}
-          gradientConfig={gradientConfig}
           parsedPalette={parsedPalette}
         />
       )}
@@ -1125,11 +852,8 @@ export const GradientPanel = ({
         <WavesControls
           wavesConfig={wavesConfig}
           setWavesConfig={setWavesConfig}
-          gradientConfig={gradientConfig}
-          parsedPalette={parsedPalette}
         />
       )}
     </div>
   )
 }
-

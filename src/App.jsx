@@ -400,9 +400,6 @@ function App() {
   // Effects Layer State
   const [effectsConfig, setEffectsConfig] = useState({
     blur: 0,
-    noiseEnabled: false,
-    noise: 0.1,
-    noiseScale: 1,
     texture: 'none', // none, grain, scanlines, dots
     textureSize: 20, // texture pattern size in pixels
     textureOpacity: 0.5, // texture layer opacity

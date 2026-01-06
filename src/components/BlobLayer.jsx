@@ -65,26 +65,25 @@ const BlobLayer = ({ config, mousePos, paletteColors = [], effectsConfig }) => {
   const orbitRadius = config.orbitRadius ?? 100
   const blurAmount = config.blurAmount ?? 12
   const threshold = config.threshold ?? 180
-  const useGradientColors = config.useGradientColors ?? true
   const mouseInfluence = config.mouseInfluence ?? 0.3
   const decaySpeed = config.decaySpeed ?? 0.95
 
-  // Derive colors from palette
+  // Always use palette colors
   const colors = useMemo(() => {
-    if (useGradientColors && paletteColors && paletteColors.length > 0) {
+    if (paletteColors && paletteColors.length > 0) {
       return paletteColors
     }
     return config.colors || ['#ff006e', '#8338ec', '#3a86ff', '#06d6a0']
-  }, [useGradientColors, paletteColors, config.colors])
+  }, [paletteColors, config.colors])
 
-  // Background color derived from first color or config
+  // Background color derived from first palette color or config
   const backgroundColor = useMemo(() => {
-    if (useGradientColors && paletteColors && paletteColors.length > 0) {
+    if (paletteColors && paletteColors.length > 0) {
       return darkenColor(paletteColors[0], 0.85)
     }
     const rgb = hexToRgb(config.backgroundColor || '#1a1a2e')
     return rgb
-  }, [useGradientColors, paletteColors, config.backgroundColor])
+  }, [paletteColors, config.backgroundColor])
 
   // Initialize blobs
   const initBlobs = useCallback((width, height) => {

@@ -363,17 +363,6 @@ const ControlPanel = ({
         effectsConfig.textureBlendMode
       )
       
-      if (effectsConfig.noiseEnabled && effectsConfig.noise > 0) {
-        const noiseCanvas = container.querySelector('.effects-layer canvas')
-        if (noiseCanvas) {
-          ctx.save()
-          ctx.globalAlpha = effectsConfig.noise
-          ctx.globalCompositeOperation = 'overlay'
-          ctx.drawImage(noiseCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
-          ctx.restore()
-        }
-      }
-      
       drawVignetteToCanvas(ctx, outputCanvas.width, outputCanvas.height, effectsConfig.vignetteIntensity)
       
       if (mode === 'all') {
@@ -526,29 +515,26 @@ const ControlPanel = ({
 
   const getDialogTitle = (key) => {
     const titles = {
-      'gradient-colors': 'Colors',
+      'gradient-colors': 'Background Colors',
       'gradient-type': 'Gradient Type',
       'gradient-stops': 'Position Stops',
       'gradient-wave': 'Wave Settings',
       'gradient-mouse': 'Mouse Influence',
-      'aurora-background': 'Background Color',
-      'aurora-hue': 'Hue Range',
+      'aurora-background': 'Background',
       'aurora-lines': 'Line Settings',
       'aurora-animation': 'Animation',
-      'blob-colors': 'Blob Colors',
+      'blob-background': 'Background',
       'blob-size': 'Blob Size & Count',
       'blob-animation': 'Blob Animation',
       'blob-effect': 'Gooey Effect',
-      'fluid-colors': 'Fluid Colors',
+      'fluid-background': 'Background',
       'fluid-animation': 'Animation Speed',
       'fluid-settings': 'Fluid Settings',
-      'waves-colors': 'Wave Colors',
       'waves-settings': 'Wave Settings',
       'pattern-icon': 'Icon Settings',
       'pattern-spacing': 'Spacing',
       'pattern-mouse': 'Mouse Influence',
       'effects-blur': 'Background Blur',
-      'effects-noise': 'Noise',
       'effects-texture': 'Texture',
       'effects-colormap': 'Color Map',
       'effects-vignette': 'Vignette',
@@ -683,55 +669,12 @@ const ControlPanel = ({
         )
       case 'aurora-background':
         return (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <Label>Use Gradient Colors</Label>
-              <Switch checked={auroraConfig.useGradientColors} onCheckedChange={(c) => setAuroraConfig({ ...auroraConfig, useGradientColors: c })} />
+          <ControlGroup label="Background Color">
+            <div className="flex items-center gap-2">
+              <PaletteColorPicker value={auroraConfig.backgroundColor} onChange={(newColor) => setAuroraConfig({ ...auroraConfig, backgroundColor: newColor })} palette={parsedPalette} className="w-10 h-10" />
+              <Input value={auroraConfig.backgroundColor} onChange={(e) => setAuroraConfig({ ...auroraConfig, backgroundColor: e.target.value })} className="h-9 font-mono text-xs flex-1" />
             </div>
-            {auroraConfig.useGradientColors ? (
-              <div className="p-3 rounded-lg bg-muted/50 border border-border">
-                <Label className="text-xs text-muted-foreground mb-2 block">Colors from Gradient</Label>
-                <div className="flex gap-1 flex-wrap">
-                  {gradientConfig.colors.map((color, idx) => (
-                    <div key={idx} className="w-8 h-8 rounded-md border border-border" style={{ backgroundColor: color }} />
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <ControlGroup label="Background Color">
-                <div className="flex items-center gap-2">
-                  <PaletteColorPicker value={auroraConfig.backgroundColor} onChange={(newColor) => setAuroraConfig({ ...auroraConfig, backgroundColor: newColor })} palette={parsedPalette} className="w-10 h-10" />
-                  <Input value={auroraConfig.backgroundColor} onChange={(e) => setAuroraConfig({ ...auroraConfig, backgroundColor: e.target.value })} className="h-9 font-mono text-xs flex-1" />
-                </div>
-              </ControlGroup>
-            )}
-          </div>
-        )
-      case 'aurora-hue':
-        return (
-          <div className="space-y-2">
-            {auroraConfig.useGradientColors ? (
-              <div className="p-3 rounded-lg bg-muted/50 border border-border">
-                <Label className="text-xs text-muted-foreground mb-2 block">Using hues from Gradient Colors</Label>
-                <div className="flex gap-1 flex-wrap">
-                  {gradientConfig.colors.map((color, idx) => (
-                    <div key={idx} className="w-8 h-8 rounded-md border border-border" style={{ backgroundColor: color }} />
-                  ))}
-                </div>
-                <p className="text-xs text-muted-foreground mt-2">Disable "Use Gradient Colors" to set custom hue range.</p>
-              </div>
-            ) : (
-              <>
-                <ControlGroup label={`Hue Start`}>
-                  <NumberInput value={[auroraConfig.hueStart]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, hueStart: val })} max={360} step={10} showButtons />
-                </ControlGroup>
-                <ControlGroup label={`Hue End`}>
-                  <NumberInput value={[auroraConfig.hueEnd]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, hueEnd: val })} max={360} step={10} showButtons />
-                </ControlGroup>
-                <div className="h-6 rounded-md border border-border mt-2" style={{ background: `linear-gradient(to right, hsl(${auroraConfig.hueStart}, 100%, 65%), hsl(${auroraConfig.hueEnd}, 100%, 65%))` }} />
-              </>
-            )}
-          </div>
+          </ControlGroup>
         )
       case 'aurora-lines':
         return (
@@ -751,47 +694,14 @@ const ControlPanel = ({
             <ControlGroup label={`Blur Amount`}><NumberInput value={[auroraConfig.blurAmount]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, blurAmount: val })} min={0} max={50} step={1} showButtons /></ControlGroup>
           </div>
         )
-      case 'blob-colors':
+      case 'blob-background':
         return (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <Label>Use Gradient Colors</Label>
-              <Switch checked={blobConfig.useGradientColors} onCheckedChange={(checked) => setBlobConfig({ ...blobConfig, useGradientColors: checked })} />
+          <ControlGroup label="Background Color">
+            <div className="flex items-center gap-2">
+              <PaletteColorPicker value={blobConfig.backgroundColor} onChange={(newColor) => setBlobConfig({ ...blobConfig, backgroundColor: newColor })} palette={parsedPalette} className="w-10 h-9" />
+              <Input value={blobConfig.backgroundColor} onChange={(e) => setBlobConfig({ ...blobConfig, backgroundColor: e.target.value })} className="h-9 font-mono text-xs flex-1" />
             </div>
-            {blobConfig.useGradientColors ? (
-              <div className="p-3 rounded-lg bg-muted/50 border border-border">
-                <Label className="text-xs text-muted-foreground mb-2 block">Colors from Gradient Palette</Label>
-                <div className="flex gap-1 flex-wrap">
-                  {gradientConfig.colors.map((color, idx) => (
-                    <div key={idx} className="w-8 h-8 rounded-md border border-border" style={{ backgroundColor: color }} title={color} />
-                  ))}
-                </div>
-                <p className="text-xs text-muted-foreground mt-2">Blobs will use these colors. Edit them in Liquid mode.</p>
-              </div>
-            ) : (
-              <>
-                <ControlGroup label="Background">
-                  <div className="flex items-center gap-2">
-                    <PaletteColorPicker value={blobConfig.backgroundColor} onChange={(newColor) => setBlobConfig({ ...blobConfig, backgroundColor: newColor })} palette={parsedPalette} className="w-10 h-9" />
-                    <Input value={blobConfig.backgroundColor} onChange={(e) => setBlobConfig({ ...blobConfig, backgroundColor: e.target.value })} className="h-9 font-mono text-xs flex-1" />
-                  </div>
-                </ControlGroup>
-                <div className="space-y-2">
-                  <Label className="text-xs uppercase tracking-wide font-semibold">Blob Colors</Label>
-                  {(blobConfig.colors || ['#ff006e', '#8338ec', '#3a86ff', '#06d6a0']).map((color, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <PaletteColorPicker value={color} onChange={(newColor) => updateBlobColor(index, newColor)} palette={parsedPalette} className="w-10 h-9" />
-                      <Input value={color} onChange={(e) => updateBlobColor(index, e.target.value)} className="h-9 font-mono text-xs flex-1" />
-                      <Button variant="ghost" size="icon" className="h-7 w-7 ml-auto" onClick={() => removeBlobColor(index)} disabled={(blobConfig.colors || []).length <= 2}><Trash size={12} /></Button>
-                    </div>
-                  ))}
-                  {(blobConfig.colors || []).length < 8 && (
-                    <Button variant="outline" size="sm" className="w-full h-8 text-xs" onClick={addBlobColor}><Plus size={12} className="mr-1" /> Add Color</Button>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
+          </ControlGroup>
         )
       case 'blob-size':
         return (
@@ -816,51 +726,14 @@ const ControlPanel = ({
             <ControlGroup label={`Gooey Threshold`}><NumberInput value={[blobConfig.threshold]} onValueChange={([val]) => setBlobConfig({ ...blobConfig, threshold: val })} min={100} max={250} step={10} showButtons /></ControlGroup>
           </div>
         )
-      case 'fluid-colors':
+      case 'fluid-background':
         return (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <Label>Use Gradient Colors</Label>
-              <Switch checked={fluidConfig.useGradientColors} onCheckedChange={(checked) => setFluidConfig({ ...fluidConfig, useGradientColors: checked })} />
+          <ControlGroup label="Background Color">
+            <div className="flex items-center gap-2">
+              <PaletteColorPicker value={fluidConfig.backgroundColor} onChange={(newColor) => setFluidConfig({ ...fluidConfig, backgroundColor: newColor })} palette={parsedPalette} className="w-10 h-9" />
+              <Input value={fluidConfig.backgroundColor} onChange={(e) => setFluidConfig({ ...fluidConfig, backgroundColor: e.target.value })} className="h-9 font-mono text-xs flex-1" />
             </div>
-            {fluidConfig.useGradientColors ? (
-              <div className="p-3 rounded-lg bg-muted/50 border border-border">
-                <Label className="text-xs text-muted-foreground mb-2 block">Colors from Gradient Palette</Label>
-                <div className="flex gap-1 flex-wrap">
-                  {gradientConfig.colors.slice(0, 4).map((color, idx) => (
-                    <div key={idx} className="w-8 h-8 rounded-md border border-border" style={{ backgroundColor: color }} title={color} />
-                  ))}
-                </div>
-                <p className="text-xs text-muted-foreground mt-2">First 4 colors will be used. Edit them in Liquid mode.</p>
-              </div>
-            ) : (
-              <>
-                <ControlGroup label="Background">
-                  <div className="flex items-center gap-2">
-                    <PaletteColorPicker value={fluidConfig.backgroundColor} onChange={(newColor) => setFluidConfig({ ...fluidConfig, backgroundColor: newColor })} palette={parsedPalette} className="w-10 h-9" />
-                    <Input value={fluidConfig.backgroundColor} onChange={(e) => setFluidConfig({ ...fluidConfig, backgroundColor: e.target.value })} className="h-9 font-mono text-xs flex-1" />
-                  </div>
-                </ControlGroup>
-                <div className="space-y-2">
-                  <Label className="text-xs uppercase tracking-wide font-semibold">Fluid Colors (4 colors)</Label>
-                  {(fluidConfig.colors || ['#71ECFF', '#39F58A', '#71ECFF', '#F0CBA8']).map((color, index) => (
-                    <div key={index} className="flex items-center gap-2">
-                      <PaletteColorPicker value={color} onChange={(newColor) => {
-                        const newColors = [...fluidConfig.colors]
-                        newColors[index] = newColor
-                        setFluidConfig({ ...fluidConfig, colors: newColors })
-                      }} palette={parsedPalette} className="w-10 h-9" />
-                      <Input value={color} onChange={(e) => {
-                        const newColors = [...fluidConfig.colors]
-                        newColors[index] = e.target.value
-                        setFluidConfig({ ...fluidConfig, colors: newColors })
-                      }} className="h-9 font-mono text-xs flex-1" />
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
+          </ControlGroup>
         )
       case 'fluid-animation':
         return (
@@ -873,56 +746,6 @@ const ControlPanel = ({
           <div className="space-y-2">
             <ControlGroup label={`Intensity`}><NumberInput value={[fluidConfig.intensity]} onValueChange={([val]) => setFluidConfig({ ...fluidConfig, intensity: val })} min={0.1} max={10} step={0.1} showButtons /></ControlGroup>
             <ControlGroup label={`Blur`}><NumberInput value={[fluidConfig.blurAmount]} onValueChange={([val]) => setFluidConfig({ ...fluidConfig, blurAmount: val })} min={0} max={100} step={1} showButtons /></ControlGroup>
-          </div>
-        )
-      case 'waves-colors':
-        return (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <Label>Use Gradient Colors</Label>
-              <Switch checked={wavesConfig.useGradientColors} onCheckedChange={(checked) => setWavesConfig({ ...wavesConfig, useGradientColors: checked })} />
-            </div>
-            {wavesConfig.useGradientColors ? (
-              <div className="p-3 rounded-lg bg-muted/50 border border-border">
-                <Label className="text-xs text-muted-foreground mb-2 block">Colors from Gradient Palette</Label>
-                <div className="flex gap-1 flex-wrap">
-                  {gradientConfig.colors.map((color, idx) => (
-                    <div key={idx} className="w-8 h-8 rounded-md border border-border" style={{ backgroundColor: color }} title={color} />
-                  ))}
-                </div>
-                <p className="text-xs text-muted-foreground mt-2">Waves will use these colors. Edit them in Liquid mode.</p>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                <Label className="text-xs uppercase tracking-wide font-semibold">Wave Colors</Label>
-                {(wavesConfig.colors || ['#06b6d4', '#a855f7', '#ec4899', '#3b82f6']).map((color, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <PaletteColorPicker value={color} onChange={(newColor) => {
-                      const newColors = [...(wavesConfig.colors || [])]
-                      newColors[index] = newColor
-                      setWavesConfig({ ...wavesConfig, colors: newColors })
-                    }} palette={parsedPalette} className="w-10 h-9" />
-                    <Input value={color} onChange={(e) => {
-                      const newColors = [...(wavesConfig.colors || [])]
-                      newColors[index] = e.target.value
-                      setWavesConfig({ ...wavesConfig, colors: newColors })
-                    }} className="h-9 font-mono text-xs flex-1" />
-                    <Button variant="ghost" size="icon" className="h-7 w-7 ml-auto" onClick={() => {
-                      const currentColors = wavesConfig.colors || []
-                      if (currentColors.length > 2) {
-                        setWavesConfig({ ...wavesConfig, colors: currentColors.filter((_, i) => i !== index) })
-                      }
-                    }} disabled={(wavesConfig.colors || []).length <= 2}><Trash size={12} /></Button>
-                  </div>
-                ))}
-                {(wavesConfig.colors || []).length < 8 && (
-                  <Button variant="outline" size="sm" className="w-full h-8 text-xs" onClick={() => {
-                    const currentColors = wavesConfig.colors || ['#06b6d4', '#a855f7', '#ec4899', '#3b82f6']
-                    setWavesConfig({ ...wavesConfig, colors: [...currentColors, '#ffffff'] })
-                  }}><Plus size={12} className="mr-1" /> Add Color</Button>
-                )}
-              </div>
-            )}
           </div>
         )
       case 'waves-settings':
@@ -965,21 +788,6 @@ const ControlPanel = ({
         )
       case 'effects-blur':
         return <ControlGroup label={`Blur`}><NumberInput value={[effectsConfig.blur]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, blur: val })} max={30} step={2} showButtons /></ControlGroup>
-      case 'effects-noise':
-        return (
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label>Enable Noise</Label>
-              <Switch checked={effectsConfig.noiseEnabled} onCheckedChange={(c) => setEffectsConfig({ ...effectsConfig, noiseEnabled: c })} />
-            </div>
-            {effectsConfig.noiseEnabled && (
-              <>
-                <ControlGroup label={`Amount`}><NumberInput value={[effectsConfig.noise]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, noise: val })} max={0.5} step={0.05} showButtons /></ControlGroup>
-                <ControlGroup label={`Scale`}><NumberInput value={[effectsConfig.noiseScale]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, noiseScale: val })} min={0.5} max={3} step={0.25} showButtons /></ControlGroup>
-              </>
-            )}
-          </div>
-        )
       case 'effects-texture':
         return (
           <div className="space-y-2">
@@ -1353,23 +1161,32 @@ const ControlPanel = ({
             <ScrollArea className="max-h-[50vh] p-1 gap-2">
               {activePanel === 'gradient' && (
                 <div className="space-y-2">
+                  {/* Colors Section - Always visible */}
+                  <div className="px-1">
+                    <SubsectionButton title="Colors" onClick={() => openDialog('gradient-colors')} />
+                  </div>
+                  
+                  <div className="h-px bg-border mx-3" />
+                  
+                  {/* Background Type Selector */}
                   <div className="flex items-center justify-between px-3 py-2">
-                    <Label className="text-sm">Background</Label>
+                    <Label className="text-sm">Background Type</Label>
                     <Select value={backgroundType} onValueChange={(value) => setBackgroundType(value)}>
                       <SelectTrigger className="w-[120px] h-9"><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="liquid">Liquid</SelectItem>
+                        <SelectItem value="liquid">Fog</SelectItem>
                         <SelectItem value="aurora">Aurora</SelectItem>
                         <SelectItem value="blob">Blob</SelectItem>
-                        <SelectItem value="fluid">Fluid</SelectItem>
+                        <SelectItem value="fluid">Mesh</SelectItem>
                         <SelectItem value="waves">Waves</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
+                  
+                  {/* Type-specific settings */}
                   <div className="space-y-1 flex flex-row flex-wrap gap-1 px-1">
                     {backgroundType === 'liquid' && (
                       <>
-                        <SubsectionButton title="Colors" onClick={() => openDialog('gradient-colors')} />
                         <SubsectionButton title="Type" onClick={() => openDialog('gradient-type')} />
                         <SubsectionButton title="Stops" onClick={() => openDialog('gradient-stops')} />
                         <SubsectionButton title="Wave" onClick={() => openDialog('gradient-wave')} />
@@ -1379,14 +1196,13 @@ const ControlPanel = ({
                     {backgroundType === 'aurora' && (
                       <>
                         <SubsectionButton title="Background" onClick={() => openDialog('aurora-background')} />
-                        <SubsectionButton title="Hue" onClick={() => openDialog('aurora-hue')} />
                         <SubsectionButton title="Lines" onClick={() => openDialog('aurora-lines')} />
                         <SubsectionButton title="Animation" onClick={() => openDialog('aurora-animation')} />
                       </>
                     )}
                     {backgroundType === 'blob' && (
                       <>
-                        <SubsectionButton title="Colors" onClick={() => openDialog('blob-colors')} />
+                        <SubsectionButton title="Background" onClick={() => openDialog('blob-background')} />
                         <SubsectionButton title="Size" onClick={() => openDialog('blob-size')} />
                         <SubsectionButton title="Animation" onClick={() => openDialog('blob-animation')} />
                         <SubsectionButton title="Effect" onClick={() => openDialog('blob-effect')} />
@@ -1394,14 +1210,13 @@ const ControlPanel = ({
                     )}
                     {backgroundType === 'fluid' && (
                       <>
-                        <SubsectionButton title="Colors" onClick={() => openDialog('fluid-colors')} />
+                        <SubsectionButton title="Background" onClick={() => openDialog('fluid-background')} />
                         <SubsectionButton title="Animation" onClick={() => openDialog('fluid-animation')} />
                         <SubsectionButton title="Settings" onClick={() => openDialog('fluid-settings')} />
                       </>
                     )}
                     {backgroundType === 'waves' && (
                       <>
-                        <SubsectionButton title="Colors" onClick={() => openDialog('waves-colors')} />
                         <SubsectionButton title="Settings" onClick={() => openDialog('waves-settings')} />
                       </>
                     )}
@@ -1424,7 +1239,6 @@ const ControlPanel = ({
               {activePanel === 'effects' && (
                 <div className="space-y-1 flex flex-row flex-wrap gap-1">
                   <SubsectionButton title="Blur" onClick={() => openDialog('effects-blur')} />
-                  <SubsectionButton title="Noise" onClick={() => openDialog('effects-noise')} />
                   <SubsectionButton title="Texture" onClick={() => openDialog('effects-texture')} />
                   <SubsectionButton title="Color Map" onClick={() => openDialog('effects-colormap')} />
                   <SubsectionButton title="Vignette" onClick={() => openDialog('effects-vignette')} />
@@ -1479,7 +1293,7 @@ const ControlPanel = ({
         className={cn(
           "fixed z-50 bg-card/95 backdrop-blur-xl border border-border rounded-2xl w-[340px] max-h-[85vh]",
           "shadow-2xl shadow-black/50 transition-shadow duration-200",
-          "font-[Geist,system-ui,sans-serif] text-foreground",
+          "text-foreground",
           isDragging && "shadow-3xl shadow-black/60",
           isCollapsed && "w-auto max-h-none overflow-hidden",
           !isCollapsed && "flex flex-col overflow-hidden"
