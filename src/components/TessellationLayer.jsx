@@ -149,5 +149,5 @@ export const AVAILABLE_ICONS = [
   'Planet', 'Rocket', 'Alien', 'Ghost', 'Skull', 'Smiley',
   'MusicNote', 'Headphones', 'Camera', 'GameController',
   'Butterfly', 'Bird', 'Fish', 'Cat', 'Dog', 'Horse',
-  'Snowflake', 'Rainbow', 'Compass', 'Anchor', 'Infinity', 'CarProfile', 'AirplaneTilt', 'Cheers', 'Sailboat'
+  'Snowflake', 'Rainbow', 'Compass', 'Anchor', 'Infinity', 'CarProfile', 'AirplaneTilt', 'Cheers', 'Sailboat', 'Wand', 'MagicWand', 'Baby', 'Balloon', 'BabyCarriage'
 ]

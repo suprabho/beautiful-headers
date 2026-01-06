@@ -64,39 +64,56 @@ const FluidGradientLayer = ({ config, paletteColors = [], effectsConfig }) => {
 
     const ctx = canvas.getContext('2d')
 
-    // Animation configuration matching original SVG behavior
-    // Each layer has: x oscillation, y oscillation, rotation, and focal point animation
-    // Duration values from original SVG (will be divided by speed)
-    const layers = [
+    // 4 circles with varying radii, each with a radial gradient
+    // Gradient goes from one edge (full opacity) to opposite edge (0 opacity)
+    // Circles are translated and rotated
+    const circles = [
       {
-        // Rect 1: x: 25%→0%→25%, y: 0%→25%→0%, rotation: 0→360
-        xBase: 0.25, xRange: 0.25, xDur: 20,
-        yBase: 0, yRange: 0.25, yDur: 21,
-        rotDur: 17, rotDir: 1,
-        fxBase: 0.1, fxDur: 34  // fx animated 0%→3%→0%
+        // Circle 1: cyan, large
+        radius: 0.5,  // 50% of viewport
+        xValues: [0.25, 0, 0.25], xDur: 20,
+        yValues: [0, 0.25, 0], yDur: 21,
+        rotDir: 1, rotDur: 17,
+        color: '#71ECFF'
       },
       {
-        // Rect 2: x: -25%→0%→-25%, y: 0%→50%→0%, rotation: 0→360
-        xBase: -0.25, xRange: 0.25, xDur: 23,
-        yBase: 0, yRange: 0.50, yDur: 24,
-        rotDur: 18, rotDir: 1,
-        fxBase: 0.1, fxDur: 23.5
+        // Circle 2: green, medium-large
+        radius: 0.45,
+        xValues: [-0.25, 0, -0.25], xDur: 23,
+        yValues: [0, 0.50, 0], yDur: 24,
+        rotDir: 1, rotDur: 18,
+        color: '#39F58A'
       },
       {
-        // Rect 3: x: 0%→25%→0%, y: 0%→25%→0%, rotation: 360→0 (reverse)
-        xBase: 0, xRange: 0.25, xDur: 25,
-        yBase: 0, yRange: 0.25, yDur: 26,
-        rotDur: 19, rotDir: -1,
-        fxBase: 0.5, fxDur: 21.5
+        // Circle 3: cyan, medium
+        radius: 0.4,
+        xValues: [0, 0.25, 0], xDur: 25,
+        yValues: [0, 0.25, 0], yDur: 26,
+        rotDir: -1, rotDur: 19,  // Reverse rotation
+        color: '#71ECFF'
       },
       {
-        // Rect 4: x: 25%→50%→25%, y: 25%→0%→25%, rotation: 0→360
-        xBase: 0.25, xRange: 0.25, xDur: 22,
-        yBase: 0.25, yRange: -0.25, yDur: 27,
-        rotDur: 20, rotDir: 1,
-        fxBase: 0.9, fxDur: 28
+        // Circle 4: peach/orange, smaller
+        radius: 0.35,
+        xValues: [0.25, 0.50, 0.25], xDur: 22,
+        yValues: [0.25, 0, 0.25], yDur: 27,
+        rotDir: 1, rotDur: 20,
+        color: '#F0CBA8'
       }
     ]
+
+    // Helper: interpolate values array based on time (0→1→0 pattern for "a;b;a" animation)
+    const interpolateValues = (values, progress) => {
+      // SVG values="a;b;a" means: start at a, go to b at 50%, return to a at 100%
+      const t = progress % 1
+      if (t < 0.5) {
+        // First half: interpolate from values[0] to values[1]
+        return values[0] + (values[1] - values[0]) * (t * 2)
+      } else {
+        // Second half: interpolate from values[1] to values[2]
+        return values[1] + (values[2] - values[1]) * ((t - 0.5) * 2)
+      }
+    }
 
     const handleResize = () => {
       const width = window.innerWidth
@@ -125,50 +142,62 @@ const FluidGradientLayer = ({ config, paletteColors = [], effectsConfig }) => {
       ctx.fillRect(0, 0, width, height)
 
       const time = timeRef.current
+      
+      // Base size for calculations
       const size = Math.max(width, height)
-      // Gradient radius as proportion of canvas (intensity controls this)
-      const gradientRadius = size * intensity
+      const centerX = width / 2
+      const centerY = height / 2
 
-      // Draw each gradient layer
-      for (let i = 0; i < layers.length; i++) {
-        const layer = layers[i]
-        const color = gradientColors[i % gradientColors.length]
+      // Draw each circle with its own radial gradient
+      for (let i = 0; i < circles.length; i++) {
+        const circle = circles[i]
+        const color = gradientColors[i % gradientColors.length] || circle.color
 
-        // Calculate oscillating x and y offsets (matching SVG animation pattern)
-        // SVG used values like "25%;0%;25%" which oscillates
-        const xOffset = (layer.xBase + Math.sin(time * (Math.PI * 2 / layer.xDur)) * layer.xRange) * width
-        const yOffset = (layer.yBase + Math.sin(time * (Math.PI * 2 / layer.yDur)) * layer.yRange) * height
+        // Circle radius scaled by intensity
+        const circleRadius = size * circle.radius * intensity
 
-        // Calculate rotation (continuous)
-        const rotation = (time / layer.rotDur) * Math.PI * 2 * layer.rotDir
+        // Calculate position animation (oscillating x and y)
+        const xProgress = time / circle.xDur
+        const yProgress = time / circle.yDur
+        const offsetX = interpolateValues(circle.xValues, xProgress) * width
+        const offsetY = interpolateValues(circle.yValues, yProgress) * height
 
-        // Animated focal point offset (fx animation: 0%→3%→0%)
-        const fxOffset = Math.sin(time * (Math.PI * 2 / layer.fxDur)) * 0.03 * gradientRadius
+        // Calculate rotation angle (continuous rotation)
+        const rotation = (time / circle.rotDur) * Math.PI * 2 * circle.rotDir
+
+        // Circle center position (centered + offset)
+        const circleCenterX = centerX + offsetX
+        const circleCenterY = centerY + offsetY
 
         ctx.save()
 
-        // Transform: translate to center, rotate, translate back, then apply layer offset
-        const centerX = width / 2
-        const centerY = height / 2
-
-        ctx.translate(centerX, centerY)
+        // Translate to circle center, rotate, then translate back
+        // This rotates the gradient direction within the circle
+        ctx.translate(circleCenterX, circleCenterY)
         ctx.rotate(rotation)
-        ctx.translate(-centerX + xOffset, -centerY + yOffset)
+        ctx.translate(-circleCenterX, -circleCenterY)
 
-        // Create radial gradient centered on canvas
-        // The gradient has an offset focal point (fx, fy in SVG)
+        // Create radial gradient from one edge to the opposite edge:
+        // - Focal point (start) at left edge of circle: (cx - radius, cy)
+        // - Center at circle center, radius extends to right edge
+        // This creates a gradient that goes from left edge (full color) to right edge (transparent)
         const gradient = ctx.createRadialGradient(
-          centerX + fxOffset, centerY, 0,  // Focal point (inner circle) - animated fx
-          centerX, centerY, gradientRadius  // Outer circle
+          circleCenterX - circleRadius, circleCenterY, 0,  // Start at left edge (point)
+          circleCenterX, circleCenterY, circleRadius * 2   // Extend through center to right edge (diameter)
         )
 
-        // Color stops matching SVG: solid color at center, transparent at edge
+        // Color stops: full opacity at start edge, transparent at opposite edge
         gradient.addColorStop(0, hexToRgba(color, 1))
+        gradient.addColorStop(0.5, hexToRgba(color, 0.5))  // Half opacity at center
         gradient.addColorStop(1, hexToRgba(color, 0))
 
-        // Fill the entire transformed area
+        // Draw the circle
+        ctx.beginPath()
+        ctx.arc(circleCenterX, circleCenterY, circleRadius, 0, Math.PI * 2)
+        ctx.closePath()
+
         ctx.fillStyle = gradient
-        ctx.fillRect(-width, -height, width * 3, height * 3)
+        ctx.fill()
 
         ctx.restore()
       }

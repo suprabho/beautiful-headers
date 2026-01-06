@@ -18,7 +18,7 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos }) => {
   const uniforms = useMemo(() => ({
     u_time: { value: 0 },
     u_mouse: { value: new THREE.Vector2(0.5, 0.5) },
-    u_resolution: { value: new THREE.Vector2(size.width, size.height) },
+    u_resolution: { value: new THREE.Vector2(1, 1) }, // Updated in useFrame
     u_color0: { value: new THREE.Vector3(1, 0, 0.43) },
     u_color1: { value: new THREE.Vector3(0.51, 0.22, 0.93) },
     u_color2: { value: new THREE.Vector3(0.23, 0.53, 1) },
@@ -54,7 +54,7 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos }) => {
     u_flutedMotionSpeed: { value: 0.5 },
     u_distortionStrength: { value: 0.02 },
     u_waveFrequency: { value: 1 },
-  }), [size.width, size.height])
+  }), []) // Empty deps - resolution updated in useFrame on every frame
 
   const vertexShader = `
     varying vec2 vUv;

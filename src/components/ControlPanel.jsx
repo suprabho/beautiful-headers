@@ -1450,7 +1450,7 @@ const ControlPanel = ({
               ))}
             </TabsList>
 
-            <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
+            <div className="flex-1 min-h-0 flex flex-col">
               <ScrollArea className="flex-1 min-h-0 p-5">
                 <TabsContent value="gradient" className="m-0">
                   <GradientPanel

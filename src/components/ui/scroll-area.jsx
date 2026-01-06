@@ -5,7 +5,7 @@ function ScrollArea({ className, children, ...props }) {
   return (
     <div
       data-slot="scroll-area"
-      className={cn("relative overflow-auto", className)}
+      className={cn("relative overflow-x-visible overflow-y-scroll", className)}
       {...props}
     >
       {children}
