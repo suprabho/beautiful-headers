@@ -1,7 +1,6 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import GradientLayer from './components/GradientLayer'
 import AuroraLayer from './components/AuroraLayer'
-import BlobLayer from './components/BlobLayer'
 import FluidGradientLayer from './components/FluidGradientLayer'
 import WavesLayer from './components/WavesLayer'
 import TessellationLayer, { AVAILABLE_ICONS } from './components/TessellationLayer'
@@ -437,10 +436,27 @@ function App() {
   // Custom color palette state (uploaded by user) - initialized with Tailwind OKLCH palette
   const [colorPalette, setColorPalette] = useState(DEFAULT_PALETTE)
 
+  // Ref to track if RAF is pending for mouse throttling (PERFORMANCE OPTIMIZATION)
+  const rafPendingRef = useRef(false)
+  const pendingMouseRef = useRef({ x: 0, y: 0 })
+
+  // Throttled mouse move handler using requestAnimationFrame (PERFORMANCE OPTIMIZATION)
   const handleMouseMove = useCallback((e) => {
-    const x = e.clientX / window.innerWidth
-    const y = e.clientY / window.innerHeight
-    setMousePos({ x, y })
+    // Store the latest position
+    pendingMouseRef.current.x = e.clientX / window.innerWidth
+    pendingMouseRef.current.y = e.clientY / window.innerHeight
+    
+    // Skip if RAF is already pending
+    if (rafPendingRef.current) return
+    
+    rafPendingRef.current = true
+    requestAnimationFrame(() => {
+      setMousePos({ 
+        x: pendingMouseRef.current.x, 
+        y: pendingMouseRef.current.y 
+      })
+      rafPendingRef.current = false
+    })
   }, [])
 
   const randomizeGradient = () => {
@@ -549,9 +565,6 @@ function App() {
           )}
           {backgroundType === 'aurora' && (
             <AuroraLayer config={auroraConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} />
-          )}
-          {backgroundType === 'blob' && (
-            <BlobLayer config={blobConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} />
           )}
           {backgroundType === 'fluid' && (
             <FluidGradientLayer config={fluidConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} />

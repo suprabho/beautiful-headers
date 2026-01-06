@@ -2,6 +2,24 @@ import { useRef, useEffect, useMemo } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 
+// Color cache for hex to RGB conversions (PERFORMANCE OPTIMIZATION)
+const colorCache = new Map()
+
+// Cached hex to RGB converter
+const hexToRgbCached = (hex) => {
+  if (colorCache.has(hex)) return colorCache.get(hex)
+  
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  const rgb = result ? {
+    r: parseInt(result[1], 16) / 255,
+    g: parseInt(result[2], 16) / 255,
+    b: parseInt(result[3], 16) / 255,
+  } : { r: 0, g: 0, b: 0 }
+  
+  colorCache.set(hex, rgb)
+  return rgb
+}
+
 // Custom shader material that combines gradient generation with fluted glass effect
 const FlutedGradientMaterial = ({ config, effectsConfig, mousePos }) => {
   const materialRef = useRef()
@@ -9,6 +27,10 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos }) => {
   const timeRef = useRef(0)
   const currentMouseRef = useRef({ x: 0.5, y: 0.5 })
   const targetMouseRef = useRef({ x: 0.5, y: 0.5 })
+  
+  // Track previous config to avoid unnecessary uniform updates (PERFORMANCE OPTIMIZATION)
+  const prevConfigRef = useRef(null)
+  const prevEffectsConfigRef = useRef(null)
 
   // Update target mouse position
   useEffect(() => {
@@ -313,31 +335,10 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos }) => {
     }
   `
 
-  const hexToRgb = (hex) => {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-    return result ? {
-      r: parseInt(result[1], 16) / 255,
-      g: parseInt(result[2], 16) / 255,
-      b: parseInt(result[3], 16) / 255,
-    } : { r: 0, g: 0, b: 0 }
-  }
-
-  useFrame((state, delta) => {
+  // Update config-dependent uniforms only when config changes (PERFORMANCE OPTIMIZATION)
+  useEffect(() => {
     if (!materialRef.current) return
-
-    timeRef.current += delta
-
-    // Smooth mouse following
-    const lerpFactor = 1 - config.decaySpeed
-    currentMouseRef.current.x += (targetMouseRef.current.x - currentMouseRef.current.x) * lerpFactor
-    currentMouseRef.current.y += (targetMouseRef.current.y - currentMouseRef.current.y) * lerpFactor
-
     const mat = materialRef.current
-
-    // Update time and mouse
-    mat.uniforms.u_time.value = timeRef.current
-    mat.uniforms.u_mouse.value.set(currentMouseRef.current.x, 1 - currentMouseRef.current.y)
-    mat.uniforms.u_resolution.value.set(size.width, size.height)
 
     // Update gradient uniforms
     mat.uniforms.u_numColors.value = config.numColors
@@ -351,10 +352,10 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos }) => {
     mat.uniforms.u_wave2Speed.value = config.wave2Speed
     mat.uniforms.u_wave2Direction.value = config.wave2Direction
 
-    // Update color uniforms
+    // Update color uniforms using cached converter
     for (let i = 0; i < 8; i++) {
       if (i < config.colors.length) {
-        const rgb = hexToRgb(config.colors[i])
+        const rgb = hexToRgbCached(config.colors[i])
         mat.uniforms[`u_color${i}`].value.set(rgb.r, rgb.g, rgb.b)
         mat.uniforms[`u_stop${i}`].value = config.colorStops[i] || (i * 100 / (config.colors.length - 1))
       } else {
@@ -363,7 +364,14 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos }) => {
       }
     }
 
-    // Update fluted glass uniforms from effectsConfig
+    prevConfigRef.current = config
+  }, [config])
+
+  // Update effects config uniforms only when effectsConfig changes (PERFORMANCE OPTIMIZATION)
+  useEffect(() => {
+    if (!materialRef.current) return
+    const mat = materialRef.current
+
     const fluted = effectsConfig?.flutedGlass ?? {}
     mat.uniforms.u_flutedEnabled.value = fluted.enabled ?? false
     mat.uniforms.u_segments.value = fluted.segments ?? 80
@@ -373,6 +381,26 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos }) => {
     mat.uniforms.u_flutedMotionSpeed.value = fluted.motionSpeed ?? 0.5
     mat.uniforms.u_distortionStrength.value = fluted.distortionStrength ?? 0.02
     mat.uniforms.u_waveFrequency.value = fluted.waveFrequency ?? 1
+
+    prevEffectsConfigRef.current = effectsConfig
+  }, [effectsConfig])
+
+  useFrame((state, delta) => {
+    if (!materialRef.current) return
+
+    timeRef.current += delta
+
+    // Smooth mouse following
+    const lerpFactor = 1 - config.decaySpeed
+    currentMouseRef.current.x += (targetMouseRef.current.x - currentMouseRef.current.x) * lerpFactor
+    currentMouseRef.current.y += (targetMouseRef.current.y - currentMouseRef.current.y) * lerpFactor
+
+    const mat = materialRef.current
+
+    // Only update per-frame uniforms (time, mouse, resolution)
+    mat.uniforms.u_time.value = timeRef.current
+    mat.uniforms.u_mouse.value.set(currentMouseRef.current.x, 1 - currentMouseRef.current.y)
+    mat.uniforms.u_resolution.value.set(size.width, size.height)
   })
 
   return (
@@ -413,6 +441,8 @@ const GradientLayer = ({ config, effectsConfig, mousePos }) => {
         camera={{ position: [0, 0, 1], left: -1, right: 1, top: 1, bottom: -1, near: 0.1, far: 10 }}
         style={{ width: '100%', height: '100%' }}
         dpr={Math.min(window.devicePixelRatio, 2)}
+        // React Three Fiber automatically pauses when tab is not visible
+        frameloop="always"
       >
         <GradientScene config={config} effectsConfig={effectsConfig} mousePos={mousePos} />
       </Canvas>

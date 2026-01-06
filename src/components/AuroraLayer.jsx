@@ -1,10 +1,19 @@
-import { useRef, useEffect, useCallback, useMemo, useState } from 'react'
+import { useRef, useEffect, useMemo, useState } from 'react'
 import FlutedGlassCanvas from './FlutedGlassCanvas'
 
-// Convert hex color to HSL
+// Color cache for hex to HSL conversions
+const hslCache = new Map()
+
+// Convert hex color to HSL with caching
 const hexToHsl = (hex) => {
+  if (hslCache.has(hex)) return hslCache.get(hex)
+  
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-  if (!result) return { h: 0, s: 0, l: 0 }
+  if (!result) {
+    const hsl = { h: 0, s: 0, l: 0 }
+    hslCache.set(hex, hsl)
+    return hsl
+  }
   
   let r = parseInt(result[1], 16) / 255
   let g = parseInt(result[2], 16) / 255
@@ -28,7 +37,9 @@ const hexToHsl = (hex) => {
     }
   }
 
-  return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) }
+  const hsl = { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) }
+  hslCache.set(hex, hsl)
+  return hsl
 }
 
 // Darken a hex color
@@ -43,6 +54,14 @@ const darkenHex = (hex, amount = 0.7) => {
   return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
 }
 
+// Helper functions
+const getRandomInt = (min, max) => Math.round(Math.random() * (max - min)) + min
+
+const fadeInOut = (t, m) => {
+  const hm = 0.5 * m
+  return Math.abs((t + hm) % m - hm) / hm
+}
+
 const AuroraLayer = ({ config, mousePos, paletteColors = [], effectsConfig }) => {
   const containerRef = useRef(null)
   const canvasARef = useRef(null)
@@ -54,8 +73,13 @@ const AuroraLayer = ({ config, mousePos, paletteColors = [], effectsConfig }) =>
   const animationRef = useRef(null)
   const targetMouseRef = useRef({ x: 0.5, y: 0.5 })
   const currentMouseRef = useRef({ x: 0.5, y: 0.5 })
+  const isVisibleRef = useRef(true)
+  
+  // Store config values in refs to avoid animation restarts
+  const configRef = useRef(config)
+  const derivedColorsRef = useRef(null)
 
-  // Always derive hues from palette colors
+  // Derive colors from palette
   const derivedColors = useMemo(() => {
     if (!paletteColors || paletteColors.length === 0) {
       return null
@@ -65,108 +89,31 @@ const AuroraLayer = ({ config, mousePos, paletteColors = [], effectsConfig }) =>
     const minHue = Math.min(...hues)
     const maxHue = Math.max(...hues)
     
-    // Use the darkest color or derive a dark background from the first color
     const firstColor = paletteColors[0]
     const bgColor = darkenHex(firstColor, 0.85)
     
     return {
       hueStart: minHue,
-      hueEnd: maxHue === minHue ? minHue + 60 : maxHue, // Ensure there's some range
+      hueEnd: maxHue === minHue ? minHue + 60 : maxHue,
       backgroundColor: bgColor,
-      // Store all hues for random selection
       hues: hues
     }
   }, [paletteColors])
 
-  // Config defaults with user overrides (or derived from palette)
-  const minWidth = config.minWidth ?? 10
-  const maxWidth = config.maxWidth ?? 30
-  const minHeight = config.minHeight ?? 200
-  const maxHeight = config.maxHeight ?? 600
-  const minTTL = config.minTTL ?? 100
-  const maxTTL = config.maxTTL ?? 300
-  const blurAmount = config.blurAmount ?? 13
-  const hueStart = derivedColors?.hueStart ?? config.hueStart ?? 120
-  const hueEnd = derivedColors?.hueEnd ?? config.hueEnd ?? 180
-  const backgroundColor = derivedColors?.backgroundColor ?? config.backgroundColor ?? '#000000'
-  const lineCount = config.lineCount ?? 0 // 0 = auto-calculate
-  const paletteHues = derivedColors?.hues ?? null
+  // Update refs when props change (doesn't restart animation)
+  useEffect(() => {
+    configRef.current = config
+  }, [config])
 
-  const getRandomInt = (min, max) => {
-    return Math.round(Math.random() * (max - min)) + min
-  }
+  useEffect(() => {
+    derivedColorsRef.current = derivedColors
+  }, [derivedColors])
 
-  const fadeInOut = (t, m) => {
-    const hm = 0.5 * m
-    return Math.abs((t + hm) % m - hm) / hm
-  }
+  useEffect(() => {
+    targetMouseRef.current = mousePos
+  }, [mousePos])
 
-  // Get a hue value - either from palette or random range
-  const getHue = () => {
-    if (paletteHues && paletteHues.length > 0) {
-      // Pick a random hue from the palette
-      return paletteHues[Math.floor(Math.random() * paletteHues.length)]
-    }
-    return getRandomInt(hueStart, hueEnd)
-  }
-
-  class Line {
-    constructor(canvasWidth, canvasHeight) {
-      this.canvasWidth = canvasWidth
-      this.canvasHeight = canvasHeight
-      this.reset()
-    }
-
-    reset() {
-      this.x = getRandomInt(0, this.canvasWidth)
-      this.y = this.canvasHeight / 2 + minHeight
-      this.width = getRandomInt(minWidth, maxWidth)
-      this.height = getRandomInt(minHeight, maxHeight)
-      this.hue = getHue()
-      this.ttl = getRandomInt(minTTL, maxTTL)
-      this.life = 0
-    }
-
-    draw(ctx) {
-      const gradient = ctx.createLinearGradient(this.x, this.y - this.height, this.x, this.y)
-      gradient.addColorStop(0, `hsla(${this.hue}, 100%, 65%, 0)`)
-      gradient.addColorStop(0.5, `hsla(${this.hue}, 100%, 65%, ${fadeInOut(this.life, this.ttl)})`)
-      gradient.addColorStop(1, `hsla(${this.hue}, 100%, 65%, 0)`)
-
-      ctx.save()
-      ctx.beginPath()
-      ctx.strokeStyle = gradient
-      ctx.lineWidth = this.width
-      ctx.moveTo(this.x, this.y - this.height)
-      ctx.lineTo(this.x, this.y)
-      ctx.stroke()
-      ctx.closePath()
-      ctx.restore()
-    }
-
-    update() {
-      this.life++
-      if (this.life > this.ttl) {
-        this.life = 0
-        this.x = getRandomInt(0, this.canvasWidth)
-        this.width = getRandomInt(minWidth, maxWidth)
-        this.height = getRandomInt(minHeight, maxHeight)
-        this.hue = getHue()
-        this.ttl = getRandomInt(minTTL, maxTTL)
-      }
-    }
-  }
-
-  const initLines = useCallback((width) => {
-    const count = lineCount > 0 ? lineCount : Math.floor(width / minWidth * 5)
-    const lines = []
-    const height = window.innerHeight
-    for (let i = 0; i < count; i++) {
-      lines.push(new Line(width, height))
-    }
-    return lines
-  }, [lineCount, minWidth, minHeight, maxHeight, minTTL, maxTTL, hueStart, hueEnd])
-
+  // Animation setup - runs only once on mount
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
@@ -183,11 +130,100 @@ const AuroraLayer = ({ config, mousePos, paletteColors = [], effectsConfig }) =>
     ctxBRef.current = canvasB.getContext('2d')
     container.appendChild(canvasB)
 
+    // Line class defined inside useEffect to capture current config via refs
+    class Line {
+      constructor(canvasWidth, canvasHeight) {
+        this.canvasWidth = canvasWidth
+        this.canvasHeight = canvasHeight
+        this.reset()
+      }
+
+      getHue() {
+        const derived = derivedColorsRef.current
+        const cfg = configRef.current
+        
+        if (derived?.hues && derived.hues.length > 0) {
+          return derived.hues[Math.floor(Math.random() * derived.hues.length)]
+        }
+        
+        const hueStart = cfg.hueStart ?? 120
+        const hueEnd = cfg.hueEnd ?? 180
+        return getRandomInt(hueStart, hueEnd)
+      }
+
+      reset() {
+        const cfg = configRef.current
+        const minWidth = cfg.minWidth ?? 10
+        const maxWidth = cfg.maxWidth ?? 30
+        const minHeight = cfg.minHeight ?? 200
+        const maxHeight = cfg.maxHeight ?? 600
+        const minTTL = cfg.minTTL ?? 100
+        const maxTTL = cfg.maxTTL ?? 300
+        
+        this.x = getRandomInt(0, this.canvasWidth)
+        this.y = this.canvasHeight / 2 + minHeight
+        this.width = getRandomInt(minWidth, maxWidth)
+        this.height = getRandomInt(minHeight, maxHeight)
+        this.hue = this.getHue()
+        this.ttl = getRandomInt(minTTL, maxTTL)
+        this.life = 0
+      }
+
+      draw(ctx) {
+        const gradient = ctx.createLinearGradient(this.x, this.y - this.height, this.x, this.y)
+        gradient.addColorStop(0, `hsla(${this.hue}, 100%, 65%, 0)`)
+        gradient.addColorStop(0.5, `hsla(${this.hue}, 100%, 65%, ${fadeInOut(this.life, this.ttl)})`)
+        gradient.addColorStop(1, `hsla(${this.hue}, 100%, 65%, 0)`)
+
+        ctx.save()
+        ctx.beginPath()
+        ctx.strokeStyle = gradient
+        ctx.lineWidth = this.width
+        ctx.moveTo(this.x, this.y - this.height)
+        ctx.lineTo(this.x, this.y)
+        ctx.stroke()
+        ctx.closePath()
+        ctx.restore()
+      }
+
+      update() {
+        const cfg = configRef.current
+        const minWidth = cfg.minWidth ?? 10
+        const maxWidth = cfg.maxWidth ?? 30
+        const minHeight = cfg.minHeight ?? 200
+        const maxHeight = cfg.maxHeight ?? 600
+        const minTTL = cfg.minTTL ?? 100
+        const maxTTL = cfg.maxTTL ?? 300
+        
+        this.life++
+        if (this.life > this.ttl) {
+          this.life = 0
+          this.x = getRandomInt(0, this.canvasWidth)
+          this.width = getRandomInt(minWidth, maxWidth)
+          this.height = getRandomInt(minHeight, maxHeight)
+          this.hue = this.getHue()
+          this.ttl = getRandomInt(minTTL, maxTTL)
+        }
+      }
+    }
+
+    const initLines = (width, height) => {
+      const cfg = configRef.current
+      const minWidth = cfg.minWidth ?? 10
+      const lineCount = cfg.lineCount ?? 0
+      
+      const count = lineCount > 0 ? lineCount : Math.floor(width / minWidth * 5)
+      const lines = []
+      for (let i = 0; i < count; i++) {
+        lines.push(new Line(width, height))
+      }
+      return lines
+    }
+
     const handleResize = () => {
       const width = window.innerWidth
       const height = window.innerHeight
 
-      // Preserve current state when resizing
       canvasA.width = width
       canvasA.height = height
 
@@ -202,25 +238,48 @@ const AuroraLayer = ({ config, mousePos, paletteColors = [], effectsConfig }) =>
         ctxBRef.current.drawImage(canvasA, 0, 0)
       }
 
-      // Reinitialize lines on resize
-      linesRef.current = initLines(width)
+      linesRef.current = initLines(width, height)
+    }
+
+    const handleVisibilityChange = () => {
+      isVisibleRef.current = !document.hidden
+      if (!document.hidden && animationRef.current === null) {
+        animationRef.current = requestAnimationFrame(animate)
+      }
     }
 
     handleResize()
     setCanvasReady(true)
     window.addEventListener('resize', handleResize)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
 
     const animate = () => {
+      if (!isVisibleRef.current) {
+        animationRef.current = null
+        return
+      }
+
       const ctxA = ctxARef.current
       const ctxB = ctxBRef.current
       const canvasA = canvasARef.current
       const canvasB = canvasBRef.current
       const lines = linesRef.current
 
-      if (!ctxA || !ctxB || !canvasA || !canvasB) return
+      if (!ctxA || !ctxB || !canvasA || !canvasB) {
+        animationRef.current = requestAnimationFrame(animate)
+        return
+      }
+
+      // Read config values from refs
+      const cfg = configRef.current
+      const derived = derivedColorsRef.current
+      
+      const blurAmount = cfg.blurAmount ?? 13
+      const decaySpeed = cfg.decaySpeed ?? 0.95
+      const backgroundColor = derived?.backgroundColor ?? cfg.backgroundColor ?? '#000000'
 
       // Smooth mouse following
-      const lerpFactor = 1 - (config.decaySpeed ?? 0.95)
+      const lerpFactor = 1 - decaySpeed
       currentMouseRef.current.x += (targetMouseRef.current.x - currentMouseRef.current.x) * lerpFactor
       currentMouseRef.current.y += (targetMouseRef.current.y - currentMouseRef.current.y) * lerpFactor
 
@@ -251,6 +310,7 @@ const AuroraLayer = ({ config, mousePos, paletteColors = [], effectsConfig }) =>
 
     return () => {
       window.removeEventListener('resize', handleResize)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current)
       }
@@ -258,11 +318,7 @@ const AuroraLayer = ({ config, mousePos, paletteColors = [], effectsConfig }) =>
         container.removeChild(canvasB)
       }
     }
-  }, [config, initLines, backgroundColor, blurAmount])
-
-  useEffect(() => {
-    targetMouseRef.current = mousePos
-  }, [mousePos])
+  }, []) // Empty deps - only runs on mount
 
   const flutedEnabled = effectsConfig?.flutedGlass?.enabled ?? false
 
@@ -290,4 +346,3 @@ const AuroraLayer = ({ config, mousePos, paletteColors = [], effectsConfig }) =>
 }
 
 export default AuroraLayer
-

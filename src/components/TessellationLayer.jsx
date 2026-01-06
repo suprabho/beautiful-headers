@@ -14,6 +14,7 @@ const TessellationLayer = ({ config, mousePos = { x: 0.5, y: 0.5 } }) => {
   const currentMouseRef = useRef({ x: 0.5, y: 0.5 })
   const [smoothedMouse, setSmoothedMouse] = useState({ x: 0.5, y: 0.5 })
   const animationRef = useRef(null)
+  const isVisibleRef = useRef(true)
   
   // Listen for viewport resize
   useEffect(() => {
@@ -33,16 +34,46 @@ const TessellationLayer = ({ config, mousePos = { x: 0.5, y: 0.5 } }) => {
     return PhosphorIcons[iconName] || PhosphorIcons.Star
   }, [icon])
 
+  // Visibility change handler - pause animation when tab is hidden
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      isVisibleRef.current = !document.hidden
+      if (!document.hidden && mouseRotationInfluence > 0 && animationRef.current === null) {
+        // Resume animation
+        const animate = () => {
+          if (!isVisibleRef.current) {
+            animationRef.current = null
+            return
+          }
+          const lerpFactor = 0.1
+          currentMouseRef.current.x += (mousePos.x - currentMouseRef.current.x) * lerpFactor
+          currentMouseRef.current.y += (mousePos.y - currentMouseRef.current.y) * lerpFactor
+          setSmoothedMouse({ x: currentMouseRef.current.x, y: currentMouseRef.current.y })
+          animationRef.current = requestAnimationFrame(animate)
+        }
+        animationRef.current = requestAnimationFrame(animate)
+      }
+    }
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange)
+  }, [mousePos.x, mousePos.y, mouseRotationInfluence])
+
   // Animate mouse smoothing for rotation effect
   useEffect(() => {
     if (mouseRotationInfluence <= 0) {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current)
+        animationRef.current = null
       }
       return
     }
     
     const animate = () => {
+      if (!isVisibleRef.current) {
+        animationRef.current = null
+        return
+      }
       const lerpFactor = 0.1
       currentMouseRef.current.x += (mousePos.x - currentMouseRef.current.x) * lerpFactor
       currentMouseRef.current.y += (mousePos.y - currentMouseRef.current.y) * lerpFactor
@@ -54,6 +85,7 @@ const TessellationLayer = ({ config, mousePos = { x: 0.5, y: 0.5 } }) => {
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current)
+        animationRef.current = null
       }
     }
   }, [mousePos.x, mousePos.y, mouseRotationInfluence])
@@ -100,19 +132,35 @@ const TessellationLayer = ({ config, mousePos = { x: 0.5, y: 0.5 } }) => {
     return items
   }, [rowGap, colGap, viewportSize.width, viewportSize.height])
 
+  // Memoize style objects to reduce per-render object creation
+  const containerStyle = useMemo(() => ({
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    zIndex: 2,
+    pointerEvents: 'none',
+    overflow: 'hidden',
+    // GPU acceleration hint for the container
+    contain: 'strict',
+  }), [])
+
+  // Base icon style - computed once
+  const baseIconStyle = useMemo(() => ({
+    position: 'absolute',
+    opacity: opacity,
+    color: color,
+    // GPU acceleration hints - promotes to compositor layer
+    willChange: mouseRotationInfluence > 0 ? 'transform' : 'auto',
+    // Use transform3d to trigger GPU acceleration
+    backfaceVisibility: 'hidden',
+  }), [opacity, color, mouseRotationInfluence])
+
   return (
     <div
       className="tessellation-layer"
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        zIndex: 2,
-        pointerEvents: 'none',
-        overflow: 'hidden',
-      }}
+      style={containerStyle}
     >
       {grid.map((item) => {
         const mouseRot = getMouseRotation(item.x + size / 2, item.y + size / 2)
@@ -122,13 +170,11 @@ const TessellationLayer = ({ config, mousePos = { x: 0.5, y: 0.5 } }) => {
           <div
             key={item.key}
             style={{
-              position: 'absolute',
+              ...baseIconStyle,
               left: item.x,
               top: item.y,
-              transform: `rotate(${totalRotation}deg)`,
-              opacity: opacity,
-              color: color,
-              transition: mouseRotationInfluence > 0 ? 'transform 0.1s ease-out' : 'none',
+              // Use translate3d for GPU-accelerated transforms
+              transform: `translate3d(0, 0, 0) rotate(${totalRotation}deg)`,
             }}
           >
             <IconComponent size={size} weight="regular" />

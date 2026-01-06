@@ -1,24 +1,83 @@
 import { useRef, useEffect, useMemo, useState } from 'react'
 import FlutedGlassCanvas from './FlutedGlassCanvas'
 
-const FluidGradientLayer = ({ config, paletteColors = [], effectsConfig }) => {
-  const {
-    backgroundColor = '#1C89FF',
-    colors = ['#71ECFF', '#39F58A', '#71ECFF', '#F0CBA8'],
-    speed = 1,
-    intensity = 1,
-    blurAmount = 20,
-  } = config
+// Color cache for hex to RGBA conversions
+const colorCache = new Map()
 
+// Convert hex to rgba with caching
+const hexToRgba = (hex, alpha = 1) => {
+  const cacheKey = `${hex}-${alpha}`
+  if (colorCache.has(cacheKey)) return colorCache.get(cacheKey)
+  
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  if (!result) {
+    const rgba = `rgba(0, 0, 0, ${alpha})`
+    colorCache.set(cacheKey, rgba)
+    return rgba
+  }
+  const r = parseInt(result[1], 16)
+  const g = parseInt(result[2], 16)
+  const b = parseInt(result[3], 16)
+  const rgba = `rgba(${r}, ${g}, ${b}, ${alpha})`
+  colorCache.set(cacheKey, rgba)
+  return rgba
+}
+
+// Circle configurations - static, won't change
+const CIRCLE_CONFIGS = [
+  {
+    radius: 0.5,
+    xValues: [0.25, 0, 0.25], xDur: 20,
+    yValues: [0, 0.25, 0], yDur: 21,
+    rotDir: 1, rotDur: 17,
+  },
+  {
+    radius: 0.45,
+    xValues: [-0.25, 0, -0.25], xDur: 23,
+    yValues: [0, 0.50, 0], yDur: 24,
+    rotDir: 1, rotDur: 18,
+  },
+  {
+    radius: 0.4,
+    xValues: [0, 0.25, 0], xDur: 25,
+    yValues: [0, 0.25, 0], yDur: 26,
+    rotDir: -1, rotDur: 19,
+  },
+  {
+    radius: 0.35,
+    xValues: [0.25, 0.50, 0.25], xDur: 22,
+    yValues: [0.25, 0, 0.25], yDur: 27,
+    rotDir: 1, rotDur: 20,
+  }
+]
+
+// Helper: interpolate values array based on time
+const interpolateValues = (values, progress) => {
+  const t = progress % 1
+  if (t < 0.5) {
+    return values[0] + (values[1] - values[0]) * (t * 2)
+  } else {
+    return values[1] + (values[2] - values[1]) * ((t - 0.5) * 2)
+  }
+}
+
+const FluidGradientLayer = ({ config, paletteColors = [], effectsConfig }) => {
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
+  const tempCanvasRef = useRef(null)
   const [canvasReady, setCanvasReady] = useState(false)
   const animationRef = useRef(null)
   const timeRef = useRef(0)
+  const isVisibleRef = useRef(true)
+  
+  // Store config values in refs to avoid animation restarts
+  const configRef = useRef(config)
+  const gradientColorsRef = useRef([])
+  const bgColorRef = useRef('')
 
   const flutedEnabled = effectsConfig?.flutedGlass?.enabled ?? false
 
-  // Always use palette colors
+  // Derive gradient colors
   const gradientColors = useMemo(() => {
     if (paletteColors.length >= 4) {
       return paletteColors.slice(0, 4)
@@ -30,166 +89,129 @@ const FluidGradientLayer = ({ config, paletteColors = [], effectsConfig }) => {
       }
       return repeated
     }
-    return colors
-  }, [paletteColors, colors])
+    return config.colors || ['#71ECFF', '#39F58A', '#71ECFF', '#F0CBA8']
+  }, [paletteColors, config.colors])
 
-  // Get background color from palette or config
+  // Background color
   const bgColor = useMemo(() => {
     if (paletteColors.length > 0) {
       return paletteColors[0]
     }
-    return backgroundColor
-  }, [paletteColors, backgroundColor])
+    return config.backgroundColor || '#1C89FF'
+  }, [paletteColors, config.backgroundColor])
 
-  // Convert hex to rgba
-  const hexToRgba = (hex, alpha = 1) => {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-    if (!result) return `rgba(0, 0, 0, ${alpha})`
-    const r = parseInt(result[1], 16)
-    const g = parseInt(result[2], 16)
-    const b = parseInt(result[3], 16)
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`
-  }
+  // Update refs when props change (doesn't restart animation)
+  useEffect(() => {
+    configRef.current = config
+  }, [config])
 
+  useEffect(() => {
+    gradientColorsRef.current = gradientColors
+    bgColorRef.current = bgColor
+  }, [gradientColors, bgColor])
+
+  // Animation setup - runs only once on mount
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
 
-    // Create canvas
     const canvas = document.createElement('canvas')
     canvas.style.cssText = 'position: absolute; left: 0; top: 0; width: 100%; height: 100%;'
     canvasRef.current = canvas
     container.appendChild(canvas)
 
+    const tempCanvas = document.createElement('canvas')
+    tempCanvasRef.current = tempCanvas
+
     const ctx = canvas.getContext('2d')
-
-    // 4 circles with varying radii, each with a radial gradient
-    // Gradient goes from one edge (full opacity) to opposite edge (0 opacity)
-    // Circles are translated and rotated
-    const circles = [
-      {
-        // Circle 1: cyan, large
-        radius: 0.5,  // 50% of viewport
-        xValues: [0.25, 0, 0.25], xDur: 20,
-        yValues: [0, 0.25, 0], yDur: 21,
-        rotDir: 1, rotDur: 17,
-        color: '#71ECFF'
-      },
-      {
-        // Circle 2: green, medium-large
-        radius: 0.45,
-        xValues: [-0.25, 0, -0.25], xDur: 23,
-        yValues: [0, 0.50, 0], yDur: 24,
-        rotDir: 1, rotDur: 18,
-        color: '#39F58A'
-      },
-      {
-        // Circle 3: cyan, medium
-        radius: 0.4,
-        xValues: [0, 0.25, 0], xDur: 25,
-        yValues: [0, 0.25, 0], yDur: 26,
-        rotDir: -1, rotDur: 19,  // Reverse rotation
-        color: '#71ECFF'
-      },
-      {
-        // Circle 4: peach/orange, smaller
-        radius: 0.35,
-        xValues: [0.25, 0.50, 0.25], xDur: 22,
-        yValues: [0.25, 0, 0.25], yDur: 27,
-        rotDir: 1, rotDur: 20,
-        color: '#F0CBA8'
-      }
-    ]
-
-    // Helper: interpolate values array based on time (0→1→0 pattern for "a;b;a" animation)
-    const interpolateValues = (values, progress) => {
-      // SVG values="a;b;a" means: start at a, go to b at 50%, return to a at 100%
-      const t = progress % 1
-      if (t < 0.5) {
-        // First half: interpolate from values[0] to values[1]
-        return values[0] + (values[1] - values[0]) * (t * 2)
-      } else {
-        // Second half: interpolate from values[1] to values[2]
-        return values[1] + (values[2] - values[1]) * ((t - 0.5) * 2)
-      }
-    }
+    const tempCtx = tempCanvas.getContext('2d')
 
     const handleResize = () => {
       const width = window.innerWidth
       const height = window.innerHeight
       canvas.width = width
       canvas.height = height
+      tempCanvas.width = width
+      tempCanvas.height = height
+    }
+
+    const handleVisibilityChange = () => {
+      isVisibleRef.current = !document.hidden
+      if (!document.hidden && animationRef.current === null) {
+        animationRef.current = requestAnimationFrame(animate)
+      }
     }
 
     handleResize()
     setCanvasReady(true)
     window.addEventListener('resize', handleResize)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
 
     const animate = () => {
+      if (!isVisibleRef.current) {
+        animationRef.current = null
+        return
+      }
+
       const width = canvas.width
       const height = canvas.height
 
-      if (!ctx) {
+      if (!ctx || !tempCtx) {
         animationRef.current = requestAnimationFrame(animate)
         return
       }
 
+      // Read config values from refs
+      const cfg = configRef.current
+      const colors = gradientColorsRef.current
+      const background = bgColorRef.current
+      
+      const speed = cfg.speed ?? 1
+      const intensity = cfg.intensity ?? 1
+      const blurAmount = cfg.blurAmount ?? 20
+
       timeRef.current += 0.016 * speed
 
       // Clear and fill background
-      ctx.fillStyle = bgColor
+      ctx.fillStyle = background
       ctx.fillRect(0, 0, width, height)
 
       const time = timeRef.current
-      
-      // Base size for calculations
       const size = Math.max(width, height)
       const centerX = width / 2
       const centerY = height / 2
 
       // Draw each circle with its own radial gradient
-      for (let i = 0; i < circles.length; i++) {
-        const circle = circles[i]
-        const color = gradientColors[i % gradientColors.length] || circle.color
+      for (let i = 0; i < CIRCLE_CONFIGS.length; i++) {
+        const circle = CIRCLE_CONFIGS[i]
+        const color = colors[i % colors.length]
 
-        // Circle radius scaled by intensity
         const circleRadius = size * circle.radius * intensity
 
-        // Calculate position animation (oscillating x and y)
         const xProgress = time / circle.xDur
         const yProgress = time / circle.yDur
         const offsetX = interpolateValues(circle.xValues, xProgress) * width
         const offsetY = interpolateValues(circle.yValues, yProgress) * height
 
-        // Calculate rotation angle (continuous rotation)
         const rotation = (time / circle.rotDur) * Math.PI * 2 * circle.rotDir
 
-        // Circle center position (centered + offset)
         const circleCenterX = centerX + offsetX
         const circleCenterY = centerY + offsetY
 
         ctx.save()
 
-        // Translate to circle center, rotate, then translate back
-        // This rotates the gradient direction within the circle
         ctx.translate(circleCenterX, circleCenterY)
         ctx.rotate(rotation)
         ctx.translate(-circleCenterX, -circleCenterY)
 
-        // Create radial gradient from one edge to the opposite edge:
-        // - Focal point (start) at left edge of circle: (cx - radius, cy)
-        // - Center at circle center, radius extends to right edge
-        // This creates a gradient that goes from left edge (full color) to right edge (transparent)
         const gradient = ctx.createRadialGradient(
-          circleCenterX - circleRadius, circleCenterY, 0,  // Start at left edge (point)
-          circleCenterX, circleCenterY, circleRadius * 2   // Extend through center to right edge (diameter)
+          circleCenterX - circleRadius, circleCenterY, 0,
+          circleCenterX, circleCenterY, circleRadius * 2
         )
 
-        // Color stops: full opacity at start edge, background color transparent at opposite edge
         gradient.addColorStop(0, hexToRgba(color, 1))
-        gradient.addColorStop(1, hexToRgba(bgColor, 0))
+        gradient.addColorStop(1, hexToRgba(background, 0))
 
-        // Draw the circle
         ctx.beginPath()
         ctx.arc(circleCenterX, circleCenterY, circleRadius, 0, Math.PI * 2)
         ctx.closePath()
@@ -200,18 +222,15 @@ const FluidGradientLayer = ({ config, paletteColors = [], effectsConfig }) => {
         ctx.restore()
       }
 
-      // Apply blur if specified
+      // Apply blur if specified using pre-created temp canvas
       if (blurAmount > 0) {
-        const tempCanvas = document.createElement('canvas')
-        tempCanvas.width = width
-        tempCanvas.height = height
-        const tempCtx = tempCanvas.getContext('2d')
-
         tempCtx.filter = `blur(${blurAmount}px)`
+        tempCtx.clearRect(0, 0, width, height)
         tempCtx.drawImage(canvas, 0, 0)
 
         ctx.clearRect(0, 0, width, height)
         ctx.drawImage(tempCanvas, 0, 0)
+        tempCtx.filter = 'none'
       }
 
       animationRef.current = requestAnimationFrame(animate)
@@ -221,6 +240,7 @@ const FluidGradientLayer = ({ config, paletteColors = [], effectsConfig }) => {
 
     return () => {
       window.removeEventListener('resize', handleResize)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current)
       }
@@ -228,7 +248,7 @@ const FluidGradientLayer = ({ config, paletteColors = [], effectsConfig }) => {
         container.removeChild(canvas)
       }
     }
-  }, [bgColor, gradientColors, speed, intensity, blurAmount])
+  }, []) // Empty deps - only runs on mount
 
   return (
     <div
