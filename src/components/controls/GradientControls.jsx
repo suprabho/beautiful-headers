@@ -813,7 +813,6 @@ export const GradientPanel = ({
           <SelectContent>
             <SelectItem value="liquid">Fog</SelectItem>
             <SelectItem value="aurora">Aurora</SelectItem>
-            <SelectItem value="blob">Blob</SelectItem>
             <SelectItem value="fluid">Mesh</SelectItem>
             <SelectItem value="waves">Waves</SelectItem>
           </SelectContent>
@@ -831,13 +830,6 @@ export const GradientPanel = ({
         <AuroraControls
           auroraConfig={auroraConfig}
           setAuroraConfig={setAuroraConfig}
-          parsedPalette={parsedPalette}
-        />
-      )}
-      {backgroundType === 'blob' && (
-        <BlobControls
-          blobConfig={blobConfig}
-          setBlobConfig={setBlobConfig}
           parsedPalette={parsedPalette}
         />
       )}

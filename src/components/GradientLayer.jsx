@@ -255,11 +255,16 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos }) => {
       vec2 uv = vUv;
       vec2 aspect = vec2(u_resolution.x / u_resolution.y, 1.0);
       
+      // Aspect-corrected UV for noise sampling (prevents stretching on wide screens)
+      vec2 aspectCorrectedUV = uv * aspect;
+      
       float sliceProgress = 0.0;
       
       // Apply fluted glass distortion if enabled
       if (u_flutedEnabled) {
         uv = applyFlutedGlass(uv, sliceProgress);
+        // Update aspect-corrected UV after fluted glass distortion
+        aspectCorrectedUV = uv * aspect;
       }
       
       // Mouse influence with distance falloff
@@ -267,9 +272,9 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos }) => {
       float mouseDist = length(mouseOffset * aspect);
       float mouseEffect = exp(-mouseDist * 1.5) * u_mouseInfluence;
       
-      // Wave distortion
-      float wave1 = fbm(uv * 3.0 + u_time * u_wave1Speed * u_wave1Direction);
-      float wave2 = fbm(uv * 2.0 + u_time * u_wave2Speed * u_wave2Direction + 10.0);
+      // Wave distortion (using aspect-corrected UV for consistent noise scale)
+      float wave1 = fbm(aspectCorrectedUV * 3.0 + u_time * u_wave1Speed * u_wave1Direction);
+      float wave2 = fbm(aspectCorrectedUV * 2.0 + u_time * u_wave2Speed * u_wave2Direction + 10.0);
       vec2 waveOffset = vec2(wave1, wave2) * u_waveIntensity;
       
       // Mouse distortion
@@ -277,6 +282,7 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos }) => {
       
       // Apply distortions
       vec2 distortedUV = uv + waveOffset + mouseDistort;
+      vec2 aspectCorrectedDistortedUV = distortedUV * aspect;
       
       // Calculate gradient position
       float t = 0.0;
@@ -303,14 +309,14 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos }) => {
       
       t = clamp(t, 0.0, 1.0);
       
-      // Add dynamic movement to t
-      t += snoise(distortedUV * 2.0 + u_time * 0.1) * 0.1;
+      // Add dynamic movement to t (using aspect-corrected UV)
+      t += snoise(aspectCorrectedDistortedUV * 2.0 + u_time * 0.1) * 0.1;
       t = clamp(t, 0.0, 1.0);
       
       vec3 color = getGradientColor(t);
       
-      // Add subtle shimmer
-      float shimmer = snoise(vUv * 10.0 + u_time) * 0.05;
+      // Add subtle shimmer (using aspect-corrected UV)
+      float shimmer = snoise(vUv * aspect * 10.0 + u_time) * 0.05;
       color += shimmer;
       
       // Vignette - only apply when fluted glass is disabled

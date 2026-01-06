@@ -1176,7 +1176,6 @@ const ControlPanel = ({
                       <SelectContent>
                         <SelectItem value="liquid">Fog</SelectItem>
                         <SelectItem value="aurora">Aurora</SelectItem>
-                        <SelectItem value="blob">Blob</SelectItem>
                         <SelectItem value="fluid">Mesh</SelectItem>
                         <SelectItem value="waves">Waves</SelectItem>
                       </SelectContent>
@@ -1198,14 +1197,6 @@ const ControlPanel = ({
                         <SubsectionButton title="Background" onClick={() => openDialog('aurora-background')} />
                         <SubsectionButton title="Lines" onClick={() => openDialog('aurora-lines')} />
                         <SubsectionButton title="Animation" onClick={() => openDialog('aurora-animation')} />
-                      </>
-                    )}
-                    {backgroundType === 'blob' && (
-                      <>
-                        <SubsectionButton title="Background" onClick={() => openDialog('blob-background')} />
-                        <SubsectionButton title="Size" onClick={() => openDialog('blob-size')} />
-                        <SubsectionButton title="Animation" onClick={() => openDialog('blob-animation')} />
-                        <SubsectionButton title="Effect" onClick={() => openDialog('blob-effect')} />
                       </>
                     )}
                     {backgroundType === 'fluid' && (
