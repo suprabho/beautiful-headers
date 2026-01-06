@@ -599,8 +599,8 @@ export const FluidControls = ({
             intensity: val
           })}
           min={0.1}
-          max={1}
-          step={0.05}
+          max={10}
+          step={0.1}
         />
       </ControlGroup>
 
@@ -613,7 +613,7 @@ export const FluidControls = ({
             blurAmount: val
           })}
           min={0}
-          max={20}
+          max={100}
           step={1}
         />
       </ControlGroup>
@@ -856,7 +856,201 @@ export const BlobControls = ({
   )
 }
 
-// Main Gradient Panel that combines all four background types
+// Waves controls (animated gradient waves)
+export const WavesControls = ({
+  wavesConfig,
+  setWavesConfig,
+  gradientConfig,
+  parsedPalette,
+}) => {
+  const updateWavesColor = (index, color) => {
+    const newColors = [...(wavesConfig.colors || ['#06b6d4', '#a855f7', '#ec4899', '#3b82f6'])]
+    newColors[index] = color
+    setWavesConfig({ ...wavesConfig, colors: newColors })
+  }
+
+  const addWavesColor = () => {
+    const currentColors = wavesConfig.colors || ['#06b6d4', '#a855f7', '#ec4899', '#3b82f6']
+    if (currentColors.length < 8) {
+      setWavesConfig({ ...wavesConfig, colors: [...currentColors, '#ffffff'] })
+    }
+  }
+
+  const removeWavesColor = (index) => {
+    const currentColors = wavesConfig.colors || ['#06b6d4', '#a855f7', '#ec4899', '#3b82f6']
+    if (currentColors.length > 2) {
+      setWavesConfig({ ...wavesConfig, colors: currentColors.filter((_, i) => i !== index) })
+    }
+  }
+
+  return (
+    <>
+      {/* Use Gradient Colors Toggle */}
+      <div className="flex items-center justify-between">
+        <Label className="text-sm">Use Gradient Colors</Label>
+        <Switch
+          checked={wavesConfig.useGradientColors}
+          onCheckedChange={(checked) => setWavesConfig({
+            ...wavesConfig,
+            useGradientColors: checked
+          })}
+        />
+      </div>
+
+      {wavesConfig.useGradientColors ? (
+        <div className="p-3 rounded-lg bg-muted/50 border border-border">
+          <Label className="text-xs text-muted-foreground mb-2 block">Colors from Gradient Palette</Label>
+          <div className="flex gap-1 flex-wrap">
+            {gradientConfig.colors.map((color, idx) => (
+              <div
+                key={idx}
+                className="w-8 h-8 rounded-md border border-border"
+                style={{ backgroundColor: color }}
+                title={color}
+              />
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            Waves will use these colors. Edit them in Liquid mode.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <Label className="text-xs uppercase tracking-wide font-semibold">Wave Colors</Label>
+          {(wavesConfig.colors || ['#06b6d4', '#a855f7', '#ec4899', '#3b82f6']).map((color, index) => (
+            <div key={index} className="flex items-center gap-2">
+              <PaletteColorPicker
+                value={color}
+                onChange={(newColor) => updateWavesColor(index, newColor)}
+                palette={parsedPalette}
+                className="w-10 h-9"
+              />
+              <Input 
+                value={color}
+                onChange={(e) => updateWavesColor(index, e.target.value)}
+                className="h-9 font-mono text-xs flex-1"
+              />
+              <Button 
+                variant="ghost" 
+                size="icon"
+                className="h-7 w-7 ml-auto"
+                onClick={() => removeWavesColor(index)}
+                disabled={(wavesConfig.colors || []).length <= 2}
+              >
+                <Trash size={12} />
+              </Button>
+            </div>
+          ))}
+          {(wavesConfig.colors || []).length < 8 && (
+            <Button variant="outline" size="sm" className="w-full h-8 text-xs" onClick={addWavesColor}>
+              <Plus size={12} className="mr-1" /> Add Color
+            </Button>
+          )}
+        </div>
+      )}
+
+      {/* Wave Height */}
+      <ControlGroup label={`Wave Height`}>
+        <NumberInput
+          value={[wavesConfig.waveHeight]}
+          onValueChange={([val]) => setWavesConfig({
+            ...wavesConfig,
+            waveHeight: val
+          })}
+          min={0.05}
+          max={0.5}
+          step={0.05}
+        />
+      </ControlGroup>
+
+      {/* Wave Frequency */}
+      <ControlGroup label={`Wave Frequency`}>
+        <NumberInput
+          value={[wavesConfig.waveFrequency]}
+          onValueChange={([val]) => setWavesConfig({
+            ...wavesConfig,
+            waveFrequency: val
+          })}
+          min={1}
+          max={10}
+          step={0.5}
+        />
+      </ControlGroup>
+
+      {/* Rotation */}
+      <ControlGroup label={`Rotation (°)`}>
+        <NumberInput
+          value={[wavesConfig.rotation]}
+          onValueChange={([val]) => setWavesConfig({
+            ...wavesConfig,
+            rotation: val
+          })}
+          min={-180}
+          max={180}
+          step={15}
+        />
+      </ControlGroup>
+
+      {/* Animation Speed */}
+      <ControlGroup label={`Speed`}>
+        <NumberInput
+          value={[wavesConfig.speed]}
+          onValueChange={([val]) => setWavesConfig({
+            ...wavesConfig,
+            speed: val
+          })}
+          min={0}
+          max={2}
+          step={0.1}
+        />
+      </ControlGroup>
+
+      {/* Wave Layers */}
+      <ControlGroup label={`Layers`}>
+        <NumberInput
+          value={[wavesConfig.layers]}
+          onValueChange={([val]) => setWavesConfig({
+            ...wavesConfig,
+            layers: val
+          })}
+          min={2}
+          max={8}
+          step={1}
+        />
+      </ControlGroup>
+
+      {/* Blur Amount */}
+      <ControlGroup label={`Blur`}>
+        <NumberInput
+          value={[wavesConfig.blur]}
+          onValueChange={([val]) => setWavesConfig({
+            ...wavesConfig,
+            blur: val
+          })}
+          min={0}
+          max={100}
+          step={5}
+        />
+      </ControlGroup>
+
+      {/* Phase Offset */}
+      <ControlGroup label={`Phase Offset`}>
+        <NumberInput
+          value={[wavesConfig.phaseOffset ?? 0]}
+          onValueChange={([val]) => setWavesConfig({
+            ...wavesConfig,
+            phaseOffset: val
+          })}
+          min={0}
+          max={2}
+          step={0.1}
+        />
+      </ControlGroup>
+    </>
+  )
+}
+
+// Main Gradient Panel that combines all five background types
 export const GradientPanel = ({
   backgroundType,
   setBackgroundType,
@@ -868,6 +1062,8 @@ export const GradientPanel = ({
   setBlobConfig,
   fluidConfig,
   setFluidConfig,
+  wavesConfig,
+  setWavesConfig,
   parsedPalette,
 }) => {
   return (
@@ -886,6 +1082,7 @@ export const GradientPanel = ({
             <SelectItem value="aurora">Aurora</SelectItem>
             <SelectItem value="blob">Blob</SelectItem>
             <SelectItem value="fluid">Fluid</SelectItem>
+            <SelectItem value="waves">Waves</SelectItem>
           </SelectContent>
         </Select>
       </ControlGroup>
@@ -920,6 +1117,14 @@ export const GradientPanel = ({
         <FluidControls
           fluidConfig={fluidConfig}
           setFluidConfig={setFluidConfig}
+          gradientConfig={gradientConfig}
+          parsedPalette={parsedPalette}
+        />
+      )}
+      {backgroundType === 'waves' && (
+        <WavesControls
+          wavesConfig={wavesConfig}
+          setWavesConfig={setWavesConfig}
           gradientConfig={gradientConfig}
           parsedPalette={parsedPalette}
         />

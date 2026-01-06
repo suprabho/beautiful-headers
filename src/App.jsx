@@ -3,6 +3,7 @@ import GradientLayer from './components/GradientLayer'
 import AuroraLayer from './components/AuroraLayer'
 import BlobLayer from './components/BlobLayer'
 import FluidGradientLayer from './components/FluidGradientLayer'
+import WavesLayer from './components/WavesLayer'
 import TessellationLayer, { AVAILABLE_ICONS } from './components/TessellationLayer'
 import EffectsLayer from './components/EffectsLayer'
 import TextLayer from './components/TextLayer'
@@ -366,8 +367,21 @@ function App() {
     backgroundColor: '#1C89FF',
     colors: ['#71ECFF', '#39F58A', '#71ECFF', '#F0CBA8'],
     speed: 1,
-    intensity: 0.5,
-    blurAmount: 0,
+    intensity: 1,
+    blurAmount: 20,
+  })
+
+  // Waves Layer State (animated gradient waves)
+  const [wavesConfig, setWavesConfig] = useState({
+    useGradientColors: true,
+    colors: ['#06b6d4', '#a855f7', '#ec4899', '#3b82f6'],
+    waveHeight: 0.15,
+    waveFrequency: 3,
+    rotation: 0,
+    speed: 0.5,
+    blur: 40,
+    layers: 4,
+    phaseOffset: 0, // 0 = aligned/stacked, higher values = more offset between layers
   })
 
   // Tessellation Layer State
@@ -545,6 +559,9 @@ function App() {
           {backgroundType === 'fluid' && (
             <FluidGradientLayer config={fluidConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} />
           )}
+          {backgroundType === 'waves' && (
+            <WavesLayer config={wavesConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} />
+          )}
         </div>
         
         {/* Layer 2: Tessellation (no filter effects) */}
@@ -579,6 +596,8 @@ function App() {
         setBlobConfig={setBlobConfig}
         fluidConfig={fluidConfig}
         setFluidConfig={setFluidConfig}
+        wavesConfig={wavesConfig}
+        setWavesConfig={setWavesConfig}
         randomizeGradient={randomizeGradient}
         tessellationConfig={tessellationConfig}
         setTessellationConfig={setTessellationConfig}

@@ -7,8 +7,8 @@ const FluidGradientLayer = ({ config, paletteColors = [], effectsConfig }) => {
     useGradientColors = true,
     colors = ['#71ECFF', '#39F58A', '#71ECFF', '#F0CBA8'],
     speed = 1,
-    intensity = 0.5,
-    blurAmount = 0,
+    intensity = 1,
+    blurAmount = 20,
   } = config
 
   const containerRef = useRef(null)
@@ -186,10 +186,9 @@ const FluidGradientLayer = ({ config, paletteColors = [], effectsConfig }) => {
           circleCenterX, circleCenterY, circleRadius * 2   // Extend through center to right edge (diameter)
         )
 
-        // Color stops: full opacity at start edge, transparent at opposite edge
+        // Color stops: full opacity at start edge, background color transparent at opposite edge
         gradient.addColorStop(0, hexToRgba(color, 1))
-        gradient.addColorStop(0.5, hexToRgba(color, 0.5))  // Half opacity at center
-        gradient.addColorStop(1, hexToRgba(color, 0))
+        gradient.addColorStop(1, hexToRgba(bgColor, 0))
 
         // Draw the circle
         ctx.beginPath()

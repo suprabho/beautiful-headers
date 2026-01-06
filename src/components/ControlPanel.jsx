@@ -43,6 +43,8 @@ const ControlPanel = ({
   setBlobConfig,
   fluidConfig,
   setFluidConfig,
+  wavesConfig,
+  setWavesConfig,
   randomizeGradient,
   tessellationConfig,
   setTessellationConfig,
@@ -127,8 +129,8 @@ const ControlPanel = ({
 
   const openDialog = (dialogKey) => {
     setActiveDialog(dialogKey)
-    if (dialogKey.startsWith('gradient-') || dialogKey.startsWith('aurora-') || dialogKey.startsWith('blob-') || dialogKey.startsWith('fluid-')) {
-      setOriginalValues({ type: 'gradient', data: { gradientConfig: { ...gradientConfig }, auroraConfig: { ...auroraConfig }, blobConfig: { ...blobConfig }, fluidConfig: { ...fluidConfig } } })
+    if (dialogKey.startsWith('gradient-') || dialogKey.startsWith('aurora-') || dialogKey.startsWith('blob-') || dialogKey.startsWith('fluid-') || dialogKey.startsWith('waves-')) {
+      setOriginalValues({ type: 'gradient', data: { gradientConfig: { ...gradientConfig }, auroraConfig: { ...auroraConfig }, blobConfig: { ...blobConfig }, fluidConfig: { ...fluidConfig }, wavesConfig: { ...wavesConfig } } })
     } else if (dialogKey.startsWith('pattern-')) {
       setOriginalValues({ type: 'pattern', data: { ...tessellationConfig } })
     } else if (dialogKey.startsWith('effects-')) {
@@ -150,6 +152,7 @@ const ControlPanel = ({
         setAuroraConfig(originalValues.data.auroraConfig)
         setBlobConfig(originalValues.data.blobConfig)
         setFluidConfig(originalValues.data.fluidConfig)
+        setWavesConfig(originalValues.data.wavesConfig)
       } else if (originalValues.type === 'pattern') {
         setTessellationConfig(originalValues.data)
       } else if (originalValues.type === 'effects') {
@@ -171,6 +174,7 @@ const ControlPanel = ({
         setAuroraConfig(originalValues.data.auroraConfig)
         setBlobConfig(originalValues.data.blobConfig)
         setFluidConfig(originalValues.data.fluidConfig)
+        setWavesConfig(originalValues.data.wavesConfig)
       } else if (originalValues.type === 'pattern') {
         setTessellationConfig(originalValues.data)
       } else if (originalValues.type === 'effects') {
@@ -538,6 +542,8 @@ const ControlPanel = ({
       'fluid-colors': 'Fluid Colors',
       'fluid-animation': 'Animation Speed',
       'fluid-settings': 'Fluid Settings',
+      'waves-colors': 'Wave Colors',
+      'waves-settings': 'Wave Settings',
       'pattern-icon': 'Icon Settings',
       'pattern-spacing': 'Spacing',
       'pattern-mouse': 'Mouse Influence',
@@ -865,8 +871,70 @@ const ControlPanel = ({
       case 'fluid-settings':
         return (
           <div className="space-y-2">
-            <ControlGroup label={`Intensity`}><NumberInput value={[fluidConfig.intensity]} onValueChange={([val]) => setFluidConfig({ ...fluidConfig, intensity: val })} min={0.1} max={1} step={0.05} showButtons /></ControlGroup>
-            <ControlGroup label={`Blur`}><NumberInput value={[fluidConfig.blurAmount]} onValueChange={([val]) => setFluidConfig({ ...fluidConfig, blurAmount: val })} min={0} max={20} step={1} showButtons /></ControlGroup>
+            <ControlGroup label={`Intensity`}><NumberInput value={[fluidConfig.intensity]} onValueChange={([val]) => setFluidConfig({ ...fluidConfig, intensity: val })} min={0.1} max={10} step={0.1} showButtons /></ControlGroup>
+            <ControlGroup label={`Blur`}><NumberInput value={[fluidConfig.blurAmount]} onValueChange={([val]) => setFluidConfig({ ...fluidConfig, blurAmount: val })} min={0} max={100} step={1} showButtons /></ControlGroup>
+          </div>
+        )
+      case 'waves-colors':
+        return (
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>Use Gradient Colors</Label>
+              <Switch checked={wavesConfig.useGradientColors} onCheckedChange={(checked) => setWavesConfig({ ...wavesConfig, useGradientColors: checked })} />
+            </div>
+            {wavesConfig.useGradientColors ? (
+              <div className="p-3 rounded-lg bg-muted/50 border border-border">
+                <Label className="text-xs text-muted-foreground mb-2 block">Colors from Gradient Palette</Label>
+                <div className="flex gap-1 flex-wrap">
+                  {gradientConfig.colors.map((color, idx) => (
+                    <div key={idx} className="w-8 h-8 rounded-md border border-border" style={{ backgroundColor: color }} title={color} />
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">Waves will use these colors. Edit them in Liquid mode.</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Label className="text-xs uppercase tracking-wide font-semibold">Wave Colors</Label>
+                {(wavesConfig.colors || ['#06b6d4', '#a855f7', '#ec4899', '#3b82f6']).map((color, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <PaletteColorPicker value={color} onChange={(newColor) => {
+                      const newColors = [...(wavesConfig.colors || [])]
+                      newColors[index] = newColor
+                      setWavesConfig({ ...wavesConfig, colors: newColors })
+                    }} palette={parsedPalette} className="w-10 h-9" />
+                    <Input value={color} onChange={(e) => {
+                      const newColors = [...(wavesConfig.colors || [])]
+                      newColors[index] = e.target.value
+                      setWavesConfig({ ...wavesConfig, colors: newColors })
+                    }} className="h-9 font-mono text-xs flex-1" />
+                    <Button variant="ghost" size="icon" className="h-7 w-7 ml-auto" onClick={() => {
+                      const currentColors = wavesConfig.colors || []
+                      if (currentColors.length > 2) {
+                        setWavesConfig({ ...wavesConfig, colors: currentColors.filter((_, i) => i !== index) })
+                      }
+                    }} disabled={(wavesConfig.colors || []).length <= 2}><Trash size={12} /></Button>
+                  </div>
+                ))}
+                {(wavesConfig.colors || []).length < 8 && (
+                  <Button variant="outline" size="sm" className="w-full h-8 text-xs" onClick={() => {
+                    const currentColors = wavesConfig.colors || ['#06b6d4', '#a855f7', '#ec4899', '#3b82f6']
+                    setWavesConfig({ ...wavesConfig, colors: [...currentColors, '#ffffff'] })
+                  }}><Plus size={12} className="mr-1" /> Add Color</Button>
+                )}
+              </div>
+            )}
+          </div>
+        )
+      case 'waves-settings':
+        return (
+          <div className="space-y-2">
+            <ControlGroup label={`Wave Height`}><NumberInput value={[wavesConfig.waveHeight]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, waveHeight: val })} min={0.05} max={0.5} step={0.05} showButtons /></ControlGroup>
+            <ControlGroup label={`Frequency`}><NumberInput value={[wavesConfig.waveFrequency]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, waveFrequency: val })} min={1} max={10} step={0.5} showButtons /></ControlGroup>
+            <ControlGroup label={`Rotation (°)`}><NumberInput value={[wavesConfig.rotation]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, rotation: val })} min={-180} max={180} step={15} showButtons /></ControlGroup>
+            <ControlGroup label={`Speed`}><NumberInput value={[wavesConfig.speed]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, speed: val })} min={0} max={2} step={0.1} showButtons /></ControlGroup>
+            <ControlGroup label={`Layers`}><NumberInput value={[wavesConfig.layers]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, layers: val })} min={2} max={8} step={1} showButtons /></ControlGroup>
+            <ControlGroup label={`Blur`}><NumberInput value={[wavesConfig.blur]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, blur: val })} min={0} max={100} step={5} showButtons /></ControlGroup>
+            <ControlGroup label={`Phase Offset`}><NumberInput value={[wavesConfig.phaseOffset ?? 0]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, phaseOffset: val })} min={0} max={2} step={0.1} showButtons /></ControlGroup>
           </div>
         )
       case 'pattern-icon':
@@ -1294,6 +1362,7 @@ const ControlPanel = ({
                         <SelectItem value="aurora">Aurora</SelectItem>
                         <SelectItem value="blob">Blob</SelectItem>
                         <SelectItem value="fluid">Fluid</SelectItem>
+                        <SelectItem value="waves">Waves</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -1328,6 +1397,12 @@ const ControlPanel = ({
                         <SubsectionButton title="Colors" onClick={() => openDialog('fluid-colors')} />
                         <SubsectionButton title="Animation" onClick={() => openDialog('fluid-animation')} />
                         <SubsectionButton title="Settings" onClick={() => openDialog('fluid-settings')} />
+                      </>
+                    )}
+                    {backgroundType === 'waves' && (
+                      <>
+                        <SubsectionButton title="Colors" onClick={() => openDialog('waves-colors')} />
+                        <SubsectionButton title="Settings" onClick={() => openDialog('waves-settings')} />
                       </>
                     )}
                   </div>
@@ -1464,6 +1539,8 @@ const ControlPanel = ({
                     setBlobConfig={setBlobConfig}
                     fluidConfig={fluidConfig}
                     setFluidConfig={setFluidConfig}
+                    wavesConfig={wavesConfig}
+                    setWavesConfig={setWavesConfig}
                     parsedPalette={parsedPalette}
                   />
                 </TabsContent>
