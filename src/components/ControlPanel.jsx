@@ -1169,7 +1169,22 @@ const ControlPanel = ({
                 <div className="space-y-2">
                   {/* Colors Section - Always visible */}
                   <div className="px-1">
-                    <SubsectionButton title="Colors" onClick={() => openDialog('gradient-colors')} />
+                    <Button 
+                      variant="outline" 
+                      className="w-full h-11 px-3 justify-between"
+                      onClick={() => openDialog('gradient-colors')}
+                    >
+                      <span className="text-sm">Colors</span>
+                      <div className="flex items-center gap-1">
+                        {gradientConfig.colors.map((color, idx) => (
+                          <div
+                            key={idx}
+                            className="w-5 h-5 rounded-sm border border-border/50"
+                            style={{ backgroundColor: color }}
+                          />
+                        ))}
+                      </div>
+                    </Button>
                   </div>
                   
                   <div className="h-px bg-border mx-3" />

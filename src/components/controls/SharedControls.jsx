@@ -120,7 +120,7 @@ export const PaletteColorPicker = ({ value, onChange, palette, className }) => {
   const { colorsByName } = palette
   
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen} modal={false}>
       <PopoverTrigger asChild>
         <button
           type="button"
@@ -133,36 +133,43 @@ export const PaletteColorPicker = ({ value, onChange, palette, className }) => {
           <Eyedropper size={14} className="text-white mix-blend-difference" />
         </button>
       </PopoverTrigger>
-      <PopoverContent className="max-h-[300px] overflow-auto w-[280px]">
-        <div className="space-y-3">
-          {Object.entries(colorsByName).map(([name, shades]) => (
-            <div key={name}>
-              <div className="text-xs font-medium text-muted-foreground mb-1.5 capitalize">{name}</div>
-              <div className="flex flex-wrap gap-1">
-                {shades.map((shade, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => {
-                      onChange(shade.hex)
-                      setOpen(false)
-                    }}
-                    className={cn(
-                      "w-6 h-6 rounded border border-border/50 hover:scale-110 transition-transform",
-                      value === shade.hex && "ring-2 ring-primary ring-offset-1"
-                    )}
-                    style={{ backgroundColor: shade.hex }}
-                    title={shade.shade ? `${name}-${shade.shade}` : name}
-                  />
-                ))}
+      <PopoverContent className="w-[360px] p-0 flex flex-col max-h-[50vh] bg-popover">
+        <div 
+          className="flex-1 min-h-0 overflow-y-auto overscroll-touch touch-pan-y p-3 pointer-events-auto bg-popover" 
+          style={{ transform: 'translateZ(0)', willChange: 'scroll-position' }}
+          onTouchStart={(e) => e.stopPropagation()}
+          onTouchMove={(e) => e.stopPropagation()}
+        >
+          <div className="space-y-3">
+            {Object.entries(colorsByName).map(([name, shades]) => (
+              <div key={name}>
+                <div className="text-xs font-medium text-muted-foreground mb-1.5 capitalize">{name}</div>
+                <div className="flex flex-wrap gap-1">
+                  {shades.map((shade, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => {
+                        onChange(shade.hex)
+                        setOpen(false)
+                      }}
+                      className={cn(
+                        "w-6 h-6 rounded border border-border/50 hover:scale-110 transition-transform",
+                        value === shade.hex && "ring-2 ring-primary ring-offset-1"
+                      )}
+                      style={{ backgroundColor: shade.hex }}
+                      title={shade.shade ? `${name}-${shade.shade}` : name}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
         
         {/* Still allow custom color input */}
-        <div className="mt-3 pt-3 border-t border-border">
-          <div className="flex items-center gap-2">
+        <div className="p-3 pt-0 border-t border-border mt-auto shrink-0">
+          <div className="flex items-center gap-2 pt-3">
             <input
               type="color"
               value={value}
@@ -223,7 +230,7 @@ export const ContrastAwarePaletteColorPicker = ({ value, onChange, palette, grad
   
   return (
     <div className="flex items-center gap-2">
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover open={open} onOpenChange={setOpen} modal={false}>
         <PopoverTrigger asChild>
           <button
             type="button"
@@ -237,59 +244,66 @@ export const ContrastAwarePaletteColorPicker = ({ value, onChange, palette, grad
             <Eyedropper size={14} className="text-white mix-blend-difference" />
           </button>
         </PopoverTrigger>
-        <PopoverContent className="max-h-[300px] overflow-auto w-[280px]">
+        <PopoverContent className="w-[400px] p-0 flex flex-col max-h-[50vh] bg-popover">
           {/* Header with info */}
-          <div className="mb-3 pb-2 border-b border-border">
+          <div className="p-3 pb-2 border-b border-border shrink-0 bg-popover">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <div className="w-3 h-3 rounded-full bg-green-500/30 border border-green-500/50" />
               <span>Colors with AA contrast (≥3:1)</span>
             </div>
           </div>
           
-          {hasAccessibleColors ? (
-            <div className="space-y-3">
-              {Object.entries(colorsByName).map(([name, shades]) => (
-                <div key={name}>
-                  <div className="text-xs font-medium text-muted-foreground mb-1.5 capitalize">{name}</div>
-                  <div className="flex flex-wrap gap-1">
-                    {shades.map((shade, idx) => {
-                      const contrast = checkContrastAgainstGradient(shade.hex, gradientColors, 'AA', true)
-                      return (
-                        <button
-                          key={idx}
-                          type="button"
-                          onClick={() => {
-                            onChange(shade.hex)
-                            setOpen(false)
-                          }}
-                          className={cn(
-                            "w-6 h-6 rounded border hover:scale-110 transition-transform relative group",
-                            value === shade.hex && "ring-2 ring-primary ring-offset-1",
-                            "border-green-500/50"
-                          )}
-                          style={{ backgroundColor: shade.hex }}
-                          title={`${shade.shade ? `${name}-${shade.shade}` : name} (${contrast.minRatio.toFixed(1)}:1)`}
-                        >
-                          <span className="absolute -top-6 left-1/2 -translate-x-1/2 px-1 py-0.5 bg-popover text-[10px] rounded opacity-0 group-hover:opacity-100 whitespace-nowrap border border-border shadow-sm pointer-events-none">
-                            {contrast.minRatio.toFixed(1)}:1
-                          </span>
-                        </button>
-                      )
-                    })}
+          <div 
+            className="flex-1 min-h-0 overflow-y-auto overscroll-touch touch-pan-y p-3 pointer-events-auto bg-popover" 
+            style={{ transform: 'translateZ(0)', willChange: 'scroll-position' }}
+            onTouchStart={(e) => e.stopPropagation()}
+            onTouchMove={(e) => e.stopPropagation()}
+          >
+            {hasAccessibleColors ? (
+              <div className="space-y-3">
+                {Object.entries(colorsByName).map(([name, shades]) => (
+                  <div key={name}>
+                    <div className="text-xs font-medium text-muted-foreground mb-1.5 capitalize">{name}</div>
+                    <div className="flex flex-wrap gap-1">
+                      {shades.map((shade, idx) => {
+                        const contrast = checkContrastAgainstGradient(shade.hex, gradientColors, 'AA', true)
+                        return (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => {
+                              onChange(shade.hex)
+                              setOpen(false)
+                            }}
+                            className={cn(
+                              "w-6 h-6 rounded border hover:scale-110 transition-transform relative group",
+                              value === shade.hex && "ring-2 ring-primary ring-offset-1",
+                              "border-green-500/50"
+                            )}
+                            style={{ backgroundColor: shade.hex }}
+                            title={`${shade.shade ? `${name}-${shade.shade}` : name} (${contrast.minRatio.toFixed(1)}:1)`}
+                          >
+                            <span className="absolute -top-6 left-1/2 -translate-x-1/2 px-1 py-0.5 bg-popover text-[10px] rounded opacity-0 group-hover:opacity-100 whitespace-nowrap border border-border shadow-sm pointer-events-none">
+                              {contrast.minRatio.toFixed(1)}:1
+                            </span>
+                          </button>
+                        )
+                      })}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="py-4 text-center text-sm text-muted-foreground">
-              <p>No colors in your palette meet AA contrast requirements with the current gradient.</p>
-              <p className="mt-2 text-xs">Try adjusting your gradient colors or use a custom color below.</p>
-            </div>
-          )}
+                ))}
+              </div>
+            ) : (
+              <div className="py-4 text-center text-sm text-muted-foreground">
+                <p>No colors in your palette meet AA contrast requirements with the current gradient.</p>
+                <p className="mt-2 text-xs">Try adjusting your gradient colors or use a custom color below.</p>
+              </div>
+            )}
+          </div>
           
           {/* Custom color input with contrast check */}
-          <div className="mt-3 pt-3 border-t border-border">
-            <div className="flex items-center gap-2">
+          <div className="p-3 pt-0 border-t border-border shrink-0">
+            <div className="flex items-center gap-2 pt-3">
               <input
                 type="color"
                 value={value}
