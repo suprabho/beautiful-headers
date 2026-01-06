@@ -47,14 +47,17 @@ const TessellationLayer = ({ config, mousePos = { x: 0.5, y: 0.5 }, isPaused }) 
       if (!document.hidden && mouseRotationInfluence > 0 && animationRef.current === null) {
         // Resume animation
         const animate = () => {
-          if (!isVisibleRef.current || isPausedRef.current) {
+          if (!isVisibleRef.current) {
             animationRef.current = null
             return
           }
-          const lerpFactor = 0.1
-          currentMouseRef.current.x += (mousePos.x - currentMouseRef.current.x) * lerpFactor
-          currentMouseRef.current.y += (mousePos.y - currentMouseRef.current.y) * lerpFactor
-          setSmoothedMouse({ x: currentMouseRef.current.x, y: currentMouseRef.current.y })
+          // Only update when not paused (but keep loop running)
+          if (!isPausedRef.current) {
+            const lerpFactor = 0.1
+            currentMouseRef.current.x += (mousePos.x - currentMouseRef.current.x) * lerpFactor
+            currentMouseRef.current.y += (mousePos.y - currentMouseRef.current.y) * lerpFactor
+            setSmoothedMouse({ x: currentMouseRef.current.x, y: currentMouseRef.current.y })
+          }
           animationRef.current = requestAnimationFrame(animate)
         }
         animationRef.current = requestAnimationFrame(animate)
@@ -76,14 +79,17 @@ const TessellationLayer = ({ config, mousePos = { x: 0.5, y: 0.5 }, isPaused }) 
     }
     
     const animate = () => {
-      if (!isVisibleRef.current || isPausedRef.current) {
+      if (!isVisibleRef.current) {
         animationRef.current = null
         return
       }
-      const lerpFactor = 0.1
-      currentMouseRef.current.x += (mousePos.x - currentMouseRef.current.x) * lerpFactor
-      currentMouseRef.current.y += (mousePos.y - currentMouseRef.current.y) * lerpFactor
-      setSmoothedMouse({ x: currentMouseRef.current.x, y: currentMouseRef.current.y })
+      // Only update when not paused (but keep loop running so it can resume)
+      if (!isPausedRef.current) {
+        const lerpFactor = 0.1
+        currentMouseRef.current.x += (mousePos.x - currentMouseRef.current.x) * lerpFactor
+        currentMouseRef.current.y += (mousePos.y - currentMouseRef.current.y) * lerpFactor
+        setSmoothedMouse({ x: currentMouseRef.current.x, y: currentMouseRef.current.y })
+      }
       animationRef.current = requestAnimationFrame(animate)
     }
     

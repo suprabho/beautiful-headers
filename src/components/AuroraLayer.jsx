@@ -283,10 +283,12 @@ const AuroraLayer = ({ config, mousePos, paletteColors = [], effectsConfig, isPa
       const decaySpeed = cfg.decaySpeed ?? 0.95
       const backgroundColor = derived?.backgroundColor ?? cfg.backgroundColor ?? '#000000'
 
-      // Smooth mouse following
-      const lerpFactor = 1 - decaySpeed
-      currentMouseRef.current.x += (targetMouseRef.current.x - currentMouseRef.current.x) * lerpFactor
-      currentMouseRef.current.y += (targetMouseRef.current.y - currentMouseRef.current.y) * lerpFactor
+      // Smooth mouse following (only when not paused)
+      if (!isPausedRef.current) {
+        const lerpFactor = 1 - decaySpeed
+        currentMouseRef.current.x += (targetMouseRef.current.x - currentMouseRef.current.x) * lerpFactor
+        currentMouseRef.current.y += (targetMouseRef.current.y - currentMouseRef.current.y) * lerpFactor
+      }
 
       // Clear canvas A
       ctxA.clearRect(0, 0, canvasA.width, canvasA.height)

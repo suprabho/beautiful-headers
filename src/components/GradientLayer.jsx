@@ -21,12 +21,13 @@ const hexToRgbCached = (hex) => {
 }
 
 // Custom shader material that combines gradient generation with fluted glass effect
-const FlutedGradientMaterial = ({ config, effectsConfig, mousePos }) => {
+const FlutedGradientMaterial = ({ config, effectsConfig, mousePos, isPaused }) => {
   const materialRef = useRef()
   const { size } = useThree()
   const timeRef = useRef(0)
   const currentMouseRef = useRef({ x: 0.5, y: 0.5 })
   const targetMouseRef = useRef({ x: 0.5, y: 0.5 })
+  const isPausedRef = useRef(false)
   
   // Track previous config to avoid unnecessary uniform updates (PERFORMANCE OPTIMIZATION)
   const prevConfigRef = useRef(null)
@@ -36,6 +37,11 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos }) => {
   useEffect(() => {
     targetMouseRef.current = mousePos
   }, [mousePos])
+
+  // Update pause state ref
+  useEffect(() => {
+    isPausedRef.current = isPaused
+  }, [isPaused])
 
   const uniforms = useMemo(() => ({
     u_time: { value: 0 },
@@ -393,6 +399,9 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos }) => {
 
   useFrame((state, delta) => {
     if (!materialRef.current) return
+    
+    // Skip all animation updates when paused
+    if (isPausedRef.current) return
 
     timeRef.current += delta
 
@@ -419,11 +428,11 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos }) => {
   )
 }
 
-const GradientScene = ({ config, effectsConfig, mousePos }) => {
+const GradientScene = ({ config, effectsConfig, mousePos, isPaused }) => {
   return (
     <mesh>
       <planeGeometry args={[2, 2]} />
-      <FlutedGradientMaterial config={config} effectsConfig={effectsConfig} mousePos={mousePos} />
+      <FlutedGradientMaterial config={config} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={isPaused} />
     </mesh>
   )
 }
@@ -450,7 +459,7 @@ const GradientLayer = ({ config, effectsConfig, mousePos, isPaused }) => {
         // React Three Fiber automatically pauses when tab is not visible
         frameloop={isPaused ? "demand" : "always"}
       >
-        <GradientScene config={config} effectsConfig={effectsConfig} mousePos={mousePos} />
+        <GradientScene config={config} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={isPaused} />
       </Canvas>
     </div>
   )
