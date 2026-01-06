@@ -62,7 +62,7 @@ const fadeInOut = (t, m) => {
   return Math.abs((t + hm) % m - hm) / hm
 }
 
-const AuroraLayer = ({ config, mousePos, paletteColors = [], effectsConfig }) => {
+const AuroraLayer = ({ config, mousePos, paletteColors = [], effectsConfig, isPaused }) => {
   const containerRef = useRef(null)
   const canvasARef = useRef(null)
   const canvasBRef = useRef(null)
@@ -74,6 +74,7 @@ const AuroraLayer = ({ config, mousePos, paletteColors = [], effectsConfig }) =>
   const targetMouseRef = useRef({ x: 0.5, y: 0.5 })
   const currentMouseRef = useRef({ x: 0.5, y: 0.5 })
   const isVisibleRef = useRef(true)
+  const isPausedRef = useRef(false)
   
   // Store config values in refs to avoid animation restarts
   const configRef = useRef(config)
@@ -112,6 +113,10 @@ const AuroraLayer = ({ config, mousePos, paletteColors = [], effectsConfig }) =>
   useEffect(() => {
     targetMouseRef.current = mousePos
   }, [mousePos])
+
+  useEffect(() => {
+    isPausedRef.current = isPaused
+  }, [isPaused])
 
   // Animation setup - runs only once on mount
   useEffect(() => {
@@ -290,9 +295,11 @@ const AuroraLayer = ({ config, mousePos, paletteColors = [], effectsConfig }) =>
       ctxB.fillStyle = backgroundColor
       ctxB.fillRect(0, 0, canvasB.width, canvasB.height)
 
-      // Update and draw lines
+      // Update and draw lines (only update when not paused)
       for (let i = 0; i < lines.length; i++) {
-        lines[i].update()
+        if (!isPausedRef.current) {
+          lines[i].update()
+        }
         lines[i].draw(ctxA)
       }
 

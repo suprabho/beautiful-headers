@@ -61,7 +61,7 @@ const interpolateValues = (values, progress) => {
   }
 }
 
-const FluidGradientLayer = ({ config, paletteColors = [], effectsConfig }) => {
+const FluidGradientLayer = ({ config, paletteColors = [], effectsConfig, isPaused }) => {
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
   const tempCanvasRef = useRef(null)
@@ -69,6 +69,7 @@ const FluidGradientLayer = ({ config, paletteColors = [], effectsConfig }) => {
   const animationRef = useRef(null)
   const timeRef = useRef(0)
   const isVisibleRef = useRef(true)
+  const isPausedRef = useRef(false)
   
   // Store config values in refs to avoid animation restarts
   const configRef = useRef(config)
@@ -109,6 +110,10 @@ const FluidGradientLayer = ({ config, paletteColors = [], effectsConfig }) => {
     gradientColorsRef.current = gradientColors
     bgColorRef.current = bgColor
   }, [gradientColors, bgColor])
+
+  useEffect(() => {
+    isPausedRef.current = isPaused
+  }, [isPaused])
 
   // Animation setup - runs only once on mount
   useEffect(() => {
@@ -170,7 +175,10 @@ const FluidGradientLayer = ({ config, paletteColors = [], effectsConfig }) => {
       const intensity = cfg.intensity ?? 1
       const blurAmount = cfg.blurAmount ?? 20
 
-      timeRef.current += 0.016 * speed
+      // Only update time when not paused
+      if (!isPausedRef.current) {
+        timeRef.current += 0.016 * speed
+      }
 
       // Clear and fill background
       ctx.fillStyle = background

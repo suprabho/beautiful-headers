@@ -4,7 +4,8 @@ import { AVAILABLE_ICONS } from './TessellationLayer'
 import { 
   Sliders, Palette, GridFour, Sparkle, TextT, 
   Shuffle, Plus, Trash, CaretDown, CaretUp, CaretRight, DotsSixVertical, Camera,
-  X, Image, Stack, CircleNotch, ArrowLeft, ArrowRight, Check, ArrowCounterClockwise, Upload, CaretCircleUp, CaretCircleDown
+  X, Image, Stack, CircleNotch, ArrowLeft, ArrowRight, Check, ArrowCounterClockwise, Upload, CaretCircleUp, CaretCircleDown,
+  Pause, Play
 } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
 import { prepareForCapture, validatePaletteJson, parsePaletteJson } from '@/lib/colorConversion'
@@ -59,6 +60,8 @@ const ControlPanel = ({
   layersContainerRef,
   colorPalette,
   setColorPalette,
+  isPaused,
+  setIsPaused,
 }) => {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileCollapsed, setIsMobileCollapsed] = useState(true)
@@ -1118,6 +1121,9 @@ const ControlPanel = ({
         {/* Mobile Top Bar */}
         <div className="fixed left-0 right-0 top-0 z-50 bg-card/5 backdrop-blur-4xl">
           <div className="flex items-center justify-between gap-2 p-2 safe-area-top">
+            <Button variant="outline" size="sm" className="flex items-center gap-2 h-10 px-4 border-primary/50" onClick={() => setIsPaused(!isPaused)} title={isPaused ? "Resume Animations" : "Pause Animations"}>
+              {isPaused ? <Play size={18} weight="fill" /> : <Pause size={18} />}
+            </Button>
             <Button variant="outline" size="sm" className="flex items-center gap-2 h-10 px-4 border-primary/50" onClick={() => setShowPaletteDialog(true)} title={colorPalette ? "Edit Palette" : "Upload Palette"}>
               <Upload size={18} weight={colorPalette ? 'fill' : 'regular'} />
             </Button>
@@ -1303,6 +1309,9 @@ const ControlPanel = ({
         >
           <div className="text-muted-foreground"><DotsSixVertical size={16} weight="bold" /></div>
           <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsPaused(!isPaused)} title={isPaused ? "Resume Animations" : "Pause Animations"}>
+              {isPaused ? <Play size={16} weight="fill" /> : <Pause size={16} />}
+            </Button>
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setShowPaletteDialog(true)} title={colorPalette ? "Edit Palette" : "Upload Palette"}>
               <Upload size={16} weight={colorPalette ? 'fill' : 'regular'} />
             </Button>

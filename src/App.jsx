@@ -305,6 +305,7 @@ const DEFAULT_PALETTE = {
 function App() {
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 })
   const [activePanel, setActivePanel] = useState('gradient')
+  const [isPaused, setIsPaused] = useState(false)
   const layersContainerRef = useRef(null)
 
   // Background Type State
@@ -561,22 +562,22 @@ function App() {
           }}
         >
           {backgroundType === 'liquid' && (
-            <GradientLayer config={gradientConfig} effectsConfig={effectsConfig} mousePos={mousePos} />
+            <GradientLayer config={gradientConfig} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={isPaused} />
           )}
           {backgroundType === 'aurora' && (
-            <AuroraLayer config={auroraConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} />
+            <AuroraLayer config={auroraConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} />
           )}
           {backgroundType === 'fluid' && (
-            <FluidGradientLayer config={fluidConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} />
+            <FluidGradientLayer config={fluidConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} />
           )}
           {backgroundType === 'waves' && (
-            <WavesLayer config={wavesConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} />
+            <WavesLayer config={wavesConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} />
           )}
         </div>
         
         {/* Layer 2: Tessellation (no filter effects) */}
         {tessellationConfig.enabled && (
-          <TessellationLayer config={tessellationConfig} mousePos={mousePos} />
+          <TessellationLayer config={tessellationConfig} mousePos={mousePos} isPaused={isPaused} />
         )}
         
         {/* Layer 3: Overlay effects (noise, texture, vignette) */}
@@ -622,6 +623,8 @@ function App() {
         layersContainerRef={layersContainerRef}
         colorPalette={colorPalette}
         setColorPalette={setColorPalette}
+        isPaused={isPaused}
+        setIsPaused={setIsPaused}
       />
     </div>
   )

@@ -30,7 +30,7 @@ const interpolateColor = (color1, color2, t) => {
   }
 }
 
-const WavesLayer = ({ config, paletteColors = [], effectsConfig }) => {
+const WavesLayer = ({ config, paletteColors = [], effectsConfig, isPaused }) => {
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
   const tempCanvasRef = useRef(null)
@@ -38,6 +38,7 @@ const WavesLayer = ({ config, paletteColors = [], effectsConfig }) => {
   const animationRef = useRef(null)
   const timeRef = useRef(0)
   const isVisibleRef = useRef(true)
+  const isPausedRef = useRef(false)
   
   // Store config values in refs to avoid animation restarts
   const configRef = useRef(config)
@@ -95,6 +96,10 @@ const WavesLayer = ({ config, paletteColors = [], effectsConfig }) => {
     colorsRef.current = waveColors
     layerColorDataRef.current = layerColorData
   }, [waveColors, layerColorData])
+
+  useEffect(() => {
+    isPausedRef.current = isPaused
+  }, [isPaused])
 
   // Animation setup - runs only once on mount
   useEffect(() => {
@@ -157,7 +162,10 @@ const WavesLayer = ({ config, paletteColors = [], effectsConfig }) => {
       const blur = cfg.blur ?? 40
       const phaseOffset = cfg.phaseOffset ?? 0
 
-      timeRef.current += 0.016 * speed
+      // Only update time when not paused
+      if (!isPausedRef.current) {
+        timeRef.current += 0.016 * speed
+      }
 
       // Clear canvas
       ctx.clearRect(0, 0, width, height)

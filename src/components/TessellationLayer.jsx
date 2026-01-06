@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect, useRef, useCallback } from 'react'
 import * as PhosphorIcons from '@phosphor-icons/react'
 
-const TessellationLayer = ({ config, mousePos = { x: 0.5, y: 0.5 } }) => {
+const TessellationLayer = ({ config, mousePos = { x: 0.5, y: 0.5 }, isPaused }) => {
   const { icon, rowGap, colGap, size, opacity, rotation, color, mouseRotationInfluence = 0 } = config
   
   // Track viewport size to re-render grid on resize
@@ -15,6 +15,7 @@ const TessellationLayer = ({ config, mousePos = { x: 0.5, y: 0.5 } }) => {
   const [smoothedMouse, setSmoothedMouse] = useState({ x: 0.5, y: 0.5 })
   const animationRef = useRef(null)
   const isVisibleRef = useRef(true)
+  const isPausedRef = useRef(false)
   
   // Listen for viewport resize
   useEffect(() => {
@@ -34,6 +35,11 @@ const TessellationLayer = ({ config, mousePos = { x: 0.5, y: 0.5 } }) => {
     return PhosphorIcons[iconName] || PhosphorIcons.Star
   }, [icon])
 
+  // Update isPausedRef when isPaused changes
+  useEffect(() => {
+    isPausedRef.current = isPaused
+  }, [isPaused])
+
   // Visibility change handler - pause animation when tab is hidden
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -41,7 +47,7 @@ const TessellationLayer = ({ config, mousePos = { x: 0.5, y: 0.5 } }) => {
       if (!document.hidden && mouseRotationInfluence > 0 && animationRef.current === null) {
         // Resume animation
         const animate = () => {
-          if (!isVisibleRef.current) {
+          if (!isVisibleRef.current || isPausedRef.current) {
             animationRef.current = null
             return
           }
@@ -70,7 +76,7 @@ const TessellationLayer = ({ config, mousePos = { x: 0.5, y: 0.5 } }) => {
     }
     
     const animate = () => {
-      if (!isVisibleRef.current) {
+      if (!isVisibleRef.current || isPausedRef.current) {
         animationRef.current = null
         return
       }

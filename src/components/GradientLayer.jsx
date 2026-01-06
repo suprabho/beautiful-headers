@@ -428,7 +428,7 @@ const GradientScene = ({ config, effectsConfig, mousePos }) => {
   )
 }
 
-const GradientLayer = ({ config, effectsConfig, mousePos }) => {
+const GradientLayer = ({ config, effectsConfig, mousePos, isPaused }) => {
   return (
     <div
       className="gradient-layer"
@@ -448,7 +448,7 @@ const GradientLayer = ({ config, effectsConfig, mousePos }) => {
         style={{ width: '100%', height: '100%' }}
         dpr={Math.min(window.devicePixelRatio, 2)}
         // React Three Fiber automatically pauses when tab is not visible
-        frameloop="always"
+        frameloop={isPaused ? "demand" : "always"}
       >
         <GradientScene config={config} effectsConfig={effectsConfig} mousePos={mousePos} />
       </Canvas>
