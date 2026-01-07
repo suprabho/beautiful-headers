@@ -456,8 +456,9 @@ const GradientLayer = ({ config, effectsConfig, mousePos, isPaused }) => {
         camera={{ position: [0, 0, 1], left: -1, right: 1, top: 1, bottom: -1, near: 0.1, far: 10 }}
         style={{ width: '100%', height: '100%' }}
         dpr={Math.min(window.devicePixelRatio, 2)}
-        // React Three Fiber automatically pauses when tab is not visible
-        frameloop={isPaused ? "demand" : "always"}
+        // Keep frameloop always running so canvas is always rendered (for export)
+        // Animation updates are skipped in useFrame when isPaused is true
+        frameloop="always"
       >
         <GradientScene config={config} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={isPaused} />
       </Canvas>
