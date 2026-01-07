@@ -342,11 +342,19 @@ const ControlPanel = ({
       ctx.fillStyle = '#000000'
       ctx.fillRect(0, 0, outputCanvas.width, outputCanvas.height)
       
+      // For layers with separate FlutedGlassCanvas overlay (fluid, aurora, waves),
+      // we need to grab the LAST canvas (fluted glass if enabled, or base canvas)
+      // GradientLayer has fluted glass built into its shader, so only has one canvas
+      const getLastCanvas = (selector) => {
+        const canvases = container.querySelectorAll(`${selector} canvas`)
+        return canvases.length > 0 ? canvases[canvases.length - 1] : null
+      }
+      
       const backgroundCanvas = 
         container.querySelector('.gradient-layer canvas') ||
-        container.querySelector('.fluid-gradient-layer canvas') ||
-        container.querySelector('.aurora-layer canvas') ||
-        container.querySelector('.blob-layer canvas')
+        getLastCanvas('.fluid-gradient-layer') ||
+        getLastCanvas('.aurora-layer') ||
+        getLastCanvas('.waves-layer')
       
       if (backgroundCanvas) {
         const wrapper = container.querySelector('.gradient-effects-wrapper')

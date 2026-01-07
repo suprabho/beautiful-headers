@@ -173,10 +173,9 @@ export const PaletteColorPicker = ({ value, onChange, palette, className }) => {
             <input
               type="color"
               value={value}
-              onChange={(e) => {
-                onChange(e.target.value)
-                setOpen(false)
-              }}
+              onChange={(e) => onChange(e.target.value)}
+              onPointerDown={(e) => e.stopPropagation()}
+              onMouseDown={(e) => e.stopPropagation()}
               className="w-8 h-8 rounded-md border border-border cursor-pointer bg-transparent"
             />
             <span className="text-xs text-muted-foreground">Custom color</span>
@@ -307,9 +306,9 @@ export const ContrastAwarePaletteColorPicker = ({ value, onChange, palette, grad
               <input
                 type="color"
                 value={value}
-                onChange={(e) => {
-                  onChange(e.target.value)
-                }}
+                onChange={(e) => onChange(e.target.value)}
+                onPointerDown={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
                 className="w-8 h-8 rounded-md border border-border cursor-pointer bg-transparent"
               />
               <div className="flex flex-col">
