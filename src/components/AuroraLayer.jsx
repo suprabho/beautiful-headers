@@ -166,7 +166,7 @@ const AuroraLayer = ({ config, mousePos, paletteColors = [], effectsConfig, isPa
         const maxTTL = cfg.maxTTL ?? 300
         
         this.x = getRandomInt(0, this.canvasWidth)
-        this.y = this.canvasHeight / 2 + minHeight
+        this.y = this.canvasHeight
         this.width = getRandomInt(minWidth, maxWidth)
         this.height = getRandomInt(minHeight, maxHeight)
         this.hue = this.getHue()
@@ -281,7 +281,7 @@ const AuroraLayer = ({ config, mousePos, paletteColors = [], effectsConfig, isPa
       
       const blurAmount = cfg.blurAmount ?? 13
       const decaySpeed = cfg.decaySpeed ?? 0.95
-      const backgroundColor = derived?.backgroundColor ?? cfg.backgroundColor ?? '#000000'
+      const backgroundColor = cfg.backgroundColor ?? derived?.backgroundColor ?? '#000000'
 
       // Smooth mouse following (only when not paused)
       if (!isPausedRef.current) {
