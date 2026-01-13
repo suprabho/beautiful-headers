@@ -960,6 +960,14 @@ const ControlPanel = ({
                     </SelectContent>
                   </Select>
                 </ControlGroup>
+                {(section.font === 'serif' || section.font === 'scribble') && (
+                  <ControlGroup label="Italic">
+                    <Switch
+                      checked={section.italic || false}
+                      onCheckedChange={(checked) => updateTextSection(section.id, 'italic', checked)}
+                    />
+                  </ControlGroup>
+                )}
                 <ControlGroup label="Weight">
                   <Select value={String(section.weight)} onValueChange={(value) => updateTextSection(section.id, 'weight', parseInt(value))}>
                     <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
