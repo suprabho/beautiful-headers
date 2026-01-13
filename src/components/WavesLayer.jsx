@@ -57,12 +57,17 @@ const WavesLayer = ({ config, paletteColors = [], effectsConfig, isPaused }) => 
 
   // Pre-compute layer color data
   const layerColorData = useMemo(() => {
-    const layers = config.layers ?? 4
+    const layers = config.layers ?? 5
     const numLayers = Math.max(2, Math.min(layers, waveColors.length + 2))
     const data = []
     
+    // Add padding so first and last layers are more visible
+    const padding = 0.2 // 20% padding on top and bottom
+    
     for (let layer = 0; layer < numLayers; layer++) {
-      const layerProgress = layer / numLayers
+      // Spread layers from padding to (1 - padding) instead of 0 to 1
+      const normalizedLayer = numLayers > 1 ? layer / (numLayers - 1) : 0.5
+      const layerProgress = padding + normalizedLayer * (1 - 2 * padding)
       const colorIndex = Math.floor(layerProgress * (waveColors.length - 1))
       const nextColorIndex = Math.min(colorIndex + 1, waveColors.length - 1)
       const colorT = (layerProgress * (waveColors.length - 1)) - colorIndex
@@ -155,8 +160,8 @@ const WavesLayer = ({ config, paletteColors = [], effectsConfig, isPaused }) => 
       const currentColors = colorsRef.current
       const currentLayerData = layerColorDataRef.current
       
-      const waveHeight = cfg.waveHeight ?? 0.15
-      const waveFrequency = cfg.waveFrequency ?? 3
+      const waveHeight = cfg.waveHeight ?? 0.05
+      const waveFrequency = cfg.waveFrequency ?? 2
       const rotation = cfg.rotation ?? 0
       const speed = cfg.speed ?? 0.5
       const blur = cfg.blur ?? 40

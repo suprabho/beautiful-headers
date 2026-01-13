@@ -375,12 +375,12 @@ function App() {
   const [wavesConfig, setWavesConfig] = useState({
     useGradientColors: true,
     colors: ['#06b6d4', '#a855f7', '#ec4899', '#3b82f6'],
-    waveHeight: 0.15,
-    waveFrequency: 3,
+    waveHeight: 0.05,
+    waveFrequency: 2,
     rotation: 0,
     speed: 0.5,
     blur: 40,
-    layers: 4,
+    layers: 5,
     phaseOffset: 0, // 0 = aligned/stacked, higher values = more offset between layers
   })
 
