@@ -468,6 +468,52 @@ const useStore = create((set, get) => ({
   // Color palette
   colorPalette: DEFAULT_PALETTE,
   setColorPalette: (palette) => set({ colorPalette: palette }),
+
+  // Scene management
+  currentSceneId: null,
+  setCurrentSceneId: (id) => set({ currentSceneId: id }),
+
+  // Navigation
+  currentPage: 'editor', // 'editor' | 'scenes'
+  setCurrentPage: (page) => set({ currentPage: page }),
+
+  // Get current scene data as JSON
+  getSceneData: () => {
+    const state = get()
+    return {
+      backgroundType: state.backgroundType,
+      gradientConfig: state.gradientConfig,
+      auroraConfig: state.auroraConfig,
+      blobConfig: state.blobConfig,
+      fluidConfig: state.fluidConfig,
+      wavesConfig: state.wavesConfig,
+      tessellationConfig: state.tessellationConfig,
+      effectsConfig: state.effectsConfig,
+      textSections: state.textSections,
+      textGap: state.textGap,
+      textConfig: state.textConfig,
+      colorPalette: state.colorPalette,
+    }
+  },
+
+  // Load scene data from JSON
+  loadSceneData: (sceneData) => {
+    if (!sceneData) return
+    set({
+      ...(sceneData.backgroundType && { backgroundType: sceneData.backgroundType }),
+      ...(sceneData.gradientConfig && { gradientConfig: sceneData.gradientConfig }),
+      ...(sceneData.auroraConfig && { auroraConfig: sceneData.auroraConfig }),
+      ...(sceneData.blobConfig && { blobConfig: sceneData.blobConfig }),
+      ...(sceneData.fluidConfig && { fluidConfig: sceneData.fluidConfig }),
+      ...(sceneData.wavesConfig && { wavesConfig: sceneData.wavesConfig }),
+      ...(sceneData.tessellationConfig && { tessellationConfig: sceneData.tessellationConfig }),
+      ...(sceneData.effectsConfig && { effectsConfig: sceneData.effectsConfig }),
+      ...(sceneData.textSections && { textSections: sceneData.textSections }),
+      ...(sceneData.textGap !== undefined && { textGap: sceneData.textGap }),
+      ...(sceneData.textConfig && { textConfig: sceneData.textConfig }),
+      ...(sceneData.colorPalette !== undefined && { colorPalette: sceneData.colorPalette }),
+    })
+  },
 }))
 
 export default useStore

@@ -5,8 +5,9 @@ import {
   Sliders, Palette, GridFour, Sparkle, TextT,
   Shuffle, Plus, Trash, CaretDown, CaretUp, CaretRight, DotsSixVertical, Camera,
   X, Image, Stack, CircleNotch, ArrowLeft, ArrowRight, Check, ArrowCounterClockwise, Upload, CaretCircleUp, CaretCircleDown,
-  Pause, Play
+  Pause, Play, FloppyDisk, Images
 } from '@phosphor-icons/react'
+import { createScene, checkCmsHealth } from '@/lib/scenesApi'
 import { cn } from '@/lib/utils'
 import { prepareForCapture, validatePaletteJson, parsePaletteJson } from '@/lib/colorConversion'
 import { Button } from '@/components/ui/button'
@@ -62,6 +63,8 @@ const ControlPanel = ({ layersContainerRef }) => {
   const setColorPalette = useStore((state) => state.setColorPalette)
   const isPaused = useStore((state) => state.isPaused)
   const setIsPaused = useStore((state) => state.setIsPaused)
+  const getSceneData = useStore((state) => state.getSceneData)
+  const setCurrentPage = useStore((state) => state.setCurrentPage)
 
   // Local UI state (not in Zustand - panel-specific)
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -74,6 +77,12 @@ const ControlPanel = ({ layersContainerRef }) => {
   const [showPaletteDialog, setShowPaletteDialog] = useState(false)
   const [paletteJson, setPaletteJson] = useState('')
   const [paletteError, setPaletteError] = useState('')
+  const [showSaveDialog, setShowSaveDialog] = useState(false)
+  const [sceneTitle, setSceneTitle] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
+  const [saveSuccess, setSaveSuccess] = useState(false)
+  const [cmsAvailable, setCmsAvailable] = useState(false)
   const dragOffset = useRef({ x: 0, y: 0 })
   const panelRef = useRef(null)
 
@@ -197,6 +206,133 @@ const ControlPanel = ({ layersContainerRef }) => {
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
+
+  // Check CMS availability on mount
+  useEffect(() => {
+    checkCmsHealth().then(setCmsAvailable)
+  }, [])
+
+  // Capture thumbnail as base64 at high resolution (server will resize)
+  const captureThumbnail = async () => {
+    if (!layersContainerRef?.current) return null
+
+    const restoreColors = prepareForCapture(document.body)
+
+    try {
+      await new Promise(resolve => requestAnimationFrame(resolve))
+
+      const container = layersContainerRef.current
+      const width = container.offsetWidth
+      const height = container.offsetHeight
+
+      // Capture at 2x resolution for high quality (server will generate multiple sizes)
+      const scale = 2
+
+      const outputCanvas = document.createElement('canvas')
+      outputCanvas.width = width * scale
+      outputCanvas.height = height * scale
+      const ctx = outputCanvas.getContext('2d')
+
+      ctx.fillStyle = '#000000'
+      ctx.fillRect(0, 0, outputCanvas.width, outputCanvas.height)
+
+      const getLastCanvas = (selector) => {
+        const canvases = container.querySelectorAll(`${selector} canvas`)
+        return canvases.length > 0 ? canvases[canvases.length - 1] : null
+      }
+
+      const backgroundCanvas =
+        container.querySelector('.gradient-layer canvas') ||
+        getLastCanvas('.fluid-gradient-layer') ||
+        getLastCanvas('.aurora-layer') ||
+        getLastCanvas('.waves-layer')
+
+      if (backgroundCanvas) {
+        const wrapper = container.querySelector('.gradient-effects-wrapper')
+        const filterStyle = wrapper ? getComputedStyle(wrapper).filter : 'none'
+        ctx.filter = filterStyle !== 'none' ? filterStyle : 'none'
+        ctx.drawImage(backgroundCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
+        ctx.filter = 'none'
+      }
+
+      drawTextureToCanvas(
+        ctx,
+        outputCanvas.width,
+        outputCanvas.height,
+        effectsConfig.texture,
+        effectsConfig.textureSize * scale,
+        effectsConfig.textureOpacity,
+        effectsConfig.textureBlendMode
+      )
+
+      drawVignetteToCanvas(ctx, outputCanvas.width, outputCanvas.height, effectsConfig.vignetteIntensity)
+
+      // Capture tessellation layer
+      const tessellationLayer = container.querySelector('.tessellation-layer')
+      if (tessellationLayer) {
+        const tessCanvas = await html2canvas(tessellationLayer, {
+          useCORS: true,
+          allowTaint: true,
+          scale: scale,
+          backgroundColor: null,
+          logging: false,
+        })
+        ctx.drawImage(tessCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
+      }
+
+      // Capture text layer
+      const textLayer = container.querySelector('.text-layer')
+      if (textLayer) {
+        const textCanvas = await html2canvas(textLayer, {
+          useCORS: true,
+          allowTaint: true,
+          scale: scale,
+          backgroundColor: null,
+          logging: false,
+        })
+        ctx.drawImage(textCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
+      }
+
+      restoreColors()
+
+      // Return as base64 data URL (PNG for high quality, server will convert to optimized JPEGs)
+      return outputCanvas.toDataURL('image/png')
+    } catch (error) {
+      console.error('Failed to capture thumbnail:', error)
+      restoreColors()
+      return null
+    }
+  }
+
+  // Handle save scene
+  const handleSaveScene = async () => {
+    if (!sceneTitle.trim()) {
+      setSaveError('Please enter a title')
+      return
+    }
+
+    setIsSaving(true)
+    setSaveError('')
+    setSaveSuccess(false)
+
+    try {
+      // Capture thumbnail first
+      const thumbnail = await captureThumbnail()
+      const sceneData = getSceneData()
+      await createScene(sceneTitle.trim(), sceneData, thumbnail)
+      setSaveSuccess(true)
+      setSceneTitle('')
+      setTimeout(() => {
+        setShowSaveDialog(false)
+        setSaveSuccess(false)
+      }, 1500)
+    } catch (error) {
+      console.error('Failed to save scene:', error)
+      setSaveError('Failed to save scene. Is the CMS server running?')
+    } finally {
+      setIsSaving(false)
+    }
+  }
 
   const openDialog = (dialogKey) => {
     setActiveDialog(dialogKey)
@@ -1198,6 +1334,84 @@ const ControlPanel = ({ layersContainerRef }) => {
     </Dialog>
   )
 
+  // Save Scene Dialog Component (shared between mobile and desktop)
+  const SaveSceneDialog = () => (
+    <Dialog open={showSaveDialog} onOpenChange={(open) => {
+      setShowSaveDialog(open)
+      if (!open) {
+        setSaveError('')
+        setSaveSuccess(false)
+      }
+    }}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>
+            <div className="flex items-center gap-2">
+              <FloppyDisk size={20} weight="duotone" />
+              Save Scene
+            </div>
+          </DialogTitle>
+        </DialogHeader>
+        {saveSuccess ? (
+          <div className="flex flex-col items-center gap-4 py-8">
+            <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
+              <Check size={24} weight="bold" className="text-green-500" />
+            </div>
+            <span className="text-muted-foreground">Scene saved successfully!</span>
+          </div>
+        ) : (
+          <div className="space-y-4 py-4">
+            {!cmsAvailable && (
+              <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-sm text-yellow-600 dark:text-yellow-400">
+                CMS server not detected. Start it with: <code className="bg-muted px-1 rounded">pnpm cms</code>
+              </div>
+            )}
+            <div className="space-y-2">
+              <Label htmlFor="scene-title">Scene Title</Label>
+              <Input
+                id="scene-title"
+                value={sceneTitle}
+                onChange={(e) => {
+                  setSceneTitle(e.target.value)
+                  setSaveError('')
+                }}
+                placeholder="My awesome scene..."
+                className="h-11"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !isSaving) {
+                    handleSaveScene()
+                  }
+                }}
+              />
+              {saveError && <p className="text-sm text-destructive">{saveError}</p>}
+            </div>
+          </div>
+        )}
+        {!saveSuccess && (
+          <DialogFooter className="flex-row gap-2">
+            <Button variant="outline" className="flex-1" onClick={() => setShowSaveDialog(false)} disabled={isSaving}>
+              Cancel
+            </Button>
+            <Button className="flex-1" onClick={handleSaveScene} disabled={isSaving || !cmsAvailable}>
+              {isSaving ? (
+                <>
+                  <CircleNotch size={16} className="mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <FloppyDisk size={16} className="mr-2" />
+                  Save Scene
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        )}
+      </DialogContent>
+    </Dialog>
+  )
+
   // Mobile Panel
   if (isMobile) {
     return (
@@ -1213,6 +1427,12 @@ const ControlPanel = ({ layersContainerRef }) => {
             </Button>
             <Button variant="outline" size="sm" className="flex items-center gap-2 h-10 px-4 border-primary/50" onClick={randomizeGradient} title="Shuffle Gradient">
               <Shuffle size={18} />
+            </Button>
+            <Button variant="outline" size="sm" className="flex items-center gap-2 h-10 px-4 border-primary/50" onClick={() => setShowSaveDialog(true)} title="Save Scene">
+              <FloppyDisk size={18} />
+            </Button>
+            <Button variant="outline" size="sm" className="flex items-center gap-2 h-10 px-4 border-primary/50" onClick={() => setCurrentPage('scenes')} title="Saved Scenes">
+              <Images size={18} />
             </Button>
             <Button variant="outline" size="sm" className="flex items-center gap-2 h-10 px-4 border-primary/50" onClick={() => setShowCaptureModal(true)}>
               <Camera size={18} />
@@ -1377,6 +1597,7 @@ const ControlPanel = ({ layersContainerRef }) => {
 
         <CaptureModal />
         <PaletteDialog />
+        <SaveSceneDialog />
       </>
     )
   }
@@ -1416,6 +1637,12 @@ const ControlPanel = ({ layersContainerRef }) => {
             </Button>
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={randomizeGradient} disabled={isCapturing} title="Shuffle Gradient">
               <Shuffle size={16} weight="regular" />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setShowSaveDialog(true)} title="Save Scene">
+              <FloppyDisk size={16} />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setCurrentPage('scenes')} title="Saved Scenes">
+              <Images size={16} />
             </Button>
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setShowCaptureModal(true)} disabled={isCapturing}>
               <Camera size={16} weight={isCapturing ? 'fill' : 'regular'} />
@@ -1490,6 +1717,7 @@ const ControlPanel = ({ layersContainerRef }) => {
 
       <CaptureModal />
       <PaletteDialog />
+      <SaveSceneDialog />
     </>
   )
 }

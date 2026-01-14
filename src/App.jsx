@@ -7,11 +7,13 @@ import TessellationLayer from './components/TessellationLayer'
 import EffectsLayer from './components/EffectsLayer'
 import TextLayer from './components/TextLayer'
 import ControlPanel from './components/ControlPanel'
+import SavedScenesPage from './components/SavedScenesPage'
 import useStore from './store/useStore'
 import './App.css'
 
 function App() {
   // Subscribe to Zustand store slices
+  const currentPage = useStore((state) => state.currentPage)
   const mousePos = useStore((state) => state.mousePos)
   const setMousePos = useStore((state) => state.setMousePos)
   const backgroundType = useStore((state) => state.backgroundType)
@@ -81,6 +83,12 @@ function App() {
     return filters.filter(Boolean).join(' ') || 'none'
   }
 
+  // Render saved scenes page
+  if (currentPage === 'scenes') {
+    return <SavedScenesPage />
+  }
+
+  // Render main editor
   return (
     <div className="app" onMouseMove={handleMouseMove}>
       <div className="layers-container" ref={layersContainerRef}>
