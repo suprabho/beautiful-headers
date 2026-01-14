@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import html2canvas from 'html2canvas'
 import { AVAILABLE_ICONS } from './TessellationLayer'
-import { 
-  Sliders, Palette, GridFour, Sparkle, TextT, 
+import {
+  Sliders, Palette, GridFour, Sparkle, TextT,
   Shuffle, Plus, Trash, CaretDown, CaretUp, CaretRight, DotsSixVertical, Camera,
   X, Image, Stack, CircleNotch, ArrowLeft, ArrowRight, Check, ArrowCounterClockwise, Upload, CaretCircleUp, CaretCircleDown,
   Pause, Play
@@ -17,6 +17,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import useStore from '../store/useStore'
 
 // Import control panel components
 import {
@@ -31,38 +32,38 @@ import {
   TextPanel,
 } from './controls'
 
-const ControlPanel = ({
-  activePanel,
-  setActivePanel,
-  backgroundType,
-  setBackgroundType,
-  gradientConfig,
-  setGradientConfig,
-  auroraConfig,
-  setAuroraConfig,
-  blobConfig,
-  setBlobConfig,
-  fluidConfig,
-  setFluidConfig,
-  wavesConfig,
-  setWavesConfig,
-  randomizeGradient,
-  tessellationConfig,
-  setTessellationConfig,
-  effectsConfig,
-  setEffectsConfig,
-  textSections,
-  setTextSections,
-  textGap,
-  setTextGap,
-  textConfig,
-  setTextConfig,
-  layersContainerRef,
-  colorPalette,
-  setColorPalette,
-  isPaused,
-  setIsPaused,
-}) => {
+const ControlPanel = ({ layersContainerRef }) => {
+  // Subscribe to Zustand store
+  const activePanel = useStore((state) => state.activePanel)
+  const setActivePanel = useStore((state) => state.setActivePanel)
+  const backgroundType = useStore((state) => state.backgroundType)
+  const setBackgroundType = useStore((state) => state.setBackgroundType)
+  const gradientConfig = useStore((state) => state.gradientConfig)
+  const setGradientConfig = useStore((state) => state.setGradientConfig)
+  const auroraConfig = useStore((state) => state.auroraConfig)
+  const setAuroraConfig = useStore((state) => state.setAuroraConfig)
+  const blobConfig = useStore((state) => state.blobConfig)
+  const setBlobConfig = useStore((state) => state.setBlobConfig)
+  const fluidConfig = useStore((state) => state.fluidConfig)
+  const setFluidConfig = useStore((state) => state.setFluidConfig)
+  const wavesConfig = useStore((state) => state.wavesConfig)
+  const setWavesConfig = useStore((state) => state.setWavesConfig)
+  const tessellationConfig = useStore((state) => state.tessellationConfig)
+  const setTessellationConfig = useStore((state) => state.setTessellationConfig)
+  const effectsConfig = useStore((state) => state.effectsConfig)
+  const setEffectsConfig = useStore((state) => state.setEffectsConfig)
+  const textSections = useStore((state) => state.textSections)
+  const setTextSections = useStore((state) => state.setTextSections)
+  const textGap = useStore((state) => state.textGap)
+  const setTextGap = useStore((state) => state.setTextGap)
+  const textConfig = useStore((state) => state.textConfig)
+  const setTextConfig = useStore((state) => state.setTextConfig)
+  const colorPalette = useStore((state) => state.colorPalette)
+  const setColorPalette = useStore((state) => state.setColorPalette)
+  const isPaused = useStore((state) => state.isPaused)
+  const setIsPaused = useStore((state) => state.setIsPaused)
+
+  // Local UI state (not in Zustand - panel-specific)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileCollapsed, setIsMobileCollapsed] = useState(true)
   const [position, setPosition] = useState({ x: 20, y: 20 })
@@ -75,9 +76,76 @@ const ControlPanel = ({
   const [paletteError, setPaletteError] = useState('')
   const dragOffset = useRef({ x: 0, y: 0 })
   const panelRef = useRef(null)
-  
+
   // Parse the palette for the color picker
   const parsedPalette = colorPalette ? parsePaletteJson(colorPalette) : null
+
+  // Randomize gradient function (moved from App.jsx)
+  const randomizeGradient = useCallback(() => {
+    const randomHex = () => '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')
+    const randomInRange = (min, max) => Math.random() * (max - min) + min
+    const pickOne = (arr) => arr[Math.floor(Math.random() * arr.length)]
+
+    let colors
+    let numColors
+
+    // Check if a palette is uploaded and use its colors
+    if (colorPalette) {
+      const parsedPalette = parsePaletteJson(colorPalette)
+      const paletteColors = parsedPalette.colors.map(c => c.hex)
+
+      if (paletteColors.length >= 2) {
+        // Pick 2-5 random colors from the palette (or max available)
+        numColors = Math.min(Math.floor(Math.random() * 4) + 2, paletteColors.length)
+        const shuffled = [...paletteColors].sort(() => Math.random() - 0.5)
+        colors = shuffled.slice(0, numColors)
+      } else {
+        // Fallback if palette has fewer than 2 colors
+        numColors = Math.floor(Math.random() * 4) + 2
+        colors = Array.from({ length: numColors }, randomHex)
+      }
+    } else {
+      // No palette uploaded - use random colors
+      numColors = Math.floor(Math.random() * 4) + 2
+      colors = Array.from({ length: numColors }, randomHex)
+    }
+
+    const colorStops = colors.map((_, i) => Math.round((i / (numColors - 1)) * 100))
+
+    setGradientConfig({
+      ...gradientConfig,
+      colors,
+      numColors,
+      type: ['linear', 'radial', 'conic'][Math.floor(Math.random() * 3)],
+      startPos: { x: Math.random() * 100, y: Math.random() * 100 },
+      endPos: { x: Math.random() * 100, y: Math.random() * 100 },
+      colorStops,
+      waveIntensity: Math.random() * 0.5 + 0.1,
+      mouseInfluence: Math.random() * 0.8 + 0.2,
+      wave1Speed: Math.random() * 0.4 + 0.05,
+      wave1Direction: Math.random() > 0.5 ? 1 : -1,
+      wave2Speed: Math.random() * 0.4 + 0.05,
+      wave2Direction: Math.random() > 0.5 ? 1 : -1,
+    })
+
+    // Also randomize related layer styling
+    setTessellationConfig({
+      ...tessellationConfig,
+      icon: pickOne(AVAILABLE_ICONS),
+      color: pickOne([...colors, '#ffffff', '#000000']),
+      opacity: randomInRange(0.05, 0.35),
+    })
+
+    setEffectsConfig({
+      ...effectsConfig,
+      textureOpacity: randomInRange(0.1, 0.9),
+    })
+
+    setTextConfig({
+      ...textConfig,
+      color: pickOne([...colors, '#ffffff', '#000000']),
+    })
+  }, [colorPalette, gradientConfig, tessellationConfig, effectsConfig, textConfig, setGradientConfig, setTessellationConfig, setEffectsConfig, setTextConfig])
   
   // Handle palette upload
   const handlePaletteUpload = () => {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, memo, useCallback } from 'react'
 
 const hexToRgb = (hex) => {
   if (typeof hex !== 'string') return null
@@ -19,34 +19,72 @@ const FONT_FAMILIES = {
   'scribble': "'Pacifico', cursive",
 }
 
-const TextLayer = ({ sections, gap, color = '#ffffff', opacity = 1 }) => {
-  const rgb = hexToRgb(color) || { r: 255, g: 255, b: 255 }
+// Memoized text section component
+const TextSection = memo(({ section, index, gap, color, opacity, rgb, getResponsiveFontSize }) => {
+  const responsiveFontSize = useMemo(
+    () => getResponsiveFontSize(section.size),
+    [getResponsiveFontSize, section.size]
+  )
+
+  return (
+    <div
+      className="text-section"
+      style={{
+        fontSize: `${responsiveFontSize}px`,
+        fontWeight: section.weight,
+        fontStyle: section.italic ? 'italic' : 'normal',
+        letterSpacing: `${section.spacing}em`,
+        color,
+        opacity,
+        textShadow: `
+          0 0 40px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.3),
+          0 0 80px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.2),
+          0 4px 20px rgba(0, 0, 0, 0.5)
+        `,
+        fontFamily: FONT_FAMILIES[section.font] || FONT_FAMILIES['sans-serif'],
+        mixBlendMode: 'difference',
+        animation: `text-float 6s ease-in-out ${index * 0.5}s infinite`,
+        textAlign: 'center',
+        padding: '0 20px',
+        wordBreak: 'break-word',
+      }}
+    >
+      {section.text}
+    </div>
+  )
+})
+
+TextSection.displayName = 'TextSection'
+
+const TextLayer = memo(({ sections, gap, color = '#ffffff', opacity = 1 }) => {
+  const rgb = useMemo(() => hexToRgb(color) || { r: 255, g: 255, b: 255 }, [color])
+
   const [windowWidth, setWindowWidth] = useState(() => {
     if (typeof window !== 'undefined') {
       return window.innerWidth
     }
     return 1920 // Default to desktop size for SSR
   })
-  
+
   useEffect(() => {
     if (typeof window === 'undefined') return
-    
+
     const handleResize = () => {
       setWindowWidth(window.innerWidth)
     }
-    
+
     // Set initial width
     setWindowWidth(window.innerWidth)
-    
+
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
-  
-  // Calculate responsive font size based on viewport width
-  const getResponsiveFontSize = (baseSize) => {
+
+  // Memoize responsive font size calculator
+  const getResponsiveFontSize = useCallback((baseSize) => {
     // Scale down proportionally on smaller screens
     // Mobile (320px): ~35% of base size
-    // Tablet (768px): ~65% of base size  
+    // Tablet (768px): ~65% of base size
     // Desktop (1920px+): full size
     if (windowWidth <= 480) {
       // Mobile phones
@@ -61,7 +99,7 @@ const TextLayer = ({ sections, gap, color = '#ffffff', opacity = 1 }) => {
       // Large desktops - full size
       return baseSize
     }
-  }
+  }, [windowWidth])
   
   return (
     <div
@@ -82,31 +120,16 @@ const TextLayer = ({ sections, gap, color = '#ffffff', opacity = 1 }) => {
       }}
     >
       {sections.map((section, index) => (
-        <div
+        <TextSection
           key={section.id}
-          className="text-section"
-          style={{
-            fontSize: `${getResponsiveFontSize(section.size)}px`,
-            fontWeight: section.weight,
-            fontStyle: section.italic ? 'italic' : 'normal',
-            letterSpacing: `${section.spacing}em`,
-            color,
-            opacity,
-            textShadow: `
-              0 0 40px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.3),
-              0 0 80px rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.2),
-              0 4px 20px rgba(0, 0, 0, 0.5)
-            `,
-            fontFamily: FONT_FAMILIES[section.font] || FONT_FAMILIES['sans-serif'],
-            mixBlendMode: 'difference',
-            animation: `text-float 6s ease-in-out ${index * 0.5}s infinite`,
-            textAlign: 'center',
-            padding: '0 20px',
-            wordBreak: 'break-word',
-          }}
-        >
-          {section.text}
-        </div>
+          section={section}
+          index={index}
+          gap={gap}
+          color={color}
+          opacity={opacity}
+          rgb={rgb}
+          getResponsiveFontSize={getResponsiveFontSize}
+        />
       ))}
       <style>{`
         @keyframes text-float {
@@ -120,7 +143,9 @@ const TextLayer = ({ sections, gap, color = '#ffffff', opacity = 1 }) => {
       `}</style>
     </div>
   )
-}
+})
+
+TextLayer.displayName = 'TextLayer'
 
 export default TextLayer
 

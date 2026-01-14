@@ -1,4 +1,4 @@
-import { useRef, useEffect, useMemo, useState } from 'react'
+import { useRef, useEffect, useMemo, useState, memo } from 'react'
 import FlutedGlassCanvas from './FlutedGlassCanvas'
 
 // Color cache for hex to HSL conversions
@@ -62,7 +62,7 @@ const fadeInOut = (t, m) => {
   return Math.abs((t + hm) % m - hm) / hm
 }
 
-const AuroraLayer = ({ config, mousePos, paletteColors = [], effectsConfig, isPaused }) => {
+const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig, isPaused }) => {
   const containerRef = useRef(null)
   const canvasARef = useRef(null)
   const canvasBRef = useRef(null)
@@ -122,6 +122,9 @@ const AuroraLayer = ({ config, mousePos, paletteColors = [], effectsConfig, isPa
   useEffect(() => {
     const container = containerRef.current
     if (!container) return
+
+    // Cap DPR at 2.0 for performance - higher values offer diminishing returns
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
 
     // Create canvas A (offscreen for drawing)
     const canvasA = document.createElement('canvas')
@@ -229,19 +232,28 @@ const AuroraLayer = ({ config, mousePos, paletteColors = [], effectsConfig, isPa
       const width = window.innerWidth
       const height = window.innerHeight
 
-      canvasA.width = width
-      canvasA.height = height
+      // Use DPR-scaled canvas for crisp rendering on Retina/4K displays
+      canvasA.width = width * dpr
+      canvasA.height = height * dpr
+      canvasA.style.width = `${width}px`
+      canvasA.style.height = `${height}px`
 
       if (canvasB.width && canvasB.height) {
         ctxARef.current.drawImage(canvasB, 0, 0)
       }
 
-      canvasB.width = width
-      canvasB.height = height
+      canvasB.width = width * dpr
+      canvasB.height = height * dpr
+      canvasB.style.width = `${width}px`
+      canvasB.style.height = `${height}px`
 
       if (canvasA.width && canvasA.height) {
         ctxBRef.current.drawImage(canvasA, 0, 0)
       }
+
+      // Set transform for DPR scaling
+      ctxARef.current.setTransform(dpr, 0, 0, dpr, 0, 0)
+      ctxBRef.current.setTransform(dpr, 0, 0, dpr, 0, 0)
 
       linesRef.current = initLines(width, height)
     }
@@ -290,12 +302,16 @@ const AuroraLayer = ({ config, mousePos, paletteColors = [], effectsConfig, isPa
         currentMouseRef.current.y += (targetMouseRef.current.y - currentMouseRef.current.y) * lerpFactor
       }
 
+      // Use logical dimensions (since we set transform with dpr)
+      const logicalWidth = canvasA.width / dpr
+      const logicalHeight = canvasA.height / dpr
+
       // Clear canvas A
-      ctxA.clearRect(0, 0, canvasA.width, canvasA.height)
+      ctxA.clearRect(0, 0, logicalWidth, logicalHeight)
 
       // Fill canvas B with background color
       ctxB.fillStyle = backgroundColor
-      ctxB.fillRect(0, 0, canvasB.width, canvasB.height)
+      ctxB.fillRect(0, 0, logicalWidth, logicalHeight)
 
       // Update and draw lines (only update when not paused)
       for (let i = 0; i < lines.length; i++) {
@@ -352,6 +368,8 @@ const AuroraLayer = ({ config, mousePos, paletteColors = [], effectsConfig, isPa
       )}
     </div>
   )
-}
+})
+
+AuroraLayer.displayName = 'AuroraLayer'
 
 export default AuroraLayer

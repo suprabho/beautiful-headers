@@ -1,4 +1,4 @@
-import { useRef, useEffect, useMemo, useState } from 'react'
+import { useRef, useEffect, useMemo, useState, memo } from 'react'
 import FlutedGlassCanvas from './FlutedGlassCanvas'
 
 // Color cache for hex to RGB conversions
@@ -30,7 +30,7 @@ const interpolateColor = (color1, color2, t) => {
   }
 }
 
-const WavesLayer = ({ config, paletteColors = [], effectsConfig, isPaused }) => {
+const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused }) => {
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
   const tempCanvasRef = useRef(null)
@@ -122,11 +122,21 @@ const WavesLayer = ({ config, paletteColors = [], effectsConfig, isPaused }) => 
     const ctx = canvas.getContext('2d')
     const tempCtx = tempCanvas.getContext('2d')
 
+    // Cap DPR at 2.0 for performance - higher values offer diminishing returns
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+
     const handleResize = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
-      tempCanvas.width = window.innerWidth
-      tempCanvas.height = window.innerHeight
+      const width = window.innerWidth
+      const height = window.innerHeight
+      // Use DPR-scaled canvas for crisp rendering on Retina/4K displays
+      canvas.width = width * dpr
+      canvas.height = height * dpr
+      canvas.style.width = `${width}px`
+      canvas.style.height = `${height}px`
+      tempCanvas.width = width * dpr
+      tempCanvas.height = height * dpr
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      tempCtx.setTransform(dpr, 0, 0, dpr, 0, 0)
     }
 
     const handleVisibilityChange = () => {
@@ -147,8 +157,9 @@ const WavesLayer = ({ config, paletteColors = [], effectsConfig, isPaused }) => 
         return
       }
 
-      const width = canvas.width
-      const height = canvas.height
+      // Use logical dimensions (pre-DPR scaling)
+      const width = canvas.width / dpr
+      const height = canvas.height / dpr
 
       if (!ctx || !tempCtx) {
         animationRef.current = requestAnimationFrame(animate)
@@ -223,8 +234,10 @@ const WavesLayer = ({ config, paletteColors = [], effectsConfig, isPaused }) => 
         const freq = waveFrequency * (1 + layer * 0.2)
         const layerPhase = phaseOffset * layer * Math.PI * 0.5 + time
         
-        // Use larger step size when blur is high (optimization)
-        const step = blur > 20 ? 4 : 2
+        // LOD optimization: use larger step size when blur is high or paused
+        // High blur hides fine detail, so we can reduce geometry complexity
+        const isPaused = isPausedRef.current
+        const step = (blur > 30 || isPaused) ? 6 : (blur > 20 ? 4 : 2)
         for (let x = 0; x <= extendedWidth; x += step) {
           const normalizedX = x / extendedWidth
           const waveY = baseY + 
@@ -303,6 +316,8 @@ const WavesLayer = ({ config, paletteColors = [], effectsConfig, isPaused }) => 
       )}
     </div>
   )
-}
+})
+
+WavesLayer.displayName = 'WavesLayer'
 
 export default WavesLayer

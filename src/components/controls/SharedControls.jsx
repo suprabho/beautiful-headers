@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, memo, useCallback } from 'react'
 import { Plus, Minus, Eyedropper } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
 import { checkContrastAgainstGradient, filterPaletteByContrast } from '@/lib/colorConversion'
@@ -8,30 +8,32 @@ import { Label } from '@/components/ui/label'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 
 // Control group component for consistent styling
-export const ControlGroup = ({ label, children, className }) => (
+export const ControlGroup = memo(({ label, children, className }) => (
   <div className={cn(className, "flex flex-row items-center justify-between")}>
     <Label className="text-xs font-semibold tracking-wide">{label}</Label>
     <div className="py-2 flex items-center gap-1">
       {children}
     </div>
   </div>
-)
+))
+
+ControlGroup.displayName = 'ControlGroup'
 
 // Number input component
-export const NumberInput = ({ value, onValueChange, min = 0, max = 100, step = 1, className, showButtons = false }) => {
+export const NumberInput = memo(({ value, onValueChange, min = 0, max = 100, step = 1, className, showButtons = false }) => {
   const currentValue = value[0]
-  
-  const handleDecrement = () => {
+
+  const handleDecrement = useCallback(() => {
     const newVal = Math.max(min, currentValue - step)
     const rounded = Math.round(newVal * 1000) / 1000
     onValueChange([rounded])
-  }
-  
-  const handleIncrement = () => {
+  }, [min, currentValue, step, onValueChange])
+
+  const handleIncrement = useCallback(() => {
     const newVal = Math.min(max, currentValue + step)
     const rounded = Math.round(newVal * 1000) / 1000
     onValueChange([rounded])
-  }
+  }, [max, currentValue, step, onValueChange])
 
   if (showButtons) {
     return (
@@ -88,21 +90,25 @@ export const NumberInput = ({ value, onValueChange, min = 0, max = 100, step = 1
       className={cn("h-9", className)}
     />
   )
-}
+})
+
+NumberInput.displayName = 'NumberInput'
 
 // Subsection button for mobile
-export const SubsectionButton = ({ title, onClick }) => (
-  <Button 
-    variant="outline" 
+export const SubsectionButton = memo(({ title, onClick }) => (
+  <Button
+    variant="outline"
     className="w-fit h-11 px-3"
     onClick={onClick}
   >
     <span className="text-sm">{title}</span>
   </Button>
-)
+))
+
+SubsectionButton.displayName = 'SubsectionButton'
 
 // Palette Color Picker component - shows palette swatches when palette is uploaded
-export const PaletteColorPicker = ({ value, onChange, palette, className }) => {
+export const PaletteColorPicker = memo(({ value, onChange, palette, className }) => {
   const [open, setOpen] = useState(false)
   
   // If no palette, show native color picker
@@ -184,10 +190,12 @@ export const PaletteColorPicker = ({ value, onChange, palette, className }) => {
       </PopoverContent>
     </Popover>
   )
-}
+})
+
+PaletteColorPicker.displayName = 'PaletteColorPicker'
 
 // Contrast-aware Palette Color Picker - filters colors by AA contrast against gradient
-export const ContrastAwarePaletteColorPicker = ({ value, onChange, palette, gradientColors, className }) => {
+export const ContrastAwarePaletteColorPicker = memo(({ value, onChange, palette, gradientColors, className }) => {
   const [open, setOpen] = useState(false)
   
   // Filter palette colors by contrast with gradient colors
@@ -333,6 +341,8 @@ export const ContrastAwarePaletteColorPicker = ({ value, onChange, palette, grad
       )}
     </div>
   )
-}
+})
+
+ContrastAwarePaletteColorPicker.displayName = 'ContrastAwarePaletteColorPicker'
 
 

@@ -1,5 +1,6 @@
-import { useRef, useEffect, useMemo } from 'react'
+import { useRef, useEffect, useMemo, memo } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { EffectComposer, BrightnessContrast, HueSaturation, Sepia } from '@react-three/postprocessing'
 import * as THREE from 'three'
 
 // Color cache for hex to RGB conversions (PERFORMANCE OPTIMIZATION)
@@ -82,6 +83,8 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos, isPaused }) =
     u_flutedMotionSpeed: { value: 0.5 },
     u_distortionStrength: { value: 0.02 },
     u_waveFrequency: { value: 1 },
+    // LOD control for performance optimization
+    u_lodLevel: { value: 0 }, // 0 = full quality, 1 = reduced (paused), 2 = minimal (high blur)
   }), []) // Empty deps - resolution updated in useFrame on every frame
 
   const vertexShader = `
@@ -135,7 +138,8 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos, isPaused }) =
     uniform float u_flutedMotionSpeed;
     uniform float u_distortionStrength;
     uniform float u_waveFrequency;
-    
+    uniform int u_lodLevel; // 0 = full quality, 1 = reduced, 2 = minimal
+
     // Simplex noise functions
     vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
     vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
@@ -168,11 +172,15 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos, isPaused }) =
       return 130.0 * dot(m, g);
     }
     
+    // LOD-aware FBM: reduces octaves based on u_lodLevel for GPU optimization
+    // Full quality (0): 5 octaves, Reduced (1): 3 octaves, Minimal (2): 2 octaves
     float fbm(vec2 p) {
       float value = 0.0;
       float amplitude = 0.5;
       float frequency = 1.0;
+      int maxOctaves = u_lodLevel == 0 ? 5 : (u_lodLevel == 1 ? 3 : 2);
       for (int i = 0; i < 5; i++) {
+        if (i >= maxOctaves) break;
         value += amplitude * snoise(p * frequency);
         amplitude *= 0.5;
         frequency *= 2.0;
@@ -397,11 +405,22 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos, isPaused }) =
     prevEffectsConfigRef.current = effectsConfig
   }, [effectsConfig])
 
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
     if (!materialRef.current) return
-    
-    // Skip all animation updates when paused
-    if (isPausedRef.current) return
+
+    const mat = materialRef.current
+    const isPaused = isPausedRef.current
+
+    // Set LOD level for GPU optimization:
+    // When paused, use reduced octaves since animation isn't visible
+    mat.uniforms.u_lodLevel.value = isPaused ? 1 : 0
+
+    // Skip animation updates when paused, but still render current state
+    if (isPaused) {
+      // Still need to update resolution in case of resize
+      mat.uniforms.u_resolution.value.set(size.width, size.height)
+      return
+    }
 
     timeRef.current += delta
 
@@ -409,8 +428,6 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos, isPaused }) =
     const lerpFactor = 1 - config.decaySpeed
     currentMouseRef.current.x += (targetMouseRef.current.x - currentMouseRef.current.x) * lerpFactor
     currentMouseRef.current.y += (targetMouseRef.current.y - currentMouseRef.current.y) * lerpFactor
-
-    const mat = materialRef.current
 
     // Only update per-frame uniforms (time, mouse, resolution)
     mat.uniforms.u_time.value = timeRef.current
@@ -428,16 +445,114 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos, isPaused }) =
   )
 }
 
+// Post-processing effects component
+const PostProcessingEffects = memo(({ effectsConfig }) => {
+  const {
+    blur = 0,
+    saturation = 100,
+    contrast = 100,
+    brightness = 100,
+    colorMap = 'none',
+  } = effectsConfig
+
+  // Calculate hue rotation based on colorMap
+  const hueRotation = useMemo(() => {
+    switch (colorMap) {
+      case 'cyberpunk': return 280 / 360 // 280deg -> normalized
+      case 'sunset': return 30 / 360
+      case 'matrix': return 90 / 360
+      default: return 0
+    }
+  }, [colorMap])
+
+  // Calculate additional saturation from colorMap
+  const colorMapSaturation = useMemo(() => {
+    switch (colorMap) {
+      case 'cyberpunk': return 1.5
+      case 'sunset': return 1.3
+      case 'matrix': return 2.0
+      case 'vintage': return 1.5
+      case 'noir': return 0 // grayscale
+      default: return 1
+    }
+  }, [colorMap])
+
+  // Calculate sepia intensity for sepia/vintage effects
+  const sepiaIntensity = useMemo(() => {
+    switch (colorMap) {
+      case 'sepia': return 0.8
+      case 'vintage': return 0.3
+      default: return 0
+    }
+  }, [colorMap])
+
+  // Hue adjustment for vintage effect
+  const sepiaHue = colorMap === 'vintage' ? -0.03 : 0
+
+  // Normalize values: saturation/contrast/brightness are 0-200 in UI, need to convert
+  // BrightnessContrast: brightness/contrast range is typically -1 to 1
+  // HueSaturation: saturation range is -1 to 1 (0 = no change)
+  const normalizedBrightness = (brightness - 100) / 100 // 100 -> 0, 50 -> -0.5, 150 -> 0.5
+  const normalizedContrast = (contrast - 100) / 100
+
+  // Combine base saturation with colorMap saturation modifier
+  const baseSaturation = (saturation - 100) / 100
+  const finalSaturation = colorMap === 'noir'
+    ? -1 // Full grayscale for noir
+    : baseSaturation + (colorMapSaturation - 1)
+
+  const finalHue = hueRotation + sepiaHue
+
+  // Only render effects if any are active
+  const hasEffects = blur > 0 ||
+    saturation !== 100 ||
+    contrast !== 100 ||
+    brightness !== 100 ||
+    colorMap !== 'none'
+
+  if (!hasEffects) return null
+
+  return (
+    <EffectComposer>
+      {/* Brightness and Contrast */}
+      {(brightness !== 100 || contrast !== 100) && (
+        <BrightnessContrast
+          brightness={normalizedBrightness}
+          contrast={normalizedContrast}
+        />
+      )}
+
+      {/* Hue and Saturation */}
+      {(saturation !== 100 || colorMap !== 'none') && (
+        <HueSaturation
+          hue={finalHue}
+          saturation={finalSaturation}
+        />
+      )}
+
+      {/* Sepia effect for sepia/vintage color maps */}
+      {sepiaIntensity > 0 && (
+        <Sepia intensity={sepiaIntensity} />
+      )}
+    </EffectComposer>
+  )
+})
+
+PostProcessingEffects.displayName = 'PostProcessingEffects'
+
 const GradientScene = ({ config, effectsConfig, mousePos, isPaused }) => {
   return (
-    <mesh>
-      <planeGeometry args={[2, 2]} />
-      <FlutedGradientMaterial config={config} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={isPaused} />
-    </mesh>
+    <>
+      <mesh>
+        <planeGeometry args={[2, 2]} />
+        <FlutedGradientMaterial config={config} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={isPaused} />
+      </mesh>
+      <PostProcessingEffects effectsConfig={effectsConfig} />
+    </>
   )
 }
 
-const GradientLayer = ({ config, effectsConfig, mousePos, isPaused }) => {
+const GradientLayer = memo(({ config, effectsConfig, mousePos, isPaused }) => {
   return (
     <div
       className="gradient-layer"
@@ -464,6 +579,8 @@ const GradientLayer = ({ config, effectsConfig, mousePos, isPaused }) => {
       </Canvas>
     </div>
   )
-}
+})
+
+GradientLayer.displayName = 'GradientLayer'
 
 export default GradientLayer

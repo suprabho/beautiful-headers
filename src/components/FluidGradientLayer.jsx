@@ -1,4 +1,4 @@
-import { useRef, useEffect, useMemo, useState } from 'react'
+import { useRef, useEffect, useMemo, useState, memo } from 'react'
 import FlutedGlassCanvas from './FlutedGlassCanvas'
 
 // Color cache for hex to RGBA conversions
@@ -61,7 +61,7 @@ const interpolateValues = (values, progress) => {
   }
 }
 
-const FluidGradientLayer = ({ config, paletteColors = [], effectsConfig, isPaused }) => {
+const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused }) => {
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
   const tempCanvasRef = useRef(null)
@@ -131,13 +131,21 @@ const FluidGradientLayer = ({ config, paletteColors = [], effectsConfig, isPause
     const ctx = canvas.getContext('2d')
     const tempCtx = tempCanvas.getContext('2d')
 
+    // Cap DPR at 2.0 for performance - higher values offer diminishing returns
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+
     const handleResize = () => {
       const width = window.innerWidth
       const height = window.innerHeight
-      canvas.width = width
-      canvas.height = height
-      tempCanvas.width = width
-      tempCanvas.height = height
+      // Use DPR-scaled canvas for crisp rendering on Retina/4K displays
+      canvas.width = width * dpr
+      canvas.height = height * dpr
+      canvas.style.width = `${width}px`
+      canvas.style.height = `${height}px`
+      tempCanvas.width = width * dpr
+      tempCanvas.height = height * dpr
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      tempCtx.setTransform(dpr, 0, 0, dpr, 0, 0)
     }
 
     const handleVisibilityChange = () => {
@@ -158,8 +166,9 @@ const FluidGradientLayer = ({ config, paletteColors = [], effectsConfig, isPause
         return
       }
 
-      const width = canvas.width
-      const height = canvas.height
+      // Use logical dimensions (pre-DPR scaling)
+      const width = canvas.width / dpr
+      const height = canvas.height / dpr
 
       if (!ctx || !tempCtx) {
         animationRef.current = requestAnimationFrame(animate)
@@ -276,6 +285,8 @@ const FluidGradientLayer = ({ config, paletteColors = [], effectsConfig, isPause
       )}
     </div>
   )
-}
+})
+
+FluidGradientLayer.displayName = 'FluidGradientLayer'
 
 export default FluidGradientLayer

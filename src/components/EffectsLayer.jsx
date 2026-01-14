@@ -1,4 +1,6 @@
-const EffectsLayer = ({ config }) => {
+import { useMemo, memo } from 'react'
+
+const EffectsLayer = memo(({ config }) => {
   const {
     texture,
     textureSize = 20,
@@ -7,10 +9,11 @@ const EffectsLayer = ({ config }) => {
     vignetteIntensity,
   } = config
 
-  const getTexturePattern = () => {
+  // Memoize texture pattern calculation
+  const texturePattern = useMemo(() => {
     const lineWidth = Math.max(1, textureSize * 0.1)
     const dotSize = Math.max(1, textureSize * 0.15)
-    
+
     switch (texture) {
       case 'grain':
         return `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`
@@ -40,9 +43,10 @@ const EffectsLayer = ({ config }) => {
       default:
         return 'none'
     }
-  }
+  }, [texture, textureSize])
 
-  const getTextureSize = () => {
+  // Memoize texture size calculation
+  const textureBgSize = useMemo(() => {
     switch (texture) {
       case 'dots':
       case 'grid':
@@ -52,7 +56,7 @@ const EffectsLayer = ({ config }) => {
       default:
         return 'auto'
     }
-  }
+  }, [texture, textureSize])
 
   return (
     <div
@@ -73,8 +77,8 @@ const EffectsLayer = ({ config }) => {
           style={{
             position: 'absolute',
             inset: 0,
-            background: getTexturePattern(),
-            backgroundSize: getTextureSize(),
+            background: texturePattern,
+            backgroundSize: textureBgSize,
             opacity: textureOpacity,
             mixBlendMode: textureBlendMode,
           }}
@@ -98,7 +102,9 @@ const EffectsLayer = ({ config }) => {
       )}
     </div>
   )
-}
+})
+
+EffectsLayer.displayName = 'EffectsLayer'
 
 export default EffectsLayer
 
