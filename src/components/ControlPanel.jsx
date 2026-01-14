@@ -328,7 +328,7 @@ const ControlPanel = ({ layersContainerRef }) => {
       }, 1500)
     } catch (error) {
       console.error('Failed to save scene:', error)
-      setSaveError('Failed to save scene. Is the CMS server running?')
+      setSaveError('Failed to save scene. Check your internet connection.')
     } finally {
       setIsSaving(false)
     }
@@ -1363,7 +1363,7 @@ const ControlPanel = ({ layersContainerRef }) => {
           <div className="space-y-4 py-4">
             {!cmsAvailable && (
               <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-sm text-yellow-600 dark:text-yellow-400">
-                CMS server not detected. Start it with: <code className="bg-muted px-1 rounded">pnpm cms</code>
+                Unable to connect to database. Check your internet connection.
               </div>
             )}
             <div className="space-y-2">

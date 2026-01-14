@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import { generateSceneDescriptions } from './gemini'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://grbrfpaznehikakupavx.supabase.co'
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_nFT6O21VoCZSKs7lQe-UaA_tSkoc4su'
@@ -107,6 +108,9 @@ export async function getScene(id) {
  * Save a new scene
  */
 export async function createScene(title, sceneData, thumbnail = null) {
+  // Generate AI descriptions in parallel with scene creation
+  const descriptionsPromise = generateSceneDescriptions(sceneData)
+
   // First create the scene to get an ID
   const { data: scene, error } = await supabase
     .from('scenes')
@@ -121,23 +125,43 @@ export async function createScene(title, sceneData, thumbnail = null) {
     .single()
 
   if (error) {
-    throw new Error('Failed to create scene')
+    console.error('Supabase create error:', error)
+    throw new Error(`Failed to create scene: ${error.message}`)
   }
+
+  // Collect updates to apply
+  const updates = {}
 
   // Upload thumbnail if provided
   if (thumbnail) {
     const thumbnailUrls = await uploadThumbnail(thumbnail, scene.id)
     if (thumbnailUrls) {
-      const { data: updatedScene, error: updateError } = await supabase
-        .from('scenes')
-        .update({ thumbnail: thumbnailUrls, updated_at: new Date().toISOString() })
-        .eq('id', scene.id)
-        .select()
-        .single()
+      updates.thumbnail = thumbnailUrls
+    }
+  }
 
-      if (!updateError) {
-        return updatedScene
-      }
+  // Wait for AI descriptions
+  const descriptions = await descriptionsPromise
+  console.log('AI descriptions result:', descriptions)
+  if (descriptions) {
+    updates.short_description = descriptions.shortDescription
+    updates.long_description = descriptions.longDescription
+  }
+
+  // Apply updates if any
+  if (Object.keys(updates).length > 0) {
+    updates.updated_at = new Date().toISOString()
+    const { data: updatedScene, error: updateError } = await supabase
+      .from('scenes')
+      .update(updates)
+      .eq('id', scene.id)
+      .select()
+      .single()
+
+    if (updateError) {
+      console.error('Failed to update scene:', updateError)
+    } else {
+      return updatedScene
     }
   }
 

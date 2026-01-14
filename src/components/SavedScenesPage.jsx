@@ -15,7 +15,7 @@ function SceneCard({ scene, onClick, onDelete }) {
   const thumbnailUrl = scene.thumbnail?.medium || null
 
   // Use long description for alt text, fallback to short description or title
-  const altText = scene.longDescription || scene.shortDescription || scene.title
+  const altText = scene.long_description || scene.short_description || scene.title
 
   return (
     <div
@@ -54,9 +54,9 @@ function SceneCard({ scene, onClick, onDelete }) {
       {/* Info */}
       <div className="p-3">
         <h3 className="font-medium text-sm truncate">{scene.title}</h3>
-        {scene.shortDescription && (
+        {scene.short_description && (
           <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-            {scene.shortDescription}
+            {scene.short_description}
           </p>
         )}
       </div>
@@ -91,6 +91,7 @@ function SavedScenesPage() {
   const [isDeleting, setIsDeleting] = useState(false)
   const [isLoadingScene, setIsLoadingScene] = useState(false)
   const [selectedScene, setSelectedScene] = useState(null)
+  const [isLoadingDetails, setIsLoadingDetails] = useState(false)
 
   // Check CMS and fetch scenes on mount
   useEffect(() => {
@@ -102,7 +103,7 @@ function SavedScenesPage() {
         fetchScenes()
       } else {
         setIsLoading(false)
-        setError('CMS server is not available. Please start the CMS server.')
+        setError('Unable to connect to database. Check your internet connection.')
       }
     }
     init()
@@ -122,14 +123,39 @@ function SavedScenesPage() {
     }
   }
 
+  const handleOpenSceneDetails = async (scene) => {
+    // Set the scene immediately to show the dialog
+    setSelectedScene(scene)
+    setIsLoadingDetails(true)
+
+    try {
+      // Fetch full scene data including sceneData
+      const fullScene = await getScene(scene.id)
+      setSelectedScene(fullScene)
+    } catch (err) {
+      console.error('Failed to load scene details:', err)
+      // Keep showing partial data if fetch fails
+    } finally {
+      setIsLoadingDetails(false)
+    }
+  }
+
   const handleApplyScene = async (scene) => {
     try {
       setIsLoadingScene(true)
-      const fullScene = await getScene(scene.id)
-      loadSceneData(fullScene.sceneData)
-      setCurrentSceneId(scene.id)
-      setSelectedScene(null)
-      setCurrentPage('editor')
+      // If we already have full scene data, use it directly
+      if (scene.scene_data) {
+        loadSceneData(scene.scene_data)
+        setCurrentSceneId(scene.id)
+        setSelectedScene(null)
+        setCurrentPage('editor')
+      } else {
+        const fullScene = await getScene(scene.id)
+        loadSceneData(fullScene.scene_data)
+        setCurrentSceneId(scene.id)
+        setSelectedScene(null)
+        setCurrentPage('editor')
+      }
     } catch (err) {
       console.error('Failed to load scene:', err)
       setError('Failed to load scene. Please try again.')
@@ -219,7 +245,7 @@ function SavedScenesPage() {
               <SceneCard
                 key={scene.id}
                 scene={scene}
-                onClick={setSelectedScene}
+                onClick={handleOpenSceneDetails}
                 onDelete={(s) => setDeleteDialog({ open: true, scene: s })}
               />
             ))}
@@ -278,7 +304,7 @@ function SavedScenesPage() {
                 {selectedScene.thumbnail?.large ? (
                   <img
                     src={selectedScene.thumbnail.large}
-                    alt={selectedScene.longDescription || selectedScene.shortDescription || selectedScene.title}
+                    alt={selectedScene.long_description || selectedScene.short_description || selectedScene.title}
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -290,28 +316,33 @@ function SavedScenesPage() {
 
               <DialogHeader className="pt-2">
                 <DialogTitle className="text-xl">{selectedScene.title}</DialogTitle>
-                {selectedScene.shortDescription && (
+                {selectedScene.short_description && (
                   <DialogDescription className="text-base">
-                    {selectedScene.shortDescription}
+                    {selectedScene.short_description}
                   </DialogDescription>
                 )}
               </DialogHeader>
 
               {/* Long description */}
-              {selectedScene.longDescription && (
+              {selectedScene.long_description && (
                 <ScrollArea className="max-h-32">
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    {selectedScene.longDescription}
+                    {selectedScene.long_description}
                   </p>
                 </ScrollArea>
               )}
 
               {/* Color stops */}
-              {selectedScene.sceneData?.gradientConfig?.colors && (
+              {isLoadingDetails ? (
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <CircleNotch size={16} className="animate-spin" />
+                  <span className="text-sm">Loading details...</span>
+                </div>
+              ) : selectedScene.scene_data?.gradientConfig?.colors && (
                 <div className="space-y-2">
                   <span className="text-xs text-muted-foreground uppercase tracking-wide">Colors</span>
                   <div className="flex gap-1.5">
-                    {selectedScene.sceneData.gradientConfig.colors.map((color, idx) => (
+                    {selectedScene.scene_data.gradientConfig.colors.map((color, idx) => (
                       <div
                         key={idx}
                         className="w-8 h-8 rounded-md border border-border/50 shadow-sm"
