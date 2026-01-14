@@ -7,15 +7,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { ScrollArea } from '@/components/ui/scroll-area'
 import useStore from '../store/useStore'
 
-const API_BASE = import.meta.env.VITE_CMS_URL || 'http://localhost:3002'
-
 function SceneCard({ scene, onClick, onDelete }) {
   const [isHovered, setIsHovered] = useState(false)
   const [imageError, setImageError] = useState(false)
 
-  const thumbnailUrl = scene.thumbnail?.medium
-    ? `${API_BASE}${scene.thumbnail.medium}`
-    : null
+  // Supabase returns full URLs, no need to prepend base
+  const thumbnailUrl = scene.thumbnail?.medium || null
 
   // Use long description for alt text, fallback to short description or title
   const altText = scene.longDescription || scene.shortDescription || scene.title
@@ -280,7 +277,7 @@ function SavedScenesPage() {
               <div className="aspect-video bg-muted rounded-lg overflow-hidden -mx-2 -mt-2">
                 {selectedScene.thumbnail?.large ? (
                   <img
-                    src={`${API_BASE}${selectedScene.thumbnail.large}`}
+                    src={selectedScene.thumbnail.large}
                     alt={selectedScene.longDescription || selectedScene.shortDescription || selectedScene.title}
                     className="w-full h-full object-cover"
                   />
