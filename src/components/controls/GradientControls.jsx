@@ -127,6 +127,7 @@ export const LiquidControls = ({
               ...gradientConfig,
               startPos: { ...gradientConfig.startPos, x: val }
             })}
+            min={-100}
             max={100}
             step={10}
           />
@@ -138,6 +139,7 @@ export const LiquidControls = ({
               ...gradientConfig,
               startPos: { ...gradientConfig.startPos, y: val }
             })}
+            min={-100}
             max={100}
             step={10}
           />
@@ -152,6 +154,7 @@ export const LiquidControls = ({
               ...gradientConfig,
               endPos: { ...gradientConfig.endPos, x: val }
             })}
+            min={-100}
             max={100}
             step={10}
           />
@@ -163,6 +166,7 @@ export const LiquidControls = ({
               ...gradientConfig,
               endPos: { ...gradientConfig.endPos, y: val }
             })}
+            min={-100}
             max={100}
             step={10}
           />

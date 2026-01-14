@@ -117,8 +117,8 @@ const ControlPanel = ({ layersContainerRef }) => {
       colors,
       numColors,
       type: ['linear', 'radial', 'conic'][Math.floor(Math.random() * 3)],
-      startPos: { x: Math.random() * 100, y: Math.random() * 100 },
-      endPos: { x: Math.random() * 100, y: Math.random() * 100 },
+      startPos: { x: Math.random() * 200 - 100, y: Math.random() * 200 - 100 },
+      endPos: { x: Math.random() * 200 - 100, y: Math.random() * 200 - 100 },
       colorStops,
       waveIntensity: Math.random() * 0.5 + 0.1,
       mouseInfluence: Math.random() * 0.8 + 0.2,
@@ -698,16 +698,16 @@ const ControlPanel = ({ layersContainerRef }) => {
         return (
           <div className="space-y-2">
             <ControlGroup label={`Start X: `}>
-              <NumberInput value={[gradientConfig.startPos.x]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, startPos: { ...gradientConfig.startPos, x: val } })} max={100} step={5} showButtons />
+              <NumberInput value={[gradientConfig.startPos.x]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, startPos: { ...gradientConfig.startPos, x: val } })} min={-100} max={100} step={5} showButtons />
             </ControlGroup>
             <ControlGroup label={`Start Y: `}>
-              <NumberInput value={[gradientConfig.startPos.y]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, startPos: { ...gradientConfig.startPos, y: val } })} max={100} step={5} showButtons />
+              <NumberInput value={[gradientConfig.startPos.y]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, startPos: { ...gradientConfig.startPos, y: val } })} min={-100} max={100} step={5} showButtons />
             </ControlGroup>
             <ControlGroup label={`End X: `}>
-              <NumberInput value={[gradientConfig.endPos.x]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, endPos: { ...gradientConfig.endPos, x: val } })} max={100} step={5} showButtons />
+              <NumberInput value={[gradientConfig.endPos.x]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, endPos: { ...gradientConfig.endPos, x: val } })} min={-100} max={100} step={5} showButtons />
             </ControlGroup>
             <ControlGroup label={`End Y: `}>
-              <NumberInput value={[gradientConfig.endPos.y]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, endPos: { ...gradientConfig.endPos, y: val } })} max={100} step={5} showButtons />
+              <NumberInput value={[gradientConfig.endPos.y]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, endPos: { ...gradientConfig.endPos, y: val } })} min={-100} max={100} step={5} showButtons />
             </ControlGroup>
           </div>
         )

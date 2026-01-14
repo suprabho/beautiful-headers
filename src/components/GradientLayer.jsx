@@ -299,6 +299,8 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos, isPaused }) =
       vec2 aspectCorrectedDistortedUV = distortedUV * aspect;
       
       // Calculate gradient position
+      // Map -100 to 100 range: 0 -> 0, 100 -> 1, -100 -> -1
+      // This allows positioning gradient origins beyond the visible area (0-1)
       float t = 0.0;
       vec2 start = u_startPos / 100.0;
       vec2 end = u_endPos / 100.0;
