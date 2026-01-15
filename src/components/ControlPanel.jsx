@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -160,25 +160,25 @@ const ControlPanel = ({ layersContainerRef }) => {
       color: pickOne([...colors, '#ffffff', '#000000']),
     })
   }, [colorPalette, gradientConfig, tessellationConfig, effectsConfig, textConfig, setGradientConfig, setTessellationConfig, setEffectsConfig, setTextConfig])
-  
+
   // Handle palette upload
   const handlePaletteUpload = () => {
     if (!paletteJson.trim()) {
       setPaletteError('Please paste a JSON palette')
       return
     }
-    
+
     const result = validatePaletteJson(paletteJson)
     if (!result.valid) {
       setPaletteError(result.error)
       return
     }
-    
+
     setColorPalette(result.palette)
     setPaletteError('')
     setShowPaletteDialog(false)
     setPaletteJson('')
-    
+
     // Shuffle gradient colors using the new palette
     const paletteColors = result.colors.map(c => c.hex)
     if (paletteColors.length >= 2) {
@@ -186,7 +186,7 @@ const ControlPanel = ({ layersContainerRef }) => {
       const shuffled = [...paletteColors].sort(() => Math.random() - 0.5)
       const selectedColors = shuffled.slice(0, numColors)
       const colorStops = selectedColors.map((_, i) => Math.round((i / (selectedColors.length - 1)) * 100))
-      
+
       setGradientConfig(prev => ({
         ...prev,
         colors: selectedColors,
@@ -195,7 +195,7 @@ const ControlPanel = ({ layersContainerRef }) => {
       }))
     }
   }
-  
+
   // Clear palette
   const handleClearPalette = () => {
     setColorPalette(null)
@@ -422,7 +422,7 @@ const ControlPanel = ({ layersContainerRef }) => {
   const handleMouseDown = useCallback((e) => {
     if (isMobile) return
     if (e.target.closest('.panel-content') || e.target.closest('[data-slot="tabs"]')) return
-    
+
     setIsDragging(true)
     dragOffset.current = {
       x: e.clientX - position.x,
@@ -433,10 +433,10 @@ const ControlPanel = ({ layersContainerRef }) => {
 
   const handleMouseMove = useCallback((e) => {
     if (!isDragging) return
-    
+
     const newX = e.clientX - dragOffset.current.x
     const newY = e.clientY - dragOffset.current.y
-    
+
     const panel = panelRef.current
     if (panel) {
       const maxX = window.innerWidth - panel.offsetWidth
@@ -458,15 +458,15 @@ const ControlPanel = ({ layersContainerRef }) => {
   // Helper function to draw texture patterns directly to canvas
   const drawTextureToCanvas = (ctx, width, height, textureType, textureSize, textureOpacity, blendMode) => {
     if (textureType === 'none') return
-    
+
     const textureCanvas = document.createElement('canvas')
     textureCanvas.width = width
     textureCanvas.height = height
     const textureCtx = textureCanvas.getContext('2d')
-    
+
     const lineWidth = Math.max(1, textureSize * 0.1)
     const dotSize = Math.max(1, textureSize * 0.15)
-    
+
     switch (textureType) {
       case 'grain': {
         const imageData = textureCtx.createImageData(width, height)
@@ -524,7 +524,7 @@ const ControlPanel = ({ layersContainerRef }) => {
         break
       }
     }
-    
+
     ctx.save()
     ctx.globalAlpha = textureOpacity
     ctx.globalCompositeOperation = blendMode
@@ -535,7 +535,7 @@ const ControlPanel = ({ layersContainerRef }) => {
   // Helper function to draw vignette to canvas
   const drawVignetteToCanvas = (ctx, width, height, intensity) => {
     if (intensity <= 0) return
-    
+
     const gradient = ctx.createRadialGradient(
       width / 2, height / 2, 0,
       width / 2, height / 2, Math.max(width, height) * 0.7
@@ -543,34 +543,34 @@ const ControlPanel = ({ layersContainerRef }) => {
     gradient.addColorStop(0, 'transparent')
     gradient.addColorStop(0.3, 'transparent')
     gradient.addColorStop(1, `rgba(0, 0, 0, ${intensity})`)
-    
+
     ctx.fillStyle = gradient
     ctx.fillRect(0, 0, width, height)
   }
 
   const captureSnapshot = async (mode = 'all') => {
     if (!layersContainerRef?.current || isCapturing) return
-    
+
     setIsCapturing(true)
-    
+
     const restoreColors = prepareForCapture(document.body)
-    
+
     try {
       await new Promise(resolve => requestAnimationFrame(resolve))
-      
+
       const container = layersContainerRef.current
       const width = container.offsetWidth
       const height = container.offsetHeight
       const scale = 2
-      
+
       const outputCanvas = document.createElement('canvas')
       outputCanvas.width = width * scale
       outputCanvas.height = height * scale
       const ctx = outputCanvas.getContext('2d')
-      
+
       ctx.fillStyle = '#000000'
       ctx.fillRect(0, 0, outputCanvas.width, outputCanvas.height)
-      
+
       // For layers with separate FlutedGlassCanvas overlay (fluid, aurora, waves),
       // we need to grab the LAST canvas (fluted glass if enabled, or base canvas)
       // GradientLayer has fluted glass built into its shader, so only has one canvas
@@ -578,13 +578,13 @@ const ControlPanel = ({ layersContainerRef }) => {
         const canvases = container.querySelectorAll(`${selector} canvas`)
         return canvases.length > 0 ? canvases[canvases.length - 1] : null
       }
-      
-      const backgroundCanvas = 
+
+      const backgroundCanvas =
         container.querySelector('.gradient-layer canvas') ||
         getLastCanvas('.fluid-gradient-layer') ||
         getLastCanvas('.aurora-layer') ||
         getLastCanvas('.waves-layer')
-      
+
       if (backgroundCanvas) {
         const wrapper = container.querySelector('.gradient-effects-wrapper')
         const filterStyle = wrapper ? getComputedStyle(wrapper).filter : 'none'
@@ -592,7 +592,7 @@ const ControlPanel = ({ layersContainerRef }) => {
         ctx.drawImage(backgroundCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
         ctx.filter = 'none'
       }
-      
+
       drawTextureToCanvas(
         ctx,
         outputCanvas.width,
@@ -602,9 +602,9 @@ const ControlPanel = ({ layersContainerRef }) => {
         effectsConfig.textureOpacity,
         effectsConfig.textureBlendMode
       )
-      
+
       drawVignetteToCanvas(ctx, outputCanvas.width, outputCanvas.height, effectsConfig.vignetteIntensity)
-      
+
       if (mode === 'all') {
         const tessellationLayer = container.querySelector('.tessellation-layer')
         if (tessellationLayer) {
@@ -617,7 +617,7 @@ const ControlPanel = ({ layersContainerRef }) => {
           })
           ctx.drawImage(tessCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
         }
-        
+
         const textLayer = container.querySelector('.text-layer')
         if (textLayer) {
           const textCanvas = await html2canvas(textLayer, {
@@ -630,11 +630,11 @@ const ControlPanel = ({ layersContainerRef }) => {
           ctx.drawImage(textCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
         }
       }
-      
-      const filename = mode === 'background' 
-        ? `background-${Date.now()}.png` 
+
+      const filename = mode === 'background'
+        ? `background-${Date.now()}.png`
         : `header-capture-${Date.now()}.png`
-      
+
       outputCanvas.toBlob((blob) => {
         if (blob) {
           const url = URL.createObjectURL(blob)
@@ -742,7 +742,7 @@ const ControlPanel = ({ layersContainerRef }) => {
   }
 
   const updateTextSection = (id, field, value) => {
-    setTextSections(textSections.map(s => 
+    setTextSections(textSections.map(s =>
       s.id === id ? { ...s, [field]: value } : s
     ))
   }
@@ -820,8 +820,8 @@ const ControlPanel = ({ layersContainerRef }) => {
                     />
                     <span className="text-sm text-muted-foreground">%</span>
                   </div>
-                  <Button 
-                    variant="ghost" 
+                  <Button
+                    variant="ghost"
                     size="icon"
                     className="h-8 w-8"
                     onClick={() => removeGradientColor(index)}
@@ -1084,74 +1084,74 @@ const ControlPanel = ({ layersContainerRef }) => {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <Label>Enable Fluted Glass</Label>
-              <Switch 
-                checked={effectsConfig.flutedGlass?.enabled ?? false} 
-                onCheckedChange={(checked) => setEffectsConfig({ 
-                  ...effectsConfig, 
-                  flutedGlass: { ...effectsConfig.flutedGlass, enabled: checked } 
-                })} 
+              <Switch
+                checked={effectsConfig.flutedGlass?.enabled ?? false}
+                onCheckedChange={(checked) => setEffectsConfig({
+                  ...effectsConfig,
+                  flutedGlass: { ...effectsConfig.flutedGlass, enabled: checked }
+                })}
               />
             </div>
             {effectsConfig.flutedGlass?.enabled && (
               <>
                 <ControlGroup label={`Ridges / Segments`}>
-                  <NumberInput 
-                    value={[effectsConfig.flutedGlass?.segments ?? 80]} 
-                    onValueChange={([val]) => setEffectsConfig({ 
-                      ...effectsConfig, 
-                      flutedGlass: { ...effectsConfig.flutedGlass, segments: val } 
-                    })} 
-                    min={5} max={300} step={5} showButtons 
+                  <NumberInput
+                    value={[effectsConfig.flutedGlass?.segments ?? 80]}
+                    onValueChange={([val]) => setEffectsConfig({
+                      ...effectsConfig,
+                      flutedGlass: { ...effectsConfig.flutedGlass, segments: val }
+                    })}
+                    min={5} max={300} step={5} showButtons
                   />
                 </ControlGroup>
                 <ControlGroup label={`Distortion`}>
-                  <NumberInput 
-                    value={[effectsConfig.flutedGlass?.distortionStrength ?? 0.02]} 
-                    onValueChange={([val]) => setEffectsConfig({ 
-                      ...effectsConfig, 
-                      flutedGlass: { ...effectsConfig.flutedGlass, distortionStrength: val } 
-                    })} 
-                    min={0.005} max={0.1} step={0.005} showButtons 
+                  <NumberInput
+                    value={[effectsConfig.flutedGlass?.distortionStrength ?? 0.02]}
+                    onValueChange={([val]) => setEffectsConfig({
+                      ...effectsConfig,
+                      flutedGlass: { ...effectsConfig.flutedGlass, distortionStrength: val }
+                    })}
+                    min={0.005} max={0.1} step={0.005} showButtons
                   />
                 </ControlGroup>
                 <ControlGroup label={`Wave Frequency`}>
-                  <NumberInput 
-                    value={[effectsConfig.flutedGlass?.waveFrequency ?? 1]} 
-                    onValueChange={([val]) => setEffectsConfig({ 
-                      ...effectsConfig, 
-                      flutedGlass: { ...effectsConfig.flutedGlass, waveFrequency: val } 
-                    })} 
-                    min={0.5} max={5} step={0.5} showButtons 
+                  <NumberInput
+                    value={[effectsConfig.flutedGlass?.waveFrequency ?? 1]}
+                    onValueChange={([val]) => setEffectsConfig({
+                      ...effectsConfig,
+                      flutedGlass: { ...effectsConfig.flutedGlass, waveFrequency: val }
+                    })}
+                    min={0.5} max={5} step={0.5} showButtons
                   />
                 </ControlGroup>
                 <ControlGroup label={`Rotation (°)`}>
-                  <NumberInput 
-                    value={[effectsConfig.flutedGlass?.rotation ?? 0]} 
-                    onValueChange={([val]) => setEffectsConfig({ 
-                      ...effectsConfig, 
-                      flutedGlass: { ...effectsConfig.flutedGlass, rotation: val } 
-                    })} 
-                    min={0} max={180} step={5} showButtons 
+                  <NumberInput
+                    value={[effectsConfig.flutedGlass?.rotation ?? 0]}
+                    onValueChange={([val]) => setEffectsConfig({
+                      ...effectsConfig,
+                      flutedGlass: { ...effectsConfig.flutedGlass, rotation: val }
+                    })}
+                    min={0} max={180} step={5} showButtons
                   />
                 </ControlGroup>
                 <ControlGroup label={`Motion Speed`}>
-                  <NumberInput 
-                    value={[effectsConfig.flutedGlass?.motionSpeed ?? 0.5]} 
-                    onValueChange={([val]) => setEffectsConfig({ 
-                      ...effectsConfig, 
-                      flutedGlass: { ...effectsConfig.flutedGlass, motionSpeed: val } 
-                    })} 
-                    min={0} max={3} step={0.1} showButtons 
+                  <NumberInput
+                    value={[effectsConfig.flutedGlass?.motionSpeed ?? 0.5]}
+                    onValueChange={([val]) => setEffectsConfig({
+                      ...effectsConfig,
+                      flutedGlass: { ...effectsConfig.flutedGlass, motionSpeed: val }
+                    })}
+                    min={0} max={3} step={0.1} showButtons
                   />
                 </ControlGroup>
                 <ControlGroup label={`3D Overlay`}>
-                  <NumberInput 
-                    value={[effectsConfig.flutedGlass?.overlayOpacity ?? 0]} 
-                    onValueChange={([val]) => setEffectsConfig({ 
-                      ...effectsConfig, 
-                      flutedGlass: { ...effectsConfig.flutedGlass, overlayOpacity: val } 
-                    })} 
-                    min={0} max={100} step={5} showButtons 
+                  <NumberInput
+                    value={[effectsConfig.flutedGlass?.overlayOpacity ?? 0]}
+                    onValueChange={([val]) => setEffectsConfig({
+                      ...effectsConfig,
+                      flutedGlass: { ...effectsConfig.flutedGlass, overlayOpacity: val }
+                    })}
+                    min={0} max={100} step={5} showButtons
                   />
                 </ControlGroup>
               </>
@@ -1239,6 +1239,9 @@ const ControlPanel = ({ layersContainerRef }) => {
               Upload Color Palette
             </div>
           </DialogTitle>
+          <DialogDescription>
+            Upload a JSON file or paste your color palette data below.
+          </DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[60vh]">
           <div className="space-y-2 pr-4">
@@ -1277,13 +1280,13 @@ const ControlPanel = ({ layersContainerRef }) => {
                 </Button>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               <div className="flex-1 h-px bg-border" />
               <span className="text-xs text-muted-foreground uppercase">or paste JSON</span>
               <div className="flex-1 h-px bg-border" />
             </div>
-            
+
             <div className="space-y-2">
               <Label>Paste your JSON color palette</Label>
               <textarea
@@ -1294,7 +1297,7 @@ const ControlPanel = ({ layersContainerRef }) => {
               />
               {paletteError && <p className="text-sm text-destructive">{paletteError}</p>}
             </div>
-            
+
             {colorPalette && (
               <div className="p-3 bg-muted/50 rounded-lg border border-border">
                 <div className="flex items-center justify-between mb-2">
@@ -1331,6 +1334,9 @@ const ControlPanel = ({ layersContainerRef }) => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{isCapturing ? 'Exporting...' : 'Export Image'}</DialogTitle>
+          <DialogDescription>
+            {isCapturing ? 'Please wait while we generate your image.' : 'Choose how you want to capture your scene.'}
+          </DialogDescription>
         </DialogHeader>
         {isCapturing ? (
           <div className="flex flex-col items-center gap-4 py-8">
@@ -1380,6 +1386,9 @@ const ControlPanel = ({ layersContainerRef }) => {
               Save Scene
             </div>
           </DialogTitle>
+          <DialogDescription>
+            Save your current scene configuration to your library.
+          </DialogDescription>
         </DialogHeader>
 
         {/* Show thumbnail and color stops while saving/generating */}
@@ -1527,8 +1536,8 @@ const ControlPanel = ({ layersContainerRef }) => {
                 <div className="space-y-2">
                   {/* Colors Section - Always visible */}
                   <div className="px-1">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       className="w-full h-11 px-3 justify-between"
                       onClick={() => openDialog('gradient-colors')}
                     >
@@ -1544,9 +1553,9 @@ const ControlPanel = ({ layersContainerRef }) => {
                       </div>
                     </Button>
                   </div>
-                  
+
                   <div className="h-px bg-border mx-3" />
-                  
+
                   {/* Background Type Selector */}
                   <div className="flex items-center justify-between px-3 py-2">
                     <Label className="text-sm">Background Type</Label>
@@ -1560,7 +1569,7 @@ const ControlPanel = ({ layersContainerRef }) => {
                       </SelectContent>
                     </Select>
                   </div>
-                  
+
                   {/* Type-specific settings */}
                   <div className="space-y-1 flex flex-row flex-wrap gap-1 px-1">
                     {backgroundType === 'liquid' && (
@@ -1640,7 +1649,12 @@ const ControlPanel = ({ layersContainerRef }) => {
         {/* Mobile Dialog */}
         <Dialog open={!!activeDialog} onOpenChange={(open) => !open && backDialog()}>
           <DialogContent className="max-h-[80vh]">
-            <DialogHeader><DialogTitle>{getDialogTitle(activeDialog)}</DialogTitle></DialogHeader>
+            <DialogHeader>
+              <DialogTitle>{getDialogTitle(activeDialog)}</DialogTitle>
+              <DialogDescription className="sr-only">
+                Adjust the settings for this section.
+              </DialogDescription>
+            </DialogHeader>
             <ScrollArea className="max-h-[60vh] py-4">{renderDialogContent()}</ScrollArea>
             <DialogFooter className="flex-row gap-2">
               <Button variant="outline" className="flex-1" onClick={resetDialog}><ArrowCounterClockwise size={16} className="mr-2" />Reset</Button>

@@ -23,33 +23,36 @@ const hexToRgba = (hex, alpha = 1) => {
   return rgba
 }
 
-// Circle configurations - static, won't change
-const CIRCLE_CONFIGS = [
-  {
-    radius: 0.5,
-    xValues: [0.25, 0, 0.25], xDur: 20,
-    yValues: [0, 0.25, 0], yDur: 21,
-    rotDir: 1, rotDur: 17,
-  },
-  {
-    radius: 0.45,
-    xValues: [-0.25, 0, -0.25], xDur: 23,
-    yValues: [0, 0.50, 0], yDur: 24,
-    rotDir: 1, rotDur: 18,
-  },
-  {
-    radius: 0.4,
-    xValues: [0, 0.25, 0], xDur: 25,
-    yValues: [0, 0.25, 0], yDur: 26,
-    rotDir: -1, rotDur: 19,
-  },
-  {
-    radius: 0.35,
-    xValues: [0.25, 0.50, 0.25], xDur: 22,
-    yValues: [0.25, 0, 0.25], yDur: 27,
-    rotDir: 1, rotDur: 20,
-  }
+// Base circle configuration templates for variety
+const CIRCLE_TEMPLATES = [
+  { xValues: [0.25, 0, 0.25], yValues: [0, 0.25, 0], rotDir: 1 },
+  { xValues: [-0.25, 0, -0.25], yValues: [0, 0.50, 0], rotDir: 1 },
+  { xValues: [0, 0.25, 0], yValues: [0, 0.25, 0], rotDir: -1 },
+  { xValues: [0.25, 0.50, 0.25], yValues: [0.25, 0, 0.25], rotDir: 1 },
+  { xValues: [-0.15, 0.15, -0.15], yValues: [0.15, -0.15, 0.15], rotDir: -1 },
+  { xValues: [0.3, -0.1, 0.3], yValues: [-0.2, 0.3, -0.2], rotDir: 1 },
 ]
+
+// Generate circle configs dynamically based on number of colors
+const generateCircleConfigs = (numColors) => {
+  const configs = []
+  for (let i = 0; i < numColors; i++) {
+    const template = CIRCLE_TEMPLATES[i % CIRCLE_TEMPLATES.length]
+    // Vary radius, duration based on index for visual variety
+    const radiusBase = 0.5 - (i * 0.05)
+    const radius = Math.max(0.25, radiusBase + (i % 2) * 0.1)
+    configs.push({
+      radius,
+      xValues: template.xValues,
+      xDur: 20 + i * 2,
+      yValues: template.yValues,
+      yDur: 21 + i * 2,
+      rotDir: template.rotDir,
+      rotDur: 17 + i,
+    })
+  }
+  return configs
+}
 
 // Helper: interpolate values array based on time
 const interpolateValues = (values, progress) => {
@@ -74,24 +77,23 @@ const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, is
   // Store config values in refs to avoid animation restarts
   const configRef = useRef(config)
   const gradientColorsRef = useRef([])
+  const circleConfigsRef = useRef([])
   const bgColorRef = useRef('')
 
   const flutedEnabled = effectsConfig?.flutedGlass?.enabled ?? false
 
-  // Derive gradient colors
+  // Derive gradient colors - use all palette colors
   const gradientColors = useMemo(() => {
-    if (paletteColors.length >= 4) {
-      return paletteColors.slice(0, 4)
-    }
     if (paletteColors.length >= 2) {
-      const repeated = []
-      for (let i = 0; i < 4; i++) {
-        repeated.push(paletteColors[i % paletteColors.length])
-      }
-      return repeated
+      return paletteColors
     }
     return config.colors || ['#71ECFF', '#39F58A', '#71ECFF', '#F0CBA8']
   }, [paletteColors, config.colors])
+
+  // Generate circle configs based on number of colors
+  const circleConfigs = useMemo(() => {
+    return generateCircleConfigs(gradientColors.length)
+  }, [gradientColors.length])
 
   // Background color
   const bgColor = useMemo(() => {
@@ -108,8 +110,9 @@ const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, is
 
   useEffect(() => {
     gradientColorsRef.current = gradientColors
+    circleConfigsRef.current = circleConfigs
     bgColorRef.current = bgColor
-  }, [gradientColors, bgColor])
+  }, [gradientColors, circleConfigs, bgColor])
 
   useEffect(() => {
     isPausedRef.current = isPaused
@@ -198,10 +201,11 @@ const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, is
       const centerX = width / 2
       const centerY = height / 2
 
-      // Draw each circle with its own radial gradient
-      for (let i = 0; i < CIRCLE_CONFIGS.length; i++) {
-        const circle = CIRCLE_CONFIGS[i]
-        const color = colors[i % colors.length]
+      // Draw each circle with its own radial gradient - one per color
+      const circles = circleConfigsRef.current
+      for (let i = 0; i < circles.length; i++) {
+        const circle = circles[i]
+        const color = colors[i]
 
         const circleRadius = size * circle.radius * intensity
 

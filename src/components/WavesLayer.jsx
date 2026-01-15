@@ -58,29 +58,34 @@ const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused }
   // Pre-compute layer color data
   const layerColorData = useMemo(() => {
     const layers = config.layers ?? 5
-    const numLayers = Math.max(2, Math.min(layers, waveColors.length + 2))
+    // Ensure we have at least as many layers as colors to show all color stops
+    const numLayers = Math.max(waveColors.length, Math.max(2, layers))
     const data = []
-    
+
     // Add padding so first and last layers are more visible
-    const padding = 0.2 // 20% padding on top and bottom
-    
+    const padding = 0.15 // 15% padding on top and bottom
+
     for (let layer = 0; layer < numLayers; layer++) {
-      // Spread layers from padding to (1 - padding) instead of 0 to 1
+      // Map layer index directly to color index for better color distribution
+      // This ensures each color stop gets represented
       const normalizedLayer = numLayers > 1 ? layer / (numLayers - 1) : 0.5
       const layerProgress = padding + normalizedLayer * (1 - 2 * padding)
-      const colorIndex = Math.floor(layerProgress * (waveColors.length - 1))
+
+      // Direct mapping: layer position maps to color position
+      const colorPosition = normalizedLayer * (waveColors.length - 1)
+      const colorIndex = Math.floor(colorPosition)
       const nextColorIndex = Math.min(colorIndex + 1, waveColors.length - 1)
-      const colorT = (layerProgress * (waveColors.length - 1)) - colorIndex
-      
+      const colorT = colorPosition - colorIndex
+
       const layerColor = interpolateColor(
         waveColors[colorIndex],
         waveColors[nextColorIndex],
         colorT
       )
-      
-      const endColor = waveColors[Math.min(colorIndex + 2, waveColors.length - 1)] || waveColors[waveColors.length - 1]
+
+      const endColor = waveColors[Math.min(colorIndex + 1, waveColors.length - 1)]
       const endRgb = hexToRgb(endColor)
-      
+
       data.push({
         layerProgress,
         layerColor,
@@ -88,7 +93,7 @@ const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused }
         colorIndex,
       })
     }
-    
+
     return data
   }, [waveColors, config.layers])
 
