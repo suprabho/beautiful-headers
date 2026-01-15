@@ -8,7 +8,7 @@ import {
   X, Image, Stack, CircleNotch, ArrowLeft, ArrowRight, Check, ArrowCounterClockwise, Upload, CaretCircleUp, CaretCircleDown,
   Pause, Play, FloppyDisk, Images
 } from '@phosphor-icons/react'
-import { createScene, checkCmsHealth } from '@/lib/scenesApi'
+import { createScene, updateScene, checkCmsHealth } from '@/lib/scenesApi'
 import { generateSceneDescriptions } from '@/lib/gemini'
 import { cn } from '@/lib/utils'
 import { prepareForCapture, validatePaletteJson, parsePaletteJson } from '@/lib/colorConversion'
@@ -86,6 +86,7 @@ const ControlPanel = ({ layersContainerRef }) => {
   const [saveSuccess, setSaveSuccess] = useState(false)
   const [cmsAvailable, setCmsAvailable] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [saveThumbnail, setSaveThumbnail] = useState(null)
   const [generatedContent, setGeneratedContent] = useState(null)
   const dragOffset = useRef({ x: 0, y: 0 })
   const panelRef = useRef(null)
@@ -308,53 +309,51 @@ const ControlPanel = ({ layersContainerRef }) => {
     }
   }
 
-  // Generate scene content using Gemini
-  const handleGenerateContent = async () => {
-    setIsGenerating(true)
-    setSaveError('')
-    setGeneratedContent(null)
-
-    try {
-      const sceneData = getSceneData()
-      const content = await generateSceneDescriptions(sceneData)
-      if (content) {
-        setGeneratedContent(content)
-      } else {
-        setSaveError('Failed to generate content. Please try again.')
-      }
-    } catch (error) {
-      console.error('Failed to generate content:', error)
-      setSaveError('Failed to generate content. Please try again.')
-    } finally {
-      setIsGenerating(false)
-    }
-  }
-
-  // Handle save scene
+  // Handle save scene - creates scene first, then generates AI descriptions
   const handleSaveScene = async () => {
-    if (!generatedContent?.title) {
-      setSaveError('Please wait for content generation')
-      return
-    }
-
     setIsSaving(true)
     setSaveError('')
     setSaveSuccess(false)
+    setIsGenerating(false)
+    setSaveThumbnail(null)
+    setGeneratedContent(null)
 
     try {
-      // Capture thumbnail first
+      // Step 1: Capture thumbnail
       const thumbnail = await captureThumbnail()
+      setSaveThumbnail(thumbnail)
       const sceneData = getSceneData()
-      await createScene(generatedContent.title, sceneData, thumbnail)
+
+      // Step 2: Create scene with placeholder title
+      const placeholderTitle = 'Untitled Scene'
+      const scene = await createScene(placeholderTitle, sceneData, thumbnail, null)
+
+      // Step 3: Generate AI descriptions
+      setIsGenerating(true)
+      const content = await generateSceneDescriptions(sceneData)
+      setIsGenerating(false)
+
+      if (content) {
+        // Step 4: Update scene with generated title and descriptions
+        await updateScene(scene.id, {
+          title: content.title,
+          short_description: content.shortDescription,
+          long_description: content.longDescription
+        })
+        setGeneratedContent(content)
+      }
+
       setSaveSuccess(true)
-      setGeneratedContent(null)
       setTimeout(() => {
         setShowSaveDialog(false)
         setSaveSuccess(false)
-      }, 1500)
+        setSaveThumbnail(null)
+        setGeneratedContent(null)
+      }, 2000)
     } catch (error) {
       console.error('Failed to save scene:', error)
       setSaveError('Failed to save scene. Check your internet connection.')
+      setIsGenerating(false)
     } finally {
       setIsSaving(false)
     }
@@ -1367,10 +1366,10 @@ const ControlPanel = ({ layersContainerRef }) => {
       if (!open) {
         setSaveError('')
         setSaveSuccess(false)
+        setIsSaving(false)
+        setIsGenerating(false)
+        setSaveThumbnail(null)
         setGeneratedContent(null)
-      } else if (open && !generatedContent && !isGenerating) {
-        // Auto-generate content when dialog opens
-        handleGenerateContent()
       }
     }}>
       <DialogContent className="max-w-lg">
@@ -1382,17 +1381,57 @@ const ControlPanel = ({ layersContainerRef }) => {
             </div>
           </DialogTitle>
         </DialogHeader>
-        {saveSuccess ? (
-          <div className="flex flex-col items-center gap-4 py-8">
-            <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
-              <Check size={24} weight="bold" className="text-green-500" />
+
+        {/* Show thumbnail and color stops while saving/generating */}
+        {(isSaving || saveSuccess) && saveThumbnail && (
+          <div className="space-y-4">
+            {/* Thumbnail preview */}
+            <div className="relative aspect-video rounded-lg overflow-hidden border border-border">
+              <img src={saveThumbnail} alt="Scene preview" className="w-full h-full object-cover" />
             </div>
-            <span className="text-muted-foreground">Scene saved successfully!</span>
+
+            {/* Color stops */}
+            <div className="flex gap-1 h-6 rounded-md overflow-hidden">
+              {gradientConfig.colors.map((color, index) => (
+                <div
+                  key={index}
+                  className="flex-1 transition-all"
+                  style={{ backgroundColor: color }}
+                  title={color}
+                />
+              ))}
+            </div>
           </div>
-        ) : isGenerating ? (
-          <div className="flex flex-col items-center gap-4 py-8">
-            <CircleNotch size={32} className="animate-spin text-primary" />
-            <span className="text-muted-foreground">Generating scene details with AI...</span>
+        )}
+
+        {saveSuccess ? (
+          <div className="space-y-4">
+            {/* Show generated content on success */}
+            {generatedContent && (
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <span className="text-xs text-muted-foreground uppercase tracking-wide">Title</span>
+                  <p className="font-medium">{generatedContent.title}</p>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-xs text-muted-foreground uppercase tracking-wide">Description</span>
+                  <p className="text-sm text-muted-foreground">{generatedContent.shortDescription}</p>
+                </div>
+              </div>
+            )}
+            <div className="flex items-center justify-center gap-2 py-2">
+              <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                <Check size={16} weight="bold" className="text-green-500" />
+              </div>
+              <span className="text-muted-foreground">Scene saved successfully!</span>
+            </div>
+          </div>
+        ) : isSaving ? (
+          <div className="flex items-center justify-center gap-3 py-4">
+            <CircleNotch size={24} className="animate-spin text-primary" />
+            <span className="text-muted-foreground">
+              {isGenerating ? 'Generating AI descriptions...' : 'Saving scene...'}
+            </span>
           </div>
         ) : (
           <div className="space-y-4 py-4">
@@ -1401,65 +1440,26 @@ const ControlPanel = ({ layersContainerRef }) => {
                 Unable to connect to database. Check your internet connection.
               </div>
             )}
-            {generatedContent ? (
-              <>
-                <div className="space-y-2">
-                  <Label className="text-muted-foreground text-xs uppercase tracking-wide">Title</Label>
-                  <div className="p-3 bg-muted/50 rounded-lg font-medium">
-                    {generatedContent.title}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-muted-foreground text-xs uppercase tracking-wide">Short Description</Label>
-                  <div className="p-3 bg-muted/50 rounded-lg text-sm">
-                    {generatedContent.shortDescription}
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-muted-foreground text-xs uppercase tracking-wide">Long Description</Label>
-                  <div className="p-3 bg-muted/50 rounded-lg text-sm text-muted-foreground">
-                    {generatedContent.longDescription}
-                  </div>
-                </div>
-              </>
+            {saveError ? (
+              <div className="text-center py-4">
+                <p className="text-sm text-destructive">{saveError}</p>
+              </div>
             ) : (
               <div className="text-center py-4 text-muted-foreground">
-                {saveError || 'Failed to generate content'}
+                Save this scene to your collection. AI will generate a title and description automatically.
               </div>
             )}
-            {saveError && <p className="text-sm text-destructive">{saveError}</p>}
           </div>
         )}
-        {!saveSuccess && !isGenerating && (
+        {!saveSuccess && !isSaving && (
           <DialogFooter className="flex-row gap-2">
-            <Button variant="outline" className="flex-1" onClick={() => setShowSaveDialog(false)} disabled={isSaving}>
+            <Button variant="outline" className="flex-1" onClick={() => setShowSaveDialog(false)}>
               Cancel
             </Button>
-            {!generatedContent ? (
-              <Button className="flex-1" onClick={handleGenerateContent} disabled={!cmsAvailable}>
-                <Shuffle size={16} className="mr-2" />
-                Retry
-              </Button>
-            ) : (
-              <>
-                <Button variant="outline" onClick={handleGenerateContent} disabled={isSaving}>
-                  <Shuffle size={16} />
-                </Button>
-                <Button className="flex-1" onClick={handleSaveScene} disabled={isSaving || !cmsAvailable}>
-                  {isSaving ? (
-                    <>
-                      <CircleNotch size={16} className="mr-2 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    <>
-                      <FloppyDisk size={16} className="mr-2" />
-                      Save Scene
-                    </>
-                  )}
-                </Button>
-              </>
-            )}
+            <Button className="flex-1" onClick={handleSaveScene} disabled={!cmsAvailable}>
+              <FloppyDisk size={16} className="mr-2" />
+              Save Scene
+            </Button>
           </DialogFooter>
         )}
       </DialogContent>

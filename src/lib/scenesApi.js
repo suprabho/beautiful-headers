@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js'
-import { generateSceneDescriptions } from './gemini'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://grbrfpaznehikakupavx.supabase.co'
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_nFT6O21VoCZSKs7lQe-UaA_tSkoc4su'
@@ -141,11 +140,12 @@ export async function getSceneBySlug(slug) {
 
 /**
  * Save a new scene
+ * @param {string} title - Scene title
+ * @param {Object} sceneData - Scene configuration data
+ * @param {string|null} thumbnail - Base64 thumbnail image
+ * @param {Object|null} descriptions - Pre-generated descriptions { shortDescription, longDescription }
  */
-export async function createScene(title, sceneData, thumbnail = null) {
-  // Generate AI descriptions in parallel with scene creation
-  const descriptionsPromise = generateSceneDescriptions(sceneData)
-
+export async function createScene(title, sceneData, thumbnail = null, descriptions = null) {
   // First create the scene to get an ID
   const { data: scene, error } = await supabase
     .from('scenes')
@@ -153,6 +153,8 @@ export async function createScene(title, sceneData, thumbnail = null) {
       title,
       scene_data: sceneData,
       thumbnail: null,
+      short_description: descriptions?.shortDescription || null,
+      long_description: descriptions?.longDescription || null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     })
@@ -164,39 +166,25 @@ export async function createScene(title, sceneData, thumbnail = null) {
     throw new Error(`Failed to create scene: ${error.message}`)
   }
 
-  // Collect updates to apply
-  const updates = {}
-
   // Upload thumbnail if provided
   if (thumbnail) {
     const thumbnailUrls = await uploadThumbnail(thumbnail, scene.id)
     if (thumbnailUrls) {
-      updates.thumbnail = thumbnailUrls
-    }
-  }
+      const { data: updatedScene, error: updateError } = await supabase
+        .from('scenes')
+        .update({
+          thumbnail: thumbnailUrls,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', scene.id)
+        .select()
+        .single()
 
-  // Wait for AI descriptions
-  const descriptions = await descriptionsPromise
-  console.log('AI descriptions result:', descriptions)
-  if (descriptions) {
-    updates.short_description = descriptions.shortDescription
-    updates.long_description = descriptions.longDescription
-  }
-
-  // Apply updates if any
-  if (Object.keys(updates).length > 0) {
-    updates.updated_at = new Date().toISOString()
-    const { data: updatedScene, error: updateError } = await supabase
-      .from('scenes')
-      .update(updates)
-      .eq('id', scene.id)
-      .select()
-      .single()
-
-    if (updateError) {
-      console.error('Failed to update scene:', updateError)
-    } else {
-      return updatedScene
+      if (updateError) {
+        console.error('Failed to update scene thumbnail:', updateError)
+      } else {
+        return updatedScene
+      }
     }
   }
 

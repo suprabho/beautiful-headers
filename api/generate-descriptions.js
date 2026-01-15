@@ -19,7 +19,7 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { sceneData } = req.body;
+    const { sceneData, thumbnailImage } = req.body;
 
     if (!sceneData) {
         return res.status(400).json({ error: 'Missing sceneData' });
@@ -39,10 +39,13 @@ export default async function handler(req, res) {
 
         // Construct the prompt
         const prompt = `You are describing a beautiful gradient/visual header design for a website in a SEO-friendly way to help it get discovered by search engines. 
-    Based on the above guidelines, and following configuration,  generate two descriptions:
+    Based on the above guidelines, and attached image which is generated using following configuration, generate two descriptions:
 
-Configuration:
+
+    Image: ${thumbnailImage}
+    Configuration:
 ${sceneSummary}
+
 
 Include the major color in the short description. Do not include specific gradient type in the short description.
 
@@ -371,7 +374,32 @@ Industrial & Metal Macro Detail Backgrounds
 
 Focus on the aesthetic qualities, color harmony, and visual impact. Be creative and evocative.`;
 
-        const result = await model.generateContent(prompt);
+        // Build content parts - text prompt + optional image
+        const contentParts = [{ text: prompt }];
+
+        if (thumbnailImage) {
+            // thumbnailImage should be base64 string (with or without data URL prefix)
+            let base64Data = thumbnailImage;
+            let mimeType = 'image/png';
+
+            // Handle data URL format: "data:image/png;base64,..."
+            if (thumbnailImage.startsWith('data:')) {
+                const matches = thumbnailImage.match(/^data:(.+);base64,(.+)$/);
+                if (matches) {
+                    mimeType = matches[1];
+                    base64Data = matches[2];
+                }
+            }
+
+            contentParts.push({
+                inlineData: {
+                    mimeType,
+                    data: base64Data
+                }
+            });
+        }
+
+        const result = await model.generateContent(contentParts);
         const responseText = result.response.text();
 
         // Parse JSON - find the first complete JSON object
