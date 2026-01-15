@@ -9,6 +9,7 @@ import {
   Pause, Play, FloppyDisk, Images
 } from '@phosphor-icons/react'
 import { createScene, checkCmsHealth } from '@/lib/scenesApi'
+import { generateSceneDescriptions } from '@/lib/gemini'
 import { cn } from '@/lib/utils'
 import { prepareForCapture, validatePaletteJson, parsePaletteJson } from '@/lib/colorConversion'
 import { Button } from '@/components/ui/button'
@@ -80,11 +81,12 @@ const ControlPanel = ({ layersContainerRef }) => {
   const [paletteJson, setPaletteJson] = useState('')
   const [paletteError, setPaletteError] = useState('')
   const [showSaveDialog, setShowSaveDialog] = useState(false)
-  const [sceneTitle, setSceneTitle] = useState('')
   const [isSaving, setIsSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
   const [saveSuccess, setSaveSuccess] = useState(false)
   const [cmsAvailable, setCmsAvailable] = useState(false)
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [generatedContent, setGeneratedContent] = useState(null)
   const dragOffset = useRef({ x: 0, y: 0 })
   const panelRef = useRef(null)
 
@@ -306,10 +308,32 @@ const ControlPanel = ({ layersContainerRef }) => {
     }
   }
 
+  // Generate scene content using Gemini
+  const handleGenerateContent = async () => {
+    setIsGenerating(true)
+    setSaveError('')
+    setGeneratedContent(null)
+
+    try {
+      const sceneData = getSceneData()
+      const content = await generateSceneDescriptions(sceneData)
+      if (content) {
+        setGeneratedContent(content)
+      } else {
+        setSaveError('Failed to generate content. Please try again.')
+      }
+    } catch (error) {
+      console.error('Failed to generate content:', error)
+      setSaveError('Failed to generate content. Please try again.')
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
   // Handle save scene
   const handleSaveScene = async () => {
-    if (!sceneTitle.trim()) {
-      setSaveError('Please enter a title')
+    if (!generatedContent?.title) {
+      setSaveError('Please wait for content generation')
       return
     }
 
@@ -321,9 +345,9 @@ const ControlPanel = ({ layersContainerRef }) => {
       // Capture thumbnail first
       const thumbnail = await captureThumbnail()
       const sceneData = getSceneData()
-      await createScene(sceneTitle.trim(), sceneData, thumbnail)
+      await createScene(generatedContent.title, sceneData, thumbnail)
       setSaveSuccess(true)
-      setSceneTitle('')
+      setGeneratedContent(null)
       setTimeout(() => {
         setShowSaveDialog(false)
         setSaveSuccess(false)
@@ -1343,9 +1367,13 @@ const ControlPanel = ({ layersContainerRef }) => {
       if (!open) {
         setSaveError('')
         setSaveSuccess(false)
+        setGeneratedContent(null)
+      } else if (open && !generatedContent && !isGenerating) {
+        // Auto-generate content when dialog opens
+        handleGenerateContent()
       }
     }}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-2">
@@ -1361,6 +1389,11 @@ const ControlPanel = ({ layersContainerRef }) => {
             </div>
             <span className="text-muted-foreground">Scene saved successfully!</span>
           </div>
+        ) : isGenerating ? (
+          <div className="flex flex-col items-center gap-4 py-8">
+            <CircleNotch size={32} className="animate-spin text-primary" />
+            <span className="text-muted-foreground">Generating scene details with AI...</span>
+          </div>
         ) : (
           <div className="space-y-4 py-4">
             {!cmsAvailable && (
@@ -1368,46 +1401,65 @@ const ControlPanel = ({ layersContainerRef }) => {
                 Unable to connect to database. Check your internet connection.
               </div>
             )}
-            <div className="space-y-2">
-              <Label htmlFor="scene-title">Scene Title</Label>
-              <Input
-                id="scene-title"
-                value={sceneTitle}
-                onChange={(e) => {
-                  setSceneTitle(e.target.value)
-                  setSaveError('')
-                }}
-                placeholder="My awesome scene..."
-                className="h-11"
-                autoFocus
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !isSaving) {
-                    handleSaveScene()
-                  }
-                }}
-              />
-              {saveError && <p className="text-sm text-destructive">{saveError}</p>}
-            </div>
+            {generatedContent ? (
+              <>
+                <div className="space-y-2">
+                  <Label className="text-muted-foreground text-xs uppercase tracking-wide">Title</Label>
+                  <div className="p-3 bg-muted/50 rounded-lg font-medium">
+                    {generatedContent.title}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-muted-foreground text-xs uppercase tracking-wide">Short Description</Label>
+                  <div className="p-3 bg-muted/50 rounded-lg text-sm">
+                    {generatedContent.shortDescription}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-muted-foreground text-xs uppercase tracking-wide">Long Description</Label>
+                  <div className="p-3 bg-muted/50 rounded-lg text-sm text-muted-foreground">
+                    {generatedContent.longDescription}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-4 text-muted-foreground">
+                {saveError || 'Failed to generate content'}
+              </div>
+            )}
+            {saveError && <p className="text-sm text-destructive">{saveError}</p>}
           </div>
         )}
-        {!saveSuccess && (
+        {!saveSuccess && !isGenerating && (
           <DialogFooter className="flex-row gap-2">
             <Button variant="outline" className="flex-1" onClick={() => setShowSaveDialog(false)} disabled={isSaving}>
               Cancel
             </Button>
-            <Button className="flex-1" onClick={handleSaveScene} disabled={isSaving || !cmsAvailable}>
-              {isSaving ? (
-                <>
-                  <CircleNotch size={16} className="mr-2 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <FloppyDisk size={16} className="mr-2" />
-                  Save Scene
-                </>
-              )}
-            </Button>
+            {!generatedContent ? (
+              <Button className="flex-1" onClick={handleGenerateContent} disabled={!cmsAvailable}>
+                <Shuffle size={16} className="mr-2" />
+                Retry
+              </Button>
+            ) : (
+              <>
+                <Button variant="outline" onClick={handleGenerateContent} disabled={isSaving}>
+                  <Shuffle size={16} />
+                </Button>
+                <Button className="flex-1" onClick={handleSaveScene} disabled={isSaving || !cmsAvailable}>
+                  {isSaving ? (
+                    <>
+                      <CircleNotch size={16} className="mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <FloppyDisk size={16} className="mr-2" />
+                      Save Scene
+                    </>
+                  )}
+                </Button>
+              </>
+            )}
           </DialogFooter>
         )}
       </DialogContent>
