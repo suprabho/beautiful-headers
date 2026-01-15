@@ -105,6 +105,41 @@ export async function getScene(id) {
 }
 
 /**
+ * Convert title to URL-friendly slug
+ */
+export function titleToSlug(title) {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single
+}
+
+/**
+ * Fetch a single scene by slug (URL-friendly title)
+ */
+export async function getSceneBySlug(slug) {
+  // First try to find by exact slug match in title
+  const { data, error } = await supabase
+    .from('scenes')
+    .select('*')
+
+  if (error) {
+    throw new Error('Failed to fetch scenes')
+  }
+
+  // Find scene where the slugified title matches the provided slug
+  const scene = data.find(s => titleToSlug(s.title) === slug)
+
+  if (!scene) {
+    throw new Error('Scene not found')
+  }
+
+  return scene
+}
+
+/**
  * Save a new scene
  */
 export async function createScene(title, sceneData, thumbnail = null) {

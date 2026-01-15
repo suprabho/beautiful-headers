@@ -50,3 +50,5 @@ cms/thumbnails/
 # Environment variables
 .env
 .env.local
+.vercel
+.env*.local

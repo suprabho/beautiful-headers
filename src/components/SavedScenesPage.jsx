@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react'
-import { ArrowLeft, Trash, CircleNotch, Warning, ImageBroken, Play } from '@phosphor-icons/react'
-import { getScenes, getScene, deleteScene, checkCmsHealth } from '@/lib/scenesApi'
+import { useNavigate } from 'react-router-dom'
+import { ArrowLeft, Trash, CircleNotch, Warning, ImageBroken } from '@phosphor-icons/react'
+import { getScenes, deleteScene, checkCmsHealth, titleToSlug } from '@/lib/scenesApi'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import useStore from '../store/useStore'
+import '../App.css'
 
-function SceneCard({ scene, onClick, onDelete }) {
+function SceneCard({ scene, onNavigate, onDelete }) {
   const [isHovered, setIsHovered] = useState(false)
   const [imageError, setImageError] = useState(false)
 
@@ -22,7 +22,7 @@ function SceneCard({ scene, onClick, onDelete }) {
       className="group relative rounded-xl overflow-hidden bg-card border border-border transition-all hover:border-primary/50 hover:shadow-lg cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => onClick(scene)}
+      onClick={() => onNavigate(scene)}
     >
       {/* Thumbnail */}
       <div className="aspect-video bg-muted relative">
@@ -47,7 +47,7 @@ function SceneCard({ scene, onClick, onDelete }) {
             isHovered ? "opacity-100" : "opacity-0"
           )}
         >
-          <span className="text-white font-medium">View Details</span>
+          <span className="text-white font-medium">View Scene</span>
         </div>
       </div>
 
@@ -79,9 +79,7 @@ function SceneCard({ scene, onClick, onDelete }) {
 }
 
 function SavedScenesPage() {
-  const setCurrentPage = useStore((state) => state.setCurrentPage)
-  const loadSceneData = useStore((state) => state.loadSceneData)
-  const setCurrentSceneId = useStore((state) => state.setCurrentSceneId)
+  const navigate = useNavigate()
 
   const [scenes, setScenes] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -89,9 +87,6 @@ function SavedScenesPage() {
   const [cmsAvailable, setCmsAvailable] = useState(false)
   const [deleteDialog, setDeleteDialog] = useState({ open: false, scene: null })
   const [isDeleting, setIsDeleting] = useState(false)
-  const [isLoadingScene, setIsLoadingScene] = useState(false)
-  const [selectedScene, setSelectedScene] = useState(null)
-  const [isLoadingDetails, setIsLoadingDetails] = useState(false)
 
   // Check CMS and fetch scenes on mount
   useEffect(() => {
@@ -123,45 +118,9 @@ function SavedScenesPage() {
     }
   }
 
-  const handleOpenSceneDetails = async (scene) => {
-    // Set the scene immediately to show the dialog
-    setSelectedScene(scene)
-    setIsLoadingDetails(true)
-
-    try {
-      // Fetch full scene data including sceneData
-      const fullScene = await getScene(scene.id)
-      setSelectedScene(fullScene)
-    } catch (err) {
-      console.error('Failed to load scene details:', err)
-      // Keep showing partial data if fetch fails
-    } finally {
-      setIsLoadingDetails(false)
-    }
-  }
-
-  const handleApplyScene = async (scene) => {
-    try {
-      setIsLoadingScene(true)
-      // If we already have full scene data, use it directly
-      if (scene.scene_data) {
-        loadSceneData(scene.scene_data)
-        setCurrentSceneId(scene.id)
-        setSelectedScene(null)
-        setCurrentPage('editor')
-      } else {
-        const fullScene = await getScene(scene.id)
-        loadSceneData(fullScene.scene_data)
-        setCurrentSceneId(scene.id)
-        setSelectedScene(null)
-        setCurrentPage('editor')
-      }
-    } catch (err) {
-      console.error('Failed to load scene:', err)
-      setError('Failed to load scene. Please try again.')
-    } finally {
-      setIsLoadingScene(false)
-    }
+  const handleNavigateToScene = (scene) => {
+    const slug = titleToSlug(scene.title)
+    navigate(`/scenes/${slug}`)
   }
 
   const handleDeleteScene = async () => {
@@ -188,7 +147,7 @@ function SavedScenesPage() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setCurrentPage('editor')}
+            onClick={() => navigate('/')}
           >
             <ArrowLeft size={20} weight="bold" />
           </Button>
@@ -198,16 +157,6 @@ function SavedScenesPage() {
           </span>
         </div>
       </header>
-
-      {/* Loading overlay for scene loading */}
-      {isLoadingScene && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-          <div className="flex items-center gap-3">
-            <CircleNotch size={24} className="animate-spin" />
-            <span>Loading scene...</span>
-          </div>
-        </div>
-      )}
 
       {/* Content */}
       <main className="container mx-auto px-4 py-6">
@@ -234,7 +183,7 @@ function SavedScenesPage() {
             <p className="text-muted-foreground mb-4">No saved scenes yet</p>
             <Button
               variant="outline"
-              onClick={() => setCurrentPage('editor')}
+              onClick={() => navigate('/')}
             >
               Create your first scene
             </Button>
@@ -245,7 +194,7 @@ function SavedScenesPage() {
               <SceneCard
                 key={scene.id}
                 scene={scene}
-                onClick={handleOpenSceneDetails}
+                onNavigate={handleNavigateToScene}
                 onDelete={(s) => setDeleteDialog({ open: true, scene: s })}
               />
             ))}
@@ -288,101 +237,6 @@ function SavedScenesPage() {
               )}
             </Button>
           </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Scene detail sheet */}
-      <Dialog
-        open={!!selectedScene}
-        onOpenChange={(open) => !isLoadingScene && !open && setSelectedScene(null)}
-      >
-        <DialogContent className="sm:max-w-lg">
-          {selectedScene && (
-            <>
-              {/* Thumbnail */}
-              <div className="aspect-video bg-muted rounded-lg overflow-hidden -mx-2 -mt-2">
-                {selectedScene.thumbnail?.large ? (
-                  <img
-                    src={selectedScene.thumbnail.large}
-                    alt={selectedScene.long_description || selectedScene.short_description || selectedScene.title}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                    <ImageBroken size={64} weight="light" />
-                  </div>
-                )}
-              </div>
-
-              <DialogHeader className="pt-2">
-                <DialogTitle className="text-xl">{selectedScene.title}</DialogTitle>
-                {selectedScene.short_description && (
-                  <DialogDescription className="text-base">
-                    {selectedScene.short_description}
-                  </DialogDescription>
-                )}
-              </DialogHeader>
-
-              {/* Long description */}
-              {selectedScene.long_description && (
-                <ScrollArea className="max-h-32">
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {selectedScene.long_description}
-                  </p>
-                </ScrollArea>
-              )}
-
-              {/* Color stops */}
-              {isLoadingDetails ? (
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <CircleNotch size={16} className="animate-spin" />
-                  <span className="text-sm">Loading details...</span>
-                </div>
-              ) : selectedScene.scene_data?.gradientConfig?.colors && (
-                <div className="space-y-2">
-                  <span className="text-xs text-muted-foreground uppercase tracking-wide">Colors</span>
-                  <div className="flex gap-1.5">
-                    {selectedScene.scene_data.gradientConfig.colors.map((color, idx) => (
-                      <div
-                        key={idx}
-                        className="w-8 h-8 rounded-md border border-border/50 shadow-sm"
-                        style={{ backgroundColor: color }}
-                        title={color}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <DialogFooter className="gap-2 sm:gap-2 pt-2">
-                <Button
-                  variant="outline"
-                  className="flex-1 sm:flex-none"
-                  onClick={() => setSelectedScene(null)}
-                  disabled={isLoadingScene}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  className="flex-1 sm:flex-none"
-                  onClick={() => handleApplyScene(selectedScene)}
-                  disabled={isLoadingScene}
-                >
-                  {isLoadingScene ? (
-                    <>
-                      <CircleNotch size={16} className="animate-spin" />
-                      Applying...
-                    </>
-                  ) : (
-                    <>
-                      <Play size={16} weight="fill" />
-                      Apply Scene
-                    </>
-                  )}
-                </Button>
-              </DialogFooter>
-            </>
-          )}
         </DialogContent>
       </Dialog>
     </div>

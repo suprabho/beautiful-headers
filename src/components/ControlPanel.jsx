@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import html2canvas from 'html2canvas'
 import { AVAILABLE_ICONS } from './TessellationLayer'
 import {
@@ -34,6 +35,8 @@ import {
 } from './controls'
 
 const ControlPanel = ({ layersContainerRef }) => {
+  const navigate = useNavigate()
+
   // Subscribe to Zustand store
   const activePanel = useStore((state) => state.activePanel)
   const setActivePanel = useStore((state) => state.setActivePanel)
@@ -64,7 +67,6 @@ const ControlPanel = ({ layersContainerRef }) => {
   const isPaused = useStore((state) => state.isPaused)
   const setIsPaused = useStore((state) => state.setIsPaused)
   const getSceneData = useStore((state) => state.getSceneData)
-  const setCurrentPage = useStore((state) => state.setCurrentPage)
 
   // Local UI state (not in Zustand - panel-specific)
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -1431,7 +1433,7 @@ const ControlPanel = ({ layersContainerRef }) => {
             <Button variant="outline" size="sm" className="flex items-center gap-2 h-10 px-4 border-primary/50" onClick={() => setShowSaveDialog(true)} title="Save Scene">
               <FloppyDisk size={18} />
             </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-2 h-10 px-4 border-primary/50" onClick={() => setCurrentPage('scenes')} title="Saved Scenes">
+            <Button variant="outline" size="sm" className="flex items-center gap-2 h-10 px-4 border-primary/50" onClick={() => navigate('/scenes')} title="Saved Scenes">
               <Images size={18} />
             </Button>
             <Button variant="outline" size="sm" className="flex items-center gap-2 h-10 px-4 border-primary/50" onClick={() => setShowCaptureModal(true)}>
@@ -1641,7 +1643,7 @@ const ControlPanel = ({ layersContainerRef }) => {
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setShowSaveDialog(true)} title="Save Scene">
               <FloppyDisk size={16} />
             </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setCurrentPage('scenes')} title="Saved Scenes">
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate('/scenes')} title="Saved Scenes">
               <Images size={16} />
             </Button>
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setShowCaptureModal(true)} disabled={isCapturing}>
