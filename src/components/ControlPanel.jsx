@@ -102,6 +102,10 @@ const ControlPanel = ({ layersContainerRef }) => {
     const randomInRange = (min, max) => Math.random() * (max - min) + min
     const pickOne = (arr) => arr[Math.floor(Math.random() * arr.length)]
 
+    // Randomize background type
+    const backgroundTypes = ['simple', 'liquid', 'aurora', 'fluid', 'waves']
+    setBackgroundType(pickOne(backgroundTypes))
+
     let colors
     let numColors
 
@@ -210,7 +214,7 @@ const ControlPanel = ({ layersContainerRef }) => {
         waveFrequency: randomInRange(0.5, 4),
       },
     })
-  }, [colorPalette, gradientConfig, tessellationConfig, effectsConfig, textConfig, textSections, setGradientConfig, setTessellationConfig, setEffectsConfig, setTextConfig, setTextSections, setTextGap])
+  }, [colorPalette, gradientConfig, tessellationConfig, effectsConfig, textConfig, textSections, setBackgroundType, setGradientConfig, setTessellationConfig, setEffectsConfig, setTextConfig, setTextSections, setTextGap])
 
   // Handle palette upload
   const handlePaletteUpload = () => {
