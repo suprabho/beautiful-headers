@@ -77,8 +77,9 @@ const EffectsLayer = memo(({ config }) => {
           style={{
             position: 'absolute',
             inset: 0,
-            background: texturePattern,
+            backgroundImage: texturePattern,
             backgroundSize: textureBgSize,
+            backgroundRepeat: 'repeat',
             opacity: textureOpacity,
             mixBlendMode: textureBlendMode,
           }}

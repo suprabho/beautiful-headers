@@ -1,6 +1,16 @@
 import { useRef, useEffect, useMemo, useState, memo } from 'react'
 import FlutedGlassCanvas from './FlutedGlassCanvas'
 
+// Detect mobile device for performance optimizations
+const isMobile = typeof window !== 'undefined' && (
+  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+  window.innerWidth < 768
+)
+
+// Check for reduced motion preference
+const prefersReducedMotion = typeof window !== 'undefined' &&
+  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+
 // Color cache for hex to RGBA conversions
 const colorCache = new Map()
 
@@ -35,8 +45,10 @@ const CIRCLE_TEMPLATES = [
 
 // Generate circle configs dynamically based on number of colors
 const generateCircleConfigs = (numColors) => {
+  // Limit circles on mobile for better performance
+  const maxCircles = isMobile ? Math.min(numColors, 4) : numColors
   const configs = []
-  for (let i = 0; i < numColors; i++) {
+  for (let i = 0; i < maxCircles; i++) {
     const template = CIRCLE_TEMPLATES[i % CIRCLE_TEMPLATES.length]
     // Vary radius, duration based on index for visual variety
     const radiusBase = 0.5 - (i * 0.05)
@@ -134,21 +146,32 @@ const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, is
     const ctx = canvas.getContext('2d')
     const tempCtx = tempCanvas.getContext('2d')
 
-    // Cap DPR at 2.0 for performance - higher values offer diminishing returns
-    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    // Cap DPR lower on mobile for better performance (1.5 vs 2.0 on desktop)
+    const dpr = Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2)
 
+    // Debounced resize for mobile to prevent excessive redraws during orientation change
+    let resizeTimeout = null
     const handleResize = () => {
-      const width = window.innerWidth
-      const height = window.innerHeight
-      // Use DPR-scaled canvas for crisp rendering on Retina/4K displays
-      canvas.width = width * dpr
-      canvas.height = height * dpr
-      canvas.style.width = `${width}px`
-      canvas.style.height = `${height}px`
-      tempCanvas.width = width * dpr
-      tempCanvas.height = height * dpr
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      tempCtx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      const doResize = () => {
+        const width = window.innerWidth
+        const height = window.innerHeight
+        // Use DPR-scaled canvas for crisp rendering on Retina/4K displays
+        canvas.width = width * dpr
+        canvas.height = height * dpr
+        canvas.style.width = `${width}px`
+        canvas.style.height = `${height}px`
+        tempCanvas.width = width * dpr
+        tempCanvas.height = height * dpr
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+        tempCtx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      }
+
+      if (isMobile) {
+        if (resizeTimeout) clearTimeout(resizeTimeout)
+        resizeTimeout = setTimeout(doResize, 150)
+      } else {
+        doResize()
+      }
     }
 
     const handleVisibilityChange = () => {
@@ -163,11 +186,22 @@ const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, is
     window.addEventListener('resize', handleResize)
     document.addEventListener('visibilitychange', handleVisibilityChange)
 
-    const animate = () => {
+    // Frame throttling for mobile - target ~30fps instead of 60fps
+    let lastFrameTime = 0
+    const targetFrameInterval = isMobile ? 33 : 16 // ~30fps on mobile, ~60fps on desktop
+
+    const animate = (currentTime) => {
       if (!isVisibleRef.current) {
         animationRef.current = null
         return
       }
+
+      // Throttle frames on mobile
+      if (currentTime - lastFrameTime < targetFrameInterval) {
+        animationRef.current = requestAnimationFrame(animate)
+        return
+      }
+      lastFrameTime = currentTime
 
       // Use logical dimensions (pre-DPR scaling)
       const width = canvas.width / dpr
@@ -183,9 +217,13 @@ const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, is
       const colors = gradientColorsRef.current
       const background = bgColorRef.current
       
-      const speed = cfg.speed ?? 1
+      // Reduce animation speed if user prefers reduced motion
+      const baseSpeed = cfg.speed ?? 1
+      const speed = prefersReducedMotion ? baseSpeed * 0.3 : baseSpeed
       const intensity = cfg.intensity ?? 1
-      const blurAmount = cfg.blurAmount ?? 20
+      // Reduce blur on mobile for better performance
+      const baseBlur = cfg.blurAmount ?? 20
+      const blurAmount = isMobile ? Math.min(baseBlur, 15) : baseBlur
 
       // Only update time when not paused
       if (!isPausedRef.current) {
@@ -257,11 +295,12 @@ const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, is
       animationRef.current = requestAnimationFrame(animate)
     }
 
-    animate()
+    animationRef.current = requestAnimationFrame(animate)
 
     return () => {
       window.removeEventListener('resize', handleResize)
       document.removeEventListener('visibilitychange', handleVisibilityChange)
+      if (resizeTimeout) clearTimeout(resizeTimeout)
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current)
       }

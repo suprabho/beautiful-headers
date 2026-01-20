@@ -7,27 +7,16 @@ const colorCache = new Map()
 // Convert hex to RGB with caching
 const hexToRgb = (hex) => {
   if (colorCache.has(hex)) return colorCache.get(hex)
-  
+
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
   const rgb = result ? {
     r: parseInt(result[1], 16),
     g: parseInt(result[2], 16),
     b: parseInt(result[3], 16),
   } : { r: 0, g: 0, b: 0 }
-  
+
   colorCache.set(hex, rgb)
   return rgb
-}
-
-// Interpolate between colors
-const interpolateColor = (color1, color2, t) => {
-  const rgb1 = hexToRgb(color1)
-  const rgb2 = hexToRgb(color2)
-  return {
-    r: Math.round(rgb1.r + (rgb2.r - rgb1.r) * t),
-    g: Math.round(rgb1.g + (rgb2.g - rgb1.g) * t),
-    b: Math.round(rgb1.b + (rgb2.b - rgb1.b) * t),
-  }
 }
 
 const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused }) => {
@@ -39,63 +28,20 @@ const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused }
   const timeRef = useRef(0)
   const isVisibleRef = useRef(true)
   const isPausedRef = useRef(false)
-  
+
   // Store config values in refs to avoid animation restarts
   const configRef = useRef(config)
   const colorsRef = useRef([])
-  const layerColorDataRef = useRef([])
 
   const flutedEnabled = effectsConfig?.flutedGlass?.enabled ?? false
 
-  // Derive wave colors
+  // Derive wave colors from palette
   const waveColors = useMemo(() => {
     if (paletteColors.length >= 2) {
       return paletteColors
     }
     return config.colors || ['#06b6d4', '#a855f7', '#ec4899', '#3b82f6']
   }, [paletteColors, config.colors])
-
-  // Pre-compute layer color data
-  const layerColorData = useMemo(() => {
-    const layers = config.layers ?? 5
-    // Ensure we have at least as many layers as colors to show all color stops
-    const numLayers = Math.max(waveColors.length, Math.max(2, layers))
-    const data = []
-
-    // Add padding so first and last layers are more visible
-    const padding = 0.15 // 15% padding on top and bottom
-
-    for (let layer = 0; layer < numLayers; layer++) {
-      // Map layer index directly to color index for better color distribution
-      // This ensures each color stop gets represented
-      const normalizedLayer = numLayers > 1 ? layer / (numLayers - 1) : 0.5
-      const layerProgress = padding + normalizedLayer * (1 - 2 * padding)
-
-      // Direct mapping: layer position maps to color position
-      const colorPosition = normalizedLayer * (waveColors.length - 1)
-      const colorIndex = Math.floor(colorPosition)
-      const nextColorIndex = Math.min(colorIndex + 1, waveColors.length - 1)
-      const colorT = colorPosition - colorIndex
-
-      const layerColor = interpolateColor(
-        waveColors[colorIndex],
-        waveColors[nextColorIndex],
-        colorT
-      )
-
-      const endColor = waveColors[Math.min(colorIndex + 1, waveColors.length - 1)]
-      const endRgb = hexToRgb(endColor)
-
-      data.push({
-        layerProgress,
-        layerColor,
-        endRgb,
-        colorIndex,
-      })
-    }
-
-    return data
-  }, [waveColors, config.layers])
 
   // Update refs when props change (doesn't restart animation)
   useEffect(() => {
@@ -104,8 +50,7 @@ const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused }
 
   useEffect(() => {
     colorsRef.current = waveColors
-    layerColorDataRef.current = layerColorData
-  }, [waveColors, layerColorData])
+  }, [waveColors])
 
   useEffect(() => {
     isPausedRef.current = isPaused
@@ -174,8 +119,8 @@ const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused }
       // Read config values from ref
       const cfg = configRef.current
       const currentColors = colorsRef.current
-      const currentLayerData = layerColorDataRef.current
-      
+
+      const numLayers = Math.max(1, cfg.layers ?? 3)
       const waveHeight = cfg.waveHeight ?? 0.05
       const waveFrequency = cfg.waveFrequency ?? 2
       const rotation = cfg.rotation ?? 0
@@ -187,6 +132,8 @@ const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused }
       if (!isPausedRef.current) {
         timeRef.current += 0.016 * speed
       }
+
+      const time = timeRef.current
 
       // Clear canvas
       ctx.clearRect(0, 0, width, height)
@@ -207,67 +154,67 @@ const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused }
       const offsetX = (width - extendedWidth) / 2
       const offsetY = (height - extendedHeight) / 2
 
-      // Draw gradient background
-      const bgGradient = ctx.createLinearGradient(
-        offsetX,
-        offsetY,
-        offsetX,
-        offsetY + extendedHeight
-      )
-      
-      currentColors.forEach((color, index) => {
-        bgGradient.addColorStop(index / Math.max(1, currentColors.length - 1), color)
-      })
-      
-      ctx.fillStyle = bgGradient
+      // Background color (color 1) - fills top 50%
+      const backgroundColor = currentColors[0] || '#06b6d4'
+      ctx.fillStyle = backgroundColor
       ctx.fillRect(offsetX, offsetY, extendedWidth, extendedHeight)
 
-      // Draw wave layers using pre-computed color data
-      const numLayers = currentLayerData.length
-      const time = timeRef.current
+      // Wave region starts at 50% of the extended height
+      const waveRegionStart = offsetY + (extendedHeight * 0.5)
+      // Layer spacing uses 20% of height for distributing layer start positions
+      const layerSpacingHeight = extendedHeight * 0.2
 
-      for (let layer = 0; layer < numLayers; layer++) {
-        const { layerProgress, layerColor, endRgb } = currentLayerData[layer]
+      // Each layer starts at: 50% + (20% / numLayers) * i
+      // Layer i uses color (i + 2) from palette (index i + 1, since color 1 is index 0 for background)
 
-        const baseY = offsetY + (layerProgress * extendedHeight)
-        
+      // Wave region height is from 50% to bottom of extended area
+      const waveRegionHeight = extendedHeight * 0.5
+
+      // Draw layers from index 0 to numLayers-1
+      // Later layers (higher index) paint over earlier layers (lower index)
+      for (let i = 0; i < numLayers; i++) {
+        // Calculate the starting Y position for this layer
+        // Layer 0 starts at 50%, Layer 1 at 50% + segment, etc.
+        const segmentHeight = layerSpacingHeight / numLayers
+        const layerStartY = waveRegionStart + (segmentHeight * i)
+
+        // Get color for this layer (color index i+1, since index 0 is background)
+        const colorIndex = (i + 1) % currentColors.length
+        const layerColor = hexToRgb(currentColors[colorIndex])
+
+        // Calculate wave parameters for this layer
+        const amplitude = waveRegionHeight * waveHeight * (0.5 + i * 0.15)
+        const freq = waveFrequency * (1 + i * 0.2)
+        const layerPhase = phaseOffset * i * Math.PI * 0.5 + time
+
         ctx.beginPath()
-        ctx.moveTo(offsetX, offsetY + extendedHeight)
-        ctx.lineTo(offsetX, baseY)
 
-        const amplitude = extendedHeight * waveHeight * (0.5 + layer * 0.15)
-        const freq = waveFrequency * (1 + layer * 0.2)
-        const layerPhase = phaseOffset * layer * Math.PI * 0.5 + time
-        
+        // Start from bottom-left corner
+        ctx.moveTo(offsetX, offsetY + extendedHeight)
+
+        // Move up to the wave starting point on the left edge
+        ctx.lineTo(offsetX, layerStartY)
+
+        // Draw the wave curve across the width
         // LOD optimization: use larger step size when blur is high or paused
-        // High blur hides fine detail, so we can reduce geometry complexity
-        const isPaused = isPausedRef.current
-        const step = (blur > 30 || isPaused) ? 6 : (blur > 20 ? 4 : 2)
+        const isPausedNow = isPausedRef.current
+        const step = (blur > 30 || isPausedNow) ? 6 : (blur > 20 ? 4 : 2)
+
         for (let x = 0; x <= extendedWidth; x += step) {
           const normalizedX = x / extendedWidth
-          const waveY = baseY + 
+          // Composite wave with primary and secondary harmonics
+          const waveY = layerStartY +
             Math.sin(normalizedX * Math.PI * 2 * freq + layerPhase) * amplitude +
             Math.sin(normalizedX * Math.PI * 4 * freq * 0.5 + layerPhase * 1.5) * amplitude * 0.3
           ctx.lineTo(offsetX + x, waveY)
         }
 
+        // Close the path: go to bottom-right, then back to bottom-left
         ctx.lineTo(offsetX + extendedWidth, offsetY + extendedHeight)
         ctx.closePath()
 
-        const waveGradient = ctx.createLinearGradient(
-          offsetX,
-          baseY - amplitude,
-          offsetX,
-          offsetY + extendedHeight
-        )
-        
-        const startColor = `rgba(${layerColor.r}, ${layerColor.g}, ${layerColor.b}, 0.9)`
-        
-        waveGradient.addColorStop(0, startColor)
-        waveGradient.addColorStop(0.5, `rgba(${layerColor.r}, ${layerColor.g}, ${layerColor.b}, 0.95)`)
-        waveGradient.addColorStop(1, `rgba(${endRgb.r}, ${endRgb.g}, ${endRgb.b}, 1)`)
-
-        ctx.fillStyle = waveGradient
+        // Fill with solid color
+        ctx.fillStyle = `rgb(${layerColor.r}, ${layerColor.g}, ${layerColor.b})`
         ctx.fill()
       }
 
@@ -278,7 +225,7 @@ const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused }
         ctx.filter = `blur(${blur}px)`
         tempCtx.clearRect(0, 0, width, height)
         tempCtx.drawImage(canvas, 0, 0)
-        
+
         ctx.filter = 'none'
         ctx.clearRect(0, 0, width, height)
         ctx.filter = `blur(${blur}px)`
