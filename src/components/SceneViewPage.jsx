@@ -5,6 +5,7 @@ import { getSceneBySlug } from '@/lib/scenesApi'
 import { Button } from '@/components/ui/button'
 import '../App.css'
 import GradientLayer from './GradientLayer'
+import SimpleGradientLayer from './SimpleGradientLayer'
 import AuroraLayer from './AuroraLayer'
 import FluidGradientLayer from './FluidGradientLayer'
 import WavesLayer from './WavesLayer'
@@ -163,6 +164,9 @@ function SceneViewPage() {
               filter: getGradientFilter(),
             }}
           >
+            {backgroundType === 'simple' && (
+              <SimpleGradientLayer config={gradientConfig} gradientColors={gradientConfig.colors} effectsConfig={effectsConfig} />
+            )}
             {backgroundType === 'liquid' && (
               <GradientLayer config={gradientConfig} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={false} />
             )}

@@ -8,11 +8,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 // ============================================
 // COLORS SECTION - Shared by all background types
 // ============================================
+import { useRef, useState, useCallback } from 'react'
+
 export const ColorsSection = ({
   gradientConfig,
   setGradientConfig,
   parsedPalette,
 }) => {
+  const sliderRef = useRef(null)
+  const [draggingIndex, setDraggingIndex] = useState(null)
+  const [selectedIndex, setSelectedIndex] = useState(null)
+
   const updateGradientColor = (index, color) => {
     const newColors = [...gradientConfig.colors]
     newColors[index] = color
@@ -42,53 +48,226 @@ export const ColorsSection = ({
         colorStops: newStops,
         numColors: newColors.length,
       })
+      if (selectedIndex === index) {
+        setSelectedIndex(null)
+      } else if (selectedIndex > index) {
+        setSelectedIndex(selectedIndex - 1)
+      }
     }
   }
 
   const updateColorStop = (index, value) => {
     const newStops = [...gradientConfig.colorStops]
-    newStops[index] = parseInt(value)
+    newStops[index] = Math.max(0, Math.min(100, parseInt(value) || 0))
     setGradientConfig({ ...gradientConfig, colorStops: newStops })
   }
 
+  const handleDragStart = useCallback((e, index) => {
+    e.preventDefault()
+    setDraggingIndex(index)
+    setSelectedIndex(index)
+  }, [])
+
+  const handleDragMove = useCallback((clientX) => {
+    if (draggingIndex === null || !sliderRef.current) return
+
+    const rect = sliderRef.current.getBoundingClientRect()
+    const x = clientX - rect.left
+    const percentage = Math.max(0, Math.min(100, Math.round((x / rect.width) * 100)))
+
+    const newStops = [...gradientConfig.colorStops]
+    newStops[draggingIndex] = percentage
+    setGradientConfig({ ...gradientConfig, colorStops: newStops })
+  }, [draggingIndex, gradientConfig, setGradientConfig])
+
+  const handleMouseMove = useCallback((e) => {
+    handleDragMove(e.clientX)
+  }, [handleDragMove])
+
+  const handleTouchMove = useCallback((e) => {
+    if (draggingIndex !== null && e.touches.length > 0) {
+      e.preventDefault()
+      handleDragMove(e.touches[0].clientX)
+    }
+  }, [draggingIndex, handleDragMove])
+
+  const handleDragEnd = useCallback(() => {
+    setDraggingIndex(null)
+  }, [])
+
+  // Build gradient string for the track
+  const gradientString = gradientConfig.colors
+    .map((color, i) => `${color} ${gradientConfig.colorStops[i]}%`)
+    .join(', ')
+
   return (
-    <div className="flex flex-col gap-2">
-      <Label className="text-xs uppercase tracking-wide font-semibold mb-2">Background Colors</Label>
-      <div className="space-y-2">
+    <div
+      className="flex flex-col gap-3"
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleDragEnd}
+      onMouseLeave={handleDragEnd}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleDragEnd}
+      onTouchCancel={handleDragEnd}
+    >
+      <Label className="text-xs uppercase tracking-wide font-semibold">Background Colors</Label>
+
+      {/* Horizontal slider track with color stops */}
+      <div
+        ref={sliderRef}
+        className="relative h-8 rounded-md cursor-pointer"
+        style={{
+          background: `linear-gradient(to right, ${gradientString})`,
+          border: '1px solid hsl(var(--border))',
+        }}
+      >
+        {/* Color stop handles */}
         {gradientConfig.colors.map((color, index) => (
-          <div key={index} className="flex items-center gap-2">
-            <PaletteColorPicker
-              value={color}
-              onChange={(newColor) => updateGradientColor(index, newColor)}
-              palette={parsedPalette}
+          <div
+            key={index}
+            className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 cursor-grab active:cursor-grabbing transition-transform ${
+              selectedIndex === index ? 'scale-125 z-10' : 'z-0'
+            }`}
+            style={{
+              left: `${gradientConfig.colorStops[index]}%`,
+            }}
+            onMouseDown={(e) => handleDragStart(e, index)}
+            onTouchStart={(e) => handleDragStart(e, index)}
+            onClick={() => setSelectedIndex(index)}
+          >
+            <div
+              className={`w-4 h-6 rounded-sm border-2 shadow-md ${
+                selectedIndex === index ? 'border-white ring-2 ring-primary' : 'border-white'
+              }`}
+              style={{
+                backgroundColor: color,
+                boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+              }}
             />
-            <Input
-              type="number"
-              min="0"
-              max="100"
-              value={gradientConfig.colorStops[index] || 0}
-              onChange={(e) => updateColorStop(index, e.target.value)}
-              className="w-16 h-8 text-xs"
-            />
-            <span className="text-xs text-muted-foreground">%</span>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              className="h-7 w-7 ml-auto"
-              onClick={() => removeGradientColor(index)}
-              disabled={gradientConfig.colors.length <= 2}
-            >
-              <Trash size={12} />
-            </Button>
           </div>
         ))}
-        {gradientConfig.colors.length < 8 && (
-          <Button variant="outline" size="sm" className="w-full h-8 text-xs" onClick={addGradientColor}>
-            <Plus size={12} className="mr-1" /> Add Color
-          </Button>
-        )}
       </div>
+
+      {/* Selected color controls */}
+      {selectedIndex !== null && (
+        <div className="flex items-center gap-2 p-2 rounded-md bg-muted/50">
+          <PaletteColorPicker
+            value={gradientConfig.colors[selectedIndex]}
+            onChange={(newColor) => updateGradientColor(selectedIndex, newColor)}
+            palette={parsedPalette}
+          />
+          <Input
+            type="number"
+            min="0"
+            max="100"
+            value={gradientConfig.colorStops[selectedIndex] || 0}
+            onChange={(e) => updateColorStop(selectedIndex, e.target.value)}
+            className="w-16 h-8 text-xs"
+          />
+          <span className="text-xs text-muted-foreground">%</span>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 ml-auto"
+            onClick={() => removeGradientColor(selectedIndex)}
+            disabled={gradientConfig.colors.length <= 2}
+          >
+            <Trash size={12} />
+          </Button>
+        </div>
+      )}
+
+      {/* Add color button */}
+      {gradientConfig.colors.length < 8 && (
+        <Button variant="outline" size="sm" className="w-full h-8 text-xs" onClick={addGradientColor}>
+          <Plus size={12} className="mr-1" /> Add Color
+        </Button>
+      )}
     </div>
+  )
+}
+
+// ============================================
+// SIMPLE GRADIENT SETTINGS (without colors)
+// ============================================
+export const SimpleControls = ({
+  gradientConfig,
+  setGradientConfig,
+}) => {
+  return (
+    <>
+      {/* Gradient Type */}
+      <ControlGroup label="Gradient Type">
+        <Select
+          value={gradientConfig.type}
+          onValueChange={(value) => setGradientConfig({ ...gradientConfig, type: value })}
+        >
+          <SelectTrigger className="h-9">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="linear">Linear</SelectItem>
+            <SelectItem value="radial">Radial</SelectItem>
+            <SelectItem value="conic">Conic</SelectItem>
+          </SelectContent>
+        </Select>
+      </ControlGroup>
+
+      {/* Position Controls */}
+      <div className="grid grid-cols-2 gap-4">
+        <ControlGroup label={`Start X (in %)`}>
+          <NumberInput
+            value={[gradientConfig.startPos.x]}
+            onValueChange={([val]) => setGradientConfig({
+              ...gradientConfig,
+              startPos: { ...gradientConfig.startPos, x: val }
+            })}
+            min={-100}
+            max={200}
+            step={10}
+          />
+        </ControlGroup>
+        <ControlGroup label={`Start Y (in %)`}>
+          <NumberInput
+            value={[gradientConfig.startPos.y]}
+            onValueChange={([val]) => setGradientConfig({
+              ...gradientConfig,
+              startPos: { ...gradientConfig.startPos, y: val }
+            })}
+            min={-100}
+            max={200}
+            step={10}
+          />
+        </ControlGroup>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <ControlGroup label={`End X (in %)`}>
+          <NumberInput
+            value={[gradientConfig.endPos.x]}
+            onValueChange={([val]) => setGradientConfig({
+              ...gradientConfig,
+              endPos: { ...gradientConfig.endPos, x: val }
+            })}
+            min={-100}
+            max={200}
+            step={10}
+          />
+        </ControlGroup>
+        <ControlGroup label={`End Y (in %)`}>
+          <NumberInput
+            value={[gradientConfig.endPos.y]}
+            onValueChange={([val]) => setGradientConfig({
+              ...gradientConfig,
+              endPos: { ...gradientConfig.endPos, y: val }
+            })}
+            min={-100}
+            max={200}
+            step={10}
+          />
+        </ControlGroup>
+      </div>
+    </>
   )
 }
 
@@ -815,6 +994,7 @@ export const GradientPanel = ({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
+            <SelectItem value="simple">Simple</SelectItem>
             <SelectItem value="liquid">Fog</SelectItem>
             <SelectItem value="aurora">Aurora</SelectItem>
             <SelectItem value="fluid">Mesh</SelectItem>
@@ -824,6 +1004,12 @@ export const GradientPanel = ({
       </ControlGroup>
 
       {/* SECTION 3: Type-specific controls */}
+      {backgroundType === 'simple' && (
+        <SimpleControls
+          gradientConfig={gradientConfig}
+          setGradientConfig={setGradientConfig}
+        />
+      )}
       {backgroundType === 'liquid' && (
         <LiquidControls
           gradientConfig={gradientConfig}

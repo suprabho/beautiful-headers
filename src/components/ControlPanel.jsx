@@ -30,6 +30,7 @@ import {
   PaletteColorPicker,
   ContrastAwarePaletteColorPicker,
   GradientPanel,
+  ColorsSection,
   PatternPanel,
   EffectsPanel,
   TextPanel,
@@ -757,6 +758,8 @@ const ControlPanel = ({ layersContainerRef }) => {
   const getDialogTitle = (key) => {
     const titles = {
       'gradient-colors': 'Background Colors',
+      'simple-type': 'Gradient Type',
+      'simple-position': 'Position',
       'gradient-type': 'Gradient Type',
       'gradient-stops': 'Position Stops',
       'gradient-wave': 'Wave Settings',
@@ -797,49 +800,13 @@ const ControlPanel = ({ layersContainerRef }) => {
     switch (activeDialog) {
       case 'gradient-colors':
         return (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <Label>Gradient Colors</Label>
-            </div>
-            <div className="flex flex-row gap-1 w-[calc(100vw-2rem)] overflow-x-auto">
-              {gradientConfig.colors.map((color, index) => (
-                <div key={index} className="flex flex-col max-w-full items-center gap-2">
-                  <PaletteColorPicker
-                    value={color}
-                    onChange={(newColor) => updateGradientColor(index, newColor)}
-                    palette={parsedPalette}
-                    className="w-full h-10"
-                  />
-                  <div className="flex flex-row gap-1 w-full items-center">
-                    <Input
-                      type="number"
-                      min="0"
-                      max="200"
-                      value={gradientConfig.colorStops[index] || 0}
-                      onChange={(e) => updateColorStop(index, e.target.value)}
-                      className="w-full min-w-12 h-9"
-                    />
-                    <span className="text-sm text-muted-foreground">%</span>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => removeGradientColor(index)}
-                    disabled={gradientConfig.colors.length <= 2}
-                  >
-                    <Trash size={14} />
-                  </Button>
-                </div>
-              ))}
-            </div>
-            {gradientConfig.colors.length < 8 && (
-              <Button variant="outline" className="w-full" onClick={addGradientColor}>
-                <Plus size={14} className="mr-2" /> Add Color
-              </Button>
-            )}
-          </div>
+          <ColorsSection
+            gradientConfig={gradientConfig}
+            setGradientConfig={setGradientConfig}
+            parsedPalette={parsedPalette}
+          />
         )
+      case 'simple-type':
       case 'gradient-type':
         return (
           <ControlGroup label="Gradient Type">
@@ -855,6 +822,23 @@ const ControlPanel = ({ layersContainerRef }) => {
               </SelectContent>
             </Select>
           </ControlGroup>
+        )
+      case 'simple-position':
+        return (
+          <div className="space-y-2">
+            <ControlGroup label={`Start X: `}>
+              <NumberInput value={[gradientConfig.startPos.x]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, startPos: { ...gradientConfig.startPos, x: val } })} min={-100} max={200} step={10} showButtons />
+            </ControlGroup>
+            <ControlGroup label={`Start Y: `}>
+              <NumberInput value={[gradientConfig.startPos.y]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, startPos: { ...gradientConfig.startPos, y: val } })} min={-100} max={200} step={10} showButtons />
+            </ControlGroup>
+            <ControlGroup label={`End X: `}>
+              <NumberInput value={[gradientConfig.endPos.x]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, endPos: { ...gradientConfig.endPos, x: val } })} min={-100} max={200} step={10} showButtons />
+            </ControlGroup>
+            <ControlGroup label={`End Y: `}>
+              <NumberInput value={[gradientConfig.endPos.y]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, endPos: { ...gradientConfig.endPos, y: val } })} min={-100} max={200} step={10} showButtons />
+            </ControlGroup>
+          </div>
         )
       case 'gradient-stops':
         return (
@@ -1563,6 +1547,7 @@ const ControlPanel = ({ layersContainerRef }) => {
                     <Select value={backgroundType} onValueChange={(value) => setBackgroundType(value)}>
                       <SelectTrigger className="w-[120px] h-9"><SelectValue /></SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="simple">Simple</SelectItem>
                         <SelectItem value="liquid">Fog</SelectItem>
                         <SelectItem value="aurora">Aurora</SelectItem>
                         <SelectItem value="fluid">Mesh</SelectItem>
@@ -1573,6 +1558,12 @@ const ControlPanel = ({ layersContainerRef }) => {
 
                   {/* Type-specific settings */}
                   <div className="space-y-1 flex flex-row flex-wrap gap-1 px-1">
+                    {backgroundType === 'simple' && (
+                      <>
+                        <SubsectionButton title="Type" onClick={() => openDialog('simple-type')} />
+                        <SubsectionButton title="Position" onClick={() => openDialog('simple-position')} />
+                      </>
+                    )}
                     {backgroundType === 'liquid' && (
                       <>
                         <SubsectionButton title="Type" onClick={() => openDialog('gradient-type')} />

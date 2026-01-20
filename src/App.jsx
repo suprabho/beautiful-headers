@@ -1,5 +1,6 @@
 import { useCallback, useRef } from 'react'
 import GradientLayer from './components/GradientLayer'
+import SimpleGradientLayer from './components/SimpleGradientLayer'
 import AuroraLayer from './components/AuroraLayer'
 import FluidGradientLayer from './components/FluidGradientLayer'
 import WavesLayer from './components/WavesLayer'
@@ -94,6 +95,9 @@ function App() {
             filter: getGradientFilter(),
           }}
         >
+          {backgroundType === 'simple' && (
+            <SimpleGradientLayer config={gradientConfig} gradientColors={gradientConfig.colors} effectsConfig={effectsConfig} />
+          )}
           {backgroundType === 'liquid' && (
             <GradientLayer config={gradientConfig} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={isPaused} />
           )}
