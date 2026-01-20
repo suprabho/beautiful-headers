@@ -157,11 +157,60 @@ const ControlPanel = ({ layersContainerRef }) => {
       textureOpacity: randomInRange(0.1, 0.9),
     })
 
+    // Randomize text config
     setTextConfig({
       ...textConfig,
+      enabled: true,
       color: pickOne([...colors, '#ffffff', '#000000']),
+      opacity: randomInRange(0.7, 1),
     })
-  }, [colorPalette, gradientConfig, tessellationConfig, effectsConfig, textConfig, setGradientConfig, setTessellationConfig, setEffectsConfig, setTextConfig])
+
+    // Randomize text sections
+    const fonts = ['sans-serif', 'serif', 'mono', 'scribble']
+    const weights = [100, 200, 300, 400, 500, 600, 700, 800, 900]
+    const randomizedSections = textSections.map(section => ({
+      ...section,
+      size: Math.floor(randomInRange(section.id === 1 ? 60 : 16, section.id === 1 ? 180 : 40)),
+      weight: pickOne(weights),
+      spacing: randomInRange(-0.1, 0.3),
+      font: pickOne(fonts),
+      italic: Math.random() > 0.7, // 30% chance for italic
+    }))
+    setTextSections(randomizedSections)
+
+    // Randomize text gap
+    setTextGap(Math.floor(randomInRange(10, 60)))
+
+    // Randomize effects
+    const textures = ['none', 'grain', 'scanlines', 'dots', 'grid', 'diagonal']
+    const colorMaps = ['none', 'sepia', 'cyberpunk', 'sunset', 'matrix', 'noir', 'vintage']
+    const textureBlendModes = ['overlay', 'multiply', 'screen', 'soft-light', 'hard-light']
+
+    setEffectsConfig({
+      ...effectsConfig,
+      blur: Math.floor(randomInRange(0, 15)),
+      texture: pickOne(textures),
+      textureSize: Math.floor(randomInRange(10, 60)),
+      textureOpacity: randomInRange(0.1, 0.9),
+      textureBlendMode: pickOne(textureBlendModes),
+      colorMap: pickOne(colorMaps),
+      vignetteIntensity: randomInRange(0, 0.6),
+      saturation: Math.floor(randomInRange(80, 150)),
+      contrast: Math.floor(randomInRange(80, 130)),
+      brightness: Math.floor(randomInRange(80, 130)),
+      // Randomize fluted glass - randomly enable/disable and randomize values
+      flutedGlass: {
+        enabled: Math.random() > 0.5, // 50% chance to enable
+        segments: Math.floor(randomInRange(20, 200)),
+        rotation: Math.floor(randomInRange(0, 180)),
+        motionValue: randomInRange(0, 1),
+        motionSpeed: randomInRange(0, 2),
+        overlayOpacity: Math.floor(randomInRange(0, 50)),
+        distortionStrength: randomInRange(0.005, 0.08),
+        waveFrequency: randomInRange(0.5, 4),
+      },
+    })
+  }, [colorPalette, gradientConfig, tessellationConfig, effectsConfig, textConfig, textSections, setGradientConfig, setTessellationConfig, setEffectsConfig, setTextConfig, setTextSections, setTextGap])
 
   // Handle palette upload
   const handlePaletteUpload = () => {
