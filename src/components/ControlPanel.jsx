@@ -33,6 +33,7 @@ import {
   PatternPanel,
   EffectsPanel,
   TextPanel,
+  IconGridDropdown,
 } from './controls'
 
 const ControlPanel = ({ layersContainerRef }) => {
@@ -1004,10 +1005,10 @@ const ControlPanel = ({ layersContainerRef }) => {
         return (
           <div className="space-y-2">
             <ControlGroup label="Icon">
-              <Select value={tessellationConfig.icon} onValueChange={(v) => setTessellationConfig({ ...tessellationConfig, icon: v })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>{AVAILABLE_ICONS.map(icon => <SelectItem key={icon} value={icon}>{icon}</SelectItem>)}</SelectContent>
-              </Select>
+              <IconGridDropdown
+                value={tessellationConfig.icon}
+                onChange={(v) => setTessellationConfig({ ...tessellationConfig, icon: v })}
+              />
             </ControlGroup>
             <ControlGroup label={`Size`}><NumberInput value={[tessellationConfig.size]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, size: val })} min={8} max={100} step={4} showButtons /></ControlGroup>
             <ControlGroup label="Color"><PaletteColorPicker value={tessellationConfig.color} onChange={(newColor) => setTessellationConfig({ ...tessellationConfig, color: newColor })} palette={parsedPalette} className="w-10 h-10" /></ControlGroup>

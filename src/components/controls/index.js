@@ -9,7 +9,7 @@ export {
 
 // Panel components
 export { GradientPanel, ColorsSection, LiquidControls, AuroraControls, BlobControls, FluidControls, WavesControls } from './GradientControls'
-export { PatternPanel } from './PatternControls'
+export { PatternPanel, IconGridDropdown } from './PatternControls'
 export { EffectsPanel } from './EffectsControls'
 export { TextPanel } from './TextControls'
 
