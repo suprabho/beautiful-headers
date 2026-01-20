@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://visual-layers.vercel.app/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
+    <loc>https://aura.promad.design/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://visual-layers.vercel.app/scenes</loc>
+    <loc>https://aura.promad.design/scenes</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>1</priority>
   </url>
 </urlset>

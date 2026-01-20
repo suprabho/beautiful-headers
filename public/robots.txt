@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://visual-layers.vercel.app/sitemap.xml
+Sitemap: https://aura.promad.design/sitemap.xml
