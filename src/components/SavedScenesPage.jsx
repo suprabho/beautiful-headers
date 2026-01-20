@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Trash, CircleNotch, Warning, ImageBroken } from '@phosphor-icons/react'
-import { getScenes, deleteScene, checkCmsHealth, titleToSlug } from '@/lib/scenesApi'
+import { getScenes, deleteScene, checkCmsHealth, titleToSlug, verifyDeletePassword } from '@/lib/scenesApi'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog'
 import '../App.css'
 
@@ -87,6 +89,8 @@ function SavedScenesPage() {
   const [cmsAvailable, setCmsAvailable] = useState(false)
   const [deleteDialog, setDeleteDialog] = useState({ open: false, scene: null })
   const [isDeleting, setIsDeleting] = useState(false)
+  const [deletePassword, setDeletePassword] = useState('')
+  const [passwordError, setPasswordError] = useState('')
 
   // Check CMS and fetch scenes on mount
   useEffect(() => {
@@ -126,11 +130,26 @@ function SavedScenesPage() {
   const handleDeleteScene = async () => {
     if (!deleteDialog.scene) return
 
+    if (!deletePassword.trim()) {
+      setPasswordError('Please enter the password')
+      return
+    }
+
     try {
       setIsDeleting(true)
+      setPasswordError('')
+
+      const isValid = await verifyDeletePassword(deletePassword)
+      if (!isValid) {
+        setPasswordError('Incorrect password')
+        setIsDeleting(false)
+        return
+      }
+
       await deleteScene(deleteDialog.scene.id)
       setScenes((prev) => prev.filter((s) => s.id !== deleteDialog.scene.id))
       setDeleteDialog({ open: false, scene: null })
+      setDeletePassword('')
     } catch (err) {
       console.error('Failed to delete scene:', err)
       setError('Failed to delete scene. Please try again.')
@@ -205,7 +224,15 @@ function SavedScenesPage() {
       {/* Delete confirmation dialog */}
       <Dialog
         open={deleteDialog.open}
-        onOpenChange={(open) => !isDeleting && setDeleteDialog({ open, scene: open ? deleteDialog.scene : null })}
+        onOpenChange={(open) => {
+          if (!isDeleting) {
+            setDeleteDialog({ open, scene: open ? deleteDialog.scene : null })
+            if (!open) {
+              setDeletePassword('')
+              setPasswordError('')
+            }
+          }
+        }}
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -214,10 +241,31 @@ function SavedScenesPage() {
               Are you sure you want to delete "{deleteDialog.scene?.title}"? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
+          <div className="space-y-2 py-4">
+            <Label htmlFor="delete-password">Enter password to confirm</Label>
+            <Input
+              id="delete-password"
+              type="password"
+              placeholder="Password"
+              value={deletePassword}
+              onChange={(e) => {
+                setDeletePassword(e.target.value)
+                setPasswordError('')
+              }}
+              disabled={isDeleting}
+            />
+            {passwordError && (
+              <p className="text-sm text-destructive">{passwordError}</p>
+            )}
+          </div>
           <DialogFooter className="gap-2 sm:gap-0">
             <Button
               variant="outline"
-              onClick={() => setDeleteDialog({ open: false, scene: null })}
+              onClick={() => {
+                setDeleteDialog({ open: false, scene: null })
+                setDeletePassword('')
+                setPasswordError('')
+              }}
               disabled={isDeleting}
             >
               Cancel

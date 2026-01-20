@@ -1,8 +1,18 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, CircleNotch, Warning, Play } from '@phosphor-icons/react'
+import { ArrowLeft, CircleNotch, Warning, Play, Code, Check, Copy } from '@phosphor-icons/react'
 import { getSceneBySlug } from '@/lib/scenesApi'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
+import { useDocumentMeta } from '@/hooks/useDocumentMeta'
 import '../App.css'
 import GradientLayer from './GradientLayer'
 import SimpleGradientLayer from './SimpleGradientLayer'
@@ -25,6 +35,17 @@ function SceneViewPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 })
+  const [embedDialogOpen, setEmbedDialogOpen] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const [embedOptions, setEmbedOptions] = useState({ hideText: false, hideIcons: false })
+
+  // Update document meta tags with scene data
+  useDocumentMeta({
+    title: scene ? `${scene.title} - Aura` : null,
+    description: scene?.short_description || scene?.long_description,
+    image: scene?.thumbnail?.large || scene?.thumbnail?.small,
+    url: scene ? `https://aura.promad.design/scenes/${slug}` : null,
+  })
 
   // Ref to track if RAF is pending for mouse throttling
   const rafPendingRef = useRef(false)
@@ -73,6 +94,25 @@ function SceneViewPage() {
       setCurrentSceneId(scene.id)
       setCurrentPage('editor')
       navigate('/')
+    }
+  }
+
+  const getEmbedCode = () => {
+    const params = new URLSearchParams()
+    if (embedOptions.hideText) params.set('hideText', 'true')
+    if (embedOptions.hideIcons) params.set('hideIcons', 'true')
+    const queryString = params.toString()
+    const embedUrl = `${window.location.origin}/embed/${slug}${queryString ? `?${queryString}` : ''}`
+    return `<iframe src="${embedUrl}" width="100%" height="600" frameborder="0" style="border:0;border-radius:8px;" allowfullscreen></iframe>`
+  }
+
+  const handleCopyEmbed = async () => {
+    try {
+      await navigator.clipboard.writeText(getEmbedCode())
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy:', err)
     }
   }
 
@@ -213,10 +253,16 @@ function SceneViewPage() {
 
             </div>
           </div>
-          <Button onClick={handleApplyScene}>
-            <Play size={16} weight="fill" className="mr-2" />
-            Open in Editor
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => setEmbedDialogOpen(true)}>
+              <Code size={16} weight="bold" className="mr-2" />
+              Embed
+            </Button>
+            <Button onClick={handleApplyScene}>
+              <Play size={16} weight="fill" className="mr-2" />
+              Open in Editor
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -344,6 +390,67 @@ function SceneViewPage() {
 
         </div>
       </div>
+
+      {/* Embed Dialog */}
+      <Dialog open={embedDialogOpen} onOpenChange={setEmbedDialogOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Embed this scene</DialogTitle>
+            <DialogDescription>
+              Copy the code below to embed this scene on your website.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {/* Embed Options */}
+            <div className="flex flex-col gap-3 p-3 bg-muted/50 rounded-lg">
+              <span className="text-xs text-muted-foreground uppercase tracking-wide">Options</span>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="hide-text" className="text-sm cursor-pointer">Hide text</Label>
+                <Switch
+                  id="hide-text"
+                  checked={embedOptions.hideText}
+                  onCheckedChange={(checked) => setEmbedOptions(prev => ({ ...prev, hideText: checked }))}
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="hide-icons" className="text-sm cursor-pointer">Hide icons</Label>
+                <Switch
+                  id="hide-icons"
+                  checked={embedOptions.hideIcons}
+                  onCheckedChange={(checked) => setEmbedOptions(prev => ({ ...prev, hideIcons: checked }))}
+                />
+              </div>
+            </div>
+
+            <div className="relative">
+              <pre className="bg-muted p-4 rounded-lg text-xs overflow-x-auto whitespace-pre-wrap break-all">
+                {getEmbedCode()}
+              </pre>
+              <Button
+                size="sm"
+                variant="secondary"
+                className="absolute top-2 right-2"
+                onClick={handleCopyEmbed}
+              >
+                {copied ? (
+                  <>
+                    <Check size={14} className="mr-1" />
+                    Copied
+                  </>
+                ) : (
+                  <>
+                    <Copy size={14} className="mr-1" />
+                    Copy
+                  </>
+                )}
+              </Button>
+            </div>
+            <div className="text-sm text-muted-foreground">
+              <p>Preview URL: <a href={`/embed/${slug}`} target="_blank" rel="noopener noreferrer" className="text-primary underline">{window.location.origin}/embed/{slug}</a></p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -249,3 +249,21 @@ export async function checkCmsHealth() {
     return false
   }
 }
+
+/**
+ * Verify delete password via Supabase RPC function
+ * @param {string} password - The password to verify
+ * @returns {Promise<boolean>} - Whether the password is valid
+ */
+export async function verifyDeletePassword(password) {
+  const { data, error } = await supabase.rpc('verify_delete_password', {
+    input_password: password
+  })
+
+  if (error) {
+    console.error('Password verification error:', error)
+    return false
+  }
+
+  return data === true
+}

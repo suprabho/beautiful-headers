@@ -24,7 +24,7 @@ function DialogOverlay({ className, ...props }) {
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
-        "fixed inset-0 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+        "fixed bg-black/80 backdrop-blur inset-0 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         className
       )}
       style={{ zIndex: 9998 }}
@@ -44,7 +44,7 @@ function DialogContent({ className, children, ...props }) {
           className
         )}
         style={{ zIndex: 9998 }}
-        {...props}  
+        {...props}
       >
         {children}
         <DialogPrimitive.Close className="absolute top-4 right-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4">
