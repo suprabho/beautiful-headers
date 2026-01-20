@@ -12,7 +12,7 @@ function SceneCard({ scene, onNavigate, onDelete }) {
   const [imageError, setImageError] = useState(false)
 
   // Supabase returns full URLs, no need to prepend base
-  const thumbnailUrl = scene.thumbnail?.medium || null
+  const thumbnailUrl = scene.thumbnail?.small || null
 
   // Use long description for alt text, fallback to short description or title
   const altText = scene.long_description || scene.short_description || scene.title

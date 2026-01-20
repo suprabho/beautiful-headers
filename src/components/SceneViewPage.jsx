@@ -9,7 +9,7 @@ import SimpleGradientLayer from './SimpleGradientLayer'
 import AuroraLayer from './AuroraLayer'
 import FluidGradientLayer from './FluidGradientLayer'
 import WavesLayer from './WavesLayer'
-import TessellationLayer from './TessellationLayer'
+import TessellationLayer, { ICON_PATHS } from './TessellationLayer'
 import EffectsLayer from './EffectsLayer'
 import TextLayer from './TextLayer'
 import useStore from '../store/useStore'
@@ -203,16 +203,14 @@ function SceneViewPage() {
 
       {/* Overlay header */}
       <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur">
-        <div className="container mx-auto px-4 h-14 flex items-center justify-between">
+        <div className="container mx-auto p-2 h-14 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={() => navigate('/scenes')}>
               <ArrowLeft size={20} weight="bold" />
             </Button>
             <div>
-              <h1 className="text-lg font-semibold">{scene.title}</h1>
-              {scene.short_description && (
-                <p className="text-xs text-muted-foreground">{scene.short_description}</p>
-              )}
+              <h1 className="text-lg font-semibold hidden md:block">{scene.title}</h1>
+
             </div>
           </div>
           <Button onClick={handleApplyScene}>
@@ -224,8 +222,24 @@ function SceneViewPage() {
 
       {/* Scene info panel */}
       <div className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:w-80">
-        <div className="bg-background/90 backdrop-blur border border-border rounded-xl p-4 shadow-lg">
+        <div className="bg-background/90 backdrop-blur border border-border rounded-xl p-4 gap-0.5 shadow-lg">
+          {/* Thumbnail */}
+          {scene.thumbnail?.small && (
+            <div className="mb-4 -mx-4 -mt-4">
+              <img
+                src={scene.thumbnail.small}
+                alt={scene.title}
+                className="w-full h-32 object-cover rounded-t-xl"
+              />
+            </div>
+          )}
+
+          {scene.title && (<h1 className="text-lg font-semibold">{scene.title}</h1>)}
+          {scene.short_description && (
+            <p className="text-md text-foreground italic">{scene.short_description}</p>
+          )}
           {scene.long_description && (
+
             <p className="text-sm text-muted-foreground mb-4">{scene.long_description}</p>
           )}
 
@@ -244,6 +258,90 @@ function SceneViewPage() {
               </div>
             </div>
           )}
+
+          {/* Effects */}
+          {(() => {
+            const effects = []
+            if (effectsConfig.texture && effectsConfig.texture !== 'none') {
+              effects.push({ type: 'text', value: effectsConfig.texture })
+            }
+            if (effectsConfig.colorMap && effectsConfig.colorMap !== 'none') {
+              effects.push({ type: 'text', value: effectsConfig.colorMap })
+            }
+            if (effectsConfig.flutedGlass?.enabled) {
+              effects.push({ type: 'text', value: 'fluted glass' })
+            }
+            if (effectsConfig.blur > 0) {
+              effects.push({ type: 'text', value: `blur (${effectsConfig.blur}px)` })
+            }
+            if (effectsConfig.vignetteIntensity > 0) {
+              effects.push({ type: 'text', value: 'vignette' })
+            }
+            if (tessellationConfig.enabled) {
+              effects.push({ type: 'icon', value: tessellationConfig.icon || 'Star' })
+            }
+
+            return effects.length > 0 ? (
+              <div className="space-y-2 mt-3">
+                <span className="text-xs text-muted-foreground uppercase tracking-wide">Effects</span>
+                <div className="flex flex-wrap gap-1.5 items-center">
+                  {effects.map((effect, idx) => (
+                    <span
+                      key={idx}
+                      className="px-2 py-0.5 text-xs bg-muted rounded-md capitalize"
+                    >
+                      {effect.value}
+                    </span>
+                  ))}
+                </div>
+                <div className="flex flex-wrap gap-1.5 items-center">
+                  <span className="text-xs text-muted-foreground uppercase tracking-wide">Icon</span>
+                  {effects.map((effect, idx) => (
+                    effect.type === 'icon' ? (
+
+                      <span
+                        key={idx}
+                        className="p-1 bg-muted rounded-md flex items-center justify-center"
+                        title={`Pattern: ${effect.value}`}
+                      >
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 256 256"
+                          fill="currentColor"
+                          className="text-foreground"
+                        >
+                          <path d={ICON_PATHS[effect.value] || ICON_PATHS.Star} />
+                        </svg>
+                      </span>
+                    ) : null
+                  ))}
+                </div>
+
+              </div>
+            ) : null
+          })()}
+
+          {/* Fonts */}
+          {(() => {
+            const fonts = [...new Set(textSections.map(s => s.font).filter(Boolean))]
+            return fonts.length > 0 && textConfig.enabled ? (
+              <div className="space-y-2 mt-3">
+                <span className="text-xs text-muted-foreground uppercase tracking-wide">Fonts</span>
+                <div className="flex flex-wrap gap-1.5">
+                  {fonts.map((font, idx) => (
+                    <span
+                      key={idx}
+                      className="px-2 py-0.5 text-xs bg-muted rounded-md"
+                    >
+                      {font}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : null
+          })()}
+
         </div>
       </div>
     </div>
