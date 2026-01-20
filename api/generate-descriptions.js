@@ -19,10 +19,10 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    const { sceneData, thumbnailImage } = req.body;
+    const { thumbnailImage } = req.body;
 
-    if (!sceneData) {
-        return res.status(400).json({ error: 'Missing sceneData' });
+    if (!thumbnailImage) {
+        return res.status(400).json({ error: 'Missing thumbnailImage' });
     }
 
     const apiKey = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
@@ -35,17 +35,9 @@ export default async function handler(req, res) {
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
-        const sceneSummary = buildSceneSummary(sceneData);
-
         // Construct the prompt
-        const prompt = `You are describing a beautiful gradient/visual header design for a website in a SEO-friendly way to help it get discovered by search engines. 
-    Based on the above guidelines, and attached image which is generated using following configuration, generate two descriptions:
-
-
-    Image: ${thumbnailImage}
-    Configuration:
-${sceneSummary}
-
+        const prompt = `You are describing a beautiful gradient/visual header design for a website in a SEO-friendly way to help it get discovered by search engines.
+Based on the guidelines below and the attached image, generate descriptions for this visual design.
 
 Include the major color in the short description. Do not include specific gradient type in the short description.
 
@@ -881,69 +873,3 @@ Focus on the aesthetic qualities, color harmony, and visual impact. Be creative 
     }
 }
 
-function buildSceneSummary(sceneData) {
-    const parts = [];
-
-    // Gradient info
-    if (sceneData.gradientConfig) {
-        const gc = sceneData.gradientConfig;
-        if (gc.colors && gc.colors.length > 0) {
-            parts.push(`Colors: ${gc.colors.join(', ')}`);
-        }
-        if (gc.type) {
-            parts.push(`Gradient type: ${gc.type}`);
-        }
-        if (gc.speed !== undefined) {
-            parts.push(`Animation speed: ${gc.speed}`);
-        }
-    }
-
-    // Aurora config
-    if (sceneData.auroraConfig?.enabled) {
-        parts.push('Aurora effect: enabled');
-        if (sceneData.auroraConfig.intensity) {
-            parts.push(`Aurora intensity: ${sceneData.auroraConfig.intensity}`);
-        }
-    }
-
-    // Blob config
-    if (sceneData.blobConfig?.enabled) {
-        parts.push('Blob effect: enabled');
-    }
-
-    // Fluid config
-    if (sceneData.fluidConfig?.enabled) {
-        parts.push('Fluid effect: enabled');
-    }
-
-    // Waves config
-    if (sceneData.wavesConfig?.enabled) {
-        parts.push('Waves effect: enabled');
-    }
-
-    // Tessellation/pattern
-    if (sceneData.tessellationConfig?.enabled) {
-        parts.push(`Pattern: ${sceneData.tessellationConfig.type || 'tessellation'}`);
-    }
-
-    // Effects
-    if (sceneData.effectsConfig) {
-        const effects = [];
-        if (sceneData.effectsConfig.bloom) effects.push('bloom');
-        if (sceneData.effectsConfig.grain) effects.push('grain');
-        if (sceneData.effectsConfig.vignette) effects.push('vignette');
-        if (effects.length > 0) {
-            parts.push(`Effects: ${effects.join(', ')}`);
-        }
-    }
-
-    // Text sections
-    if (sceneData.textSections && sceneData.textSections.length > 0) {
-        const texts = sceneData.textSections.map(s => s.text).filter(Boolean);
-        if (texts.length > 0) {
-            parts.push(`Text: "${texts.join('" "')}"`);
-        }
-    }
-
-    return parts.join('\n') || 'A custom gradient design';
-}

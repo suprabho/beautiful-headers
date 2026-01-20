@@ -1,11 +1,11 @@
 /**
- * Generate short and long descriptions for a scene based on its configuration
+ * Generate short and long descriptions for a scene based on its thumbnail image
  * Calls the server-side API endpoint function.
- * @param {Object} sceneData - The scene configuration data
- * @returns {Promise<{shortDescription: string, longDescription: string} | null>}
+ * @param {string} thumbnailImage - Base64 encoded thumbnail image (with or without data URL prefix)
+ * @returns {Promise<{title: string, shortDescription: string, longDescription: string} | null>}
  */
-export async function generateSceneDescriptions(sceneData) {
-  console.log('generateSceneDescriptions called with:', sceneData)
+export async function generateSceneDescriptions(thumbnailImage) {
+  console.log('generateSceneDescriptions called with thumbnail image')
 
   try {
     const response = await fetch('/api/generate-descriptions', {
@@ -13,7 +13,7 @@ export async function generateSceneDescriptions(sceneData) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ sceneData }),
+      body: JSON.stringify({ thumbnailImage }),
     })
 
     if (!response.ok) {

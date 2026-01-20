@@ -379,9 +379,9 @@ const ControlPanel = ({ layersContainerRef }) => {
       const placeholderTitle = 'Untitled Scene'
       const scene = await createScene(placeholderTitle, sceneData, thumbnail, null)
 
-      // Step 3: Generate AI descriptions
+      // Step 3: Generate AI descriptions from thumbnail
       setIsGenerating(true)
-      const content = await generateSceneDescriptions(sceneData)
+      const content = await generateSceneDescriptions(thumbnail)
       setIsGenerating(false)
 
       if (content) {
