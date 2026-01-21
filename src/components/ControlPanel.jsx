@@ -303,6 +303,7 @@ const ControlPanel = ({ layersContainerRef }) => {
 
       const backgroundCanvas =
         container.querySelector('.gradient-layer canvas') ||
+        getLastCanvas('.simple-gradient-layer') ||
         getLastCanvas('.fluid-gradient-layer') ||
         getLastCanvas('.aurora-layer') ||
         getLastCanvas('.waves-layer')
@@ -364,6 +365,25 @@ const ControlPanel = ({ layersContainerRef }) => {
     }
   }
 
+  // Resize thumbnail for AI API call (smaller size to avoid 413 errors)
+  const resizeThumbnailForAI = (base64Data, maxWidth = 800) => {
+    return new Promise((resolve) => {
+      const img = document.createElement('img')
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        const scale = Math.min(1, maxWidth / img.width)
+        canvas.width = img.width * scale
+        canvas.height = img.height * scale
+        const ctx = canvas.getContext('2d')
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+        // Use JPEG at 70% quality for much smaller file size
+        resolve(canvas.toDataURL('image/jpeg', 0.7))
+      }
+      img.onerror = () => resolve(base64Data) // Fallback to original if resize fails
+      img.src = base64Data
+    })
+  }
+
   // Handle save scene - creates scene first, then generates AI descriptions
   const handleSaveScene = async () => {
     setIsSaving(true)
@@ -383,9 +403,10 @@ const ControlPanel = ({ layersContainerRef }) => {
       const placeholderTitle = 'Untitled Scene'
       const scene = await createScene(placeholderTitle, sceneData, thumbnail, null)
 
-      // Step 3: Generate AI descriptions from thumbnail
+      // Step 3: Generate AI descriptions from resized thumbnail (smaller for API)
       setIsGenerating(true)
-      const content = await generateSceneDescriptions(thumbnail)
+      const smallThumbnail = await resizeThumbnailForAI(thumbnail)
+      const content = await generateSceneDescriptions(smallThumbnail)
       setIsGenerating(false)
 
       if (content) {
@@ -636,6 +657,7 @@ const ControlPanel = ({ layersContainerRef }) => {
 
       const backgroundCanvas =
         container.querySelector('.gradient-layer canvas') ||
+        getLastCanvas('.simple-gradient-layer') ||
         getLastCanvas('.fluid-gradient-layer') ||
         getLastCanvas('.aurora-layer') ||
         getLastCanvas('.waves-layer')

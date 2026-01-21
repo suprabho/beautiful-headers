@@ -45,11 +45,11 @@ function SceneCard({ scene, onNavigate, onDelete }) {
         {/* Hover overlay */}
         <div
           className={cn(
-            "absolute inset-0 bg-black/60 flex items-center justify-center transition-opacity",
-            isHovered ? "opacity-100" : "opacity-0"
+            "absolute inset-0 bg-transparent md:bg-black/60 flex items-center justify-center transition-opacity",
+            isHovered ? "md:opacity-100" : "md:opacity-0"
           )}
         >
-          <span className="text-white font-medium">View Scene</span>
+          <span className="text-white font-medium hidden md:block">View Scene</span>
         </div>
       </div>
 
@@ -63,11 +63,11 @@ function SceneCard({ scene, onNavigate, onDelete }) {
         )}
       </div>
 
-      {/* Delete button */}
+      {/* Delete button - always visible on mobile, hover-only on desktop */}
       <button
         className={cn(
           "absolute top-2 right-2 p-1.5 rounded-lg bg-black/50 text-white hover:bg-destructive transition-all",
-          isHovered ? "opacity-100" : "opacity-0"
+          isHovered ? "md:opacity-100" : "md:opacity-0"
         )}
         onClick={(e) => {
           e.stopPropagation()

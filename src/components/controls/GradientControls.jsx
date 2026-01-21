@@ -95,9 +95,12 @@ export const ColorsSection = ({
     setDraggingIndex(null)
   }, [])
 
-  // Build gradient string for the track
-  const gradientString = gradientConfig.colors
-    .map((color, i) => `${color} ${gradientConfig.colorStops[i]}%`)
+  // Build gradient string for the track (sorted by stop position)
+  const sortedColorStops = gradientConfig.colors
+    .map((color, i) => ({ color, stop: gradientConfig.colorStops[i] }))
+    .sort((a, b) => a.stop - b.stop)
+  const gradientString = sortedColorStops
+    .map(({ color, stop }) => `${color} ${stop}%`)
     .join(', ')
 
   return (

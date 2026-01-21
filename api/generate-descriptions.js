@@ -1,5 +1,13 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
+export const config = {
+    api: {
+        bodyParser: {
+            sizeLimit: '10mb',
+        },
+    },
+};
+
 export default async function handler(req, res) {
     // Enable CORS
     res.setHeader('Access-Control-Allow-Credentials', true);
@@ -38,7 +46,7 @@ export default async function handler(req, res) {
         // Construct the prompt
         const prompt = `You are describing a beautiful gradient/visual header design for a website in a SEO-friendly way to help it get discovered by search engines.
 Based on the guidelines below and the attached image, generate descriptions for this visual design.
-
+x
 Include the major color in the short description. Do not include specific gradient type in the short description.
 
 Please respond in JSON format with exactly these three fields:

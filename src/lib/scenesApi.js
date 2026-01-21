@@ -6,6 +6,16 @@ const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publisha
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 /**
+ * Thumbnail size configurations
+ */
+const THUMBNAIL_SIZES = {
+  small: { width: 400, quality: 0.7 },
+  medium: { width: 800, quality: 0.8 },
+  large: { width: 1200, quality: 0.85 },
+  full: { width: 1920, quality: 0.9 },
+}
+
+/**
  * Convert base64 to Blob for upload
  */
 function base64ToBlob(base64Data) {
@@ -20,52 +30,82 @@ function base64ToBlob(base64Data) {
 }
 
 /**
- * Upload thumbnail to Supabase Storage
- * Note: For simplicity, we upload the full-size image only.
- * Server-side resizing would require Edge Functions.
+ * Resize a base64 image to a specific width while maintaining aspect ratio
+ */
+function resizeImage(base64Data, maxWidth, quality) {
+  return new Promise((resolve) => {
+    const img = document.createElement('img')
+    img.onload = () => {
+      const scale = Math.min(1, maxWidth / img.width)
+      const canvas = document.createElement('canvas')
+      canvas.width = img.width * scale
+      canvas.height = img.height * scale
+      const ctx = canvas.getContext('2d')
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+      resolve(canvas.toDataURL('image/jpeg', quality))
+    }
+    img.onerror = () => resolve(base64Data)
+    img.src = base64Data
+  })
+}
+
+/**
+ * Upload thumbnail to Supabase Storage in multiple sizes
  */
 async function uploadThumbnail(base64Data, sceneId) {
   if (!base64Data) return null
 
-  const blob = base64ToBlob(base64Data)
   const thumbnails = {}
+  const sizes = Object.entries(THUMBNAIL_SIZES)
 
-  // Upload full size image (Supabase Storage doesn't resize automatically)
-  // For multiple sizes, you'd need Supabase Edge Functions or client-side resizing
-  const filename = `${sceneId}-full.jpg`
+  // Generate and upload all sizes in parallel
+  const uploadPromises = sizes.map(async ([sizeName, config]) => {
+    const resizedBase64 = await resizeImage(base64Data, config.width, config.quality)
+    const blob = base64ToBlob(resizedBase64)
+    const filename = `${sceneId}-${sizeName}.jpg`
 
-  const { error } = await supabase.storage
-    .from('thumbnails')
-    .upload(filename, blob, {
-      contentType: 'image/jpeg',
-      upsert: true,
-    })
+    const { error } = await supabase.storage
+      .from('thumbnails')
+      .upload(filename, blob, {
+        contentType: 'image/jpeg',
+        upsert: true,
+      })
 
-  if (error) {
-    console.error('Error uploading thumbnail:', error)
-    return null
+    if (error) {
+      console.error(`Error uploading ${sizeName} thumbnail:`, error)
+      return null
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('thumbnails')
+      .getPublicUrl(filename)
+
+    return { sizeName, publicUrl }
+  })
+
+  const results = await Promise.all(uploadPromises)
+
+  // Build thumbnails object from successful uploads
+  for (const result of results) {
+    if (result) {
+      thumbnails[result.sizeName] = result.publicUrl
+    }
   }
 
-  // Get public URL
-  const { data: { publicUrl } } = supabase.storage
-    .from('thumbnails')
-    .getPublicUrl(filename)
-
-  // Return same URL for all sizes (or implement client-side resizing if needed)
-  thumbnails.small = publicUrl
-  thumbnails.medium = publicUrl
-  thumbnails.large = publicUrl
-  thumbnails.full = publicUrl
+  // If no uploads succeeded, return null
+  if (Object.keys(thumbnails).length === 0) {
+    return null
+  }
 
   return thumbnails
 }
 
 /**
- * Delete thumbnail from Supabase Storage
+ * Delete all thumbnail sizes from Supabase Storage
  */
 async function deleteThumbnail(sceneId) {
-  const filename = `${sceneId}-full.jpg`
-  await supabase.storage.from('thumbnails').remove([filename])
+  const filenames = Object.keys(THUMBNAIL_SIZES).map(size => `${sceneId}-${size}.jpg`)
+  await supabase.storage.from('thumbnails').remove(filenames)
 }
 
 /**
