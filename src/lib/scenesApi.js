@@ -307,3 +307,115 @@ export async function verifyDeletePassword(password) {
 
   return data === true
 }
+
+// ============================================
+// Projects API
+// ============================================
+
+/**
+ * Fetch all projects
+ */
+export async function getProjects() {
+  const { data, error } = await supabase
+    .from('projects')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('Failed to fetch projects:', error)
+    throw new Error('Failed to fetch projects')
+  }
+
+  return data || []
+}
+
+/**
+ * Create a new project (password protected)
+ * @param {string} name - Project name
+ * @param {string} url - Project URL
+ * @param {string} password - Admin password for verification
+ */
+export async function createProject(name, url, password) {
+  // Verify password first
+  const isValid = await verifyDeletePassword(password)
+  if (!isValid) {
+    throw new Error('Invalid password')
+  }
+
+  const { data, error } = await supabase
+    .from('projects')
+    .insert({
+      name,
+      url,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Failed to create project:', error)
+    throw new Error(`Failed to create project: ${error.message}`)
+  }
+
+  return data
+}
+
+/**
+ * Update an existing project (password protected)
+ * @param {string} id - Project ID
+ * @param {Object} updates - { name?, url? }
+ * @param {string} password - Admin password for verification
+ */
+export async function updateProject(id, updates, password) {
+  // Verify password first
+  const isValid = await verifyDeletePassword(password)
+  if (!isValid) {
+    throw new Error('Invalid password')
+  }
+
+  const updateData = {
+    updated_at: new Date().toISOString(),
+  }
+  if (updates.name !== undefined) updateData.name = updates.name
+  if (updates.url !== undefined) updateData.url = updates.url
+
+  const { data, error } = await supabase
+    .from('projects')
+    .update(updateData)
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) {
+    console.error('Failed to update project:', error)
+    throw new Error('Failed to update project')
+  }
+
+  return data
+}
+
+/**
+ * Delete a project (password protected)
+ * @param {string} id - Project ID
+ * @param {string} password - Admin password for verification
+ */
+export async function deleteProject(id, password) {
+  // Verify password first
+  const isValid = await verifyDeletePassword(password)
+  if (!isValid) {
+    throw new Error('Invalid password')
+  }
+
+  const { error } = await supabase
+    .from('projects')
+    .delete()
+    .eq('id', id)
+
+  if (error) {
+    console.error('Failed to delete project:', error)
+    throw new Error('Failed to delete project')
+  }
+
+  return { success: true }
+}

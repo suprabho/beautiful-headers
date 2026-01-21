@@ -12,5 +12,6 @@ export { GradientPanel, ColorsSection, LiquidControls, AuroraControls, BlobContr
 export { PatternPanel, IconGridDropdown } from './PatternControls'
 export { EffectsPanel } from './EffectsControls'
 export { TextPanel } from './TextControls'
+export { ProjectsPanel } from './ProjectsControls'
 
 

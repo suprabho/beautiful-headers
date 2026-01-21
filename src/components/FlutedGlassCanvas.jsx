@@ -139,10 +139,23 @@ const FlutedGlassMaterial = ({ textureRef, effectsConfig }) => {
 
     // Update texture if available
     if (textureRef.current) {
-      if (!mat.uniforms.u_texture.value) {
-        mat.uniforms.u_texture.value = new THREE.CanvasTexture(textureRef.current)
+      const sourceCanvas = textureRef.current
+      const currentTexture = mat.uniforms.u_texture.value
+
+      // Check if we need to recreate the texture (new canvas or size changed)
+      const needsNewTexture = !currentTexture ||
+        currentTexture.image !== sourceCanvas ||
+        currentTexture.image.width !== sourceCanvas.width ||
+        currentTexture.image.height !== sourceCanvas.height
+
+      if (needsNewTexture) {
+        // Dispose old texture to prevent memory leaks
+        if (currentTexture) {
+          currentTexture.dispose()
+        }
+        mat.uniforms.u_texture.value = new THREE.CanvasTexture(sourceCanvas)
       } else {
-        mat.uniforms.u_texture.value.needsUpdate = true
+        currentTexture.needsUpdate = true
       }
     }
 

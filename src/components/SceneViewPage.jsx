@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import html2canvas from 'html2canvas'
 import { ArrowLeft, CircleNotch, Warning, Play, Code, Check, Copy, Download } from '@phosphor-icons/react'
-import { getSceneBySlug } from '@/lib/scenesApi'
+import { getSceneBySlug, getProjects, updateScene, verifyDeletePassword } from '@/lib/scenesApi'
 import { prepareForCapture } from '@/lib/colorConversion'
 import { Button } from '@/components/ui/button'
 import {
@@ -11,9 +11,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
+  DialogFooter,
 } from '@/components/ui/dialog'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
 import { useDocumentMeta } from '@/hooks/useDocumentMeta'
 import '../App.css'
 import GradientLayer from './GradientLayer'
@@ -47,6 +49,16 @@ function SceneViewPage() {
     hideIcons: false
   })
   const [isDownloading, setIsDownloading] = useState(false)
+  const [projects, setProjects] = useState([])
+
+  // Projects dialog state
+  const [projectsDialogOpen, setProjectsDialogOpen] = useState(false)
+  const [allProjects, setAllProjects] = useState([])
+  const [selectedProjectIds, setSelectedProjectIds] = useState([])
+  const [projectsPassword, setProjectsPassword] = useState('')
+  const [projectsError, setProjectsError] = useState('')
+  const [isSavingProjects, setIsSavingProjects] = useState(false)
+  const [loadingAllProjects, setLoadingAllProjects] = useState(false)
 
   // Update document meta tags with scene data (use large for OG image)
   useDocumentMeta({
@@ -85,6 +97,14 @@ function SceneViewPage() {
         setError(null)
         const sceneData = await getSceneBySlug(slug)
         setScene(sceneData)
+
+        // Fetch projects if scene has linked projects
+        const selectedProjectIds = sceneData?.scene_data?.selectedProjectIds || []
+        if (selectedProjectIds.length > 0) {
+          const allProjects = await getProjects()
+          const linkedProjects = allProjects.filter(p => selectedProjectIds.includes(p.id))
+          setProjects(linkedProjects)
+        }
       } catch (err) {
         console.error('Failed to fetch scene:', err)
         setError('Scene not found')
@@ -123,6 +143,83 @@ function SceneViewPage() {
       setTimeout(() => setCopied(false), 2000)
     } catch (err) {
       console.error('Failed to copy:', err)
+    }
+  }
+
+  // Open projects dialog and load all projects
+  const handleOpenProjectsDialog = async () => {
+    setProjectsDialogOpen(true)
+    setProjectsError('')
+    setProjectsPassword('')
+    setLoadingAllProjects(true)
+
+    try {
+      const all = await getProjects()
+      setAllProjects(all)
+      // Initialize selected with current scene's projects
+      const currentIds = scene?.scene_data?.selectedProjectIds || []
+      setSelectedProjectIds(currentIds)
+    } catch (err) {
+      console.error('Failed to load projects:', err)
+      setProjectsError('Failed to load projects')
+    } finally {
+      setLoadingAllProjects(false)
+    }
+  }
+
+  // Toggle project selection
+  const toggleProjectSelection = (projectId) => {
+    setSelectedProjectIds(prev =>
+      prev.includes(projectId)
+        ? prev.filter(id => id !== projectId)
+        : [...prev, projectId]
+    )
+  }
+
+  // Save project assignments
+  const handleSaveProjects = async () => {
+    if (!projectsPassword.trim()) {
+      setProjectsError('Password is required')
+      return
+    }
+
+    setIsSavingProjects(true)
+    setProjectsError('')
+
+    try {
+      // Verify password first
+      const isValid = await verifyDeletePassword(projectsPassword)
+      if (!isValid) {
+        setProjectsError('Incorrect password')
+        setIsSavingProjects(false)
+        return
+      }
+
+      // Update scene with new project IDs
+      const updatedSceneData = {
+        ...scene.scene_data,
+        selectedProjectIds: selectedProjectIds
+      }
+
+      await updateScene(scene.id, { sceneData: updatedSceneData })
+
+      // Update local state
+      setScene(prev => ({
+        ...prev,
+        scene_data: updatedSceneData
+      }))
+
+      // Update displayed projects
+      const linkedProjects = allProjects.filter(p => selectedProjectIds.includes(p.id))
+      setProjects(linkedProjects)
+
+      setProjectsDialogOpen(false)
+      setProjectsPassword('')
+    } catch (err) {
+      console.error('Failed to save projects:', err)
+      setProjectsError('Failed to save projects')
+    } finally {
+      setIsSavingProjects(false)
     }
   }
 
@@ -484,15 +581,15 @@ function SceneViewPage() {
 
       {/* Scene info panel - on mobile it appears in second fold, on desktop fixed bottom-right */}
       <div className="relative mt-[76vh] md:mt-0 md:fixed md:bottom-4 md:right-4 md:z-50 md:w-80 p-4 md:p-0">
-        <div className="flex flex-col gap-2 bg-background/90 backdrop-blur border border-border rounded-xl p-4 gap-0.5 shadow-lg">
+        <div className="flex flex-col gap-2 bg-background/80 backdrop-blur border border-border rounded-xl p-4 gap-0.5 shadow-lg">
 
           {scene.title && (<h1 className="text-lg font-semibold">{scene.title}</h1>)}
           <div className="flex w-full flex-wrap gap-2">
-            <Button className="flex flex-row flex-1" variant="outline" onClick={() => setEmbedDialogOpen(true)}>
+            <Button className="flex flex-row flex-1 border border-primary" variant="outline" onClick={() => setEmbedDialogOpen(true)}>
               <Code size={16} weight="bold" />
               Embed
             </Button>
-            <Button className="flex flex-row flex-1" variant="outline" onClick={() => setDownloadDialogOpen(true)}>
+            <Button className="flex flex-row flex-1 border border-primary" variant="outline" onClick={() => setDownloadDialogOpen(true)}>
               <Download size={16} weight="bold" />
               Download
             </Button>
@@ -616,13 +713,48 @@ function SceneViewPage() {
 
           </div>
 
+          {/* Projects */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-muted-foreground uppercase tracking-wide">Projects</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-6 text-xs"
+                onClick={handleOpenProjectsDialog}
+              >
+                Edit
+              </Button>
+            </div>
+            {projects.length > 0 ? (
+              <div className="flex flex-col gap-1.5">
+                {projects.map((project) => (
+                  <a
+                    key={project.id}
+                    href={project.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between px-3 py-2 bg-muted/50 rounded-lg hover:bg-muted transition-colors group"
+                  >
+                    <span className="text-sm font-medium">{project.name}</span>
+                    <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                      Visit →
+                    </span>
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">No projects linked</p>
+            )}
+          </div>
+
           {/* Thumbnail - use medium size for info panel (800px width) */}
           {(scene.thumbnail?.medium || scene.thumbnail?.small) && (
             <div className="h-full">
               <img
                 src={scene.thumbnail.medium || scene.thumbnail.small}
                 alt={scene.title}
-                className="w-full h-40 object-cover rounded-t-xl"
+                className="w-full h-40 object-cover rounded-md"
               />
             </div>
           )}
@@ -759,6 +891,79 @@ function SceneViewPage() {
               )}
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Projects Dialog */}
+      <Dialog open={projectsDialogOpen} onOpenChange={setProjectsDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Assign Projects</DialogTitle>
+            <DialogDescription>
+              Select which projects to link to this scene.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {loadingAllProjects ? (
+              <div className="flex items-center justify-center py-8">
+                <CircleNotch size={24} className="animate-spin text-muted-foreground" />
+              </div>
+            ) : allProjects.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                No projects available. Create projects first.
+              </p>
+            ) : (
+              <div className="space-y-2 max-h-60 overflow-y-auto">
+                {allProjects.map((project) => (
+                  <div
+                    key={project.id}
+                    className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{project.name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{project.url}</p>
+                    </div>
+                    <Switch
+                      checked={selectedProjectIds.includes(project.id)}
+                      onCheckedChange={() => toggleProjectSelection(project.id)}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {allProjects.length > 0 && (
+              <div className="space-y-2">
+                <Label htmlFor="projects-password">Password</Label>
+                <Input
+                  id="projects-password"
+                  type="password"
+                  value={projectsPassword}
+                  onChange={(e) => setProjectsPassword(e.target.value)}
+                  placeholder="Enter admin password"
+                />
+              </div>
+            )}
+
+            {projectsError && (
+              <p className="text-sm text-destructive">{projectsError}</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setProjectsDialogOpen(false)}
+              disabled={isSavingProjects}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSaveProjects}
+              disabled={isSavingProjects || allProjects.length === 0}
+            >
+              {isSavingProjects ? 'Saving...' : 'Save'}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

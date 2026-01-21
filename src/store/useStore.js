@@ -465,6 +465,18 @@ const useStore = create((set, get) => ({
     textConfig: { ...state.textConfig, ...updates }
   })),
 
+  // Projects linked to this scene (array of project IDs)
+  selectedProjectIds: [],
+  setSelectedProjectIds: (ids) => set({ selectedProjectIds: ids }),
+  addProjectToScene: (projectId) => set((state) => ({
+    selectedProjectIds: state.selectedProjectIds.includes(projectId)
+      ? state.selectedProjectIds
+      : [...state.selectedProjectIds, projectId]
+  })),
+  removeProjectFromScene: (projectId) => set((state) => ({
+    selectedProjectIds: state.selectedProjectIds.filter(id => id !== projectId)
+  })),
+
   // Color palette
   colorPalette: DEFAULT_PALETTE,
   setColorPalette: (palette) => set({ colorPalette: palette }),
@@ -493,6 +505,7 @@ const useStore = create((set, get) => ({
       textGap: state.textGap,
       textConfig: state.textConfig,
       colorPalette: state.colorPalette,
+      selectedProjectIds: state.selectedProjectIds,
     }
   },
 
@@ -512,6 +525,7 @@ const useStore = create((set, get) => ({
       ...(sceneData.textGap !== undefined && { textGap: sceneData.textGap }),
       ...(sceneData.textConfig && { textConfig: sceneData.textConfig }),
       ...(sceneData.colorPalette !== undefined && { colorPalette: sceneData.colorPalette }),
+      ...(sceneData.selectedProjectIds && { selectedProjectIds: sceneData.selectedProjectIds }),
     })
   },
 }))
