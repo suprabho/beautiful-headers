@@ -14,4 +14,8 @@ export { EffectsPanel } from './EffectsControls'
 export { TextPanel } from './TextControls'
 export { ProjectsPanel } from './ProjectsControls'
 
+// Color palette components
+export { ColorPalettePreview } from './ColorPalettePreview'
+export { ColorPaletteDialog } from './ColorPaletteDialog'
+
 

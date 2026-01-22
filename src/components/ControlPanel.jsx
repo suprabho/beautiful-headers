@@ -35,6 +35,7 @@ import {
   EffectsPanel,
   TextPanel,
   IconGridDropdown,
+  ColorPaletteDialog,
 } from './controls'
 
 const ControlPanel = ({ layersContainerRef }) => {
@@ -80,15 +81,6 @@ const ControlPanel = ({ layersContainerRef }) => {
   const [activeDialog, setActiveDialog] = useState(null)
   const [originalValues, setOriginalValues] = useState(null)
   const [showPaletteDialog, setShowPaletteDialog] = useState(false)
-  const [paletteJson, setPaletteJson] = useState('')
-  const [paletteError, setPaletteError] = useState('')
-  const [savedPalettes, setSavedPalettes] = useState([])
-  const [allProjects, setAllProjects] = useState([])
-  const [isLoadingPalettes, setIsLoadingPalettes] = useState(false)
-  const [savePalettePassword, setSavePalettePassword] = useState('')
-  const [selectedProjectForSave, setSelectedProjectForSave] = useState('')
-  const [isSavingPalette, setIsSavingPalette] = useState(false)
-  const [savePaletteError, setSavePaletteError] = useState('')
   const [showSaveDialog, setShowSaveDialog] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
@@ -223,48 +215,6 @@ const ControlPanel = ({ layersContainerRef }) => {
     })
   }, [colorPalette, gradientConfig, tessellationConfig, effectsConfig, textConfig, textSections, setBackgroundType, setGradientConfig, setTessellationConfig, setEffectsConfig, setTextConfig, setTextSections, setTextGap])
 
-  // Handle palette upload
-  const handlePaletteUpload = () => {
-    if (!paletteJson.trim()) {
-      setPaletteError('Please paste a JSON palette')
-      return
-    }
-
-    const result = validatePaletteJson(paletteJson)
-    if (!result.valid) {
-      setPaletteError(result.error)
-      return
-    }
-
-    setColorPalette(result.palette)
-    setPaletteError('')
-    setShowPaletteDialog(false)
-    setPaletteJson('')
-
-    // Shuffle gradient colors using the new palette
-    const paletteColors = result.colors.map(c => c.hex)
-    if (paletteColors.length >= 2) {
-      const numColors = Math.min(Math.floor(Math.random() * 3) + 2, paletteColors.length)
-      const shuffled = [...paletteColors].sort(() => Math.random() - 0.5)
-      const selectedColors = shuffled.slice(0, numColors)
-      const colorStops = selectedColors.map((_, i) => Math.round((i / (selectedColors.length - 1)) * 100))
-
-      setGradientConfig({
-        ...gradientConfig,
-        colors: selectedColors,
-        colorStops,
-        numColors: selectedColors.length,
-      })
-    }
-  }
-
-  // Clear palette
-  const handleClearPalette = () => {
-    setColorPalette(null)
-    setPaletteJson('')
-    setPaletteError('')
-  }
-
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768)
@@ -278,66 +228,6 @@ const ControlPanel = ({ layersContainerRef }) => {
   useEffect(() => {
     checkCmsHealth().then(setCmsAvailable)
   }, [])
-
-  // Fetch projects (with palettes) when palette dialog opens
-  useEffect(() => {
-    if (showPaletteDialog && cmsAvailable) {
-      setIsLoadingPalettes(true)
-      getProjects()
-        .then((projects) => {
-          setAllProjects(projects)
-          setSavedPalettes(projects.filter(p => p.palette_data))
-        })
-        .catch(() => {
-          setAllProjects([])
-          setSavedPalettes([])
-        })
-        .finally(() => setIsLoadingPalettes(false))
-    }
-  }, [showPaletteDialog, cmsAvailable])
-
-  // Save palette to a project
-  const handleSavePaletteToProject = async () => {
-    if (!colorPalette || !selectedProjectForSave || !savePalettePassword) {
-      setSavePaletteError('Select a project and enter password')
-      return
-    }
-    setIsSavingPalette(true)
-    setSavePaletteError('')
-    try {
-      await updateProject(selectedProjectForSave, { paletteData: colorPalette }, savePalettePassword)
-      setSavePalettePassword('')
-      setSelectedProjectForSave('')
-      // Refresh the list
-      const projects = await getProjects()
-      setAllProjects(projects)
-      setSavedPalettes(projects.filter(p => p.palette_data))
-    } catch (err) {
-      setSavePaletteError(err.message || 'Failed to save palette to project')
-    } finally {
-      setIsSavingPalette(false)
-    }
-  }
-
-  // Load palette from a project
-  const handleLoadPaletteFromProject = (project) => {
-    if (project.palette_data) {
-      setColorPalette(project.palette_data)
-      setPaletteJson(JSON.stringify(project.palette_data, null, 2))
-      setPaletteError('')
-    }
-  }
-
-  // Remove palette from a project
-  const handleRemovePaletteFromProject = async (projectId, password) => {
-    try {
-      await updateProject(projectId, { paletteData: null }, password)
-      const projects = await getProjects()
-      setSavedPalettes(projects.filter(p => p.palette_data))
-    } catch (err) {
-      setSavePaletteError(err.message || 'Failed to remove palette')
-    }
-  }
 
   // Capture thumbnail as base64 at high resolution (server will resize)
   const captureThumbnail = async () => {
@@ -1352,201 +1242,6 @@ const ControlPanel = ({ layersContainerRef }) => {
     }
   }
 
-  // Palette Dialog JSX (shared between mobile and desktop)
-  const paletteDialogContent = (
-    <Dialog open={showPaletteDialog} onOpenChange={(open) => {
-      setShowPaletteDialog(open)
-      if (!open) setPaletteError('')
-    }}>
-      <DialogContent className="max-w-lg max-h-[85vh]" onOpenAutoFocus={(e) => e.preventDefault()}>
-        <DialogHeader>
-          <DialogTitle>
-            <div className="flex items-center gap-2">
-              <Palette size={20} weight="duotone" />
-              Upload Color Palette
-            </div>
-          </DialogTitle>
-          <DialogDescription>
-            Upload a JSON file or paste your color palette data below.
-          </DialogDescription>
-        </DialogHeader>
-        <ScrollArea className="max-h-[60vh]">
-          <div className="space-y-2 pr-4">
-            <div className="space-y-2">
-              <Label>Upload a JSON file</Label>
-              <p className="text-xs text-muted-foreground">
-                <a className="text-blue-500 hover:underline" href="https://colors.promad.design/" target="_blank" rel="noopener noreferrer">
-                  Use to generate compatible color JSON.
-                </a>
-              </p>
-              <div className="flex items-center gap-2">
-                <input
-                  type="file"
-                  accept=".json,application/json"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0]
-                    if (file) {
-                      const reader = new FileReader()
-                      reader.onload = (event) => {
-                        const content = event.target?.result
-                        if (typeof content === 'string') {
-                          setPaletteJson(content)
-                          setPaletteError('')
-                        }
-                      }
-                      reader.onerror = () => setPaletteError('Failed to read file')
-                      reader.readAsText(file)
-                    }
-                    e.target.value = ''
-                  }}
-                  className="hidden"
-                  id="palette-file-input"
-                />
-                <Button variant="outline" className="w-full" onClick={() => document.getElementById('palette-file-input')?.click()}>
-                  <Upload size={16} className="mr-2" />Choose .json file
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="flex-1 h-px bg-border" />
-              <span className="text-xs text-muted-foreground uppercase">or paste JSON</span>
-              <div className="flex-1 h-px bg-border" />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Paste your JSON color palette</Label>
-              <textarea
-                value={paletteJson}
-                onChange={(e) => { setPaletteJson(e.target.value); setPaletteError('') }}
-                placeholder={`{\n  "blue": {\n    "500": "#3b82f6",\n    "600": "#2563eb"\n  }\n}`}
-                className="w-full h-36 p-3 text-sm font-mono bg-muted border border-border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-              {paletteError && <p className="text-sm text-destructive">{paletteError}</p>}
-            </div>
-
-            {colorPalette && (
-              <div className="p-3 bg-muted/50 rounded-lg border border-border">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">Current Palette</span>
-                  <Button variant="ghost" size="sm" className="h-7 text-xs text-destructive hover:text-destructive" onClick={handleClearPalette}>
-                    <Trash size={12} className="mr-1" />Remove
-                  </Button>
-                </div>
-                <div className="flex flex-wrap gap-1">
-                  {parsedPalette?.colors.slice(0, 30).map((color, idx) => (
-                    <div key={idx} className="w-5 h-5 rounded border border-border/50" style={{ backgroundColor: color.hex }} title={color.shade ? `${color.name}-${color.shade}` : color.name} />
-                  ))}
-                  {parsedPalette?.colors.length > 30 && (
-                    <span className="text-xs text-muted-foreground self-center ml-1">+{parsedPalette.colors.length - 30} more</span>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Save to Project Section */}
-            {colorPalette && cmsAvailable && allProjects.length > 0 && (
-              <>
-                <div className="flex items-center gap-3 pt-2">
-                  <div className="flex-1 h-px bg-border" />
-                  <span className="text-xs text-muted-foreground uppercase">save to project</span>
-                  <div className="flex-1 h-px bg-border" />
-                </div>
-                <div className="space-y-2">
-                  <Select value={selectedProjectForSave} onValueChange={setSelectedProjectForSave}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a project" />
-                    </SelectTrigger>
-                    <SelectContent onCloseAutoFocus={(e) => e.preventDefault()}>
-                      {allProjects.map((project) => (
-                        <SelectItem key={project.id} value={project.id}>
-                          {project.name} {project.palette_data ? '(has palette)' : ''}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <div className="flex gap-2">
-                    <Input
-                      type="password"
-                      placeholder="Password"
-                      value={savePalettePassword}
-                      onChange={(e) => setSavePalettePassword(e.target.value)}
-                      className="flex-1"
-                    />
-                    <Button
-                      variant="outline"
-                      onClick={handleSavePaletteToProject}
-                      disabled={isSavingPalette || !selectedProjectForSave || !savePalettePassword}
-                    >
-                      {isSavingPalette ? <CircleNotch size={16} className="animate-spin" /> : <FloppyDisk size={16} />}
-                    </Button>
-                  </div>
-                </div>
-              </>
-            )}
-
-            {/* Project Palettes Section */}
-            {cmsAvailable && (
-              <>
-                <div className="flex items-center gap-3 pt-2">
-                  <div className="flex-1 h-px bg-border" />
-                  <span className="text-xs text-muted-foreground uppercase">project palettes</span>
-                  <div className="flex-1 h-px bg-border" />
-                </div>
-                {isLoadingPalettes ? (
-                  <div className="flex items-center justify-center py-4">
-                    <CircleNotch size={20} className="animate-spin text-muted-foreground" />
-                  </div>
-                ) : savedPalettes.length === 0 ? (
-                  <p className="text-sm text-muted-foreground text-center py-2">No projects with palettes yet</p>
-                ) : (
-                  <div className="space-y-2">
-                    {savedPalettes.map((project) => {
-                      const previewColors = parsePaletteJson(project.palette_data)?.colors.slice(0, 8) || []
-                      return (
-                        <div key={project.id} className="p-2 bg-muted/50 rounded-lg border border-border flex items-center gap-2">
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate">{project.name}</p>
-                            <div className="flex gap-0.5 mt-1">
-                              {previewColors.map((color, idx) => (
-                                <div key={idx} className="w-4 h-4 rounded-sm border border-border/50" style={{ backgroundColor: color.hex }} />
-                              ))}
-                            </div>
-                          </div>
-                          <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => handleLoadPaletteFromProject(project)}>
-                            Load
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-7 text-xs text-destructive hover:text-destructive"
-                            onClick={() => {
-                              const password = prompt('Enter password to remove palette:')
-                              if (password) handleRemovePaletteFromProject(project.id, password)
-                            }}
-                          >
-                            <Trash size={12} />
-                          </Button>
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
-                {savePaletteError && <p className="text-sm text-destructive mt-2">{savePaletteError}</p>}
-              </>
-            )}
-          </div>
-        </ScrollArea>
-        <DialogFooter className="flex-row gap-2">
-          <Button variant="outline" className="flex-1" onClick={() => setShowPaletteDialog(false)}>Cancel</Button>
-          <Button className="flex-1" onClick={handlePaletteUpload}>
-            <Upload size={16} className="mr-2" />{colorPalette ? 'Update Palette' : 'Upload Palette'}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  )
-
   // Capture Modal Component (shared between mobile and desktop)
   const CaptureModal = () => (
     <Dialog open={showCaptureModal} onOpenChange={setShowCaptureModal}>
@@ -1890,7 +1585,15 @@ const ControlPanel = ({ layersContainerRef }) => {
         </Dialog>
 
         <CaptureModal />
-        {paletteDialogContent}
+        <ColorPaletteDialog
+          open={showPaletteDialog}
+          onOpenChange={setShowPaletteDialog}
+          colorPalette={colorPalette}
+          setColorPalette={setColorPalette}
+          gradientConfig={gradientConfig}
+          setGradientConfig={setGradientConfig}
+          cmsAvailable={cmsAvailable}
+        />
         <SaveSceneDialog />
       </>
     )
@@ -1949,7 +1652,7 @@ const ControlPanel = ({ layersContainerRef }) => {
         </div>
 
         {!isCollapsed && (
-          <Tabs value={activePanel} onValueChange={setActivePanel} className="flex flex-col flex-1 min-h-0">
+          <Tabs value={activePanel} onValueChange={setActivePanel} className="flex flex-col flex-1">
             <TabsList className="w-full rounded-none border-b border-border bg-transparent p-1 gap-1 shrink-0">
               {tabs.map(tab => (
                 <TabsTrigger key={tab.id} value={tab.id} className="flex-1 flex flex-col gap-1 py-2 data-[state=active]:bg-muted rounded-md">
@@ -2010,7 +1713,15 @@ const ControlPanel = ({ layersContainerRef }) => {
       </div>
 
       <CaptureModal />
-      {paletteDialogContent}
+      <ColorPaletteDialog
+        open={showPaletteDialog}
+        onOpenChange={setShowPaletteDialog}
+        colorPalette={colorPalette}
+        setColorPalette={setColorPalette}
+        gradientConfig={gradientConfig}
+        setGradientConfig={setGradientConfig}
+        cmsAvailable={cmsAvailable}
+      />
       <SaveSceneDialog />
     </>
   )

@@ -501,7 +501,7 @@ const useStore = create((set, get) => ({
     } catch (e) {
       console.warn('Failed to save color palette to localStorage:', e)
     }
-    set({ colorPalette: palette || DEFAULT_PALETTE })
+    set({ colorPalette: palette })
   },
   clearColorPalette: () => {
     try {
@@ -509,7 +509,7 @@ const useStore = create((set, get) => ({
     } catch (e) {
       console.warn('Failed to clear color palette from localStorage:', e)
     }
-    set({ colorPalette: DEFAULT_PALETTE })
+    set({ colorPalette: null })
   },
 
   // Scene management
