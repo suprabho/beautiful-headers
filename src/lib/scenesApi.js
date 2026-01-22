@@ -334,22 +334,26 @@ export async function getProjects() {
  * @param {string} name - Project name
  * @param {string} url - Project URL
  * @param {string} password - Admin password for verification
+ * @param {Object|null} paletteData - Optional color palette JSON data
  */
-export async function createProject(name, url, password) {
+export async function createProject(name, url, password, paletteData = null) {
   // Verify password first
   const isValid = await verifyDeletePassword(password)
   if (!isValid) {
     throw new Error('Invalid password')
   }
 
+  const insertData = {
+    name,
+    url,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  }
+  if (paletteData) insertData.palette_data = paletteData
+
   const { data, error } = await supabase
     .from('projects')
-    .insert({
-      name,
-      url,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    })
+    .insert(insertData)
     .select()
     .single()
 
@@ -364,7 +368,7 @@ export async function createProject(name, url, password) {
 /**
  * Update an existing project (password protected)
  * @param {string} id - Project ID
- * @param {Object} updates - { name?, url? }
+ * @param {Object} updates - { name?, url?, paletteData? }
  * @param {string} password - Admin password for verification
  */
 export async function updateProject(id, updates, password) {
@@ -379,6 +383,7 @@ export async function updateProject(id, updates, password) {
   }
   if (updates.name !== undefined) updateData.name = updates.name
   if (updates.url !== undefined) updateData.url = updates.url
+  if (updates.paletteData !== undefined) updateData.palette_data = updates.paletteData
 
   const { data, error } = await supabase
     .from('projects')

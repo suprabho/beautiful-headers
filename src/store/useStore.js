@@ -1,4 +1,8 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
+
+// localStorage key for color palette
+const COLOR_PALETTE_STORAGE_KEY = 'aura-color-palette'
 
 // Default Tailwind OKLCH color palette
 const DEFAULT_PALETTE = {
@@ -477,9 +481,36 @@ const useStore = create((set, get) => ({
     selectedProjectIds: state.selectedProjectIds.filter(id => id !== projectId)
   })),
 
-  // Color palette
-  colorPalette: DEFAULT_PALETTE,
-  setColorPalette: (palette) => set({ colorPalette: palette }),
+  // Color palette with localStorage persistence
+  colorPalette: (() => {
+    try {
+      const stored = localStorage.getItem(COLOR_PALETTE_STORAGE_KEY)
+      return stored ? JSON.parse(stored) : DEFAULT_PALETTE
+    } catch {
+      return DEFAULT_PALETTE
+    }
+  })(),
+  setColorPalette: (palette) => {
+    // Save to localStorage
+    try {
+      if (palette) {
+        localStorage.setItem(COLOR_PALETTE_STORAGE_KEY, JSON.stringify(palette))
+      } else {
+        localStorage.removeItem(COLOR_PALETTE_STORAGE_KEY)
+      }
+    } catch (e) {
+      console.warn('Failed to save color palette to localStorage:', e)
+    }
+    set({ colorPalette: palette || DEFAULT_PALETTE })
+  },
+  clearColorPalette: () => {
+    try {
+      localStorage.removeItem(COLOR_PALETTE_STORAGE_KEY)
+    } catch (e) {
+      console.warn('Failed to clear color palette from localStorage:', e)
+    }
+    set({ colorPalette: DEFAULT_PALETTE })
+  },
 
   // Scene management
   currentSceneId: null,

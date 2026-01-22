@@ -8,7 +8,7 @@ import {
   X, Image, Stack, CircleNotch, ArrowLeft, ArrowRight, Check, ArrowCounterClockwise, Upload, CaretCircleUp, CaretCircleDown,
   Pause, Play, FloppyDisk, Images
 } from '@phosphor-icons/react'
-import { createScene, updateScene, checkCmsHealth } from '@/lib/scenesApi'
+import { createScene, updateScene, checkCmsHealth, getProjects, updateProject } from '@/lib/scenesApi'
 import { generateSceneDescriptions } from '@/lib/gemini'
 import { cn } from '@/lib/utils'
 import { prepareForCapture, validatePaletteJson, parsePaletteJson } from '@/lib/colorConversion'
@@ -82,6 +82,13 @@ const ControlPanel = ({ layersContainerRef }) => {
   const [showPaletteDialog, setShowPaletteDialog] = useState(false)
   const [paletteJson, setPaletteJson] = useState('')
   const [paletteError, setPaletteError] = useState('')
+  const [savedPalettes, setSavedPalettes] = useState([])
+  const [allProjects, setAllProjects] = useState([])
+  const [isLoadingPalettes, setIsLoadingPalettes] = useState(false)
+  const [savePalettePassword, setSavePalettePassword] = useState('')
+  const [selectedProjectForSave, setSelectedProjectForSave] = useState('')
+  const [isSavingPalette, setIsSavingPalette] = useState(false)
+  const [savePaletteError, setSavePaletteError] = useState('')
   const [showSaveDialog, setShowSaveDialog] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [saveError, setSaveError] = useState('')
@@ -242,12 +249,12 @@ const ControlPanel = ({ layersContainerRef }) => {
       const selectedColors = shuffled.slice(0, numColors)
       const colorStops = selectedColors.map((_, i) => Math.round((i / (selectedColors.length - 1)) * 100))
 
-      setGradientConfig(prev => ({
-        ...prev,
+      setGradientConfig({
+        ...gradientConfig,
         colors: selectedColors,
         colorStops,
         numColors: selectedColors.length,
-      }))
+      })
     }
   }
 
@@ -271,6 +278,66 @@ const ControlPanel = ({ layersContainerRef }) => {
   useEffect(() => {
     checkCmsHealth().then(setCmsAvailable)
   }, [])
+
+  // Fetch projects (with palettes) when palette dialog opens
+  useEffect(() => {
+    if (showPaletteDialog && cmsAvailable) {
+      setIsLoadingPalettes(true)
+      getProjects()
+        .then((projects) => {
+          setAllProjects(projects)
+          setSavedPalettes(projects.filter(p => p.palette_data))
+        })
+        .catch(() => {
+          setAllProjects([])
+          setSavedPalettes([])
+        })
+        .finally(() => setIsLoadingPalettes(false))
+    }
+  }, [showPaletteDialog, cmsAvailable])
+
+  // Save palette to a project
+  const handleSavePaletteToProject = async () => {
+    if (!colorPalette || !selectedProjectForSave || !savePalettePassword) {
+      setSavePaletteError('Select a project and enter password')
+      return
+    }
+    setIsSavingPalette(true)
+    setSavePaletteError('')
+    try {
+      await updateProject(selectedProjectForSave, { paletteData: colorPalette }, savePalettePassword)
+      setSavePalettePassword('')
+      setSelectedProjectForSave('')
+      // Refresh the list
+      const projects = await getProjects()
+      setAllProjects(projects)
+      setSavedPalettes(projects.filter(p => p.palette_data))
+    } catch (err) {
+      setSavePaletteError(err.message || 'Failed to save palette to project')
+    } finally {
+      setIsSavingPalette(false)
+    }
+  }
+
+  // Load palette from a project
+  const handleLoadPaletteFromProject = (project) => {
+    if (project.palette_data) {
+      setColorPalette(project.palette_data)
+      setPaletteJson(JSON.stringify(project.palette_data, null, 2))
+      setPaletteError('')
+    }
+  }
+
+  // Remove palette from a project
+  const handleRemovePaletteFromProject = async (projectId, password) => {
+    try {
+      await updateProject(projectId, { paletteData: null }, password)
+      const projects = await getProjects()
+      setSavedPalettes(projects.filter(p => p.palette_data))
+    } catch (err) {
+      setSavePaletteError(err.message || 'Failed to remove palette')
+    }
+  }
 
   // Capture thumbnail as base64 at high resolution (server will resize)
   const captureThumbnail = async () => {
@@ -1285,13 +1352,13 @@ const ControlPanel = ({ layersContainerRef }) => {
     }
   }
 
-  // Palette Dialog Component (shared between mobile and desktop)
-  const PaletteDialog = () => (
+  // Palette Dialog JSX (shared between mobile and desktop)
+  const paletteDialogContent = (
     <Dialog open={showPaletteDialog} onOpenChange={(open) => {
       setShowPaletteDialog(open)
       if (!open) setPaletteError('')
     }}>
-      <DialogContent className="max-w-lg max-h-[85vh]">
+      <DialogContent className="max-w-lg max-h-[85vh]" onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>
             <div className="flex items-center gap-2">
@@ -1375,6 +1442,98 @@ const ControlPanel = ({ layersContainerRef }) => {
                   )}
                 </div>
               </div>
+            )}
+
+            {/* Save to Project Section */}
+            {colorPalette && cmsAvailable && allProjects.length > 0 && (
+              <>
+                <div className="flex items-center gap-3 pt-2">
+                  <div className="flex-1 h-px bg-border" />
+                  <span className="text-xs text-muted-foreground uppercase">save to project</span>
+                  <div className="flex-1 h-px bg-border" />
+                </div>
+                <div className="space-y-2">
+                  <Select value={selectedProjectForSave} onValueChange={setSelectedProjectForSave}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a project" />
+                    </SelectTrigger>
+                    <SelectContent onCloseAutoFocus={(e) => e.preventDefault()}>
+                      {allProjects.map((project) => (
+                        <SelectItem key={project.id} value={project.id}>
+                          {project.name} {project.palette_data ? '(has palette)' : ''}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <div className="flex gap-2">
+                    <Input
+                      type="password"
+                      placeholder="Password"
+                      value={savePalettePassword}
+                      onChange={(e) => setSavePalettePassword(e.target.value)}
+                      className="flex-1"
+                    />
+                    <Button
+                      variant="outline"
+                      onClick={handleSavePaletteToProject}
+                      disabled={isSavingPalette || !selectedProjectForSave || !savePalettePassword}
+                    >
+                      {isSavingPalette ? <CircleNotch size={16} className="animate-spin" /> : <FloppyDisk size={16} />}
+                    </Button>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Project Palettes Section */}
+            {cmsAvailable && (
+              <>
+                <div className="flex items-center gap-3 pt-2">
+                  <div className="flex-1 h-px bg-border" />
+                  <span className="text-xs text-muted-foreground uppercase">project palettes</span>
+                  <div className="flex-1 h-px bg-border" />
+                </div>
+                {isLoadingPalettes ? (
+                  <div className="flex items-center justify-center py-4">
+                    <CircleNotch size={20} className="animate-spin text-muted-foreground" />
+                  </div>
+                ) : savedPalettes.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-2">No projects with palettes yet</p>
+                ) : (
+                  <div className="space-y-2">
+                    {savedPalettes.map((project) => {
+                      const previewColors = parsePaletteJson(project.palette_data)?.colors.slice(0, 8) || []
+                      return (
+                        <div key={project.id} className="p-2 bg-muted/50 rounded-lg border border-border flex items-center gap-2">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">{project.name}</p>
+                            <div className="flex gap-0.5 mt-1">
+                              {previewColors.map((color, idx) => (
+                                <div key={idx} className="w-4 h-4 rounded-sm border border-border/50" style={{ backgroundColor: color.hex }} />
+                              ))}
+                            </div>
+                          </div>
+                          <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => handleLoadPaletteFromProject(project)}>
+                            Load
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 text-xs text-destructive hover:text-destructive"
+                            onClick={() => {
+                              const password = prompt('Enter password to remove palette:')
+                              if (password) handleRemovePaletteFromProject(project.id, password)
+                            }}
+                          >
+                            <Trash size={12} />
+                          </Button>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+                {savePaletteError && <p className="text-sm text-destructive mt-2">{savePaletteError}</p>}
+              </>
             )}
           </div>
         </ScrollArea>
@@ -1731,7 +1890,7 @@ const ControlPanel = ({ layersContainerRef }) => {
         </Dialog>
 
         <CaptureModal />
-        <PaletteDialog />
+        {paletteDialogContent}
         <SaveSceneDialog />
       </>
     )
@@ -1851,7 +2010,7 @@ const ControlPanel = ({ layersContainerRef }) => {
       </div>
 
       <CaptureModal />
-      <PaletteDialog />
+      {paletteDialogContent}
       <SaveSceneDialog />
     </>
   )
