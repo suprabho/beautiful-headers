@@ -283,13 +283,21 @@ const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, is
 
       // Apply blur if specified using pre-created temp canvas
       if (blurAmount > 0) {
+        // Reset transforms before cross-canvas operations to avoid DPR scaling issues
+        tempCtx.setTransform(1, 0, 0, 1, 0, 0)
+        ctx.setTransform(1, 0, 0, 1, 0, 0)
+
         tempCtx.filter = `blur(${blurAmount}px)`
-        tempCtx.clearRect(0, 0, width, height)
+        tempCtx.clearRect(0, 0, canvas.width, canvas.height)
         tempCtx.drawImage(canvas, 0, 0)
 
-        ctx.clearRect(0, 0, width, height)
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
         ctx.drawImage(tempCanvas, 0, 0)
         tempCtx.filter = 'none'
+
+        // Restore DPR transforms for next frame
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+        tempCtx.setTransform(dpr, 0, 0, dpr, 0, 0)
       }
 
       animationRef.current = requestAnimationFrame(animate)

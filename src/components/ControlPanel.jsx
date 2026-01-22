@@ -1652,7 +1652,7 @@ const ControlPanel = ({ layersContainerRef }) => {
         </div>
 
         {!isCollapsed && (
-          <Tabs value={activePanel} onValueChange={setActivePanel} className="flex flex-col flex-1">
+          <Tabs value={activePanel} onValueChange={setActivePanel} className="flex h-full flex-col flex-1 max-h-[calc(85vh-4rem)]">
             <TabsList className="w-full rounded-none border-b border-border bg-transparent p-1 gap-1 shrink-0">
               {tabs.map(tab => (
                 <TabsTrigger key={tab.id} value={tab.id} className="flex-1 flex flex-col gap-1 py-2 data-[state=active]:bg-muted rounded-md">
@@ -1662,7 +1662,7 @@ const ControlPanel = ({ layersContainerRef }) => {
               ))}
             </TabsList>
 
-            <div className="flex-1 min-h-0 flex flex-col">
+            <div className="min-h-0 flex flex-col h-full">
               <ScrollArea className="flex-1 min-h-0 p-5">
                 <TabsContent value="gradient" className="m-0">
                   <GradientPanel
