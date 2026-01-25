@@ -33,6 +33,7 @@ import {
   ColorsSection,
   PatternPanel,
   EffectsPanel,
+  DEFAULT_EFFECTS_CONFIG,
   TextPanel,
   IconGridDropdown,
   ColorPaletteDialog,
@@ -194,23 +195,18 @@ const ControlPanel = ({ layersContainerRef }) => {
       blur: Math.floor(randomInRange(0, 15)),
       texture: pickOne(textures),
       textureSize: Math.floor(randomInRange(10, 60)),
-      textureOpacity: randomInRange(0.1, 0.9),
-      textureBlendMode: pickOne(textureBlendModes),
-      colorMap: pickOne(colorMaps),
-      vignetteIntensity: randomInRange(0, 0.6),
-      saturation: Math.floor(randomInRange(80, 150)),
-      contrast: Math.floor(randomInRange(80, 130)),
-      brightness: Math.floor(randomInRange(80, 130)),
+      textureOpacity: Math.floor(randomInRange(0.1, 0.9)),
+      vignetteIntensity: Math.floor(randomInRange(0, 0.6)),
       // Randomize fluted glass - randomly enable/disable and randomize values
       flutedGlass: {
-        enabled: Math.random() > 0.5, // 50% chance to enable
+        enabled: Math.random() > 0.8, // 50% chance to enable
         segments: Math.floor(randomInRange(20, 200)),
         rotation: Math.floor(randomInRange(0, 180)),
-        motionValue: randomInRange(0, 1),
-        motionSpeed: randomInRange(0, 2),
+        motionValue: Math.floor(randomInRange(0, 1)),
+        motionSpeed: Math.floor(randomInRange(0, 2)),
         overlayOpacity: Math.floor(randomInRange(0, 50)),
-        distortionStrength: randomInRange(0.005, 0.08),
-        waveFrequency: randomInRange(0.5, 4),
+        distortionStrength: Math.floor(randomInRange(0.005, 0.08)),
+        waveFrequency: Math.floor(randomInRange(0.5, 4)),
       },
     })
   }, [colorPalette, gradientConfig, tessellationConfig, effectsConfig, textConfig, textSections, setBackgroundType, setGradientConfig, setTessellationConfig, setEffectsConfig, setTextConfig, setTextSections, setTextGap])
@@ -443,7 +439,8 @@ const ControlPanel = ({ layersContainerRef }) => {
       } else if (originalValues.type === 'pattern') {
         setTessellationConfig(originalValues.data)
       } else if (originalValues.type === 'effects') {
-        setEffectsConfig(originalValues.data)
+        // Reset to default effects config instead of reverting to original values
+        setEffectsConfig(DEFAULT_EFFECTS_CONFIG)
       } else if (originalValues.type === 'text') {
         setTextSections(originalValues.data.sections)
         setTextGap(originalValues.data.gap)
@@ -1182,7 +1179,7 @@ const ControlPanel = ({ layersContainerRef }) => {
               <ContrastAwarePaletteColorPicker value={textConfig.color} onChange={(newColor) => setTextConfig({ ...textConfig, color: newColor })} palette={parsedPalette} gradientColors={gradientConfig.colors} className="w-16 h-8" />
             </ControlGroup>
             <ControlGroup label="Text Opacity"><NumberInput value={[textConfig.opacity]} onValueChange={([val]) => setTextConfig({ ...textConfig, opacity: val })} min={0} max={1} step={0.05} showButtons={true} /></ControlGroup>
-            <ControlGroup label="Section Gap"><NumberInput value={[textGap]} onValueChange={([val]) => setTextGap(val)} max={100} step={4} /></ControlGroup>
+            <ControlGroup label="Section Gap"><NumberInput value={[textGap]} onValueChange={([val]) => setTextGap(val)} min={-10} max={100} step={4} showButtons={true} /></ControlGroup>
           </div>
         )
       default:
@@ -1537,13 +1534,27 @@ const ControlPanel = ({ layersContainerRef }) => {
                 </div>
               )}
               {activePanel === 'effects' && (
-                <div className="space-y-1 flex flex-row flex-wrap gap-1">
-                  <SubsectionButton title="Blur" onClick={() => openDialog('effects-blur')} />
-                  <SubsectionButton title="Texture" onClick={() => openDialog('effects-texture')} />
-                  <SubsectionButton title="Color Map" onClick={() => openDialog('effects-colormap')} />
-                  <SubsectionButton title="Vignette" onClick={() => openDialog('effects-vignette')} />
-                  <SubsectionButton title="Color" onClick={() => openDialog('effects-color')} />
-                  <SubsectionButton title="Fluted Glass" onClick={() => openDialog('effects-fluted')} />
+                <div className="space-y-2">
+                  <div className="space-y-1 flex flex-row flex-wrap gap-1 px-1">
+                    <SubsectionButton title="Blur" onClick={() => openDialog('effects-blur')} />
+                    <SubsectionButton title="Texture" onClick={() => openDialog('effects-texture')} />
+                    <SubsectionButton title="Color Map" onClick={() => openDialog('effects-colormap')} />
+                    <SubsectionButton title="Vignette" onClick={() => openDialog('effects-vignette')} />
+                    <SubsectionButton title="Color" onClick={() => openDialog('effects-color')} />
+                    <SubsectionButton title="Fluted Glass" onClick={() => openDialog('effects-fluted')} />
+                    <div className="flex flex-1 justify-end px-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setEffectsConfig(DEFAULT_EFFECTS_CONFIG)}
+                        className="h-full px-3 text-xs text-muted-foreground hover:text-foreground"
+                      >
+                        <ArrowCounterClockwise size={14} className="mr-1" />
+                        Reset
+                      </Button>
+                    </div>
+                  </div>
+
                 </div>
               )}
               {activePanel === 'text' && (

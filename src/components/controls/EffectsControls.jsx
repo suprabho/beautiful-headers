@@ -1,27 +1,64 @@
 import { ControlGroup, NumberInput } from './SharedControls'
-import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@radix-ui/react-collapsible'
-import { Rows, CaretRight } from '@phosphor-icons/react'
+import { Rows, CaretRight, ArrowCounterClockwise } from '@phosphor-icons/react'
+import { Button } from '@/components/ui/button'
 
-// NOTE: Noise effect has been removed from this component
+export const DEFAULT_EFFECTS_CONFIG = {
+  blur: 0,
+  texture: 'none',
+  textureSize: 20,
+  textureOpacity: 0.5,
+  textureBlendMode: 'overlay',
+  colorMap: 'none',
+  vignetteIntensity: 0.3,
+  saturation: 100,
+  contrast: 100,
+  brightness: 100,
+  flutedGlass: {
+    enabled: false,
+    segments: 80,
+    rotation: 0,
+    motionValue: 0.5,
+    motionSpeed: 0.5,
+    overlayOpacity: 0,
+    distortionStrength: 0.02,
+    waveFrequency: 1,
+  },
+}
 
 export const EffectsPanel = ({
   effectsConfig,
   setEffectsConfig,
 }) => {
+  const handleReset = () => {
+    setEffectsConfig(DEFAULT_EFFECTS_CONFIG)
+  }
+
   return (
     <div className="space-y-2">
-      <ControlGroup label={`Background Blur (in px)`}>
+      <div className="flex justify-end mb-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleReset}
+          className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
+        >
+          <ArrowCounterClockwise size={14} className="mr-1" />
+          Reset
+        </Button>
+      </div>
+      <ControlGroup label={`Background Blur`}>
         <NumberInput
           value={[effectsConfig.blur]}
           onValueChange={([val]) => setEffectsConfig({
             ...effectsConfig,
             blur: val
           })}
-          max={30}
-          step={1}
+          min={0}
+          max={50}
+          step={2}
         />
       </ControlGroup>
 
@@ -49,7 +86,7 @@ export const EffectsPanel = ({
 
       {effectsConfig.texture !== 'none' && (
         <>
-          <ControlGroup label={`Size: `}>
+          <ControlGroup label={`Size`}>
             <NumberInput
               value={[effectsConfig.textureSize]}
               onValueChange={([val]) => setEffectsConfig({
@@ -58,18 +95,19 @@ export const EffectsPanel = ({
               })}
               min={4}
               max={100}
-              step={1}
+              step={2}
             />
           </ControlGroup>
-          <ControlGroup label={`Opacity: `}>
+          <ControlGroup label={`Opacity`}>
             <NumberInput
               value={[effectsConfig.textureOpacity]}
               onValueChange={([val]) => setEffectsConfig({
                 ...effectsConfig,
                 textureOpacity: val
               })}
+              min={0}
               max={1}
-              step={0.1}
+              step={0.05}
             />
           </ControlGroup>
           <ControlGroup label="Blend Mode">
@@ -125,15 +163,16 @@ export const EffectsPanel = ({
         </Select>
       </ControlGroup>
 
-      <ControlGroup label={`Vignette`}> 
+      <ControlGroup label={`Vignette`}>
         <NumberInput
           value={[effectsConfig.vignetteIntensity]}
           onValueChange={([val]) => setEffectsConfig({
             ...effectsConfig,
             vignetteIntensity: val
           })}
-          max={0.8}
-          step={0.01}
+          min={0}
+          max={1}
+          step={0.05}
         />
       </ControlGroup>
 
@@ -144,8 +183,9 @@ export const EffectsPanel = ({
             ...effectsConfig,
             saturation: val
           })}
+          min={0}
           max={200}
-          step={1}
+          step={5}
         />
       </ControlGroup>
 
@@ -158,7 +198,7 @@ export const EffectsPanel = ({
           })}
           min={50}
           max={150}
-          step={1}
+          step={5}
         />
       </ControlGroup>
 
@@ -171,13 +211,13 @@ export const EffectsPanel = ({
           })}
           min={50}
           max={150}
-          step={10}
+          step={5}
         />
       </ControlGroup>
 
       {/* Fluted Glass Section */}
       <div className="h-px bg-border my-4" />
-      
+
       <Collapsible defaultOpen={effectsConfig.flutedGlass?.enabled}>
         <div className="flex items-center justify-between mb-3">
           <CollapsibleTrigger className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide hover:text-primary transition-colors group">
@@ -196,7 +236,7 @@ export const EffectsPanel = ({
             })}
           />
         </div>
-        
+
         <CollapsibleContent className="space-y-3">
           {effectsConfig.flutedGlass?.enabled && (
             <>
@@ -216,7 +256,7 @@ export const EffectsPanel = ({
                 />
               </ControlGroup>
 
-              <ControlGroup label={`Distortion Strength`}>
+              <ControlGroup label={`Distortion`}>
                 <NumberInput
                   value={[effectsConfig.flutedGlass?.distortionStrength ?? 0.02]}
                   onValueChange={([val]) => setEffectsConfig({
@@ -226,9 +266,9 @@ export const EffectsPanel = ({
                       distortionStrength: val
                     }
                   })}
-                  min={0.005}
+                  min={0}
                   max={0.1}
-                  step={0.005}
+                  step={0.01}
                 />
               </ControlGroup>
 

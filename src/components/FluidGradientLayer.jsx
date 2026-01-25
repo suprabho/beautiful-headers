@@ -164,6 +164,9 @@ const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, is
         tempCanvas.height = height * dpr
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
         tempCtx.setTransform(dpr, 0, 0, dpr, 0, 0)
+        // Only mark canvas as ready once dimensions are actually set
+        // This prevents WebGL errors when FlutedGlassCanvas tries to use a 0-dimension canvas
+        setCanvasReady(true)
       }
 
       if (isMobile) {
@@ -182,7 +185,6 @@ const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, is
     }
 
     handleResize()
-    setCanvasReady(true)
     window.addEventListener('resize', handleResize)
     document.addEventListener('visibilitychange', handleVisibilityChange)
 

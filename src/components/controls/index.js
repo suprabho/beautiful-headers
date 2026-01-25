@@ -10,7 +10,7 @@ export {
 // Panel components
 export { GradientPanel, ColorsSection, LiquidControls, AuroraControls, BlobControls, FluidControls, WavesControls } from './GradientControls'
 export { PatternPanel, IconGridDropdown } from './PatternControls'
-export { EffectsPanel } from './EffectsControls'
+export { EffectsPanel, DEFAULT_EFFECTS_CONFIG } from './EffectsControls'
 export { TextPanel } from './TextControls'
 export { ProjectsPanel } from './ProjectsControls'
 

@@ -29,7 +29,7 @@ export const TextPanel = ({
   }
 
   const updateTextSection = (id, field, value) => {
-    setTextSections(textSections.map(s => 
+    setTextSections(textSections.map(s =>
       s.id === id ? { ...s, [field]: value } : s
     ))
   }
@@ -74,20 +74,22 @@ export const TextPanel = ({
         <NumberInput
           value={[textGap]}
           onValueChange={([val]) => setTextGap(val)}
+          min={0}
           max={100}
-          step={4}  
+          step={4}
+          showButtons={true}
         />
       </ControlGroup>
 
       {textSections.map((section, index) => (
         <div key={section.id} className="rounded-lg bg-muted/50 overflow-hidden">
-          <div 
+          <div
             className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/70 transition-colors"
             onClick={() => setCollapsedSections(prev => ({ ...prev, [section.id]: !prev[section.id] }))}
           >
             <div className="flex items-center gap-2">
-              <CaretRight 
-                size={12} 
+              <CaretRight
+                size={12}
                 className={cn(
                   "transition-transform duration-200",
                   !collapsedSections[section.id] && "rotate-90"
@@ -112,7 +114,7 @@ export const TextPanel = ({
             </Button>
           </div>
 
-          <div 
+          <div
             className={cn(
               "grid transition-all duration-200 ease-in-out",
               collapsedSections[section.id] ? "grid-rows-[0fr]" : "grid-rows-[1fr]"
@@ -201,7 +203,7 @@ export const TextPanel = ({
           </div>
         </div>
       ))}
-      
+
       <div className="flex items-center justify-center">
         <Label className="text-xs uppercase tracking-wide font-semibold">Text Sections</Label>
         <Button variant="ghost" size="icon" className="h-7 w-7" onClick={addTextSection}>

@@ -140,6 +140,12 @@ const FlutedGlassMaterial = ({ textureRef, effectsConfig }) => {
     // Update texture if available
     if (textureRef.current) {
       const sourceCanvas = textureRef.current
+
+      // Skip texture creation if canvas has no valid dimensions (prevents WebGL errors on mobile)
+      if (sourceCanvas.width === 0 || sourceCanvas.height === 0) {
+        return
+      }
+
       const currentTexture = mat.uniforms.u_texture.value
 
       // Check if we need to recreate the texture (new canvas or size changed)

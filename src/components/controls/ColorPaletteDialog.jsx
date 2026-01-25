@@ -358,7 +358,7 @@ const ProjectPalettesTab = memo(({
 
       {/* Preview and Apply section */}
       {selectedProject && previewPalette && (
-        <div className="space-y-3 flex flex-col h-full pl-4 border-l border-border justify-between">
+        <div className="space-y-3 flex flex-col w-full h-full pl-4 border-l border-border justify-between">
           <div className="flex items-center justify-between">
             <Label className="text-sm font-medium">{selectedProject.name}</Label>
             <Button
