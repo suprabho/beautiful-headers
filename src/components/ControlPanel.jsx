@@ -6,7 +6,7 @@ import {
   Sliders, Palette, GridFour, Sparkle, TextT,
   Shuffle, Plus, Trash, CaretDown, CaretUp, CaretRight, DotsSixVertical, Camera,
   X, Image, Stack, CircleNotch, ArrowLeft, ArrowRight, Check, ArrowCounterClockwise, Upload, CaretCircleUp, CaretCircleDown,
-  Pause, Play, FloppyDisk, Images
+  Pause, Play, FloppyDisk, Images, PaintBrushBroad
 } from '@phosphor-icons/react'
 import { createScene, updateScene, checkCmsHealth, getProjects, updateProject } from '@/lib/scenesApi'
 import { generateSceneDescriptions } from '@/lib/gemini'
@@ -699,7 +699,7 @@ const ControlPanel = ({ layersContainerRef }) => {
   }, [isDragging, handleMouseMove, handleMouseUp])
 
   const tabs = [
-    { id: 'gradient', label: 'Gradient', icon: Palette },
+    { id: 'gradient', label: 'Background', icon: PaintBrushBroad },
     { id: 'tessellation', label: 'Pattern', icon: GridFour },
     { id: 'effects', label: 'Effects', icon: Sparkle },
     { id: 'text', label: 'Text', icon: TextT },
@@ -1397,7 +1397,7 @@ const ControlPanel = ({ layersContainerRef }) => {
               {isPaused ? <Play size={18} weight="fill" /> : <Pause size={18} />}
             </Button>
             <Button variant="outline" size="sm" className="flex items-center gap-2 h-10 px-4 border-primary/50" onClick={() => setShowPaletteDialog(true)} title={colorPalette ? "Edit Palette" : "Upload Palette"}>
-              <Upload size={18} weight={colorPalette ? 'fill' : 'regular'} />
+              <Palette size={18} weight={colorPalette ? 'fill' : 'regular'} />
             </Button>
             <Button variant="outline" size="sm" className="flex items-center gap-2 h-10 px-4 border-primary/50" onClick={randomizeGradient} title="Shuffle Gradient">
               <Shuffle size={18} />
@@ -1641,7 +1641,7 @@ const ControlPanel = ({ layersContainerRef }) => {
               {isPaused ? <Play size={16} weight="fill" /> : <Pause size={16} />}
             </Button>
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setShowPaletteDialog(true)} title={colorPalette ? "Edit Palette" : "Upload Palette"}>
-              <Upload size={16} weight={colorPalette ? 'fill' : 'regular'} />
+              <Palette size={16} weight={colorPalette ? 'fill' : 'regular'} />
             </Button>
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={randomizeGradient} disabled={isCapturing} title="Shuffle Gradient">
               <Shuffle size={16} weight="regular" />
