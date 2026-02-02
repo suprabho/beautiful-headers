@@ -126,14 +126,17 @@ async function deleteThumbnail(sceneId) {
 }
 
 /**
- * Fetch all saved scenes
+ * Fetch saved scenes with pagination
+ * @param {Object} options
+ * @param {number} options.offset - Number of rows to skip (default 0)
+ * @param {number} options.limit - Number of rows to fetch (default 20)
  */
-export async function getScenes() {
-  const { data, error } = await supabase
+export async function getScenes({ offset = 0, limit = 20 } = {}) {
+  const { data, error, count } = await supabase
     .from('scenes')
-    .select('id, title, slug, short_description, long_description, thumbnail, created_at')
+    .select('id, title, slug, short_description, long_description, thumbnail, created_at', { count: 'exact' })
     .order('created_at', { ascending: false })
-    .limit(100)
+    .range(offset, offset + limit - 1)
 
   if (error) {
     throw new Error('Failed to fetch scenes')
@@ -145,7 +148,7 @@ export async function getScenes() {
     thumbnail: rewriteThumbnails(scene.thumbnail),
   }))
 
-  return { docs, totalDocs: docs.length }
+  return { docs, totalDocs: count }
 }
 
 /**

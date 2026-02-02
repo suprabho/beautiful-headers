@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Trash, CircleNotch, Warning, ImageBroken } from '@phosphor-icons/react'
 import { getScenes, deleteScene, checkCmsHealth, titleToSlug, verifyDeletePassword } from '@/lib/scenesApi'
@@ -83,14 +83,21 @@ function SceneCard({ scene, onNavigate, onDelete }) {
 function SavedScenesPage() {
   const navigate = useNavigate()
 
+  const PAGE_SIZE = 20
+
   const [scenes, setScenes] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [error, setError] = useState(null)
   const [cmsAvailable, setCmsAvailable] = useState(false)
+  const [totalDocs, setTotalDocs] = useState(0)
   const [deleteDialog, setDeleteDialog] = useState({ open: false, scene: null })
   const [isDeleting, setIsDeleting] = useState(false)
   const [deletePassword, setDeletePassword] = useState('')
   const [passwordError, setPasswordError] = useState('')
+
+  const sentinelRef = useRef(null)
+  const hasMore = scenes.length < totalDocs
 
   // Check CMS and fetch scenes on mount
   useEffect(() => {
@@ -112,8 +119,9 @@ function SavedScenesPage() {
     try {
       setIsLoading(true)
       setError(null)
-      const response = await getScenes()
+      const response = await getScenes({ offset: 0, limit: PAGE_SIZE })
       setScenes(response.docs || [])
+      setTotalDocs(response.totalDocs || 0)
     } catch (err) {
       console.error('Failed to fetch scenes:', err)
       setError('Failed to load scenes. Please try again.')
@@ -121,6 +129,34 @@ function SavedScenesPage() {
       setIsLoading(false)
     }
   }
+
+  const loadMore = useCallback(async () => {
+    if (isLoadingMore || !hasMore) return
+    try {
+      setIsLoadingMore(true)
+      const response = await getScenes({ offset: scenes.length, limit: PAGE_SIZE })
+      setScenes((prev) => [...prev, ...(response.docs || [])])
+      setTotalDocs(response.totalDocs || 0)
+    } catch (err) {
+      console.error('Failed to load more scenes:', err)
+    } finally {
+      setIsLoadingMore(false)
+    }
+  }, [isLoadingMore, hasMore, scenes.length])
+
+  // Infinite scroll via IntersectionObserver
+  useEffect(() => {
+    const el = sentinelRef.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) loadMore()
+      },
+      { rootMargin: '200px' }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [loadMore])
 
   const handleNavigateToScene = (scene) => {
     const slug = titleToSlug(scene.title)
@@ -172,7 +208,7 @@ function SavedScenesPage() {
           </Button>
           <h1 className="text-lg font-semibold">Saved Scenes</h1>
           <span className="text-sm text-muted-foreground">
-            {scenes.length} {scenes.length === 1 ? 'scene' : 'scenes'}
+            {scenes.length} of {totalDocs} {totalDocs === 1 ? 'scene' : 'scenes'}
           </span>
         </div>
       </header>
@@ -208,16 +244,26 @@ function SavedScenesPage() {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {scenes.map((scene) => (
-              <SceneCard
-                key={scene.id}
-                scene={scene}
-                onNavigate={handleNavigateToScene}
-                onDelete={(s) => setDeleteDialog({ open: true, scene: s })}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {scenes.map((scene) => (
+                <SceneCard
+                  key={scene.id}
+                  scene={scene}
+                  onNavigate={handleNavigateToScene}
+                  onDelete={(s) => setDeleteDialog({ open: true, scene: s })}
+                />
+              ))}
+            </div>
+
+            {/* Infinite scroll sentinel */}
+            <div ref={sentinelRef} className="h-1" />
+            {isLoadingMore && (
+              <div className="flex items-center justify-center py-8">
+                <CircleNotch size={24} className="animate-spin text-muted-foreground" />
+              </div>
+            )}
+          </>
         )}
       </main>
 
