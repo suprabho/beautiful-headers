@@ -1,5 +1,3 @@
-import { readFileSync } from 'fs';
-import { join } from 'path';
 import { createClient } from '@supabase/supabase-js';
 
 // --- Configuration ---
@@ -10,11 +8,15 @@ const BASE_URL = 'https://aura.promad.design';
 const FALLBACK_OG_IMAGE = `${BASE_URL}/og-image.png`;
 const SUPABASE_STORAGE_BASE = `${SUPABASE_URL}/storage/v1/object/public/thumbnails/`;
 
-// Read HTML template once at cold-start (cached across warm invocations)
-const htmlTemplate = readFileSync(
-  join(process.cwd(), 'dist/index.html'),
-  'utf-8'
-);
+// Fetch and cache the HTML template from the deployment's own static files
+let cachedHtml = null;
+
+async function getHtmlTemplate() {
+  if (cachedHtml) return cachedHtml;
+  const response = await fetch(`${BASE_URL}/index.html`);
+  cachedHtml = await response.text();
+  return cachedHtml;
+}
 
 // --- Helpers ---
 
@@ -141,6 +143,7 @@ async function fetchSceneBySlug(supabase, slug) {
 
 export default async function handler(req, res) {
   const { slug } = req.query;
+  const htmlTemplate = await getHtmlTemplate();
 
   if (!slug || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
     res.setHeader('Content-Type', 'text/html');

@@ -1,9 +1,4 @@
 {
-  "functions": {
-    "api/scenes/[slug].js": {
-      "includeFiles": "dist/index.html"
-    }
-  },
   "rewrites": [
     {
       "source": "/sitemap.xml",
