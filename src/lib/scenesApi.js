@@ -2,8 +2,25 @@ import { createClient } from '@supabase/supabase-js'
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://grbrfpaznehikakupavx.supabase.co'
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_nFT6O21VoCZSKs7lQe-UaA_tSkoc4su'
+const THUMBNAIL_CDN_URL = import.meta.env.VITE_THUMBNAIL_CDN_URL || ''
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+const SUPABASE_STORAGE_BASE = `${SUPABASE_URL}/storage/v1/object/public/thumbnails/`
+
+function rewriteThumbnailUrl(url) {
+  if (!THUMBNAIL_CDN_URL || !url) return url
+  return url.replace(SUPABASE_STORAGE_BASE, `${THUMBNAIL_CDN_URL}/`)
+}
+
+function rewriteThumbnails(thumbnailObj) {
+  if (!thumbnailObj || !THUMBNAIL_CDN_URL) return thumbnailObj
+  const rewritten = {}
+  for (const [size, url] of Object.entries(thumbnailObj)) {
+    rewritten[size] = rewriteThumbnailUrl(url)
+  }
+  return rewritten
+}
 
 /**
  * Thumbnail size configurations
@@ -80,7 +97,7 @@ async function uploadThumbnail(base64Data, sceneId) {
       .from('thumbnails')
       .getPublicUrl(filename)
 
-    return { sizeName, publicUrl }
+    return { sizeName, publicUrl: rewriteThumbnailUrl(publicUrl) }
   })
 
   const results = await Promise.all(uploadPromises)
@@ -114,7 +131,7 @@ async function deleteThumbnail(sceneId) {
 export async function getScenes() {
   const { data, error } = await supabase
     .from('scenes')
-    .select('*')
+    .select('id, title, slug, short_description, long_description, thumbnail, created_at')
     .order('created_at', { ascending: false })
     .limit(100)
 
@@ -122,8 +139,13 @@ export async function getScenes() {
     throw new Error('Failed to fetch scenes')
   }
 
-  // Transform to match existing API response format
-  return { docs: data, totalDocs: data.length }
+  // Rewrite thumbnail URLs to use CDN if configured
+  const docs = data.map(scene => ({
+    ...scene,
+    thumbnail: rewriteThumbnails(scene.thumbnail),
+  }))
+
+  return { docs, totalDocs: docs.length }
 }
 
 /**
@@ -140,7 +162,7 @@ export async function getScene(id) {
     throw new Error('Scene not found')
   }
 
-  return data
+  return { ...data, thumbnail: rewriteThumbnails(data.thumbnail) }
 }
 
 /**
@@ -159,23 +181,40 @@ export function titleToSlug(title) {
  * Fetch a single scene by slug (URL-friendly title)
  */
 export async function getSceneBySlug(slug) {
-  // First try to find by exact slug match in title
+  // Try server-side slug column first (new scenes have this populated)
+  const { data: slugMatch, error: slugError } = await supabase
+    .from('scenes')
+    .select('*')
+    .eq('slug', slug)
+    .maybeSingle()
+
+  if (slugError) {
+    throw new Error('Failed to fetch scene')
+  }
+
+  if (slugMatch) {
+    return { ...slugMatch, thumbnail: rewriteThumbnails(slugMatch.thumbnail) }
+  }
+
+  // Fallback: query by title for older scenes without a slug column value.
+  // Reconstruct an approximate title from the slug and use ilike for server-side filtering.
+  const titleSearch = slug.replace(/-/g, ' ')
   const { data, error } = await supabase
     .from('scenes')
     .select('*')
+    .ilike('title', `%${titleSearch}%`)
 
   if (error) {
     throw new Error('Failed to fetch scenes')
   }
 
-  // Find scene where the slugified title matches the provided slug
   const scene = data.find(s => titleToSlug(s.title) === slug)
 
   if (!scene) {
     throw new Error('Scene not found')
   }
 
-  return scene
+  return { ...scene, thumbnail: rewriteThumbnails(scene.thumbnail) }
 }
 
 /**
@@ -191,6 +230,7 @@ export async function createScene(title, sceneData, thumbnail = null, descriptio
     .from('scenes')
     .insert({
       title,
+      slug: titleToSlug(title),
       scene_data: sceneData,
       thumbnail: null,
       short_description: descriptions?.shortDescription || null,
@@ -239,7 +279,10 @@ export async function updateScene(id, data) {
     updated_at: new Date().toISOString(),
   }
 
-  if (data.title !== undefined) updateData.title = data.title
+  if (data.title !== undefined) {
+    updateData.title = data.title
+    updateData.slug = titleToSlug(data.title)
+  }
   if (data.sceneData !== undefined) updateData.scene_data = data.sceneData
   if (data.short_description !== undefined) updateData.short_description = data.short_description
   if (data.long_description !== undefined) updateData.long_description = data.long_description

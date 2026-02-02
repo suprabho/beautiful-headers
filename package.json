@@ -36,6 +36,7 @@
     "react-router-dom": "^7.12.0",
     "tailwind-merge": "^3.4.0",
     "three": "^0.182.0",
+    "vercel": "^50.5.0",
     "zustand": "^5.0.10"
   },
   "devDependencies": {

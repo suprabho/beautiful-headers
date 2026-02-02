@@ -1,0 +1,10 @@
+name = "thumbnail-proxy"
+main = "thumbnail-proxy.js"
+compatibility_date = "2024-01-01"
+
+[triggers]
+crons = []
+
+# After deploying, add a Custom Domain in the Cloudflare dashboard:
+# Workers & Pages > thumbnail-proxy > Settings > Domains & Routes
+# Add: thumbnails.promad.design
