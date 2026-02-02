@@ -221,16 +221,25 @@ const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused }
       ctx.restore()
 
       // Apply blur if specified using pre-created temp canvas
+      // Reset transform to identity for pixel-accurate canvas-to-canvas copy
+      // (drawImage with DPR transform active would scale by dpr, zooming into a corner)
       if (blur > 0) {
-        ctx.filter = `blur(${blur}px)`
-        tempCtx.clearRect(0, 0, width, height)
-        tempCtx.drawImage(canvas, 0, 0)
+        const pw = canvas.width
+        const ph = canvas.height
 
-        ctx.filter = 'none'
-        ctx.clearRect(0, 0, width, height)
-        ctx.filter = `blur(${blur}px)`
+        tempCtx.save()
+        tempCtx.setTransform(1, 0, 0, 1, 0, 0)
+        tempCtx.clearRect(0, 0, pw, ph)
+        tempCtx.drawImage(canvas, 0, 0)
+        tempCtx.restore()
+
+        ctx.save()
+        ctx.setTransform(1, 0, 0, 1, 0, 0)
+        ctx.clearRect(0, 0, pw, ph)
+        ctx.filter = `blur(${blur * dpr}px)`
         ctx.drawImage(tempCanvas, 0, 0)
         ctx.filter = 'none'
+        ctx.restore()
       }
 
       animationRef.current = requestAnimationFrame(animate)
