@@ -196,13 +196,24 @@ export async function getSceneBySlug(slug) {
     return { ...slugMatch, thumbnail: rewriteThumbnails(slugMatch.thumbnail) }
   }
 
-  // Fallback: query by title for older scenes without a slug column value.
-  // Reconstruct an approximate title from the slug and use ilike for server-side filtering.
-  const titleSearch = slug.replace(/-/g, ' ')
-  const { data, error } = await supabase
-    .from('scenes')
-    .select('*')
-    .ilike('title', `%${titleSearch}%`)
+  // Fallback: for older scenes without a slug column value.
+  // Use individual words from the slug for broader matching since titles may
+  // contain special characters (em-dashes, ampersands, etc.) that titleToSlug strips.
+  const words = slug.split('-').filter(w => w.length >= 3)
+
+  if (words.length === 0) {
+    throw new Error('Scene not found')
+  }
+
+  // Search using the longest words for specificity
+  const searchWords = [...words].sort((a, b) => b.length - a.length).slice(0, 3)
+
+  let query = supabase.from('scenes').select('*')
+  for (const word of searchWords) {
+    query = query.ilike('title', `%${word}%`)
+  }
+
+  const { data, error } = await query
 
   if (error) {
     throw new Error('Failed to fetch scenes')
@@ -212,6 +223,16 @@ export async function getSceneBySlug(slug) {
 
   if (!scene) {
     throw new Error('Scene not found')
+  }
+
+  // Backfill the slug column so future lookups use the fast path
+  if (!scene.slug) {
+    supabase
+      .from('scenes')
+      .update({ slug: titleToSlug(scene.title) })
+      .eq('id', scene.id)
+      .then()
+      .catch(() => {})
   }
 
   return { ...scene, thumbnail: rewriteThumbnails(scene.thumbnail) }

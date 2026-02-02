@@ -52,3 +52,6 @@ cms/thumbnails/
 .env.local
 .vercel
 .env*.local
+
+.claude
+.vite

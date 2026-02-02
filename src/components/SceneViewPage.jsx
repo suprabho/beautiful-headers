@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import html2canvas from 'html2canvas'
-import { ArrowLeft, CircleNotch, Warning, Play, Code, Check, Copy, Download } from '@phosphor-icons/react'
-import { getSceneBySlug, getProjects, updateScene, verifyDeletePassword } from '@/lib/scenesApi'
+import { ArrowLeft, CircleNotch, Warning, Play, Code, Check, Copy, Download, ArrowCounterClockwiseIcon as ArrowCounterClockwise } from '@phosphor-icons/react'
+import { getSceneBySlug, getProjects, updateScene, verifyDeletePassword, titleToSlug } from '@/lib/scenesApi'
+import { generateSceneDescriptions } from '@/lib/gemini'
 import { prepareForCapture } from '@/lib/colorConversion'
 import { Button } from '@/components/ui/button'
 import {
@@ -59,6 +60,12 @@ function SceneViewPage() {
   const [projectsError, setProjectsError] = useState('')
   const [isSavingProjects, setIsSavingProjects] = useState(false)
   const [loadingAllProjects, setLoadingAllProjects] = useState(false)
+
+  // Regenerate AI descriptions state
+  const [regenerateDialogOpen, setRegenerateDialogOpen] = useState(false)
+  const [regeneratePassword, setRegeneratePassword] = useState('')
+  const [regenerateError, setRegenerateError] = useState('')
+  const [isRegenerating, setIsRegenerating] = useState(false)
 
   // Update document meta tags with scene data (use large for OG image)
   useDocumentMeta({
@@ -220,6 +227,87 @@ function SceneViewPage() {
       setProjectsError('Failed to save projects')
     } finally {
       setIsSavingProjects(false)
+    }
+  }
+
+  // Convert a thumbnail URL to a resized base64 string for the AI API
+  const thumbnailUrlToBase64 = (url, maxWidth = 800) => {
+    return new Promise((resolve, reject) => {
+      const img = document.createElement('img')
+      img.crossOrigin = 'anonymous'
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        const scale = Math.min(1, maxWidth / img.width)
+        canvas.width = img.width * scale
+        canvas.height = img.height * scale
+        const ctx = canvas.getContext('2d')
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+        resolve(canvas.toDataURL('image/jpeg', 0.7))
+      }
+      img.onerror = () => reject(new Error('Failed to load thumbnail image'))
+      img.src = url
+    })
+  }
+
+  // Regenerate AI descriptions
+  const handleRegenerate = async () => {
+    if (!regeneratePassword.trim()) {
+      setRegenerateError('Password is required')
+      return
+    }
+
+    setIsRegenerating(true)
+    setRegenerateError('')
+
+    try {
+      // Verify password
+      const isValid = await verifyDeletePassword(regeneratePassword)
+      if (!isValid) {
+        setRegenerateError('Incorrect password')
+        setIsRegenerating(false)
+        return
+      }
+
+      // Get thumbnail URL and convert to base64
+      const thumbnailUrl = scene.thumbnail?.medium || scene.thumbnail?.small || scene.thumbnail?.large
+      if (!thumbnailUrl) {
+        setRegenerateError('No thumbnail available for this scene')
+        setIsRegenerating(false)
+        return
+      }
+
+      const base64Thumbnail = await thumbnailUrlToBase64(thumbnailUrl)
+      const content = await generateSceneDescriptions(base64Thumbnail)
+
+      if (!content) {
+        setRegenerateError('AI generation failed. Please try again.')
+        setIsRegenerating(false)
+        return
+      }
+
+      // Update scene in database
+      await updateScene(scene.id, {
+        title: content.title,
+        short_description: content.shortDescription,
+        long_description: content.longDescription,
+      })
+
+      // Update local state
+      setScene(prev => ({
+        ...prev,
+        title: content.title,
+        slug: titleToSlug(content.title),
+        short_description: content.shortDescription,
+        long_description: content.longDescription,
+      }))
+
+      setRegenerateDialogOpen(false)
+      setRegeneratePassword('')
+    } catch (err) {
+      console.error('Failed to regenerate descriptions:', err)
+      setRegenerateError('Failed to regenerate. Please try again.')
+    } finally {
+      setIsRegenerating(false)
     }
   }
 
@@ -583,7 +671,11 @@ function SceneViewPage() {
       <div className="relative mt-[76vh] md:mt-0 md:fixed md:bottom-4 md:right-4 md:z-50 md:w-80 p-4 md:p-0">
         <div className="flex flex-col gap-2 bg-background/80 backdrop-blur border border-border rounded-xl p-4 gap-0.5 shadow-lg">
 
-          {scene.title && (<h1 className="text-lg font-semibold">{scene.title}</h1>)}
+          {scene.title && (
+            <div className="flex items-center justify-between">
+              <h1 className="text-lg font-semibold">{scene.title}</h1>
+            </div>
+          )}
           <div className="flex w-full flex-wrap gap-2">
             <Button className="flex flex-row flex-1 border border-primary" variant="outline" onClick={() => setEmbedDialogOpen(true)}>
               <Code size={16} weight="bold" />
@@ -712,6 +804,15 @@ function SceneViewPage() {
             })()}
 
           </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-6 text-xs"
+            onClick={() => { setRegenerateDialogOpen(true); setRegenerateError(''); setRegeneratePassword('') }}
+          >
+            <ArrowCounterClockwise size={12} className="mr-1" />
+            Regenerate
+          </Button>
 
           {/* Projects */}
           <div className="flex flex-col gap-2">
@@ -891,6 +992,56 @@ function SceneViewPage() {
               )}
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Regenerate AI Descriptions Dialog */}
+      <Dialog open={regenerateDialogOpen} onOpenChange={setRegenerateDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Regenerate AI Descriptions</DialogTitle>
+            <DialogDescription>
+              This will regenerate the title, short description, and long description using AI.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {isRegenerating ? (
+              <div className="flex items-center justify-center gap-3 py-8">
+                <CircleNotch size={24} className="animate-spin text-primary" />
+                <span className="text-muted-foreground">Generating new descriptions...</span>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Label htmlFor="regenerate-password">Password</Label>
+                <Input
+                  id="regenerate-password"
+                  type="password"
+                  value={regeneratePassword}
+                  onChange={(e) => setRegeneratePassword(e.target.value)}
+                  placeholder="Enter admin password"
+                />
+              </div>
+            )}
+
+            {regenerateError && (
+              <p className="text-sm text-destructive">{regenerateError}</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setRegenerateDialogOpen(false)}
+              disabled={isRegenerating}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleRegenerate}
+              disabled={isRegenerating}
+            >
+              {isRegenerating ? 'Generating...' : 'Regenerate'}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
