@@ -262,7 +262,7 @@ const ControlPanel = ({ layersContainerRef }) => {
         getLastCanvas('.fluid-gradient-layer') ||
         getLastCanvas('.aurora-layer') ||
         getLastCanvas('.waves-layer') ||
-        container.querySelector('.ribbon-layer canvas')
+        getLastCanvas('.ribbon-layer')
 
       if (backgroundCanvas) {
         const wrapper = container.querySelector('.gradient-effects-wrapper')
@@ -620,7 +620,7 @@ const ControlPanel = ({ layersContainerRef }) => {
         getLastCanvas('.fluid-gradient-layer') ||
         getLastCanvas('.aurora-layer') ||
         getLastCanvas('.waves-layer') ||
-        container.querySelector('.ribbon-layer canvas')
+        getLastCanvas('.ribbon-layer')
 
       if (backgroundCanvas) {
         const wrapper = container.querySelector('.gradient-effects-wrapper')
