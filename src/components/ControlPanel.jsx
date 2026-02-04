@@ -57,6 +57,8 @@ const ControlPanel = ({ layersContainerRef }) => {
   const setFluidConfig = useStore((state) => state.setFluidConfig)
   const wavesConfig = useStore((state) => state.wavesConfig)
   const setWavesConfig = useStore((state) => state.setWavesConfig)
+  const ribbonConfig = useStore((state) => state.ribbonConfig)
+  const setRibbonConfig = useStore((state) => state.setRibbonConfig)
   const tessellationConfig = useStore((state) => state.tessellationConfig)
   const setTessellationConfig = useStore((state) => state.setTessellationConfig)
   const effectsConfig = useStore((state) => state.effectsConfig)
@@ -103,7 +105,7 @@ const ControlPanel = ({ layersContainerRef }) => {
     const pickOne = (arr) => arr[Math.floor(Math.random() * arr.length)]
 
     // Randomize background type
-    const backgroundTypes = ['simple', 'liquid', 'aurora', 'fluid', 'waves']
+    const backgroundTypes = ['simple', 'liquid', 'aurora', 'fluid', 'waves', 'ribbon']
     setBackgroundType(pickOne(backgroundTypes))
 
     let colors
@@ -259,7 +261,8 @@ const ControlPanel = ({ layersContainerRef }) => {
         getLastCanvas('.simple-gradient-layer') ||
         getLastCanvas('.fluid-gradient-layer') ||
         getLastCanvas('.aurora-layer') ||
-        getLastCanvas('.waves-layer')
+        getLastCanvas('.waves-layer') ||
+        container.querySelector('.ribbon-layer canvas')
 
       if (backgroundCanvas) {
         const wrapper = container.querySelector('.gradient-effects-wrapper')
@@ -390,8 +393,8 @@ const ControlPanel = ({ layersContainerRef }) => {
 
   const openDialog = (dialogKey) => {
     setActiveDialog(dialogKey)
-    if (dialogKey.startsWith('gradient-') || dialogKey.startsWith('aurora-') || dialogKey.startsWith('blob-') || dialogKey.startsWith('fluid-') || dialogKey.startsWith('waves-')) {
-      setOriginalValues({ type: 'gradient', data: { gradientConfig: { ...gradientConfig }, auroraConfig: { ...auroraConfig }, blobConfig: { ...blobConfig }, fluidConfig: { ...fluidConfig }, wavesConfig: { ...wavesConfig } } })
+    if (dialogKey.startsWith('gradient-') || dialogKey.startsWith('aurora-') || dialogKey.startsWith('blob-') || dialogKey.startsWith('fluid-') || dialogKey.startsWith('waves-') || dialogKey.startsWith('ribbon-')) {
+      setOriginalValues({ type: 'gradient', data: { gradientConfig: { ...gradientConfig }, auroraConfig: { ...auroraConfig }, blobConfig: { ...blobConfig }, fluidConfig: { ...fluidConfig }, wavesConfig: { ...wavesConfig }, ribbonConfig: { ...ribbonConfig } } })
     } else if (dialogKey.startsWith('pattern-')) {
       setOriginalValues({ type: 'pattern', data: { ...tessellationConfig } })
     } else if (dialogKey.startsWith('effects-')) {
@@ -414,6 +417,7 @@ const ControlPanel = ({ layersContainerRef }) => {
         setBlobConfig(originalValues.data.blobConfig)
         setFluidConfig(originalValues.data.fluidConfig)
         setWavesConfig(originalValues.data.wavesConfig)
+        if (originalValues.data.ribbonConfig) setRibbonConfig(originalValues.data.ribbonConfig)
       } else if (originalValues.type === 'pattern') {
         setTessellationConfig(originalValues.data)
       } else if (originalValues.type === 'effects') {
@@ -436,6 +440,7 @@ const ControlPanel = ({ layersContainerRef }) => {
         setBlobConfig(originalValues.data.blobConfig)
         setFluidConfig(originalValues.data.fluidConfig)
         setWavesConfig(originalValues.data.wavesConfig)
+        if (originalValues.data.ribbonConfig) setRibbonConfig(originalValues.data.ribbonConfig)
       } else if (originalValues.type === 'pattern') {
         setTessellationConfig(originalValues.data)
       } else if (originalValues.type === 'effects') {
@@ -614,7 +619,8 @@ const ControlPanel = ({ layersContainerRef }) => {
         getLastCanvas('.simple-gradient-layer') ||
         getLastCanvas('.fluid-gradient-layer') ||
         getLastCanvas('.aurora-layer') ||
-        getLastCanvas('.waves-layer')
+        getLastCanvas('.waves-layer') ||
+        container.querySelector('.ribbon-layer canvas')
 
       if (backgroundCanvas) {
         const wrapper = container.querySelector('.gradient-effects-wrapper')
@@ -804,6 +810,7 @@ const ControlPanel = ({ layersContainerRef }) => {
       'fluid-animation': 'Animation Speed',
       'fluid-settings': 'Fluid Settings',
       'waves-settings': 'Wave Settings',
+      'ribbon-settings': 'Ribbon Settings',
       'pattern-icon': 'Icon Settings',
       'pattern-spacing': 'Spacing',
       'pattern-mouse': 'Mouse Influence',
@@ -1012,6 +1019,20 @@ const ControlPanel = ({ layersContainerRef }) => {
             <ControlGroup label={`Layers`}><NumberInput value={[wavesConfig.layers]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, layers: val })} min={2} max={8} step={1} showButtons /></ControlGroup>
             <ControlGroup label={`Blur`}><NumberInput value={[wavesConfig.blur]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, blur: val })} min={0} max={100} step={5} showButtons /></ControlGroup>
             <ControlGroup label={`Phase Offset`}><NumberInput value={[wavesConfig.phaseOffset ?? 0]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, phaseOffset: val })} min={0} max={2} step={0.1} showButtons /></ControlGroup>
+          </div>
+        )
+      case 'ribbon-settings':
+        return (
+          <div className="space-y-2">
+            <ControlGroup label={`Ribbon Count`}><NumberInput value={[ribbonConfig.ribbonCount]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, ribbonCount: val })} min={2} max={10} step={1} showButtons /></ControlGroup>
+            <ControlGroup label={`Speed`}><NumberInput value={[ribbonConfig.speed]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, speed: val })} min={0.1} max={2} step={0.1} showButtons /></ControlGroup>
+            <ControlGroup label={`Amplitude`}><NumberInput value={[ribbonConfig.amplitude]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, amplitude: val })} min={0.1} max={3} step={0.1} showButtons /></ControlGroup>
+            <ControlGroup label={`Spread`}><NumberInput value={[ribbonConfig.spread]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, spread: val })} min={0.5} max={3} step={0.1} showButtons /></ControlGroup>
+            <ControlGroup label={`Rotation (°)`}><NumberInput value={[ribbonConfig.rotation]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, rotation: val })} min={-90} max={90} step={5} showButtons /></ControlGroup>
+            <ControlGroup label={`Thickness`}><NumberInput value={[ribbonConfig.thickness]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, thickness: val })} min={0.1} max={1} step={0.05} showButtons /></ControlGroup>
+            <ControlGroup label={`Taper`}><NumberInput value={[ribbonConfig.taper]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, taper: val })} min={-1} max={1} step={0.1} showButtons /></ControlGroup>
+            <ControlGroup label={`Noise`}><NumberInput value={[ribbonConfig.noise]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, noise: val })} min={0} max={2} step={0.1} showButtons /></ControlGroup>
+            <ControlGroup label={`Opacity`}><NumberInput value={[ribbonConfig.opacity]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, opacity: val })} min={0.1} max={1} step={0.05} showButtons /></ControlGroup>
           </div>
         )
       case 'pattern-icon':
@@ -1478,6 +1499,7 @@ const ControlPanel = ({ layersContainerRef }) => {
                         <SelectItem value="aurora">Aurora</SelectItem>
                         <SelectItem value="fluid">Mesh</SelectItem>
                         <SelectItem value="waves">Waves</SelectItem>
+                        <SelectItem value="ribbon">Ribbon</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -1515,6 +1537,11 @@ const ControlPanel = ({ layersContainerRef }) => {
                     {backgroundType === 'waves' && (
                       <>
                         <SubsectionButton title="Settings" onClick={() => openDialog('waves-settings')} />
+                      </>
+                    )}
+                    {backgroundType === 'ribbon' && (
+                      <>
+                        <SubsectionButton title="Settings" onClick={() => openDialog('ribbon-settings')} />
                       </>
                     )}
                   </div>
@@ -1689,6 +1716,8 @@ const ControlPanel = ({ layersContainerRef }) => {
                     setFluidConfig={setFluidConfig}
                     wavesConfig={wavesConfig}
                     setWavesConfig={setWavesConfig}
+                    ribbonConfig={ribbonConfig}
+                    setRibbonConfig={setRibbonConfig}
                     parsedPalette={parsedPalette}
                   />
                 </TabsContent>

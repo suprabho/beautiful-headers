@@ -959,6 +959,131 @@ export const WavesControls = ({
 }
 
 // ============================================
+// RIBBON CONTROLS
+// ============================================
+const RibbonControls = ({ ribbonConfig, setRibbonConfig, parsedPalette }) => {
+  return (
+    <>
+      {/* Background Color */}
+      <ControlGroup label="Background Color">
+        <div className="flex items-center gap-2">
+          <PaletteColorPicker
+            value={ribbonConfig.backgroundColor}
+            onChange={(newColor) => setRibbonConfig({ ...ribbonConfig, backgroundColor: newColor })}
+            palette={parsedPalette}
+            className="w-10 h-9"
+          />
+          <Input
+            value={ribbonConfig.backgroundColor}
+            onChange={(e) => setRibbonConfig({ ...ribbonConfig, backgroundColor: e.target.value })}
+            className="h-9 font-mono text-xs flex-1"
+          />
+        </div>
+      </ControlGroup>
+
+      {/* Ribbon Count */}
+      <ControlGroup label="Ribbon Count">
+        <NumberInput
+          value={[ribbonConfig.ribbonCount]}
+          onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, ribbonCount: val })}
+          min={2}
+          max={10}
+          step={1}
+        />
+      </ControlGroup>
+
+      {/* Speed */}
+      <ControlGroup label="Speed">
+        <NumberInput
+          value={[ribbonConfig.speed]}
+          onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, speed: val })}
+          min={0.1}
+          max={2}
+          step={0.1}
+        />
+      </ControlGroup>
+
+      {/* Amplitude */}
+      <ControlGroup label="Amplitude">
+        <NumberInput
+          value={[ribbonConfig.amplitude]}
+          onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, amplitude: val })}
+          min={0.1}
+          max={3}
+          step={0.1}
+        />
+      </ControlGroup>
+
+      {/* Spread */}
+      <ControlGroup label="Spread">
+        <NumberInput
+          value={[ribbonConfig.spread]}
+          onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, spread: val })}
+          min={0.5}
+          max={3}
+          step={0.1}
+        />
+      </ControlGroup>
+
+      {/* Rotation */}
+      <ControlGroup label={`Rotation (\u00B0)`}>
+        <NumberInput
+          value={[ribbonConfig.rotation]}
+          onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, rotation: val })}
+          min={-90}
+          max={90}
+          step={5}
+        />
+      </ControlGroup>
+
+      {/* Thickness */}
+      <ControlGroup label="Thickness">
+        <NumberInput
+          value={[ribbonConfig.thickness]}
+          onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, thickness: val })}
+          min={0.1}
+          max={1}
+          step={0.05}
+        />
+      </ControlGroup>
+
+      {/* Taper */}
+      <ControlGroup label="Taper">
+        <NumberInput
+          value={[ribbonConfig.taper]}
+          onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, taper: val })}
+          min={-1}
+          max={1}
+          step={0.1}
+        />
+      </ControlGroup>
+
+      {/* Noise */}
+      <ControlGroup label="Noise">
+        <NumberInput
+          value={[ribbonConfig.noise]}
+          onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, noise: val })}
+          min={0}
+          max={2}
+          step={0.1}
+        />
+      </ControlGroup>
+
+      {/* Opacity */}
+      <ControlGroup label="Opacity">
+        <NumberInput
+          value={[ribbonConfig.opacity]}
+          onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, opacity: val })}
+          min={0.1}
+          max={1}
+          step={0.05}
+        />
+      </ControlGroup>
+    </>
+  )
+}
+
+// ============================================
 // MAIN GRADIENT PANEL - Restructured
 // ============================================
 export const GradientPanel = ({
@@ -974,6 +1099,8 @@ export const GradientPanel = ({
   setFluidConfig,
   wavesConfig,
   setWavesConfig,
+  ribbonConfig,
+  setRibbonConfig,
   parsedPalette,
 }) => {
   return (
@@ -1002,6 +1129,7 @@ export const GradientPanel = ({
             <SelectItem value="aurora">Aurora</SelectItem>
             <SelectItem value="fluid">Mesh</SelectItem>
             <SelectItem value="waves">Waves</SelectItem>
+            <SelectItem value="ribbon">Ribbon</SelectItem>
           </SelectContent>
         </Select>
       </ControlGroup>
@@ -1037,6 +1165,13 @@ export const GradientPanel = ({
         <WavesControls
           wavesConfig={wavesConfig}
           setWavesConfig={setWavesConfig}
+        />
+      )}
+      {backgroundType === 'ribbon' && (
+        <RibbonControls
+          ribbonConfig={ribbonConfig}
+          setRibbonConfig={setRibbonConfig}
+          parsedPalette={parsedPalette}
         />
       )}
     </div>

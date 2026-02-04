@@ -406,6 +406,25 @@ const useStore = create((set, get) => ({
     wavesConfig: { ...state.wavesConfig, ...updates }
   })),
 
+  // Ribbon config
+  ribbonConfig: {
+    useGradientColors: true,
+    backgroundColor: '#ffffff',
+    ribbonCount: 5,
+    speed: 0.5,
+    amplitude: 1.0,
+    spread: 1.0,
+    rotation: -30,
+    thickness: 0.3,
+    taper: 0,
+    noise: 0.5,
+    opacity: 0.85,
+  },
+  setRibbonConfig: (config) => set({ ribbonConfig: config }),
+  updateRibbonConfig: (updates) => set((state) => ({
+    ribbonConfig: { ...state.ribbonConfig, ...updates }
+  })),
+
   // Tessellation config
   tessellationConfig: {
     enabled: true,
@@ -530,6 +549,7 @@ const useStore = create((set, get) => ({
       blobConfig: state.blobConfig,
       fluidConfig: state.fluidConfig,
       wavesConfig: state.wavesConfig,
+      ribbonConfig: state.ribbonConfig,
       tessellationConfig: state.tessellationConfig,
       effectsConfig: state.effectsConfig,
       textSections: state.textSections,
@@ -550,6 +570,7 @@ const useStore = create((set, get) => ({
       ...(sceneData.blobConfig && { blobConfig: sceneData.blobConfig }),
       ...(sceneData.fluidConfig && { fluidConfig: sceneData.fluidConfig }),
       ...(sceneData.wavesConfig && { wavesConfig: sceneData.wavesConfig }),
+      ...(sceneData.ribbonConfig && { ribbonConfig: sceneData.ribbonConfig }),
       ...(sceneData.tessellationConfig && { tessellationConfig: sceneData.tessellationConfig }),
       ...(sceneData.effectsConfig && { effectsConfig: sceneData.effectsConfig }),
       ...(sceneData.textSections && { textSections: sceneData.textSections }),

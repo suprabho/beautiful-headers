@@ -4,6 +4,7 @@ import SimpleGradientLayer from './components/SimpleGradientLayer'
 import AuroraLayer from './components/AuroraLayer'
 import FluidGradientLayer from './components/FluidGradientLayer'
 import WavesLayer from './components/WavesLayer'
+import RibbonLayer from './components/RibbonLayer'
 import TessellationLayer from './components/TessellationLayer'
 import EffectsLayer from './components/EffectsLayer'
 import TextLayer from './components/TextLayer'
@@ -20,6 +21,7 @@ function App() {
   const auroraConfig = useStore((state) => state.auroraConfig)
   const fluidConfig = useStore((state) => state.fluidConfig)
   const wavesConfig = useStore((state) => state.wavesConfig)
+  const ribbonConfig = useStore((state) => state.ribbonConfig)
   const tessellationConfig = useStore((state) => state.tessellationConfig)
   const effectsConfig = useStore((state) => state.effectsConfig)
   const textSections = useStore((state) => state.textSections)
@@ -109,6 +111,9 @@ function App() {
           )}
           {backgroundType === 'waves' && (
             <WavesLayer config={wavesConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} />
+          )}
+          {backgroundType === 'ribbon' && (
+            <RibbonLayer config={ribbonConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} />
           )}
         </div>
 
