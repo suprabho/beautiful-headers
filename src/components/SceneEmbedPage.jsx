@@ -9,6 +9,7 @@ import SimpleGradientLayer from './SimpleGradientLayer'
 import AuroraLayer from './AuroraLayer'
 import FluidGradientLayer from './FluidGradientLayer'
 import WavesLayer from './WavesLayer'
+import RibbonLayer from './RibbonLayer'
 import TessellationLayer from './TessellationLayer'
 import EffectsLayer from './EffectsLayer'
 import TextLayer from './TextLayer'
@@ -126,6 +127,7 @@ function SceneEmbedPage() {
   const auroraConfig = sceneData.auroraConfig || {}
   const fluidConfig = sceneData.fluidConfig || {}
   const wavesConfig = sceneData.wavesConfig || {}
+  const ribbonConfig = sceneData.ribbonConfig || {}
   const tessellationConfig = sceneData.tessellationConfig || {}
   const effectsConfig = sceneData.effectsConfig || {}
   const textSections = sceneData.textSections || []
@@ -161,6 +163,9 @@ function SceneEmbedPage() {
             )}
             {backgroundType === 'waves' && (
               <WavesLayer config={wavesConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
+            )}
+            {backgroundType === 'ribbon' && (
+              <RibbonLayer config={ribbonConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
             )}
           </div>
 

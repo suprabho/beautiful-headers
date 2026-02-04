@@ -22,6 +22,33 @@ ControlGroup.displayName = 'ControlGroup'
 // Number input component
 export const NumberInput = memo(({ value, onValueChange, min = 0, max = 100, step = 1, className, showButtons = false }) => {
   const currentValue = value[0]
+  const [localValue, setLocalValue] = useState(String(currentValue))
+  const [isFocused, setIsFocused] = useState(false)
+
+  // Sync local value when parent value changes and input is not focused
+  const displayValue = isFocused ? localValue : String(currentValue)
+
+  const handleChange = useCallback((e) => {
+    const raw = e.target.value
+    setLocalValue(raw)
+    const val = parseFloat(raw)
+    if (!isNaN(val)) {
+      onValueChange([Math.max(min, Math.min(max, val))])
+    }
+  }, [min, max, onValueChange])
+
+  const handleFocus = useCallback((e) => {
+    setIsFocused(true)
+    setLocalValue(String(currentValue))
+  }, [currentValue])
+
+  const handleBlur = useCallback(() => {
+    setIsFocused(false)
+    const val = parseFloat(localValue)
+    if (isNaN(val) || localValue.trim() === '') {
+      onValueChange([Math.max(min, Math.min(max, currentValue))])
+    }
+  }, [localValue, currentValue, min, max, onValueChange])
 
   const handleDecrement = useCallback(() => {
     const newVal = Math.max(min, currentValue - step)
@@ -49,13 +76,10 @@ export const NumberInput = memo(({ value, onValueChange, min = 0, max = 100, ste
         </Button>
         <Input
           type="number"
-          value={currentValue}
-          onChange={(e) => {
-            const val = parseFloat(e.target.value)
-            if (!isNaN(val)) {
-              onValueChange([Math.max(min, Math.min(max, val))])
-            }
-          }}
+          value={displayValue}
+          onChange={handleChange}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           min={min}
           max={max}
           step={step}
@@ -77,13 +101,10 @@ export const NumberInput = memo(({ value, onValueChange, min = 0, max = 100, ste
   return (
     <Input
       type="number"
-      value={currentValue}
-      onChange={(e) => {
-        const val = parseFloat(e.target.value)
-        if (!isNaN(val)) {
-          onValueChange([Math.max(min, Math.min(max, val))])
-        }
-      }}
+      value={displayValue}
+      onChange={handleChange}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
       min={min}
       max={max}
       step={step}

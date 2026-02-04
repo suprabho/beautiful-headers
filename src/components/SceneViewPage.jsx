@@ -24,6 +24,7 @@ import SimpleGradientLayer from './SimpleGradientLayer'
 import AuroraLayer from './AuroraLayer'
 import FluidGradientLayer from './FluidGradientLayer'
 import WavesLayer from './WavesLayer'
+import RibbonLayer from './RibbonLayer'
 import TessellationLayer, { ICON_PATHS } from './TessellationLayer'
 import EffectsLayer from './EffectsLayer'
 import TextLayer from './TextLayer'
@@ -438,7 +439,8 @@ function SceneViewPage() {
         getLastCanvas('.simple-gradient-layer') ||
         getLastCanvas('.fluid-gradient-layer') ||
         getLastCanvas('.aurora-layer') ||
-        getLastCanvas('.waves-layer')
+        getLastCanvas('.waves-layer') ||
+        getLastCanvas('.ribbon-layer')
 
       if (backgroundCanvas) {
         const wrapper = container.querySelector('.gradient-effects-wrapper')
@@ -588,6 +590,7 @@ function SceneViewPage() {
   const auroraConfig = sceneData.auroraConfig || {}
   const fluidConfig = sceneData.fluidConfig || {}
   const wavesConfig = sceneData.wavesConfig || {}
+  const ribbonConfig = sceneData.ribbonConfig || {}
   const tessellationConfig = sceneData.tessellationConfig || {}
   const effectsConfig = sceneData.effectsConfig || {}
   const textSections = sceneData.textSections || []
@@ -623,6 +626,9 @@ function SceneViewPage() {
             )}
             {backgroundType === 'waves' && (
               <WavesLayer config={wavesConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
+            )}
+            {backgroundType === 'ribbon' && (
+              <RibbonLayer config={ribbonConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
             )}
           </div>
 
