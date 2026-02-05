@@ -6,7 +6,7 @@ import {
   Sliders, Palette, GridFour, Sparkle, TextT,
   Shuffle, Plus, Trash, CaretDown, CaretUp, CaretRight, DotsSixVertical, Camera,
   X, Image, Stack, CircleNotch, ArrowLeft, ArrowRight, Check, ArrowCounterClockwise, Upload, CaretCircleUp, CaretCircleDown,
-  Pause, Play, FloppyDisk, Images, PaintBrushBroad
+  Pause, Play, FloppyDisk, Images, PaintBrushBroad, ArrowsInSimple, CaretUpDown
 } from '@phosphor-icons/react'
 import { createScene, updateScene, checkCmsHealth, getProjects, updateProject } from '@/lib/scenesApi'
 import { generateSceneDescriptions } from '@/lib/gemini'
@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import useStore from '../store/useStore'
+import faviconImg from '@/assets/favicon.png'
 
 // Import control panel components
 import {
@@ -201,7 +202,7 @@ const ControlPanel = ({ layersContainerRef }) => {
       vignetteIntensity: Math.floor(randomInRange(0, 0.6)),
       // Randomize fluted glass - randomly enable/disable and randomize values
       flutedGlass: {
-        enabled: Math.random() > 0.8, // 50% chance to enable
+        enabled: Math.random() > 0.8, // 80% chance to enable
         segments: Math.floor(randomInRange(20, 200)),
         rotation: Math.floor(randomInRange(0, 180)),
         motionValue: Math.floor(randomInRange(0, 1)),
@@ -211,7 +212,42 @@ const ControlPanel = ({ layersContainerRef }) => {
         waveFrequency: Math.floor(randomInRange(0.5, 4)),
       },
     })
-  }, [colorPalette, gradientConfig, tessellationConfig, effectsConfig, textConfig, textSections, setBackgroundType, setGradientConfig, setTessellationConfig, setEffectsConfig, setTextConfig, setTextSections, setTextGap])
+
+    // Randomize ribbon config
+    setRibbonConfig({
+      ...ribbonConfig,
+      ribbonCount: Math.floor(randomInRange(2, 10)),
+      speed: Math.round(randomInRange(0.1, 2) * 10) / 10,
+      amplitude: Math.round(randomInRange(0.1, 3) * 10) / 10,
+      spread: Math.round(randomInRange(0.5, 3) * 10) / 10,
+      rotation: Math.floor(randomInRange(-90, 90) / 5) * 5,
+      thickness: Math.round(randomInRange(0.1, 1) * 20) / 20,
+      taper: Math.round(randomInRange(-1, 1) * 10) / 10,
+      noise: Math.round(randomInRange(0, 2) * 10) / 10,
+      opacity: Math.round(randomInRange(0.1, 1) * 20) / 20,
+    })
+
+    // Randomize aurora config
+    setAuroraConfig({
+      ...auroraConfig,
+      minWidth: Math.floor(randomInRange(1, 100) / 5) * 5,
+      maxWidth: Math.floor(randomInRange(1, 100) / 5) * 5,
+      minHeight: Math.floor(randomInRange(50, 1000) / 50) * 50,
+      maxHeight: Math.floor(randomInRange(50, 1000) / 50) * 50,
+      minTTL: Math.floor(randomInRange(10, 500) / 10) * 10,
+      maxTTL: Math.floor(randomInRange(10, 500) / 10) * 10,
+      blurAmount: Math.floor(randomInRange(0, 50)),
+      lineCount: Math.floor(randomInRange(0, 500) / 10) * 10,
+    })
+
+    // Randomize fluid/mesh config
+    setFluidConfig({
+      ...fluidConfig,
+      speed: Math.round(randomInRange(0.1, 3) * 10) / 10,
+      intensity: Math.round(randomInRange(0.1, 10) * 10) / 10,
+      blurAmount: Math.floor(randomInRange(0, 100)),
+    })
+  }, [colorPalette, gradientConfig, tessellationConfig, effectsConfig, textConfig, textSections, ribbonConfig, auroraConfig, fluidConfig, setBackgroundType, setGradientConfig, setTessellationConfig, setEffectsConfig, setTextConfig, setTextSections, setTextGap, setRibbonConfig, setAuroraConfig, setFluidConfig])
 
   useEffect(() => {
     const checkMobile = () => {
@@ -1662,10 +1698,14 @@ const ControlPanel = ({ layersContainerRef }) => {
           onMouseDown={handleMouseDown}
           style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
         >
-          <div className="text-muted-foreground"><DotsSixVertical size={16} weight="bold" /></div>
+
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsPaused(!isPaused)} title={isPaused ? "Resume Animations" : "Pause Animations"}>
-              {isPaused ? <Play size={16} weight="fill" /> : <Pause size={16} />}
+            <Button variant="ghost" size="sm" className="h-8 gap-1" onClick={() => setIsCollapsed(!isCollapsed)}>
+              {isCollapsed ? <CaretUpDown size={12} /> : <ArrowsInSimple size={12} />}
+              <img src={faviconImg} alt="Logo" className="h-4 w-4 rounded-[4px]" />
+            </Button>
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate('/scenes')} title="Saved Scenes">
+              <Images size={16} />
             </Button>
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setShowPaletteDialog(true)} title={colorPalette ? "Edit Palette" : "Upload Palette"}>
               <Palette size={16} weight={colorPalette ? 'fill' : 'regular'} />
@@ -1673,20 +1713,19 @@ const ControlPanel = ({ layersContainerRef }) => {
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={randomizeGradient} disabled={isCapturing} title="Shuffle Gradient">
               <Shuffle size={16} weight="regular" />
             </Button>
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsPaused(!isPaused)} title={isPaused ? "Resume Animations" : "Pause Animations"}>
+              {isPaused ? <Play size={16} weight="fill" /> : <Pause size={16} />}
+            </Button>
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setShowSaveDialog(true)} title="Save Scene">
               <FloppyDisk size={16} />
             </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate('/scenes')} title="Saved Scenes">
-              <Images size={16} />
-            </Button>
+
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setShowCaptureModal(true)} disabled={isCapturing}>
               <Camera size={16} weight={isCapturing ? 'fill' : 'regular'} />
             </Button>
-            <Button variant="ghost" size="sm" className="h-8 gap-1" onClick={() => setIsCollapsed(!isCollapsed)}>
-              <Sliders size={16} />
-              {isCollapsed ? <CaretUp size={12} /> : <CaretDown size={12} />}
-            </Button>
+
           </div>
+          <div className="text-muted-foreground"><DotsSixVertical size={16} weight="bold" /></div>
         </div>
 
         {!isCollapsed && (
