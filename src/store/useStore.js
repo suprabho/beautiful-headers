@@ -437,6 +437,7 @@ const useStore = create((set, get) => ({
     dotSize: 3,
     spread: 0.3,
     centerY: 0.85,
+    lineOpacity: 0.8,
   },
   setDandelionConfig: (config) => set({ dandelionConfig: config }),
   updateDandelionConfig: (updates) => set((state) => ({
