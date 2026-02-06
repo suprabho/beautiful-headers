@@ -6,7 +6,7 @@ import {
   Sliders, Palette, GridFour, Sparkle, TextT,
   Shuffle, Plus, Trash, CaretDown, CaretUp, CaretRight, DotsSixVertical, Camera,
   X, Image, Stack, CircleNotch, ArrowLeft, ArrowRight, Check, ArrowCounterClockwise, Upload, CaretCircleUp, CaretCircleDown,
-  Pause, Play, FloppyDisk, Images, PaintBrushBroad, ArrowsInSimple, CaretUpDown
+  Pause, Play, FloppyDisk, Images, PaintBrushBroad, ArrowsInSimple, ArrowsOutSimple
 } from '@phosphor-icons/react'
 import { createScene, updateScene, checkCmsHealth, getProjects, updateProject } from '@/lib/scenesApi'
 import { generateSceneDescriptions } from '@/lib/gemini'
@@ -60,6 +60,10 @@ const ControlPanel = ({ layersContainerRef }) => {
   const setWavesConfig = useStore((state) => state.setWavesConfig)
   const ribbonConfig = useStore((state) => state.ribbonConfig)
   const setRibbonConfig = useStore((state) => state.setRibbonConfig)
+  const dandelionConfig = useStore((state) => state.dandelionConfig)
+  const setDandelionConfig = useStore((state) => state.setDandelionConfig)
+  const particleRingConfig = useStore((state) => state.particleRingConfig)
+  const setParticleRingConfig = useStore((state) => state.setParticleRingConfig)
   const tessellationConfig = useStore((state) => state.tessellationConfig)
   const setTessellationConfig = useStore((state) => state.setTessellationConfig)
   const effectsConfig = useStore((state) => state.effectsConfig)
@@ -106,7 +110,7 @@ const ControlPanel = ({ layersContainerRef }) => {
     const pickOne = (arr) => arr[Math.floor(Math.random() * arr.length)]
 
     // Randomize background type
-    const backgroundTypes = ['simple', 'liquid', 'aurora', 'fluid', 'waves', 'ribbon']
+    const backgroundTypes = ['simple', 'liquid', 'aurora', 'fluid', 'waves', 'ribbon', 'dandelion', 'particleRing']
     setBackgroundType(pickOne(backgroundTypes))
 
     let colors
@@ -225,6 +229,31 @@ const ControlPanel = ({ layersContainerRef }) => {
       taper: Math.round(randomInRange(-1, 1) * 10) / 10,
       noise: Math.round(randomInRange(0, 2) * 10) / 10,
       opacity: Math.round(randomInRange(0.1, 1) * 20) / 20,
+    })
+
+    // Randomize dandelion config
+    setDandelionConfig({
+      ...dandelionConfig,
+      lineCount: Math.floor(randomInRange(60, 200)),
+      radiusMin: Math.round(randomInRange(0.05, 0.2) * 100) / 100,
+      radiusMax: Math.round(randomInRange(0.3, 0.6) * 100) / 100,
+      speed: Math.round(randomInRange(0.1, 1) * 10) / 10,
+      thickness: Math.round(randomInRange(0.5, 3) * 10) / 10,
+      dotSize: Math.round(randomInRange(1, 6) * 10) / 10,
+      spread: Math.round(randomInRange(0.1, 0.5) * 100) / 100,
+      centerY: Math.round(randomInRange(0.7, 0.95) * 100) / 100,
+    })
+
+    // Randomize particleRing config
+    setParticleRingConfig({
+      ...particleRingConfig,
+      particleCount: Math.floor(randomInRange(300, 1500)),
+      ringRadius: Math.round(randomInRange(0.2, 0.5) * 100) / 100,
+      ringWidth: Math.round(randomInRange(0.05, 0.3) * 100) / 100,
+      speed: Math.round(randomInRange(0.1, 1) * 10) / 10,
+      particleSize: Math.round(randomInRange(1, 6) * 10) / 10,
+      dispersion: Math.round(randomInRange(0.1, 0.5) * 100) / 100,
+      rotationSpeed: Math.round(randomInRange(0.05, 0.5) * 100) / 100,
     })
 
     // Randomize aurora config
@@ -847,6 +876,8 @@ const ControlPanel = ({ layersContainerRef }) => {
       'fluid-settings': 'Fluid Settings',
       'waves-settings': 'Wave Settings',
       'ribbon-settings': 'Ribbon Settings',
+      'dandelion-settings': 'Dandelion Settings',
+      'particleRing-settings': 'Particle Ring Settings',
       'pattern-icon': 'Icon Settings',
       'pattern-spacing': 'Spacing',
       'pattern-mouse': 'Mouse Influence',
@@ -1060,6 +1091,12 @@ const ControlPanel = ({ layersContainerRef }) => {
       case 'ribbon-settings':
         return (
           <div className="space-y-2">
+            <ControlGroup label="Background Color">
+              <div className="flex items-center gap-2">
+                <PaletteColorPicker value={ribbonConfig.backgroundColor} onChange={(newColor) => setRibbonConfig({ ...ribbonConfig, backgroundColor: newColor })} palette={parsedPalette} className="w-10 h-10" />
+                <Input value={ribbonConfig.backgroundColor} onChange={(e) => setRibbonConfig({ ...ribbonConfig, backgroundColor: e.target.value })} className="h-9 font-mono text-xs flex-1" />
+              </div>
+            </ControlGroup>
             <ControlGroup label={`Ribbon Count`}><NumberInput value={[ribbonConfig.ribbonCount]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, ribbonCount: val })} min={2} max={10} step={1} showButtons /></ControlGroup>
             <ControlGroup label={`Speed`}><NumberInput value={[ribbonConfig.speed]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, speed: val })} min={0.1} max={2} step={0.1} showButtons /></ControlGroup>
             <ControlGroup label={`Amplitude`}><NumberInput value={[ribbonConfig.amplitude]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, amplitude: val })} min={0.1} max={3} step={0.1} showButtons /></ControlGroup>
@@ -1069,6 +1106,43 @@ const ControlPanel = ({ layersContainerRef }) => {
             <ControlGroup label={`Taper`}><NumberInput value={[ribbonConfig.taper]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, taper: val })} min={-1} max={1} step={0.1} showButtons /></ControlGroup>
             <ControlGroup label={`Noise`}><NumberInput value={[ribbonConfig.noise]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, noise: val })} min={0} max={2} step={0.1} showButtons /></ControlGroup>
             <ControlGroup label={`Opacity`}><NumberInput value={[ribbonConfig.opacity]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, opacity: val })} min={0.1} max={1} step={0.05} showButtons /></ControlGroup>
+          </div>
+        )
+      case 'dandelion-settings':
+        return (
+          <div className="space-y-2">
+            <ControlGroup label="Background Color">
+              <div className="flex items-center gap-2">
+                <PaletteColorPicker value={dandelionConfig.backgroundColor} onChange={(newColor) => setDandelionConfig({ ...dandelionConfig, backgroundColor: newColor })} palette={parsedPalette} className="w-10 h-10" />
+                <Input value={dandelionConfig.backgroundColor} onChange={(e) => setDandelionConfig({ ...dandelionConfig, backgroundColor: e.target.value })} className="h-9 font-mono text-xs flex-1" />
+              </div>
+            </ControlGroup>
+            <ControlGroup label={`Line Count`}><NumberInput value={[dandelionConfig.lineCount]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, lineCount: val })} min={20} max={300} step={10} showButtons /></ControlGroup>
+            <ControlGroup label={`Min Radius`}><NumberInput value={[dandelionConfig.radiusMin]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, radiusMin: val })} min={0.05} max={0.5} step={0.05} showButtons /></ControlGroup>
+            <ControlGroup label={`Max Radius`}><NumberInput value={[dandelionConfig.radiusMax]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, radiusMax: val })} min={0.2} max={0.8} step={0.05} showButtons /></ControlGroup>
+            <ControlGroup label={`Sway Speed`}><NumberInput value={[dandelionConfig.speed]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, speed: val })} min={0} max={2} step={0.1} showButtons /></ControlGroup>
+            <ControlGroup label={`Thickness`}><NumberInput value={[dandelionConfig.thickness]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, thickness: val })} min={0.5} max={5} step={0.5} showButtons /></ControlGroup>
+            <ControlGroup label={`Dot Size`}><NumberInput value={[dandelionConfig.dotSize]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, dotSize: val })} min={1} max={8} step={0.5} showButtons /></ControlGroup>
+            <ControlGroup label={`Spread`}><NumberInput value={[dandelionConfig.spread]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, spread: val })} min={0.1} max={1} step={0.1} showButtons /></ControlGroup>
+            <ControlGroup label={`Center Y`}><NumberInput value={[dandelionConfig.centerY]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, centerY: val })} min={0.5} max={1.2} step={0.05} showButtons /></ControlGroup>
+          </div>
+        )
+      case 'particleRing-settings':
+        return (
+          <div className="space-y-2">
+            <ControlGroup label="Background Color">
+              <div className="flex items-center gap-2">
+                <PaletteColorPicker value={particleRingConfig.backgroundColor} onChange={(newColor) => setParticleRingConfig({ ...particleRingConfig, backgroundColor: newColor })} palette={parsedPalette} className="w-10 h-10" />
+                <Input value={particleRingConfig.backgroundColor} onChange={(e) => setParticleRingConfig({ ...particleRingConfig, backgroundColor: e.target.value })} className="h-9 font-mono text-xs flex-1" />
+              </div>
+            </ControlGroup>
+            <ControlGroup label={`Particle Count`}><NumberInput value={[particleRingConfig.particleCount]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, particleCount: val })} min={100} max={2000} step={50} showButtons /></ControlGroup>
+            <ControlGroup label={`Ring Radius`}><NumberInput value={[particleRingConfig.ringRadius]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, ringRadius: val })} min={0.1} max={0.8} step={0.05} showButtons /></ControlGroup>
+            <ControlGroup label={`Ring Width`}><NumberInput value={[particleRingConfig.ringWidth]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, ringWidth: val })} min={0.05} max={0.4} step={0.05} showButtons /></ControlGroup>
+            <ControlGroup label={`Pulse Speed`}><NumberInput value={[particleRingConfig.speed]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, speed: val })} min={0} max={2} step={0.1} showButtons /></ControlGroup>
+            <ControlGroup label={`Particle Size`}><NumberInput value={[particleRingConfig.particleSize]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, particleSize: val })} min={1} max={8} step={0.5} showButtons /></ControlGroup>
+            <ControlGroup label={`Dispersion`}><NumberInput value={[particleRingConfig.dispersion]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, dispersion: val })} min={0} max={0.5} step={0.05} showButtons /></ControlGroup>
+            <ControlGroup label={`Rotation Speed`}><NumberInput value={[particleRingConfig.rotationSpeed]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, rotationSpeed: val })} min={0} max={1} step={0.05} showButtons /></ControlGroup>
           </div>
         )
       case 'pattern-icon':
@@ -1536,6 +1610,8 @@ const ControlPanel = ({ layersContainerRef }) => {
                         <SelectItem value="fluid">Mesh</SelectItem>
                         <SelectItem value="waves">Waves</SelectItem>
                         <SelectItem value="ribbon">Ribbon</SelectItem>
+                        <SelectItem value="dandelion">Dandelion</SelectItem>
+                        <SelectItem value="particleRing">Particle Ring</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -1578,6 +1654,16 @@ const ControlPanel = ({ layersContainerRef }) => {
                     {backgroundType === 'ribbon' && (
                       <>
                         <SubsectionButton title="Settings" onClick={() => openDialog('ribbon-settings')} />
+                      </>
+                    )}
+                    {backgroundType === 'dandelion' && (
+                      <>
+                        <SubsectionButton title="Settings" onClick={() => openDialog('dandelion-settings')} />
+                      </>
+                    )}
+                    {backgroundType === 'particleRing' && (
+                      <>
+                        <SubsectionButton title="Settings" onClick={() => openDialog('particleRing-settings')} />
                       </>
                     )}
                   </div>
@@ -1700,8 +1786,8 @@ const ControlPanel = ({ layersContainerRef }) => {
         >
 
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" className="h-8 gap-1" onClick={() => setIsCollapsed(!isCollapsed)}>
-              {isCollapsed ? <CaretUpDown size={12} /> : <ArrowsInSimple size={12} />}
+            <Button variant="outline" size="sm" className="h-8 gap-1" onClick={() => setIsCollapsed(!isCollapsed)}>
+              {isCollapsed ? <ArrowsOutSimple size={12} /> : <ArrowsInSimple size={12} />}
               <img src={faviconImg} alt="Logo" className="h-4 w-4 rounded-[4px]" />
             </Button>
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate('/scenes')} title="Saved Scenes">
@@ -1757,6 +1843,10 @@ const ControlPanel = ({ layersContainerRef }) => {
                     setWavesConfig={setWavesConfig}
                     ribbonConfig={ribbonConfig}
                     setRibbonConfig={setRibbonConfig}
+                    dandelionConfig={dandelionConfig}
+                    setDandelionConfig={setDandelionConfig}
+                    particleRingConfig={particleRingConfig}
+                    setParticleRingConfig={setParticleRingConfig}
                     parsedPalette={parsedPalette}
                   />
                 </TabsContent>

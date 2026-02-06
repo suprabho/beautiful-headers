@@ -10,6 +10,8 @@ import AuroraLayer from './AuroraLayer'
 import FluidGradientLayer from './FluidGradientLayer'
 import WavesLayer from './WavesLayer'
 import RibbonLayer from './RibbonLayer'
+import DandelionLayer from './DandelionLayer'
+import ParticleRingLayer from './ParticleRingLayer'
 import TessellationLayer from './TessellationLayer'
 import EffectsLayer from './EffectsLayer'
 import TextLayer from './TextLayer'
@@ -128,6 +130,8 @@ function SceneEmbedPage() {
   const fluidConfig = sceneData.fluidConfig || {}
   const wavesConfig = sceneData.wavesConfig || {}
   const ribbonConfig = sceneData.ribbonConfig || {}
+  const dandelionConfig = sceneData.dandelionConfig || {}
+  const particleRingConfig = sceneData.particleRingConfig || {}
   const tessellationConfig = sceneData.tessellationConfig || {}
   const effectsConfig = sceneData.effectsConfig || {}
   const textSections = sceneData.textSections || []
@@ -166,6 +170,12 @@ function SceneEmbedPage() {
             )}
             {backgroundType === 'ribbon' && (
               <RibbonLayer config={ribbonConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
+            )}
+            {backgroundType === 'dandelion' && (
+              <DandelionLayer config={dandelionConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
+            )}
+            {backgroundType === 'particleRing' && (
+              <ParticleRingLayer config={particleRingConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
             )}
           </div>
 

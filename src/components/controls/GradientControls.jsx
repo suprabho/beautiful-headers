@@ -1084,6 +1084,223 @@ const RibbonControls = ({ ribbonConfig, setRibbonConfig, parsedPalette }) => {
 }
 
 // ============================================
+// DANDELION CONTROLS
+// ============================================
+export const DandelionControls = ({ dandelionConfig, setDandelionConfig, parsedPalette }) => {
+  return (
+    <>
+      {/* Background Color */}
+      <ControlGroup label="Background Color">
+        <div className="flex items-center gap-2">
+          <PaletteColorPicker
+            value={dandelionConfig.backgroundColor}
+            onChange={(newColor) => setDandelionConfig({ ...dandelionConfig, backgroundColor: newColor })}
+            palette={parsedPalette}
+            className="w-10 h-9"
+          />
+          <Input
+            value={dandelionConfig.backgroundColor}
+            onChange={(e) => setDandelionConfig({ ...dandelionConfig, backgroundColor: e.target.value })}
+            className="h-9 font-mono text-xs flex-1"
+          />
+        </div>
+      </ControlGroup>
+
+      {/* Line Count */}
+      <ControlGroup label="Line Count">
+        <NumberInput
+          value={[dandelionConfig.lineCount]}
+          onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, lineCount: val })}
+          min={20}
+          max={300}
+          step={10}
+        />
+      </ControlGroup>
+
+      {/* Radius Range */}
+      <div className="grid grid-cols-2 gap-4">
+        <ControlGroup label="Min Radius">
+          <NumberInput
+            value={[dandelionConfig.radiusMin]}
+            onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, radiusMin: val })}
+            min={0.05}
+            max={0.5}
+            step={0.05}
+          />
+        </ControlGroup>
+        <ControlGroup label="Max Radius">
+          <NumberInput
+            value={[dandelionConfig.radiusMax]}
+            onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, radiusMax: val })}
+            min={0.2}
+            max={0.8}
+            step={0.05}
+          />
+        </ControlGroup>
+      </div>
+
+      {/* Speed */}
+      <ControlGroup label="Sway Speed">
+        <NumberInput
+          value={[dandelionConfig.speed]}
+          onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, speed: val })}
+          min={0}
+          max={2}
+          step={0.1}
+        />
+      </ControlGroup>
+
+      {/* Thickness */}
+      <ControlGroup label="Line Thickness">
+        <NumberInput
+          value={[dandelionConfig.thickness]}
+          onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, thickness: val })}
+          min={0.5}
+          max={5}
+          step={0.5}
+        />
+      </ControlGroup>
+
+      {/* Dot Size */}
+      <ControlGroup label="Dot Size">
+        <NumberInput
+          value={[dandelionConfig.dotSize]}
+          onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, dotSize: val })}
+          min={1}
+          max={8}
+          step={0.5}
+        />
+      </ControlGroup>
+
+      {/* Spread */}
+      <ControlGroup label="Spread Angle">
+        <NumberInput
+          value={[dandelionConfig.spread]}
+          onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, spread: val })}
+          min={0.1}
+          max={1}
+          step={0.1}
+        />
+      </ControlGroup>
+
+      {/* Center Y Position */}
+      <ControlGroup label="Center Y Position">
+        <NumberInput
+          value={[dandelionConfig.centerY]}
+          onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, centerY: val })}
+          min={0.5}
+          max={1.2}
+          step={0.05}
+        />
+      </ControlGroup>
+    </>
+  )
+}
+
+// ============================================
+// PARTICLE RING CONTROLS
+// ============================================
+export const ParticleRingControls = ({ particleRingConfig, setParticleRingConfig, parsedPalette }) => {
+  return (
+    <>
+      {/* Background Color */}
+      <ControlGroup label="Background Color">
+        <div className="flex items-center gap-2">
+          <PaletteColorPicker
+            value={particleRingConfig.backgroundColor}
+            onChange={(newColor) => setParticleRingConfig({ ...particleRingConfig, backgroundColor: newColor })}
+            palette={parsedPalette}
+            className="w-10 h-9"
+          />
+          <Input
+            value={particleRingConfig.backgroundColor}
+            onChange={(e) => setParticleRingConfig({ ...particleRingConfig, backgroundColor: e.target.value })}
+            className="h-9 font-mono text-xs flex-1"
+          />
+        </div>
+      </ControlGroup>
+
+      {/* Particle Count */}
+      <ControlGroup label="Particle Count">
+        <NumberInput
+          value={[particleRingConfig.particleCount]}
+          onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, particleCount: val })}
+          min={100}
+          max={2000}
+          step={50}
+        />
+      </ControlGroup>
+
+      {/* Ring Radius */}
+      <ControlGroup label="Ring Radius">
+        <NumberInput
+          value={[particleRingConfig.ringRadius]}
+          onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, ringRadius: val })}
+          min={0.1}
+          max={0.8}
+          step={0.05}
+        />
+      </ControlGroup>
+
+      {/* Ring Width */}
+      <ControlGroup label="Ring Width">
+        <NumberInput
+          value={[particleRingConfig.ringWidth]}
+          onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, ringWidth: val })}
+          min={0.05}
+          max={0.4}
+          step={0.05}
+        />
+      </ControlGroup>
+
+      {/* Animation Speed */}
+      <ControlGroup label="Pulse Speed">
+        <NumberInput
+          value={[particleRingConfig.speed]}
+          onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, speed: val })}
+          min={0}
+          max={2}
+          step={0.1}
+        />
+      </ControlGroup>
+
+      {/* Particle Size */}
+      <ControlGroup label="Particle Size">
+        <NumberInput
+          value={[particleRingConfig.particleSize]}
+          onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, particleSize: val })}
+          min={1}
+          max={8}
+          step={0.5}
+        />
+      </ControlGroup>
+
+      {/* Dispersion */}
+      <ControlGroup label="Dispersion">
+        <NumberInput
+          value={[particleRingConfig.dispersion]}
+          onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, dispersion: val })}
+          min={0}
+          max={0.5}
+          step={0.05}
+        />
+      </ControlGroup>
+
+      {/* Rotation Speed */}
+      <ControlGroup label="Rotation Speed">
+        <NumberInput
+          value={[particleRingConfig.rotationSpeed]}
+          onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, rotationSpeed: val })}
+          min={0}
+          max={1}
+          step={0.05}
+        />
+      </ControlGroup>
+    </>
+  )
+}
+
+// ============================================
 // MAIN GRADIENT PANEL - Restructured
 // ============================================
 export const GradientPanel = ({
@@ -1101,6 +1318,10 @@ export const GradientPanel = ({
   setWavesConfig,
   ribbonConfig,
   setRibbonConfig,
+  dandelionConfig,
+  setDandelionConfig,
+  particleRingConfig,
+  setParticleRingConfig,
   parsedPalette,
 }) => {
   return (
@@ -1130,6 +1351,8 @@ export const GradientPanel = ({
             <SelectItem value="fluid">Mesh</SelectItem>
             <SelectItem value="waves">Waves</SelectItem>
             <SelectItem value="ribbon">Ribbon</SelectItem>
+            <SelectItem value="dandelion">Dandelion</SelectItem>
+            <SelectItem value="particleRing">Particle Ring</SelectItem>
           </SelectContent>
         </Select>
       </ControlGroup>
@@ -1171,6 +1394,20 @@ export const GradientPanel = ({
         <RibbonControls
           ribbonConfig={ribbonConfig}
           setRibbonConfig={setRibbonConfig}
+          parsedPalette={parsedPalette}
+        />
+      )}
+      {backgroundType === 'dandelion' && (
+        <DandelionControls
+          dandelionConfig={dandelionConfig}
+          setDandelionConfig={setDandelionConfig}
+          parsedPalette={parsedPalette}
+        />
+      )}
+      {backgroundType === 'particleRing' && (
+        <ParticleRingControls
+          particleRingConfig={particleRingConfig}
+          setParticleRingConfig={setParticleRingConfig}
           parsedPalette={parsedPalette}
         />
       )}

@@ -310,12 +310,12 @@ const useStore = create((set, get) => ({
   setIsPaused: (paused) => set({ isPaused: paused }),
 
   // Background type
-  backgroundType: 'liquid',
+  backgroundType: 'mesh',
   setBackgroundType: (type) => set({ backgroundType: type }),
 
   // Gradient config
   gradientConfig: {
-    colors: ['#ff006e', '#8338ec', '#3a86ff', '#06d6a0'],
+    colors: ['#b80038', '#fdf7f2', '#004d9c', '#00999a'],
     numColors: 4,
     type: 'radial',
     startPos: { x: 0, y: 0 },
@@ -413,16 +413,51 @@ const useStore = create((set, get) => ({
     ribbonCount: 5,
     speed: 0.5,
     amplitude: 1.0,
-    spread: 1.0,
+    spread: 0.5,
     rotation: -30,
-    thickness: 0.3,
-    taper: 0,
+    thickness: 1,
+    taper: -0.3,
     noise: 0.5,
     opacity: 0.85,
   },
   setRibbonConfig: (config) => set({ ribbonConfig: config }),
   updateRibbonConfig: (updates) => set((state) => ({
     ribbonConfig: { ...state.ribbonConfig, ...updates }
+  })),
+
+  // Dandelion config
+  dandelionConfig: {
+    useGradientColors: true,
+    backgroundColor: '#e8f4fc',
+    lineCount: 120,
+    radiusMin: 0.1,
+    radiusMax: 0.45,
+    speed: 0.3,
+    thickness: 1.5,
+    dotSize: 3,
+    spread: 0.3,
+    centerY: 0.85,
+  },
+  setDandelionConfig: (config) => set({ dandelionConfig: config }),
+  updateDandelionConfig: (updates) => set((state) => ({
+    dandelionConfig: { ...state.dandelionConfig, ...updates }
+  })),
+
+  // ParticleRing config
+  particleRingConfig: {
+    useGradientColors: true,
+    backgroundColor: '#fef6f9',
+    particleCount: 800,
+    ringRadius: 0.35,
+    ringWidth: 0.15,
+    speed: 0.5,
+    particleSize: 3,
+    dispersion: 0.3,
+    rotationSpeed: 0.2,
+  },
+  setParticleRingConfig: (config) => set({ particleRingConfig: config }),
+  updateParticleRingConfig: (updates) => set((state) => ({
+    particleRingConfig: { ...state.particleRingConfig, ...updates }
   })),
 
   // Tessellation config
@@ -550,6 +585,8 @@ const useStore = create((set, get) => ({
       fluidConfig: state.fluidConfig,
       wavesConfig: state.wavesConfig,
       ribbonConfig: state.ribbonConfig,
+      dandelionConfig: state.dandelionConfig,
+      particleRingConfig: state.particleRingConfig,
       tessellationConfig: state.tessellationConfig,
       effectsConfig: state.effectsConfig,
       textSections: state.textSections,
@@ -571,6 +608,8 @@ const useStore = create((set, get) => ({
       ...(sceneData.fluidConfig && { fluidConfig: sceneData.fluidConfig }),
       ...(sceneData.wavesConfig && { wavesConfig: sceneData.wavesConfig }),
       ...(sceneData.ribbonConfig && { ribbonConfig: sceneData.ribbonConfig }),
+      ...(sceneData.dandelionConfig && { dandelionConfig: sceneData.dandelionConfig }),
+      ...(sceneData.particleRingConfig && { particleRingConfig: sceneData.particleRingConfig }),
       ...(sceneData.tessellationConfig && { tessellationConfig: sceneData.tessellationConfig }),
       ...(sceneData.effectsConfig && { effectsConfig: sceneData.effectsConfig }),
       ...(sceneData.textSections && { textSections: sceneData.textSections }),

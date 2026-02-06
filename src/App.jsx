@@ -1,15 +1,18 @@
-import { useCallback, useRef } from 'react'
+import { useCallback, useRef, useEffect } from 'react'
 import GradientLayer from './components/GradientLayer'
 import SimpleGradientLayer from './components/SimpleGradientLayer'
 import AuroraLayer from './components/AuroraLayer'
 import FluidGradientLayer from './components/FluidGradientLayer'
 import WavesLayer from './components/WavesLayer'
 import RibbonLayer from './components/RibbonLayer'
+import DandelionLayer from './components/DandelionLayer'
+import ParticleRingLayer from './components/ParticleRingLayer'
 import TessellationLayer from './components/TessellationLayer'
 import EffectsLayer from './components/EffectsLayer'
 import TextLayer from './components/TextLayer'
 import ControlPanel from './components/ControlPanel'
 import useStore from './store/useStore'
+import { getScenes, getScene } from './lib/scenesApi'
 import './App.css'
 
 function App() {
@@ -22,14 +25,40 @@ function App() {
   const fluidConfig = useStore((state) => state.fluidConfig)
   const wavesConfig = useStore((state) => state.wavesConfig)
   const ribbonConfig = useStore((state) => state.ribbonConfig)
+  const dandelionConfig = useStore((state) => state.dandelionConfig)
+  const particleRingConfig = useStore((state) => state.particleRingConfig)
   const tessellationConfig = useStore((state) => state.tessellationConfig)
   const effectsConfig = useStore((state) => state.effectsConfig)
   const textSections = useStore((state) => state.textSections)
   const textGap = useStore((state) => state.textGap)
   const textConfig = useStore((state) => state.textConfig)
   const isPaused = useStore((state) => state.isPaused)
+  const loadSceneData = useStore((state) => state.loadSceneData)
+  const currentSceneId = useStore((state) => state.currentSceneId)
 
   const layersContainerRef = useRef(null)
+
+  // Load a random saved scene on initial mount (only if no scene already loaded)
+  useEffect(() => {
+    // Skip if a scene was already loaded (e.g., from "Open in Editor")
+    if (currentSceneId) return
+
+    const loadRandomScene = async () => {
+      try {
+        const { docs } = await getScenes({ limit: 50 })
+        if (docs.length > 0) {
+          const randomIndex = Math.floor(Math.random() * docs.length)
+          const scene = await getScene(docs[randomIndex].id)
+          if (scene?.scene_data) {
+            loadSceneData(scene.scene_data)
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to load random scene:', err)
+      }
+    }
+    loadRandomScene()
+  }, [loadSceneData, currentSceneId])
 
   // Ref to track if RAF is pending for mouse throttling (PERFORMANCE OPTIMIZATION)
   const rafPendingRef = useRef(false)
@@ -114,6 +143,12 @@ function App() {
           )}
           {backgroundType === 'ribbon' && (
             <RibbonLayer config={ribbonConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} />
+          )}
+          {backgroundType === 'dandelion' && (
+            <DandelionLayer config={dandelionConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} />
+          )}
+          {backgroundType === 'particleRing' && (
+            <ParticleRingLayer config={particleRingConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} />
           )}
         </div>
 
