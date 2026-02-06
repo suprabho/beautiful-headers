@@ -90,10 +90,13 @@ const DandelionLayer = memo(({ config, paletteColors = [], effectsConfig, isPaus
     const dpr = Math.min(window.devicePixelRatio || 1, 2)
 
     const resize = () => {
-      const rect = container.getBoundingClientRect()
-      canvas.width = rect.width * dpr
-      canvas.height = rect.height * dpr
-      ctx.scale(dpr, dpr)
+      const width = window.innerWidth
+      const height = window.innerHeight
+      canvas.width = width * dpr
+      canvas.height = height * dpr
+      canvas.style.width = `${width}px`
+      canvas.style.height = `${height}px`
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     }
 
     resize()
