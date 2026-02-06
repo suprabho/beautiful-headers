@@ -181,6 +181,7 @@ const ParticleRingLayer = memo(({ config, paletteColors = [], effectsConfig, isP
   return (
     <div
       ref={containerRef}
+      className="particle-ring-layer"
       style={{
         position: 'absolute',
         top: 0,

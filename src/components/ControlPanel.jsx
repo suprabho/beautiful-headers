@@ -327,7 +327,9 @@ const ControlPanel = ({ layersContainerRef }) => {
         getLastCanvas('.fluid-gradient-layer') ||
         getLastCanvas('.aurora-layer') ||
         getLastCanvas('.waves-layer') ||
-        getLastCanvas('.ribbon-layer')
+        getLastCanvas('.ribbon-layer') ||
+        getLastCanvas('.dandelion-layer') ||
+        getLastCanvas('.particle-ring-layer')
 
       if (backgroundCanvas) {
         const wrapper = container.querySelector('.gradient-effects-wrapper')
@@ -685,7 +687,9 @@ const ControlPanel = ({ layersContainerRef }) => {
         getLastCanvas('.fluid-gradient-layer') ||
         getLastCanvas('.aurora-layer') ||
         getLastCanvas('.waves-layer') ||
-        getLastCanvas('.ribbon-layer')
+        getLastCanvas('.ribbon-layer') ||
+        getLastCanvas('.dandelion-layer') ||
+        getLastCanvas('.particle-ring-layer')
 
       if (backgroundCanvas) {
         const wrapper = container.querySelector('.gradient-effects-wrapper')

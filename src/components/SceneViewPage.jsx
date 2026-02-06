@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import html2canvas from 'html2canvas'
-import { ArrowLeft, CircleNotch, Warning, Play, Code, Check, Copy, Download, ArrowCounterClockwiseIcon as ArrowCounterClockwise } from '@phosphor-icons/react'
-import { getSceneBySlug, getProjects, updateScene, verifyDeletePassword, titleToSlug } from '@/lib/scenesApi'
+import { ArrowLeft, CircleNotch, Warning, Play, Code, Check, Copy, Download, ArrowCounterClockwiseIcon as ArrowCounterClockwise, CameraIcon } from '@phosphor-icons/react'
+import { getSceneBySlug, getProjects, updateScene, verifyDeletePassword, titleToSlug, recaptureThumbnail } from '@/lib/scenesApi'
 import { generateSceneDescriptions } from '@/lib/gemini'
 import { prepareForCapture } from '@/lib/colorConversion'
 import { Button } from '@/components/ui/button'
@@ -69,6 +69,13 @@ function SceneViewPage() {
   const [regeneratePassword, setRegeneratePassword] = useState('')
   const [regenerateError, setRegenerateError] = useState('')
   const [isRegenerating, setIsRegenerating] = useState(false)
+
+  // Recapture thumbnail state
+  const [recaptureDialogOpen, setRecaptureDialogOpen] = useState(false)
+  const [recapturePassword, setRecapturePassword] = useState('')
+  const [recaptureError, setRecaptureError] = useState('')
+  const [isRecapturing, setIsRecapturing] = useState(false)
+  const [thumbnailCacheBuster, setThumbnailCacheBuster] = useState('')
 
   // Update document meta tags with scene data (use large for OG image)
   useDocumentMeta({
@@ -311,6 +318,140 @@ function SceneViewPage() {
       setRegenerateError('Failed to regenerate. Please try again.')
     } finally {
       setIsRegenerating(false)
+    }
+  }
+
+  // Recapture thumbnail
+  const handleRecaptureThumbnail = async () => {
+    if (!recapturePassword.trim()) {
+      setRecaptureError('Password is required')
+      return
+    }
+
+    if (!layersContainerRef?.current) {
+      setRecaptureError('Scene not ready for capture')
+      return
+    }
+
+    setIsRecapturing(true)
+    setRecaptureError('')
+
+    try {
+      // Verify password
+      const isValid = await verifyDeletePassword(recapturePassword)
+      if (!isValid) {
+        setRecaptureError('Incorrect password')
+        setIsRecapturing(false)
+        return
+      }
+
+      const restoreColors = prepareForCapture(document.body)
+
+      try {
+        await new Promise(resolve => requestAnimationFrame(resolve))
+
+        const container = layersContainerRef.current
+        const width = container.offsetWidth
+        const height = container.offsetHeight
+        const scale = 2 // Full resolution
+
+        const outputCanvas = document.createElement('canvas')
+        outputCanvas.width = width * scale
+        outputCanvas.height = height * scale
+        const ctx = outputCanvas.getContext('2d')
+
+        ctx.fillStyle = '#000000'
+        ctx.fillRect(0, 0, outputCanvas.width, outputCanvas.height)
+
+        // Get the last canvas from layer (for fluted glass overlay support)
+        const getLastCanvas = (selector) => {
+          const canvases = container.querySelectorAll(`${selector} canvas`)
+          return canvases.length > 0 ? canvases[canvases.length - 1] : null
+        }
+
+        const backgroundCanvas =
+          container.querySelector('.gradient-layer canvas') ||
+          getLastCanvas('.simple-gradient-layer') ||
+          getLastCanvas('.fluid-gradient-layer') ||
+          getLastCanvas('.aurora-layer') ||
+          getLastCanvas('.waves-layer') ||
+          getLastCanvas('.ribbon-layer')
+
+        if (backgroundCanvas) {
+          const wrapper = container.querySelector('.gradient-effects-wrapper')
+          const filterStyle = wrapper ? getComputedStyle(wrapper).filter : 'none'
+          ctx.filter = filterStyle !== 'none' ? filterStyle : 'none'
+          ctx.drawImage(backgroundCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
+          ctx.filter = 'none'
+        }
+
+        // Draw texture and vignette
+        const currentEffectsConfig = scene?.scene_data?.effectsConfig || {}
+        drawTextureToCanvas(
+          ctx,
+          outputCanvas.width,
+          outputCanvas.height,
+          currentEffectsConfig.texture,
+          (currentEffectsConfig.textureSize || 20) * scale,
+          currentEffectsConfig.textureOpacity || 0.5,
+          currentEffectsConfig.textureBlendMode || 'overlay'
+        )
+        drawVignetteToCanvas(ctx, outputCanvas.width, outputCanvas.height, currentEffectsConfig.vignetteIntensity || 0)
+
+        // Capture tessellation layer (icons)
+        const tessellationLayer = container.querySelector('.tessellation-layer')
+        if (tessellationLayer) {
+          const tessCanvas = await html2canvas(tessellationLayer, {
+            useCORS: true,
+            allowTaint: true,
+            scale: scale,
+            backgroundColor: null,
+            logging: false,
+          })
+          ctx.drawImage(tessCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
+        }
+
+        // Capture text layer
+        const textLayer = container.querySelector('.text-layer')
+        if (textLayer) {
+          const textCanvas = await html2canvas(textLayer, {
+            useCORS: true,
+            allowTaint: true,
+            scale: scale,
+            backgroundColor: null,
+            logging: false,
+          })
+          ctx.drawImage(textCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
+        }
+
+        // Convert canvas to base64
+        const base64Data = outputCanvas.toDataURL('image/jpeg', 0.9)
+
+        restoreColors()
+
+        // Upload new thumbnail
+        const updatedScene = await recaptureThumbnail(scene.id, base64Data)
+
+        // Update local state with new thumbnail URLs
+        setScene(prev => ({
+          ...prev,
+          thumbnail: updatedScene.thumbnail,
+        }))
+
+        // Force browser to reload cached images
+        setThumbnailCacheBuster(`?t=${Date.now()}`)
+
+        setRecaptureDialogOpen(false)
+        setRecapturePassword('')
+      } catch (captureError) {
+        restoreColors()
+        throw captureError
+      }
+    } catch (err) {
+      console.error('Failed to recapture thumbnail:', err)
+      setRecaptureError('Failed to recapture thumbnail. Please try again.')
+    } finally {
+      setIsRecapturing(false)
     }
   }
 
@@ -820,15 +961,26 @@ function SceneViewPage() {
             })()}
 
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-6 text-xs"
-            onClick={() => { setRegenerateDialogOpen(true); setRegenerateError(''); setRegeneratePassword('') }}
-          >
-            <ArrowCounterClockwise size={12} className="mr-1" />
-            Regenerate
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 text-xs"
+              onClick={() => { setRegenerateDialogOpen(true); setRegenerateError(''); setRegeneratePassword('') }}
+            >
+              <ArrowCounterClockwise size={12} className="mr-1" />
+              Regenerate
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-6 text-xs"
+              onClick={() => { setRecaptureDialogOpen(true); setRecaptureError(''); setRecapturePassword('') }}
+            >
+              <CameraIcon size={12} className="mr-1" />
+              Recapture
+            </Button>
+          </div>
 
           {/* Projects */}
           <div className="flex flex-col gap-2">
@@ -869,7 +1021,7 @@ function SceneViewPage() {
           {(scene.thumbnail?.medium || scene.thumbnail?.small) && (
             <div className="h-full">
               <img
-                src={scene.thumbnail.medium || scene.thumbnail.small}
+                src={`${scene.thumbnail.medium || scene.thumbnail.small}${thumbnailCacheBuster}`}
                 alt={scene.title}
                 className="w-full h-40 object-cover rounded-md"
               />
@@ -1056,6 +1208,56 @@ function SceneViewPage() {
               disabled={isRegenerating}
             >
               {isRegenerating ? 'Generating...' : 'Regenerate'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Recapture Thumbnail Dialog */}
+      <Dialog open={recaptureDialogOpen} onOpenChange={setRecaptureDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Recapture Thumbnail</DialogTitle>
+            <DialogDescription>
+              This will capture the current scene and update the thumbnail image.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {isRecapturing ? (
+              <div className="flex items-center justify-center gap-3 py-8">
+                <CircleNotch size={24} className="animate-spin text-primary" />
+                <span className="text-muted-foreground">Capturing thumbnail...</span>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Label htmlFor="recapture-password">Password</Label>
+                <Input
+                  id="recapture-password"
+                  type="password"
+                  value={recapturePassword}
+                  onChange={(e) => setRecapturePassword(e.target.value)}
+                  placeholder="Enter admin password"
+                />
+              </div>
+            )}
+
+            {recaptureError && (
+              <p className="text-sm text-destructive">{recaptureError}</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setRecaptureDialogOpen(false)}
+              disabled={isRecapturing}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleRecaptureThumbnail}
+              disabled={isRecapturing}
+            >
+              {isRecapturing ? 'Capturing...' : 'Recapture'}
             </Button>
           </DialogFooter>
         </DialogContent>

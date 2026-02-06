@@ -327,6 +327,39 @@ export async function updateScene(id, data) {
 }
 
 /**
+ * Re-capture and update thumbnail for an existing scene
+ */
+export async function recaptureThumbnail(sceneId, base64Data) {
+  if (!base64Data) {
+    throw new Error('No image data provided')
+  }
+
+  // Upload new thumbnails
+  const thumbnailUrls = await uploadThumbnail(base64Data, sceneId)
+
+  if (!thumbnailUrls) {
+    throw new Error('Failed to upload thumbnails')
+  }
+
+  // Update scene with new thumbnail URLs
+  const { data: scene, error } = await supabase
+    .from('scenes')
+    .update({
+      thumbnail: thumbnailUrls,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', sceneId)
+    .select()
+    .single()
+
+  if (error) {
+    throw new Error('Failed to update scene thumbnail')
+  }
+
+  return scene
+}
+
+/**
  * Delete a scene
  */
 export async function deleteScene(id) {

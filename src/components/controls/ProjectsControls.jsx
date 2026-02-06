@@ -414,7 +414,7 @@ export const ProjectsPanel = ({
             <Button variant="outline" onClick={() => setShowDeleteDialog(false)} disabled={isSaving}>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleDeleteProject} disabled={isSaving}>
+            <Button className="ml-2" variant="destructive" onClick={handleDeleteProject} disabled={isSaving}>
               {isSaving ? 'Deleting...' : 'Delete'}
             </Button>
           </DialogFooter>

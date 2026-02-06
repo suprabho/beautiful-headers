@@ -195,6 +195,7 @@ const DandelionLayer = memo(({ config, paletteColors = [], effectsConfig, isPaus
   return (
     <div
       ref={containerRef}
+      className="dandelion-layer"
       style={{
         position: 'absolute',
         top: 0,

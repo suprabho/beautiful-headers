@@ -304,7 +304,7 @@ function SavedScenesPage() {
               <p className="text-sm text-destructive">{passwordError}</p>
             )}
           </div>
-          <DialogFooter className="gap-2 sm:gap-0">
+          <DialogFooter>
             <Button
               variant="outline"
               onClick={() => {
@@ -320,6 +320,7 @@ function SavedScenesPage() {
               variant="destructive"
               onClick={handleDeleteScene}
               disabled={isDeleting}
+              className="ml-2"
             >
               {isDeleting ? (
                 <>
