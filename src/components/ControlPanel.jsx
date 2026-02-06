@@ -177,7 +177,7 @@ const ControlPanel = ({ layersContainerRef }) => {
     })
 
     // Randomize text sections
-    const fonts = ['sans-serif', 'serif', 'mono', 'scribble']
+    const fonts = ['sans-serif', 'serif', 'mono']
     const weights = [100, 200, 300, 400, 500, 600, 700, 800, 900]
     const randomizedSections = textSections.map(section => ({
       ...section,
@@ -1528,22 +1528,24 @@ const ControlPanel = ({ layersContainerRef }) => {
         {/* Mobile Top Bar */}
         <div className="fixed left-0 right-0 top-0 z-50 bg-card/5 backdrop-blur-4xl">
           <div className="flex items-center justify-between gap-2 p-2 safe-area-top">
-            <Button variant="outline" size="sm" className="flex items-center gap-2 h-10 px-4 border-primary/50" onClick={() => setIsPaused(!isPaused)} title={isPaused ? "Resume Animations" : "Pause Animations"}>
-              {isPaused ? <Play size={18} weight="fill" /> : <Pause size={18} />}
-            </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-2 h-10 px-4 border-primary/50" onClick={() => setShowPaletteDialog(true)} title={colorPalette ? "Edit Palette" : "Upload Palette"}>
-              <Palette size={18} weight={colorPalette ? 'fill' : 'regular'} />
-            </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-2 h-10 px-4 border-primary/50" onClick={randomizeGradient} title="Shuffle Gradient">
-              <Shuffle size={18} />
-            </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-2 h-10 px-4 border-primary/50" onClick={() => setShowSaveDialog(true)} title="Save Scene">
-              <FloppyDisk size={18} />
-            </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-2 h-10 px-4 border-primary/50" onClick={() => navigate('/scenes')} title="Saved Scenes">
+            <img src={faviconImg} alt="Logo" className="w-10 h-10 rounded-[12px]" />
+            <Button variant="outline" size="sm" className="bg-background/30 backdrop-blur-md flex items-center gap-2 h-10 px-3 border-primary/50" onClick={() => navigate('/scenes')} title="Saved Scenes">
               <Images size={18} />
             </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-2 h-10 px-4 border-primary/50" onClick={() => setShowCaptureModal(true)}>
+            <Button variant="outline" size="sm" className="bg-background/30 backdrop-blur-md flex items-center gap-2 h-10 px-3 border-primary/50" onClick={() => setShowPaletteDialog(true)} title={colorPalette ? "Edit Palette" : "Upload Palette"}>
+              <Palette size={18} weight={colorPalette ? 'fill' : 'regular'} />
+            </Button>
+            <Button variant="outline" size="sm" className="bg-background/30 backdrop-blur-md flex items-center gap-2 h-10 px-3 border-primary/50" onClick={() => setIsPaused(!isPaused)} title={isPaused ? "Resume Animations" : "Pause Animations"}>
+              {isPaused ? <Play size={18} weight="fill" /> : <Pause size={18} />}
+            </Button>
+            <Button variant="outline" size="sm" className="bg-background/30 backdrop-blur-md flex items-center gap-2 h-10 px-3 border-primary/50" onClick={randomizeGradient} title="Shuffle Gradient">
+              <Shuffle size={18} />
+            </Button>
+            <Button variant="outline" size="sm" className="bg-background/30 backdrop-blur-md flex items-center gap-2 h-10 px-3 border-primary/50" onClick={() => setShowSaveDialog(true)} title="Save Scene">
+              <FloppyDisk size={18} />
+            </Button>
+
+            <Button variant="outline" size="sm" className="bg-background/30 backdrop-blur-md flex items-center gap-2 h-10 px-3 border-primary/50" onClick={() => setShowCaptureModal(true)}>
               <Camera size={18} />
             </Button>
           </div>
