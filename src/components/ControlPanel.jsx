@@ -1129,6 +1129,7 @@ const ControlPanel = ({ layersContainerRef }) => {
             <ControlGroup label={`Dot Size`}><NumberInput value={[dandelionConfig.dotSize]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, dotSize: val })} min={1} max={8} step={0.5} showButtons /></ControlGroup>
             <ControlGroup label={`Spread`}><NumberInput value={[dandelionConfig.spread]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, spread: val })} min={0.1} max={1} step={0.1} showButtons /></ControlGroup>
             <ControlGroup label={`Center Y`}><NumberInput value={[dandelionConfig.centerY]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, centerY: val })} min={0.5} max={1.2} step={0.05} showButtons /></ControlGroup>
+            <ControlGroup label={`Line Opacity`}><NumberInput value={[dandelionConfig.lineOpacity]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, lineOpacity: val })} min={0.1} max={1} step={0.05} showButtons /></ControlGroup>
           </div>
         )
       case 'particleRing-settings':

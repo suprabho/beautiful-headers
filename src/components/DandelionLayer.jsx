@@ -129,6 +129,9 @@ const DandelionLayer = memo(({ config, paletteColors = [], effectsConfig, isPaus
 
       // Draw lines
       const lines = linesRef.current
+      const lineOpacity = cfg.lineOpacity ?? 0.8
+
+      ctx.globalAlpha = lineOpacity
 
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i]
@@ -147,14 +150,13 @@ const DandelionLayer = memo(({ config, paletteColors = [], effectsConfig, isPaus
         const endX = centerX + Math.cos(angle) * lineLength
         const endY = centerY + Math.sin(angle) * lineLength
 
-        // Get colors for gradient
-        const colorIdx1 = line.colorIdx % colors.length
-        const colorIdx2 = (line.colorIdx + 1) % colors.length
-
-        // Create gradient for line
+        // Create gradient for line: origin color to dot color
         const lineGradient = ctx.createLinearGradient(startX, startY, endX, endY)
-        lineGradient.addColorStop(0, colors[colorIdx1])
-        lineGradient.addColorStop(1, colors[colorIdx2])
+        const originColor = colors[colors.length - 1] || '#fef3c7'
+        const dotColor = colors[line.colorIdx % colors.length]
+
+        lineGradient.addColorStop(0, originColor)
+        lineGradient.addColorStop(1, dotColor)
 
         // Draw line
         ctx.beginPath()
@@ -168,9 +170,12 @@ const DandelionLayer = memo(({ config, paletteColors = [], effectsConfig, isPaus
         // Draw dot at end
         ctx.beginPath()
         ctx.arc(endX, endY, cfg.dotSize, 0, Math.PI * 2)
-        ctx.fillStyle = colors[colorIdx2]
+        ctx.fillStyle = dotColor
         ctx.fill()
       }
+
+      // Reset opacity
+      ctx.globalAlpha = 1.0
 
       animationRef.current = requestAnimationFrame(animate)
     }
