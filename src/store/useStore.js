@@ -429,6 +429,8 @@ const useStore = create((set, get) => ({
   dandelionConfig: {
     useGradientColors: true,
     backgroundColor: '#e8f4fc',
+    radialGradientCenter: '#e8f4fc',
+    radialGradientOuter: '#fef3c7',
     lineCount: 120,
     radiusMin: 0.1,
     radiusMax: 0.45,
@@ -447,6 +449,8 @@ const useStore = create((set, get) => ({
   particleRingConfig: {
     useGradientColors: true,
     backgroundColor: '#fef6f9',
+    radialGradientCenter: '#fef6f9',
+    radialGradientOuter: '#fef3c7',
     particleCount: 800,
     ringRadius: 0.35,
     ringWidth: 0.15,

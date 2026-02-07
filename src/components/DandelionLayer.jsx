@@ -109,15 +109,14 @@ const DandelionLayer = memo(({ config, paletteColors = [], effectsConfig, isPaus
       const width = rect.width
       const height = rect.height
 
-      // Clear with background
-      const bgColor = cfg.backgroundColor || '#e8f4fc'
-      ctx.fillStyle = bgColor
-      ctx.fillRect(0, 0, width, height)
+      const centerX = width / 2
+      const centerY = height * cfg.centerY
+      const maxLength = Math.min(width, height)
 
-      // Create background gradient
-      const bgGradient = ctx.createLinearGradient(0, 0, 0, height)
-      bgGradient.addColorStop(0, cfg.backgroundColor || '#e8f4fc')
-      bgGradient.addColorStop(1, colors[colors.length - 1] || '#fef3c7')
+      // Create radial background gradient
+      const bgGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, Math.max(width, height))
+      bgGradient.addColorStop(0, cfg.radialGradientCenter || cfg.backgroundColor || '#e8f4fc')
+      bgGradient.addColorStop(1, cfg.radialGradientOuter || colors[colors.length - 1] || '#fef3c7')
       ctx.fillStyle = bgGradient
       ctx.fillRect(0, 0, width, height)
 
@@ -127,9 +126,6 @@ const DandelionLayer = memo(({ config, paletteColors = [], effectsConfig, isPaus
       }
 
       const time = timeRef.current
-      const centerX = width / 2
-      const centerY = height * cfg.centerY
-      const maxLength = Math.min(width, height)
 
       // Draw lines
       const lines = linesRef.current

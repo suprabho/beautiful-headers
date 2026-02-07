@@ -109,9 +109,15 @@ const ParticleRingLayer = memo(({ config, paletteColors = [], effectsConfig, isP
       const width = rect.width
       const height = rect.height
 
-      // Clear with background
-      const bgColor = cfg.backgroundColor || '#fef6f9'
-      ctx.fillStyle = bgColor
+      const centerX = width / 2
+      const centerY = height / 2
+      const maxRadius = Math.min(width, height) / 2
+
+      // Create radial background gradient
+      const bgGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, Math.max(width, height))
+      bgGradient.addColorStop(0, cfg.radialGradientCenter || cfg.backgroundColor || '#fef6f9')
+      bgGradient.addColorStop(1, cfg.radialGradientOuter || colors[colors.length - 1] || '#fef3c7')
+      ctx.fillStyle = bgGradient
       ctx.fillRect(0, 0, width, height)
 
       // Update time
@@ -120,9 +126,6 @@ const ParticleRingLayer = memo(({ config, paletteColors = [], effectsConfig, isP
       }
 
       const time = timeRef.current
-      const centerX = width / 2
-      const centerY = height / 2
-      const maxRadius = Math.min(width, height) / 2
 
       // Draw particles
       const particles = particlesRef.current

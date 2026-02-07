@@ -1106,6 +1106,40 @@ export const DandelionControls = ({ dandelionConfig, setDandelionConfig, parsedP
         </div>
       </ControlGroup>
 
+      {/* Radial Gradient Center */}
+      <ControlGroup label="Radial Center">
+        <div className="flex items-center gap-2">
+          <PaletteColorPicker
+            value={dandelionConfig.radialGradientCenter}
+            onChange={(newColor) => setDandelionConfig({ ...dandelionConfig, radialGradientCenter: newColor })}
+            palette={parsedPalette}
+            className="w-10 h-9"
+          />
+          <Input
+            value={dandelionConfig.radialGradientCenter}
+            onChange={(e) => setDandelionConfig({ ...dandelionConfig, radialGradientCenter: e.target.value })}
+            className="h-9 font-mono text-xs flex-1"
+          />
+        </div>
+      </ControlGroup>
+
+      {/* Radial Gradient Outer */}
+      <ControlGroup label="Radial Outer">
+        <div className="flex items-center gap-2">
+          <PaletteColorPicker
+            value={dandelionConfig.radialGradientOuter}
+            onChange={(newColor) => setDandelionConfig({ ...dandelionConfig, radialGradientOuter: newColor })}
+            palette={parsedPalette}
+            className="w-10 h-9"
+          />
+          <Input
+            value={dandelionConfig.radialGradientOuter}
+            onChange={(e) => setDandelionConfig({ ...dandelionConfig, radialGradientOuter: e.target.value })}
+            className="h-9 font-mono text-xs flex-1"
+          />
+        </div>
+      </ControlGroup>
+
       {/* Line Count */}
       <ControlGroup label="Line Count">
         <NumberInput
@@ -1215,6 +1249,40 @@ export const ParticleRingControls = ({ particleRingConfig, setParticleRingConfig
           <Input
             value={particleRingConfig.backgroundColor}
             onChange={(e) => setParticleRingConfig({ ...particleRingConfig, backgroundColor: e.target.value })}
+            className="h-9 font-mono text-xs flex-1"
+          />
+        </div>
+      </ControlGroup>
+
+      {/* Radial Gradient Center */}
+      <ControlGroup label="Radial Center">
+        <div className="flex items-center gap-2">
+          <PaletteColorPicker
+            value={particleRingConfig.radialGradientCenter}
+            onChange={(newColor) => setParticleRingConfig({ ...particleRingConfig, radialGradientCenter: newColor })}
+            palette={parsedPalette}
+            className="w-10 h-9"
+          />
+          <Input
+            value={particleRingConfig.radialGradientCenter}
+            onChange={(e) => setParticleRingConfig({ ...particleRingConfig, radialGradientCenter: e.target.value })}
+            className="h-9 font-mono text-xs flex-1"
+          />
+        </div>
+      </ControlGroup>
+
+      {/* Radial Gradient Outer */}
+      <ControlGroup label="Radial Outer">
+        <div className="flex items-center gap-2">
+          <PaletteColorPicker
+            value={particleRingConfig.radialGradientOuter}
+            onChange={(newColor) => setParticleRingConfig({ ...particleRingConfig, radialGradientOuter: newColor })}
+            palette={parsedPalette}
+            className="w-10 h-9"
+          />
+          <Input
+            value={particleRingConfig.radialGradientOuter}
+            onChange={(e) => setParticleRingConfig({ ...particleRingConfig, radialGradientOuter: e.target.value })}
             className="h-9 font-mono text-xs flex-1"
           />
         </div>
