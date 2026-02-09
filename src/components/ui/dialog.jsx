@@ -40,7 +40,7 @@ function DialogContent({ className, children, ...props }) {
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "bg-card fixed bottom-0 left-[50%] translate-x-[-50%] sm:bottom-auto sm:top-[50%] sm:left-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%] grid w-screen sm:w-7xl gap-4 rounded-t-xl sm:rounded-xl border p-2 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-in-from-bottom-4 data-[state=open]:slide-in-from-bottom-4 sm:data-[state=closed]:zoom-out-95 sm:data-[state=open]:zoom-in-95 overflow-visible",
+          "bg-card fixed bottom-0 left-[50%] translate-x-[-50%] md:bottom-auto md:top-[50%] md:left-[50%] md:translate-x-[-50%] md:translate-y-[-50%] grid w-screen md:w-7xl gap-4 rounded-t-xl md:rounded-xl border p-2 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:slide-in-from-bottom-4 data-[state=open]:slide-in-from-bottom-4 md:data-[state=closed]:zoom-out-95 md:data-[state=open]:zoom-in-95 overflow-visible",
           className
         )}
         style={{ zIndex: 9998 }}
@@ -60,7 +60,7 @@ function DialogHeader({ className, ...props }) {
   return (
     <div
       data-slot="dialog-header"
-      className={cn("flex flex-col gap-2 text-center sm:text-left", className)}
+      className={cn("flex flex-col gap-2 text-center md:text-left", className)}
       {...props}
     />
   )
@@ -71,7 +71,7 @@ function DialogFooter({ className, ...props }) {
     <div
       data-slot="dialog-footer"
       className={cn(
-        "flex flex-1 flex-col-reverse gap-2 sm:flex-row sm:justify-end",
+        "flex flex-1 flex-col-reverse gap-2 md:flex-row md:justify-end",
         className
       )}
       {...props}

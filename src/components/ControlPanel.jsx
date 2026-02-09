@@ -21,7 +21,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import useStore from '../store/useStore'
-import faviconImg from '@/apple-touch-icon.png'
 
 // Import control panel components
 import {
@@ -32,6 +31,7 @@ import {
   ContrastAwarePaletteColorPicker,
   GradientPanel,
   ColorsSection,
+  RadialGradientSection,
   PatternPanel,
   EffectsPanel,
   DEFAULT_EFFECTS_CONFIG,
@@ -460,8 +460,8 @@ const ControlPanel = ({ layersContainerRef }) => {
 
   const openDialog = (dialogKey) => {
     setActiveDialog(dialogKey)
-    if (dialogKey.startsWith('gradient-') || dialogKey.startsWith('aurora-') || dialogKey.startsWith('blob-') || dialogKey.startsWith('fluid-') || dialogKey.startsWith('waves-') || dialogKey.startsWith('ribbon-')) {
-      setOriginalValues({ type: 'gradient', data: { gradientConfig: { ...gradientConfig }, auroraConfig: { ...auroraConfig }, blobConfig: { ...blobConfig }, fluidConfig: { ...fluidConfig }, wavesConfig: { ...wavesConfig }, ribbonConfig: { ...ribbonConfig } } })
+    if (dialogKey.startsWith('gradient-') || dialogKey.startsWith('aurora-') || dialogKey.startsWith('blob-') || dialogKey.startsWith('fluid-') || dialogKey.startsWith('waves-') || dialogKey.startsWith('ribbon-') || dialogKey.startsWith('dandelion-') || dialogKey.startsWith('particleRing-')) {
+      setOriginalValues({ type: 'gradient', data: { gradientConfig: { ...gradientConfig }, auroraConfig: { ...auroraConfig }, blobConfig: { ...blobConfig }, fluidConfig: { ...fluidConfig }, wavesConfig: { ...wavesConfig }, ribbonConfig: { ...ribbonConfig }, dandelionConfig: { ...dandelionConfig }, particleRingConfig: { ...particleRingConfig } } })
     } else if (dialogKey.startsWith('pattern-')) {
       setOriginalValues({ type: 'pattern', data: { ...tessellationConfig } })
     } else if (dialogKey.startsWith('effects-')) {
@@ -485,6 +485,8 @@ const ControlPanel = ({ layersContainerRef }) => {
         setFluidConfig(originalValues.data.fluidConfig)
         setWavesConfig(originalValues.data.wavesConfig)
         if (originalValues.data.ribbonConfig) setRibbonConfig(originalValues.data.ribbonConfig)
+        if (originalValues.data.dandelionConfig) setDandelionConfig(originalValues.data.dandelionConfig)
+        if (originalValues.data.particleRingConfig) setParticleRingConfig(originalValues.data.particleRingConfig)
       } else if (originalValues.type === 'pattern') {
         setTessellationConfig(originalValues.data)
       } else if (originalValues.type === 'effects') {
@@ -508,6 +510,8 @@ const ControlPanel = ({ layersContainerRef }) => {
         setFluidConfig(originalValues.data.fluidConfig)
         setWavesConfig(originalValues.data.wavesConfig)
         if (originalValues.data.ribbonConfig) setRibbonConfig(originalValues.data.ribbonConfig)
+        if (originalValues.data.dandelionConfig) setDandelionConfig(originalValues.data.dandelionConfig)
+        if (originalValues.data.particleRingConfig) setParticleRingConfig(originalValues.data.particleRingConfig)
       } else if (originalValues.type === 'pattern') {
         setTessellationConfig(originalValues.data)
       } else if (originalValues.type === 'effects') {
@@ -871,17 +875,24 @@ const ControlPanel = ({ layersContainerRef }) => {
       'aurora-background': 'Background',
       'aurora-lines': 'Line Settings',
       'aurora-animation': 'Animation',
-      'blob-background': 'Background',
-      'blob-size': 'Blob Size & Count',
-      'blob-animation': 'Blob Animation',
-      'blob-effect': 'Gooey Effect',
       'fluid-background': 'Background',
       'fluid-animation': 'Animation Speed',
       'fluid-settings': 'Fluid Settings',
-      'waves-settings': 'Wave Settings',
-      'ribbon-settings': 'Ribbon Settings',
-      'dandelion-settings': 'Dandelion Settings',
-      'particleRing-settings': 'Particle Ring Settings',
+      'waves-shape': 'Wave Shape',
+      'waves-position': 'Wave Position',
+      'waves-animation': 'Wave Animation',
+      'ribbon-background': 'Ribbon Background',
+      'ribbon-shape': 'Ribbon Shape',
+      'ribbon-motion': 'Ribbon Motion',
+      'ribbon-animation': 'Ribbon Animation',
+      'dandelion-background': 'Dandelion Background',
+      'dandelion-lines': 'Dandelion Lines',
+      'dandelion-shape': 'Dandelion Shape',
+      'dandelion-animation': 'Dandelion Animation',
+      'particleRing-background': 'Ring Background',
+      'particleRing-ring': 'Ring Settings',
+      'particleRing-particles': 'Particle Settings',
+      'particleRing-animation': 'Ring Animation',
       'pattern-icon': 'Icon Settings',
       'pattern-spacing': 'Spacing',
       'pattern-mouse': 'Mouse Influence',
@@ -1026,38 +1037,6 @@ const ControlPanel = ({ layersContainerRef }) => {
             <ControlGroup label={`Blur Amount`}><NumberInput value={[auroraConfig.blurAmount]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, blurAmount: val })} min={0} max={50} step={1} showButtons /></ControlGroup>
           </div>
         )
-      case 'blob-background':
-        return (
-          <ControlGroup label="Background Color">
-            <div className="flex items-center gap-2">
-              <PaletteColorPicker value={blobConfig.backgroundColor} onChange={(newColor) => setBlobConfig({ ...blobConfig, backgroundColor: newColor })} palette={parsedPalette} className="w-10 h-9" />
-              <Input value={blobConfig.backgroundColor} onChange={(e) => setBlobConfig({ ...blobConfig, backgroundColor: e.target.value })} className="h-9 font-mono text-xs flex-1" />
-            </div>
-          </ControlGroup>
-        )
-      case 'blob-size':
-        return (
-          <div className="space-y-2">
-            <ControlGroup label={`Blob Count`}><NumberInput value={[blobConfig.blobCount]} onValueChange={([val]) => setBlobConfig({ ...blobConfig, blobCount: val })} min={2} max={20} step={1} showButtons /></ControlGroup>
-            <ControlGroup label={`Min Radius`}><NumberInput value={[blobConfig.minRadius]} onValueChange={([val]) => setBlobConfig({ ...blobConfig, minRadius: val })} min={10} max={200} step={10} showButtons /></ControlGroup>
-            <ControlGroup label={`Max Radius`}><NumberInput value={[blobConfig.maxRadius]} onValueChange={([val]) => setBlobConfig({ ...blobConfig, maxRadius: val })} min={10} max={300} step={10} showButtons /></ControlGroup>
-            <ControlGroup label={`Orbit Radius`}><NumberInput value={[blobConfig.orbitRadius]} onValueChange={([val]) => setBlobConfig({ ...blobConfig, orbitRadius: val })} min={50} max={500} step={25} showButtons /></ControlGroup>
-          </div>
-        )
-      case 'blob-animation':
-        return (
-          <div className="space-y-2">
-            <ControlGroup label={`Speed`}><NumberInput value={[blobConfig.speed]} onValueChange={([val]) => setBlobConfig({ ...blobConfig, speed: val })} min={0.1} max={2} step={0.1} showButtons /></ControlGroup>
-            <ControlGroup label={`Mouse Influence`}><NumberInput value={[blobConfig.mouseInfluence]} onValueChange={([val]) => setBlobConfig({ ...blobConfig, mouseInfluence: val })} min={0} max={1} step={0.1} showButtons /></ControlGroup>
-          </div>
-        )
-      case 'blob-effect':
-        return (
-          <div className="space-y-2">
-            <ControlGroup label={`Blur Amount`}><NumberInput value={[blobConfig.blurAmount]} onValueChange={([val]) => setBlobConfig({ ...blobConfig, blurAmount: val })} min={5} max={50} step={1} showButtons /></ControlGroup>
-            <ControlGroup label={`Gooey Threshold`}><NumberInput value={[blobConfig.threshold]} onValueChange={([val]) => setBlobConfig({ ...blobConfig, threshold: val })} min={100} max={250} step={10} showButtons /></ControlGroup>
-          </div>
-        )
       case 'fluid-background':
         return (
           <ControlGroup label="Background Color">
@@ -1080,73 +1059,142 @@ const ControlPanel = ({ layersContainerRef }) => {
             <ControlGroup label={`Blur`}><NumberInput value={[fluidConfig.blurAmount]} onValueChange={([val]) => setFluidConfig({ ...fluidConfig, blurAmount: val })} min={0} max={100} step={1} showButtons /></ControlGroup>
           </div>
         )
-      case 'waves-settings':
+      case 'waves-shape':
         return (
           <div className="space-y-2">
             <ControlGroup label={`Wave Height`}><NumberInput value={[wavesConfig.waveHeight]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, waveHeight: val })} min={0.05} max={0.5} step={0.05} showButtons /></ControlGroup>
             <ControlGroup label={`Frequency`}><NumberInput value={[wavesConfig.waveFrequency]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, waveFrequency: val })} min={1} max={10} step={0.5} showButtons /></ControlGroup>
-            <ControlGroup label={`Rotation (°)`}><NumberInput value={[wavesConfig.rotation]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, rotation: val })} min={-180} max={180} step={15} showButtons /></ControlGroup>
-            <ControlGroup label={`Speed`}><NumberInput value={[wavesConfig.speed]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, speed: val })} min={0} max={2} step={0.1} showButtons /></ControlGroup>
             <ControlGroup label={`Layers`}><NumberInput value={[wavesConfig.layers]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, layers: val })} min={2} max={8} step={1} showButtons /></ControlGroup>
-            <ControlGroup label={`Blur`}><NumberInput value={[wavesConfig.blur]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, blur: val })} min={0} max={100} step={5} showButtons /></ControlGroup>
+          </div>
+        )
+      case 'waves-position':
+        return (
+          <div className="space-y-2">
+            <ControlGroup label={`Rotation (°)`}><NumberInput value={[wavesConfig.rotation]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, rotation: val })} min={-180} max={180} step={15} showButtons /></ControlGroup>
             <ControlGroup label={`Phase Offset`}><NumberInput value={[wavesConfig.phaseOffset ?? 0]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, phaseOffset: val })} min={0} max={2} step={0.1} showButtons /></ControlGroup>
           </div>
         )
-      case 'ribbon-settings':
+      case 'waves-animation':
         return (
           <div className="space-y-2">
-            <ControlGroup label="Background Color">
-              <div className="flex items-center gap-2">
-                <PaletteColorPicker value={ribbonConfig.backgroundColor} onChange={(newColor) => setRibbonConfig({ ...ribbonConfig, backgroundColor: newColor })} palette={parsedPalette} className="w-10 h-10" />
-                <Input value={ribbonConfig.backgroundColor} onChange={(e) => setRibbonConfig({ ...ribbonConfig, backgroundColor: e.target.value })} className="h-9 font-mono text-xs flex-1" />
-              </div>
-            </ControlGroup>
+            <ControlGroup label={`Speed`}><NumberInput value={[wavesConfig.speed]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, speed: val })} min={0} max={2} step={0.1} showButtons /></ControlGroup>
+            <ControlGroup label={`Blur`}><NumberInput value={[wavesConfig.blur]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, blur: val })} min={0} max={100} step={5} showButtons /></ControlGroup>
+          </div>
+        )
+      case 'ribbon-background':
+        return (
+          <ControlGroup label="Background Color">
+            <div className="flex items-center gap-2">
+              <PaletteColorPicker value={ribbonConfig.backgroundColor} onChange={(newColor) => setRibbonConfig({ ...ribbonConfig, backgroundColor: newColor })} palette={parsedPalette} className="w-10 h-10" />
+              <Input value={ribbonConfig.backgroundColor} onChange={(e) => setRibbonConfig({ ...ribbonConfig, backgroundColor: e.target.value })} className="h-9 font-mono text-xs flex-1" />
+            </div>
+          </ControlGroup>
+        )
+      case 'ribbon-shape':
+        return (
+          <div className="space-y-2">
             <ControlGroup label={`Ribbon Count`}><NumberInput value={[ribbonConfig.ribbonCount]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, ribbonCount: val })} min={2} max={10} step={1} showButtons /></ControlGroup>
-            <ControlGroup label={`Speed`}><NumberInput value={[ribbonConfig.speed]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, speed: val })} min={0.1} max={2} step={0.1} showButtons /></ControlGroup>
-            <ControlGroup label={`Amplitude`}><NumberInput value={[ribbonConfig.amplitude]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, amplitude: val })} min={0.1} max={3} step={0.1} showButtons /></ControlGroup>
-            <ControlGroup label={`Spread`}><NumberInput value={[ribbonConfig.spread]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, spread: val })} min={0.5} max={3} step={0.1} showButtons /></ControlGroup>
-            <ControlGroup label={`Rotation (°)`}><NumberInput value={[ribbonConfig.rotation]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, rotation: val })} min={-90} max={90} step={5} showButtons /></ControlGroup>
             <ControlGroup label={`Thickness`}><NumberInput value={[ribbonConfig.thickness]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, thickness: val })} min={0.1} max={1} step={0.05} showButtons /></ControlGroup>
             <ControlGroup label={`Taper`}><NumberInput value={[ribbonConfig.taper]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, taper: val })} min={-1} max={1} step={0.1} showButtons /></ControlGroup>
+            <ControlGroup label={`Spread`}><NumberInput value={[ribbonConfig.spread]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, spread: val })} min={0.5} max={3} step={0.1} showButtons /></ControlGroup>
+          </div>
+        )
+      case 'ribbon-motion':
+        return (
+          <div className="space-y-2">
+            <ControlGroup label={`Amplitude`}><NumberInput value={[ribbonConfig.amplitude]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, amplitude: val })} min={0.1} max={3} step={0.1} showButtons /></ControlGroup>
+            <ControlGroup label={`Rotation (°)`}><NumberInput value={[ribbonConfig.rotation]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, rotation: val })} min={-90} max={90} step={5} showButtons /></ControlGroup>
             <ControlGroup label={`Noise`}><NumberInput value={[ribbonConfig.noise]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, noise: val })} min={0} max={2} step={0.1} showButtons /></ControlGroup>
+          </div>
+        )
+      case 'ribbon-animation':
+        return (
+          <div className="space-y-2">
+            <ControlGroup label={`Speed`}><NumberInput value={[ribbonConfig.speed]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, speed: val })} min={0.1} max={2} step={0.1} showButtons /></ControlGroup>
             <ControlGroup label={`Opacity`}><NumberInput value={[ribbonConfig.opacity]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, opacity: val })} min={0.1} max={1} step={0.05} showButtons /></ControlGroup>
           </div>
         )
-      case 'dandelion-settings':
+      case 'dandelion-background': {
+        const dandelionColors = dandelionConfig.radialGradientColors || [
+          dandelionConfig.radialGradientCenter || dandelionConfig.backgroundColor || '#e8f4fc',
+          dandelionConfig.radialGradientOuter || '#fef3c7'
+        ]
+        const dandelionStops = dandelionConfig.radialGradientStops || [0, 100]
+        return (
+          <RadialGradientSection
+            colors={dandelionColors}
+            colorStops={dandelionStops}
+            endX={dandelionConfig.gradientEndX ?? 100}
+            endY={dandelionConfig.gradientEndY ?? 100}
+            onColorsChange={(newColors) => setDandelionConfig({ ...dandelionConfig, radialGradientColors: newColors })}
+            onColorStopsChange={(newStops) => setDandelionConfig({ ...dandelionConfig, radialGradientStops: newStops })}
+            onEndXChange={(val) => setDandelionConfig({ ...dandelionConfig, gradientEndX: val })}
+            onEndYChange={(val) => setDandelionConfig({ ...dandelionConfig, gradientEndY: val })}
+            parsedPalette={parsedPalette}
+          />
+        )
+      }
+      case 'dandelion-lines':
         return (
           <div className="space-y-2">
-            <ControlGroup label="Background Color">
-              <div className="flex items-center gap-2">
-                <PaletteColorPicker value={dandelionConfig.backgroundColor} onChange={(newColor) => setDandelionConfig({ ...dandelionConfig, backgroundColor: newColor })} palette={parsedPalette} className="w-10 h-10" />
-                <Input value={dandelionConfig.backgroundColor} onChange={(e) => setDandelionConfig({ ...dandelionConfig, backgroundColor: e.target.value })} className="h-9 font-mono text-xs flex-1" />
-              </div>
-            </ControlGroup>
             <ControlGroup label={`Line Count`}><NumberInput value={[dandelionConfig.lineCount]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, lineCount: val })} min={20} max={300} step={10} showButtons /></ControlGroup>
-            <ControlGroup label={`Min Radius`}><NumberInput value={[dandelionConfig.radiusMin]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, radiusMin: val })} min={0.05} max={0.5} step={0.05} showButtons /></ControlGroup>
-            <ControlGroup label={`Max Radius`}><NumberInput value={[dandelionConfig.radiusMax]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, radiusMax: val })} min={0.2} max={0.8} step={0.05} showButtons /></ControlGroup>
-            <ControlGroup label={`Sway Speed`}><NumberInput value={[dandelionConfig.speed]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, speed: val })} min={0} max={2} step={0.1} showButtons /></ControlGroup>
             <ControlGroup label={`Thickness`}><NumberInput value={[dandelionConfig.thickness]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, thickness: val })} min={0.5} max={5} step={0.5} showButtons /></ControlGroup>
             <ControlGroup label={`Dot Size`}><NumberInput value={[dandelionConfig.dotSize]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, dotSize: val })} min={1} max={8} step={0.5} showButtons /></ControlGroup>
-            <ControlGroup label={`Spread`}><NumberInput value={[dandelionConfig.spread]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, spread: val })} min={0.1} max={1} step={0.1} showButtons /></ControlGroup>
-            <ControlGroup label={`Center Y`}><NumberInput value={[dandelionConfig.centerY]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, centerY: val })} min={0.5} max={1.2} step={0.05} showButtons /></ControlGroup>
             <ControlGroup label={`Line Opacity`}><NumberInput value={[dandelionConfig.lineOpacity]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, lineOpacity: val })} min={0.1} max={1} step={0.05} showButtons /></ControlGroup>
           </div>
         )
-      case 'particleRing-settings':
+      case 'dandelion-shape':
         return (
           <div className="space-y-2">
-            <ControlGroup label="Background Color">
-              <div className="flex items-center gap-2">
-                <PaletteColorPicker value={particleRingConfig.backgroundColor} onChange={(newColor) => setParticleRingConfig({ ...particleRingConfig, backgroundColor: newColor })} palette={parsedPalette} className="w-10 h-10" />
-                <Input value={particleRingConfig.backgroundColor} onChange={(e) => setParticleRingConfig({ ...particleRingConfig, backgroundColor: e.target.value })} className="h-9 font-mono text-xs flex-1" />
-              </div>
-            </ControlGroup>
+            <ControlGroup label={`Min Radius`}><NumberInput value={[dandelionConfig.radiusMin]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, radiusMin: val })} min={0.05} max={0.5} step={0.05} showButtons /></ControlGroup>
+            <ControlGroup label={`Max Radius`}><NumberInput value={[dandelionConfig.radiusMax]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, radiusMax: val })} min={0.2} max={0.8} step={0.05} showButtons /></ControlGroup>
+            <ControlGroup label={`Spread`}><NumberInput value={[dandelionConfig.spread]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, spread: val })} min={0.1} max={1} step={0.1} showButtons /></ControlGroup>
+            <ControlGroup label={`Center Y`}><NumberInput value={[dandelionConfig.centerY]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, centerY: val })} min={0.5} max={1.2} step={0.05} showButtons /></ControlGroup>
+          </div>
+        )
+      case 'dandelion-animation':
+        return (
+          <ControlGroup label={`Sway Speed`}><NumberInput value={[dandelionConfig.speed]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, speed: val })} min={0} max={2} step={0.1} showButtons /></ControlGroup>
+        )
+      case 'particleRing-background': {
+        const particleRingColors = particleRingConfig.radialGradientColors || [
+          particleRingConfig.radialGradientCenter || particleRingConfig.backgroundColor || '#fef6f9',
+          particleRingConfig.radialGradientOuter || '#fef3c7'
+        ]
+        const particleRingStops = particleRingConfig.radialGradientStops || [0, 100]
+        return (
+          <RadialGradientSection
+            colors={particleRingColors}
+            colorStops={particleRingStops}
+            endX={particleRingConfig.gradientEndX ?? 100}
+            endY={particleRingConfig.gradientEndY ?? 100}
+            onColorsChange={(newColors) => setParticleRingConfig({ ...particleRingConfig, radialGradientColors: newColors })}
+            onColorStopsChange={(newStops) => setParticleRingConfig({ ...particleRingConfig, radialGradientStops: newStops })}
+            onEndXChange={(val) => setParticleRingConfig({ ...particleRingConfig, gradientEndX: val })}
+            onEndYChange={(val) => setParticleRingConfig({ ...particleRingConfig, gradientEndY: val })}
+            parsedPalette={parsedPalette}
+          />
+        )
+      }
+      case 'particleRing-ring':
+        return (
+          <div className="space-y-2">
             <ControlGroup label={`Particle Count`}><NumberInput value={[particleRingConfig.particleCount]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, particleCount: val })} min={100} max={2000} step={50} showButtons /></ControlGroup>
             <ControlGroup label={`Ring Radius`}><NumberInput value={[particleRingConfig.ringRadius]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, ringRadius: val })} min={0.1} max={0.8} step={0.05} showButtons /></ControlGroup>
             <ControlGroup label={`Ring Width`}><NumberInput value={[particleRingConfig.ringWidth]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, ringWidth: val })} min={0.05} max={0.4} step={0.05} showButtons /></ControlGroup>
-            <ControlGroup label={`Pulse Speed`}><NumberInput value={[particleRingConfig.speed]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, speed: val })} min={0} max={2} step={0.1} showButtons /></ControlGroup>
+          </div>
+        )
+      case 'particleRing-particles':
+        return (
+          <div className="space-y-2">
             <ControlGroup label={`Particle Size`}><NumberInput value={[particleRingConfig.particleSize]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, particleSize: val })} min={1} max={8} step={0.5} showButtons /></ControlGroup>
             <ControlGroup label={`Dispersion`}><NumberInput value={[particleRingConfig.dispersion]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, dispersion: val })} min={0} max={0.5} step={0.05} showButtons /></ControlGroup>
+          </div>
+        )
+      case 'particleRing-animation':
+        return (
+          <div className="space-y-2">
+            <ControlGroup label={`Pulse Speed`}><NumberInput value={[particleRingConfig.speed]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, speed: val })} min={0} max={2} step={0.1} showButtons /></ControlGroup>
             <ControlGroup label={`Rotation Speed`}><NumberInput value={[particleRingConfig.rotationSpeed]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, rotationSpeed: val })} min={0} max={1} step={0.05} showButtons /></ControlGroup>
           </div>
         )
@@ -1529,7 +1577,7 @@ const ControlPanel = ({ layersContainerRef }) => {
         {/* Mobile Top Bar */}
         <div className="fixed left-0 right-0 top-0 z-50 bg-card/5 backdrop-blur-4xl">
           <div className="flex items-center justify-between gap-2 p-2 safe-area-top">
-            <img src={faviconImg} alt="Logo" className="w-10 h-10 rounded-[12px]" />
+            <img src="/apple-touch-icon.png" alt="Logo" className="w-10 h-10 rounded-[12px]" />
             <Button variant="outline" size="sm" className="bg-background/30 backdrop-blur-md flex items-center gap-2 h-10 px-3 border-primary/50" onClick={() => navigate('/scenes')} title="Saved Scenes">
               <Images size={18} />
             </Button>
@@ -1583,28 +1631,6 @@ const ControlPanel = ({ layersContainerRef }) => {
             <ScrollArea className="max-h-[50vh] p-1 gap-2">
               {activePanel === 'gradient' && (
                 <div className="space-y-2">
-                  {/* Colors Section - Always visible */}
-                  <div className="px-1">
-                    <Button
-                      variant="outline"
-                      className="w-full h-11 px-3 justify-between"
-                      onClick={() => openDialog('gradient-colors')}
-                    >
-                      <span className="text-sm">Colors</span>
-                      <div className="flex items-center gap-1">
-                        {gradientConfig.colors.map((color, idx) => (
-                          <div
-                            key={idx}
-                            className="w-5 h-5 rounded-sm border border-border/50"
-                            style={{ backgroundColor: color }}
-                          />
-                        ))}
-                      </div>
-                    </Button>
-                  </div>
-
-                  <div className="h-px bg-border mx-3" />
-
                   {/* Background Type Selector */}
                   <div className="flex items-center justify-between px-3 py-2">
                     <Label className="text-sm">Background Type</Label>
@@ -1627,12 +1653,14 @@ const ControlPanel = ({ layersContainerRef }) => {
                   <div className="space-y-1 flex flex-row flex-wrap gap-1 px-1">
                     {backgroundType === 'simple' && (
                       <>
+                        <SubsectionButton title="Colors" onClick={() => openDialog('gradient-colors')} />
                         <SubsectionButton title="Type" onClick={() => openDialog('simple-type')} />
                         <SubsectionButton title="Position" onClick={() => openDialog('simple-position')} />
                       </>
                     )}
                     {backgroundType === 'liquid' && (
                       <>
+                        <SubsectionButton title="Colors" onClick={() => openDialog('gradient-colors')} />
                         <SubsectionButton title="Type" onClick={() => openDialog('gradient-type')} />
                         <SubsectionButton title="Stops" onClick={() => openDialog('gradient-stops')} />
                         <SubsectionButton title="Wave" onClick={() => openDialog('gradient-wave')} />
@@ -1655,22 +1683,33 @@ const ControlPanel = ({ layersContainerRef }) => {
                     )}
                     {backgroundType === 'waves' && (
                       <>
-                        <SubsectionButton title="Settings" onClick={() => openDialog('waves-settings')} />
+                        <SubsectionButton title="Shape" onClick={() => openDialog('waves-shape')} />
+                        <SubsectionButton title="Position" onClick={() => openDialog('waves-position')} />
+                        <SubsectionButton title="Animation" onClick={() => openDialog('waves-animation')} />
                       </>
                     )}
                     {backgroundType === 'ribbon' && (
                       <>
-                        <SubsectionButton title="Settings" onClick={() => openDialog('ribbon-settings')} />
+                        <SubsectionButton title="Background" onClick={() => openDialog('ribbon-background')} />
+                        <SubsectionButton title="Shape" onClick={() => openDialog('ribbon-shape')} />
+                        <SubsectionButton title="Motion" onClick={() => openDialog('ribbon-motion')} />
+                        <SubsectionButton title="Animation" onClick={() => openDialog('ribbon-animation')} />
                       </>
                     )}
                     {backgroundType === 'dandelion' && (
                       <>
-                        <SubsectionButton title="Settings" onClick={() => openDialog('dandelion-settings')} />
+                        <SubsectionButton title="Background" onClick={() => openDialog('dandelion-background')} />
+                        <SubsectionButton title="Lines" onClick={() => openDialog('dandelion-lines')} />
+                        <SubsectionButton title="Shape" onClick={() => openDialog('dandelion-shape')} />
+                        <SubsectionButton title="Animation" onClick={() => openDialog('dandelion-animation')} />
                       </>
                     )}
                     {backgroundType === 'particleRing' && (
                       <>
-                        <SubsectionButton title="Settings" onClick={() => openDialog('particleRing-settings')} />
+                        <SubsectionButton title="Background" onClick={() => openDialog('particleRing-background')} />
+                        <SubsectionButton title="Ring" onClick={() => openDialog('particleRing-ring')} />
+                        <SubsectionButton title="Particles" onClick={() => openDialog('particleRing-particles')} />
+                        <SubsectionButton title="Animation" onClick={() => openDialog('particleRing-animation')} />
                       </>
                     )}
                   </div>
@@ -1795,7 +1834,7 @@ const ControlPanel = ({ layersContainerRef }) => {
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" className="h-8 gap-1" onClick={() => setIsCollapsed(!isCollapsed)}>
               {isCollapsed ? <ArrowsOutSimple size={12} /> : <ArrowsInSimple size={12} />}
-              <img src={faviconImg} alt="Logo" className="h-4 w-4 rounded-[4px]" />
+              <img src="/apple-touch-icon.png" alt="Logo" className="h-4 w-4 rounded-[4px]" />
             </Button>
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate('/scenes')} title="Saved Scenes">
               <Images size={16} />

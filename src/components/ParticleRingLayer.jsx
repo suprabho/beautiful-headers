@@ -113,10 +113,27 @@ const ParticleRingLayer = memo(({ config, paletteColors = [], effectsConfig, isP
       const centerY = height / 2
       const maxRadius = Math.min(width, height) / 2
 
-      // Create radial background gradient
-      const bgGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, Math.max(width, height))
-      bgGradient.addColorStop(0, cfg.radialGradientCenter || cfg.backgroundColor || '#fef6f9')
-      bgGradient.addColorStop(1, cfg.radialGradientOuter || colors[colors.length - 1] || '#fef3c7')
+      // Create radial background gradient with configurable end position
+      const gradientEndX = (cfg.gradientEndX ?? 100) / 100
+      const gradientEndY = (cfg.gradientEndY ?? 100) / 100
+      const endRadius = Math.sqrt(Math.pow(width * gradientEndX, 2) + Math.pow(height * gradientEndY, 2))
+      const bgGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, endRadius)
+
+      // Support multiple color stops or fallback to legacy 2-color format
+      const gradientColors = cfg.radialGradientColors || [
+        cfg.radialGradientCenter || cfg.backgroundColor || '#fef6f9',
+        cfg.radialGradientOuter || colors[colors.length - 1] || '#fef3c7'
+      ]
+      const gradientStops = cfg.radialGradientStops || [0, 100]
+
+      // Sort by stop position and add color stops
+      const sortedStops = gradientColors
+        .map((color, i) => ({ color, stop: gradientStops[i] / 100 }))
+        .sort((a, b) => a.stop - b.stop)
+      sortedStops.forEach(({ color, stop }) => {
+        bgGradient.addColorStop(stop, color)
+      })
+
       ctx.fillStyle = bgGradient
       ctx.fillRect(0, 0, width, height)
 

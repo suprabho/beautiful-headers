@@ -1,3 +1,4 @@
+import { useRef, useState, useCallback, useEffect } from 'react'
 import { Plus, Trash, ArrowLeft, ArrowRight } from '@phosphor-icons/react'
 import { ControlGroup, NumberInput, PaletteColorPicker } from './SharedControls'
 import { Button } from '@/components/ui/button'
@@ -8,17 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 // ============================================
 // COLORS SECTION - Shared by all background types
 // ============================================
-import { useRef, useState, useCallback } from 'react'
-
 export const ColorsSection = ({
   gradientConfig,
   setGradientConfig,
   parsedPalette,
 }) => {
-  const sliderRef = useRef(null)
-  const [draggingIndex, setDraggingIndex] = useState(null)
-  const [selectedIndex, setSelectedIndex] = useState(null)
-
   const updateGradientColor = (index, color) => {
     const newColors = [...gradientConfig.colors]
     newColors[index] = color
@@ -48,6 +43,96 @@ export const ColorsSection = ({
         colorStops: newStops,
         numColors: newColors.length,
       })
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-3">
+      <Label className="text-xs uppercase tracking-wide font-semibold">Background Colors</Label>
+
+      {/* Color grid */}
+      <div className="flex flex-wrap gap-2">
+        {gradientConfig.colors.map((color, index) => (
+          <div key={index} className="relative group">
+            <PaletteColorPicker
+              value={color}
+              onChange={(newColor) => updateGradientColor(index, newColor)}
+              palette={parsedPalette}
+              className="w-10 h-10"
+            />
+            {gradientConfig.colors.length > 2 && (
+              <button
+                className="absolute -top-1 -right-1 w-4 h-4 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                onClick={() => removeGradientColor(index)}
+              >
+                <Trash size={10} />
+              </button>
+            )}
+          </div>
+        ))}
+        {gradientConfig.colors.length < 8 && (
+          <Button
+            variant="outline"
+            size="icon"
+            className="w-10 h-10"
+            onClick={addGradientColor}
+          >
+            <Plus size={16} />
+          </Button>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// ============================================
+// RADIAL GRADIENT SECTION - For Dandelion/ParticleRing
+// ============================================
+export const RadialGradientSection = ({
+  colors,
+  colorStops,
+  endX,
+  endY,
+  onColorsChange,
+  onColorStopsChange,
+  onBothChange,
+  onEndXChange,
+  onEndYChange,
+  parsedPalette,
+}) => {
+  const sliderRef = useRef(null)
+  const [draggingIndex, setDraggingIndex] = useState(null)
+  const [selectedIndex, setSelectedIndex] = useState(null)
+
+  const updateColor = (index, color) => {
+    const newColors = [...colors]
+    newColors[index] = color
+    onColorsChange(newColors)
+  }
+
+  const addColor = () => {
+    if (colors.length < 8) {
+      const newColors = [...colors, '#ffffff']
+      const newStops = newColors.map((_, i) => Math.round((i / (newColors.length - 1)) * 100))
+      if (onBothChange) {
+        onBothChange(newColors, newStops)
+      } else {
+        onColorsChange(newColors)
+        onColorStopsChange(newStops)
+      }
+    }
+  }
+
+  const removeColor = (index) => {
+    if (colors.length > 2) {
+      const newColors = colors.filter((_, i) => i !== index)
+      const newStops = newColors.map((_, i) => Math.round((i / (newColors.length - 1)) * 100))
+      if (onBothChange) {
+        onBothChange(newColors, newStops)
+      } else {
+        onColorsChange(newColors)
+        onColorStopsChange(newStops)
+      }
       if (selectedIndex === index) {
         setSelectedIndex(null)
       } else if (selectedIndex > index) {
@@ -57,9 +142,9 @@ export const ColorsSection = ({
   }
 
   const updateColorStop = (index, value) => {
-    const newStops = [...gradientConfig.colorStops]
+    const newStops = [...colorStops]
     newStops[index] = Math.max(0, Math.min(100, parseInt(value) || 0))
-    setGradientConfig({ ...gradientConfig, colorStops: newStops })
+    onColorStopsChange(newStops)
   }
 
   const handleDragStart = useCallback((e, index) => {
@@ -75,10 +160,10 @@ export const ColorsSection = ({
     const x = clientX - rect.left
     const percentage = Math.max(0, Math.min(100, Math.round((x / rect.width) * 100)))
 
-    const newStops = [...gradientConfig.colorStops]
+    const newStops = [...colorStops]
     newStops[draggingIndex] = percentage
-    setGradientConfig({ ...gradientConfig, colorStops: newStops })
-  }, [draggingIndex, gradientConfig, setGradientConfig])
+    onColorStopsChange(newStops)
+  }, [draggingIndex, colorStops, onColorStopsChange])
 
   const handleMouseMove = useCallback((e) => {
     handleDragMove(e.clientX)
@@ -96,8 +181,181 @@ export const ColorsSection = ({
   }, [])
 
   // Build gradient string for the track (sorted by stop position)
-  const sortedColorStops = gradientConfig.colors
-    .map((color, i) => ({ color, stop: gradientConfig.colorStops[i] }))
+  const sortedColorStops = colors
+    .map((color, i) => ({ color, stop: colorStops[i] }))
+    .sort((a, b) => a.stop - b.stop)
+  const gradientString = sortedColorStops
+    .map(({ color, stop }) => `${color} ${stop}%`)
+    .join(', ')
+
+  return (
+    <div
+      className="flex flex-col gap-3"
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleDragEnd}
+      onMouseLeave={handleDragEnd}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleDragEnd}
+      onTouchCancel={handleDragEnd}
+    >
+      <Label className="text-xs uppercase tracking-wide font-semibold">Background Colors</Label>
+
+      {/* Horizontal slider track with color stops */}
+      <div
+        ref={sliderRef}
+        className="relative h-10 rounded-md cursor-pointer"
+        style={{
+          background: `linear-gradient(to right, ${gradientString})`,
+          border: '1px solid hsl(var(--border))',
+          touchAction: 'none',
+        }}
+      >
+        {/* Color stop handles */}
+        {colors.map((color, index) => (
+          <div
+            key={index}
+            className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 cursor-grab active:cursor-grabbing transition-transform ${
+              selectedIndex === index ? 'scale-110 z-10' : 'z-0'
+            }`}
+            style={{
+              left: `${colorStops[index]}%`,
+              touchAction: 'none',
+            }}
+            onMouseDown={(e) => handleDragStart(e, index)}
+            onTouchStart={(e) => handleDragStart(e, index)}
+            onClick={() => setSelectedIndex(index)}
+          >
+            {/* Larger invisible touch target */}
+            <div className="absolute inset-0 -m-3" />
+            <div
+              className={`w-5 h-8 rounded-sm border-2 shadow-md ${
+                selectedIndex === index ? 'border-white ring-2 ring-primary' : 'border-white'
+              }`}
+              style={{
+                backgroundColor: color,
+                boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+              }}
+            />
+          </div>
+        ))}
+      </div>
+
+      {/* Selected color controls */}
+      {selectedIndex !== null && (
+        <div className="flex items-center gap-2 p-3 rounded-md bg-muted/50">
+          <PaletteColorPicker
+            value={colors[selectedIndex]}
+            onChange={(newColor) => updateColor(selectedIndex, newColor)}
+            palette={parsedPalette}
+            className="w-10 h-10"
+          />
+          <Input
+            type="number"
+            min="0"
+            max="100"
+            value={colorStops[selectedIndex] || 0}
+            onChange={(e) => updateColorStop(selectedIndex, e.target.value)}
+            className="w-20 h-10 text-sm"
+          />
+          <span className="text-sm text-muted-foreground">%</span>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-10 w-10 ml-auto"
+            onClick={() => removeColor(selectedIndex)}
+            disabled={colors.length <= 2}
+          >
+            <Trash size={16} />
+          </Button>
+        </div>
+      )}
+
+      {/* Add color button */}
+      {colors.length < 8 && (
+        <Button variant="outline" size="sm" className="w-full h-10 text-sm" onClick={addColor}>
+          <Plus size={16} className="mr-1" /> Add Color
+        </Button>
+      )}
+
+      {/* End X / End Y position controls */}
+      <div className="grid grid-cols-2 gap-4">
+        <ControlGroup label="End X (in %)">
+          <NumberInput
+            value={[endX]}
+            onValueChange={([val]) => onEndXChange(val)}
+            min={0}
+            max={200}
+            step={10}
+          />
+        </ControlGroup>
+        <ControlGroup label="End Y (in %)">
+          <NumberInput
+            value={[endY]}
+            onValueChange={([val]) => onEndYChange(val)}
+            min={0}
+            max={200}
+            step={10}
+          />
+        </ControlGroup>
+      </div>
+    </div>
+  )
+}
+
+// ============================================
+// LOCKED GRADIENT SLIDER - Colors synced with background, only stops editable
+// ============================================
+export const LockedGradientSection = ({
+  colors,
+  colorStops,
+  onColorStopsChange,
+}) => {
+  const sliderRef = useRef(null)
+  const [draggingIndex, setDraggingIndex] = useState(null)
+  const [selectedIndex, setSelectedIndex] = useState(null)
+
+  const updateColorStop = (index, value) => {
+    const newStops = [...colorStops]
+    newStops[index] = Math.max(0, Math.min(100, parseInt(value) || 0))
+    onColorStopsChange(newStops)
+  }
+
+  const handleDragStart = useCallback((e, index) => {
+    e.preventDefault()
+    setDraggingIndex(index)
+    setSelectedIndex(index)
+  }, [])
+
+  const handleDragMove = useCallback((clientX) => {
+    if (draggingIndex === null || !sliderRef.current) return
+
+    const rect = sliderRef.current.getBoundingClientRect()
+    const x = clientX - rect.left
+    const percentage = Math.max(0, Math.min(100, Math.round((x / rect.width) * 100)))
+
+    const newStops = [...colorStops]
+    newStops[draggingIndex] = percentage
+    onColorStopsChange(newStops)
+  }, [draggingIndex, colorStops, onColorStopsChange])
+
+  const handleMouseMove = useCallback((e) => {
+    handleDragMove(e.clientX)
+  }, [handleDragMove])
+
+  const handleTouchMove = useCallback((e) => {
+    if (draggingIndex !== null && e.touches.length > 0) {
+      e.preventDefault()
+      handleDragMove(e.touches[0].clientX)
+    }
+  }, [draggingIndex, handleDragMove])
+
+  const handleDragEnd = useCallback(() => {
+    setDraggingIndex(null)
+  }, [])
+
+  // Build gradient string for the track (sorted by stop position)
+  const sortedColorStops = colors
+    .map((color, i) => ({ color, stop: colorStops[i] ?? Math.round((i / (colors.length - 1)) * 100) }))
     .sort((a, b) => a.stop - b.stop)
   const gradientString = sortedColorStops
     .map(({ color, stop }) => `${color} ${stop}%`)
@@ -125,14 +383,14 @@ export const ColorsSection = ({
         }}
       >
         {/* Color stop handles */}
-        {gradientConfig.colors.map((color, index) => (
+        {colors.map((color, index) => (
           <div
             key={index}
             className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 cursor-grab active:cursor-grabbing transition-transform ${
               selectedIndex === index ? 'scale-125 z-10' : 'z-0'
             }`}
             style={{
-              left: `${gradientConfig.colorStops[index]}%`,
+              left: `${colorStops[index] ?? Math.round((index / (colors.length - 1)) * 100)}%`,
             }}
             onMouseDown={(e) => handleDragStart(e, index)}
             onTouchStart={(e) => handleDragStart(e, index)}
@@ -151,40 +409,23 @@ export const ColorsSection = ({
         ))}
       </div>
 
-      {/* Selected color controls */}
+      {/* Selected stop controls - position only, no color editing */}
       {selectedIndex !== null && (
         <div className="flex items-center gap-2 p-2 rounded-md bg-muted/50">
-          <PaletteColorPicker
-            value={gradientConfig.colors[selectedIndex]}
-            onChange={(newColor) => updateGradientColor(selectedIndex, newColor)}
-            palette={parsedPalette}
+          <div
+            className="w-8 h-8 rounded border border-border"
+            style={{ backgroundColor: colors[selectedIndex] }}
           />
           <Input
             type="number"
             min="0"
             max="100"
-            value={gradientConfig.colorStops[selectedIndex] || 0}
+            value={colorStops[selectedIndex] ?? Math.round((selectedIndex / (colors.length - 1)) * 100)}
             onChange={(e) => updateColorStop(selectedIndex, e.target.value)}
             className="w-16 h-8 text-xs"
           />
           <span className="text-xs text-muted-foreground">%</span>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 ml-auto"
-            onClick={() => removeGradientColor(selectedIndex)}
-            disabled={gradientConfig.colors.length <= 2}
-          >
-            <Trash size={12} />
-          </Button>
         </div>
-      )}
-
-      {/* Add color button */}
-      {gradientConfig.colors.length < 8 && (
-        <Button variant="outline" size="sm" className="w-full h-8 text-xs" onClick={addGradientColor}>
-          <Plus size={12} className="mr-1" /> Add Color
-        </Button>
       )}
     </div>
   )
@@ -199,6 +440,13 @@ export const SimpleControls = ({
 }) => {
   return (
     <>
+      {/* Locked Gradient Slider */}
+      <LockedGradientSection
+        colors={gradientConfig.colors}
+        colorStops={gradientConfig.colorStops}
+        onColorStopsChange={(newStops) => setGradientConfig({ ...gradientConfig, colorStops: newStops })}
+      />
+
       {/* Gradient Type */}
       <ControlGroup label="Gradient Type">
         <Select
@@ -283,6 +531,13 @@ export const LiquidControls = ({
 }) => {
   return (
     <>
+      {/* Locked Gradient Slider */}
+      <LockedGradientSection
+        colors={gradientConfig.colors}
+        colorStops={gradientConfig.colorStops}
+        onColorStopsChange={(newStops) => setGradientConfig({ ...gradientConfig, colorStops: newStops })}
+      />
+
       {/* Gradient Type */}
       <ControlGroup label="Gradient Type">
         <Select
@@ -1087,58 +1342,28 @@ const RibbonControls = ({ ribbonConfig, setRibbonConfig, parsedPalette }) => {
 // DANDELION CONTROLS
 // ============================================
 export const DandelionControls = ({ dandelionConfig, setDandelionConfig, parsedPalette }) => {
+  // Fallback for legacy configs without array format
+  const colors = dandelionConfig.radialGradientColors || [
+    dandelionConfig.radialGradientCenter || dandelionConfig.backgroundColor || '#e8f4fc',
+    dandelionConfig.radialGradientOuter || '#fef3c7'
+  ]
+  const colorStops = dandelionConfig.radialGradientStops || [0, 100]
+
   return (
     <>
-      {/* Background Color */}
-      <ControlGroup label="Background Color">
-        <div className="flex items-center gap-2">
-          <PaletteColorPicker
-            value={dandelionConfig.backgroundColor}
-            onChange={(newColor) => setDandelionConfig({ ...dandelionConfig, backgroundColor: newColor })}
-            palette={parsedPalette}
-            className="w-10 h-9"
-          />
-          <Input
-            value={dandelionConfig.backgroundColor}
-            onChange={(e) => setDandelionConfig({ ...dandelionConfig, backgroundColor: e.target.value })}
-            className="h-9 font-mono text-xs flex-1"
-          />
-        </div>
-      </ControlGroup>
-
-      {/* Radial Gradient Center */}
-      <ControlGroup label="Radial Center">
-        <div className="flex items-center gap-2">
-          <PaletteColorPicker
-            value={dandelionConfig.radialGradientCenter}
-            onChange={(newColor) => setDandelionConfig({ ...dandelionConfig, radialGradientCenter: newColor })}
-            palette={parsedPalette}
-            className="w-10 h-9"
-          />
-          <Input
-            value={dandelionConfig.radialGradientCenter}
-            onChange={(e) => setDandelionConfig({ ...dandelionConfig, radialGradientCenter: e.target.value })}
-            className="h-9 font-mono text-xs flex-1"
-          />
-        </div>
-      </ControlGroup>
-
-      {/* Radial Gradient Outer */}
-      <ControlGroup label="Radial Outer">
-        <div className="flex items-center gap-2">
-          <PaletteColorPicker
-            value={dandelionConfig.radialGradientOuter}
-            onChange={(newColor) => setDandelionConfig({ ...dandelionConfig, radialGradientOuter: newColor })}
-            palette={parsedPalette}
-            className="w-10 h-9"
-          />
-          <Input
-            value={dandelionConfig.radialGradientOuter}
-            onChange={(e) => setDandelionConfig({ ...dandelionConfig, radialGradientOuter: e.target.value })}
-            className="h-9 font-mono text-xs flex-1"
-          />
-        </div>
-      </ControlGroup>
+      {/* Radial Gradient Section */}
+      <RadialGradientSection
+        colors={colors}
+        colorStops={colorStops}
+        endX={dandelionConfig.gradientEndX ?? 100}
+        endY={dandelionConfig.gradientEndY ?? 100}
+        onColorsChange={(newColors) => setDandelionConfig({ ...dandelionConfig, radialGradientColors: newColors })}
+        onColorStopsChange={(newStops) => setDandelionConfig({ ...dandelionConfig, radialGradientStops: newStops })}
+        onBothChange={(newColors, newStops) => setDandelionConfig({ ...dandelionConfig, radialGradientColors: newColors, radialGradientStops: newStops })}
+        onEndXChange={(val) => setDandelionConfig({ ...dandelionConfig, gradientEndX: val })}
+        onEndYChange={(val) => setDandelionConfig({ ...dandelionConfig, gradientEndY: val })}
+        parsedPalette={parsedPalette}
+      />
 
       {/* Line Count */}
       <ControlGroup label="Line Count">
@@ -1235,58 +1460,28 @@ export const DandelionControls = ({ dandelionConfig, setDandelionConfig, parsedP
 // PARTICLE RING CONTROLS
 // ============================================
 export const ParticleRingControls = ({ particleRingConfig, setParticleRingConfig, parsedPalette }) => {
+  // Fallback for legacy configs without array format
+  const colors = particleRingConfig.radialGradientColors || [
+    particleRingConfig.radialGradientCenter || particleRingConfig.backgroundColor || '#fef6f9',
+    particleRingConfig.radialGradientOuter || '#fef3c7'
+  ]
+  const colorStops = particleRingConfig.radialGradientStops || [0, 100]
+
   return (
     <>
-      {/* Background Color */}
-      <ControlGroup label="Background Color">
-        <div className="flex items-center gap-2">
-          <PaletteColorPicker
-            value={particleRingConfig.backgroundColor}
-            onChange={(newColor) => setParticleRingConfig({ ...particleRingConfig, backgroundColor: newColor })}
-            palette={parsedPalette}
-            className="w-10 h-9"
-          />
-          <Input
-            value={particleRingConfig.backgroundColor}
-            onChange={(e) => setParticleRingConfig({ ...particleRingConfig, backgroundColor: e.target.value })}
-            className="h-9 font-mono text-xs flex-1"
-          />
-        </div>
-      </ControlGroup>
-
-      {/* Radial Gradient Center */}
-      <ControlGroup label="Radial Center">
-        <div className="flex items-center gap-2">
-          <PaletteColorPicker
-            value={particleRingConfig.radialGradientCenter}
-            onChange={(newColor) => setParticleRingConfig({ ...particleRingConfig, radialGradientCenter: newColor })}
-            palette={parsedPalette}
-            className="w-10 h-9"
-          />
-          <Input
-            value={particleRingConfig.radialGradientCenter}
-            onChange={(e) => setParticleRingConfig({ ...particleRingConfig, radialGradientCenter: e.target.value })}
-            className="h-9 font-mono text-xs flex-1"
-          />
-        </div>
-      </ControlGroup>
-
-      {/* Radial Gradient Outer */}
-      <ControlGroup label="Radial Outer">
-        <div className="flex items-center gap-2">
-          <PaletteColorPicker
-            value={particleRingConfig.radialGradientOuter}
-            onChange={(newColor) => setParticleRingConfig({ ...particleRingConfig, radialGradientOuter: newColor })}
-            palette={parsedPalette}
-            className="w-10 h-9"
-          />
-          <Input
-            value={particleRingConfig.radialGradientOuter}
-            onChange={(e) => setParticleRingConfig({ ...particleRingConfig, radialGradientOuter: e.target.value })}
-            className="h-9 font-mono text-xs flex-1"
-          />
-        </div>
-      </ControlGroup>
+      {/* Radial Gradient Section */}
+      <RadialGradientSection
+        colors={colors}
+        colorStops={colorStops}
+        endX={particleRingConfig.gradientEndX ?? 100}
+        endY={particleRingConfig.gradientEndY ?? 100}
+        onColorsChange={(newColors) => setParticleRingConfig({ ...particleRingConfig, radialGradientColors: newColors })}
+        onColorStopsChange={(newStops) => setParticleRingConfig({ ...particleRingConfig, radialGradientStops: newStops })}
+        onBothChange={(newColors, newStops) => setParticleRingConfig({ ...particleRingConfig, radialGradientColors: newColors, radialGradientStops: newStops })}
+        onEndXChange={(val) => setParticleRingConfig({ ...particleRingConfig, gradientEndX: val })}
+        onEndYChange={(val) => setParticleRingConfig({ ...particleRingConfig, gradientEndY: val })}
+        parsedPalette={parsedPalette}
+      />
 
       {/* Particle Count */}
       <ControlGroup label="Particle Count">

@@ -9,7 +9,11 @@
       "destination": "/api/scenes/:slug"
     },
     {
-      "source": "/((?!assets|src|node_modules|@).*)",
+      "source": "/scenes",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/embed/:slug",
       "destination": "/index.html"
     }
   ]
