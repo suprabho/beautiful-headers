@@ -47,18 +47,18 @@ export const ColorsSection = ({
   }
 
   return (
-    <div className="flex flex-col gap-3">
-      <Label className="text-xs uppercase tracking-wide font-semibold">Background Colors</Label>
+    <div className="flex flex-col gap-3 pb-2 border-b border-border/50">
+      <Label className="text-sm md:text-xs md:uppercase tracking-wide font-medium md:font-semibold">Background Colors</Label>
 
       {/* Color grid */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap w-full flex-1 gap-2">
         {gradientConfig.colors.map((color, index) => (
-          <div key={index} className="relative group">
+          <div key={index} className="relative flex w-full min-w-10 flex-1">
             <PaletteColorPicker
               value={color}
               onChange={(newColor) => updateGradientColor(index, newColor)}
               palette={parsedPalette}
-              className="w-10 h-10"
+              className="w-full h-10"
             />
             {gradientConfig.colors.length > 2 && (
               <button
@@ -214,9 +214,8 @@ export const RadialGradientSection = ({
         {colors.map((color, index) => (
           <div
             key={index}
-            className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 cursor-grab active:cursor-grabbing transition-transform ${
-              selectedIndex === index ? 'scale-110 z-10' : 'z-0'
-            }`}
+            className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 cursor-grab active:cursor-grabbing transition-transform ${selectedIndex === index ? 'scale-110 z-10' : 'z-0'
+              }`}
             style={{
               left: `${colorStops[index]}%`,
               touchAction: 'none',
@@ -228,9 +227,8 @@ export const RadialGradientSection = ({
             {/* Larger invisible touch target */}
             <div className="absolute inset-0 -m-3" />
             <div
-              className={`w-5 h-8 rounded-sm border-2 shadow-md ${
-                selectedIndex === index ? 'border-white ring-2 ring-primary' : 'border-white'
-              }`}
+              className={`w-5 h-8 rounded-sm border-2 shadow-md ${selectedIndex === index ? 'border-white ring-2 ring-primary' : 'border-white'
+                }`}
               style={{
                 backgroundColor: color,
                 boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
@@ -386,9 +384,8 @@ export const LockedGradientSection = ({
         {colors.map((color, index) => (
           <div
             key={index}
-            className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 cursor-grab active:cursor-grabbing transition-transform ${
-              selectedIndex === index ? 'scale-125 z-10' : 'z-0'
-            }`}
+            className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 cursor-grab active:cursor-grabbing transition-transform ${selectedIndex === index ? 'scale-125 z-10' : 'z-0'
+              }`}
             style={{
               left: `${colorStops[index] ?? Math.round((index / (colors.length - 1)) * 100)}%`,
             }}
@@ -397,9 +394,8 @@ export const LockedGradientSection = ({
             onClick={() => setSelectedIndex(index)}
           >
             <div
-              className={`w-4 h-6 rounded-sm border-2 shadow-md ${
-                selectedIndex === index ? 'border-white ring-2 ring-primary' : 'border-white'
-              }`}
+              className={`w-4 h-6 rounded-sm border-2 shadow-md ${selectedIndex === index ? 'border-white ring-2 ring-primary' : 'border-white'
+                }`}
               style={{
                 backgroundColor: color,
                 boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
@@ -737,7 +733,7 @@ export const AuroraControls = ({
             palette={parsedPalette}
             className="w-10 h-9"
           />
-          <Input 
+          <Input
             value={auroraConfig.backgroundColor}
             onChange={(e) => setAuroraConfig({
               ...auroraConfig,
@@ -885,7 +881,7 @@ export const FluidControls = ({
             palette={parsedPalette}
             className="w-10 h-9"
           />
-          <Input 
+          <Input
             value={fluidConfig.backgroundColor}
             onChange={(e) => setFluidConfig({
               ...fluidConfig,
@@ -977,7 +973,7 @@ export const BlobControls = ({
             palette={parsedPalette}
             className="w-10 h-9"
           />
-          <Input 
+          <Input
             value={blobConfig.backgroundColor}
             onChange={(e) => setBlobConfig({
               ...blobConfig,

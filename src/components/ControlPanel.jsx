@@ -481,7 +481,6 @@ const ControlPanel = ({ layersContainerRef }) => {
       if (originalValues.type === 'gradient') {
         setGradientConfig(originalValues.data.gradientConfig)
         setAuroraConfig(originalValues.data.auroraConfig)
-        setBlobConfig(originalValues.data.blobConfig)
         setFluidConfig(originalValues.data.fluidConfig)
         setWavesConfig(originalValues.data.wavesConfig)
         if (originalValues.data.ribbonConfig) setRibbonConfig(originalValues.data.ribbonConfig)
@@ -1630,9 +1629,15 @@ const ControlPanel = ({ layersContainerRef }) => {
           {!isMobileCollapsed && (
             <ScrollArea className="max-h-[50vh] p-1 gap-2">
               {activePanel === 'gradient' && (
-                <div className="space-y-2">
+                <div className="px-3 py-2 ">
+                  <ColorsSection
+                    className="border-b border-border/50"
+                    gradientConfig={gradientConfig}
+                    setGradientConfig={setGradientConfig}
+                    parsedPalette={parsedPalette}
+                  />
                   {/* Background Type Selector */}
-                  <div className="flex items-center justify-between px-3 py-2">
+                  <div className="flex items-center justify-between px-0 py-2">
                     <Label className="text-sm">Background Type</Label>
                     <Select value={backgroundType} onValueChange={(value) => setBackgroundType(value)}>
                       <SelectTrigger className="w-[120px] h-9"><SelectValue /></SelectTrigger>
@@ -1653,14 +1658,12 @@ const ControlPanel = ({ layersContainerRef }) => {
                   <div className="space-y-1 flex flex-row flex-wrap gap-1 px-1">
                     {backgroundType === 'simple' && (
                       <>
-                        <SubsectionButton title="Colors" onClick={() => openDialog('gradient-colors')} />
                         <SubsectionButton title="Type" onClick={() => openDialog('simple-type')} />
                         <SubsectionButton title="Position" onClick={() => openDialog('simple-position')} />
                       </>
                     )}
                     {backgroundType === 'liquid' && (
                       <>
-                        <SubsectionButton title="Colors" onClick={() => openDialog('gradient-colors')} />
                         <SubsectionButton title="Type" onClick={() => openDialog('gradient-type')} />
                         <SubsectionButton title="Stops" onClick={() => openDialog('gradient-stops')} />
                         <SubsectionButton title="Wave" onClick={() => openDialog('gradient-wave')} />
