@@ -1351,8 +1351,8 @@ export const DandelionControls = ({ dandelionConfig, setDandelionConfig, parsedP
       <RadialGradientSection
         colors={colors}
         colorStops={colorStops}
-        endX={dandelionConfig.gradientEndX ?? 100}
-        endY={dandelionConfig.gradientEndY ?? 100}
+        endX={dandelionConfig.gradientEndX ?? 200}
+        endY={dandelionConfig.gradientEndY ?? 200}
         onColorsChange={(newColors) => setDandelionConfig({ ...dandelionConfig, radialGradientColors: newColors })}
         onColorStopsChange={(newStops) => setDandelionConfig({ ...dandelionConfig, radialGradientStops: newStops })}
         onBothChange={(newColors, newStops) => setDandelionConfig({ ...dandelionConfig, radialGradientColors: newColors, radialGradientStops: newStops })}
@@ -1367,8 +1367,8 @@ export const DandelionControls = ({ dandelionConfig, setDandelionConfig, parsedP
           value={[dandelionConfig.lineCount]}
           onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, lineCount: val })}
           min={20}
-          max={300}
-          step={10}
+          max={3000}
+          step={50}
         />
       </ControlGroup>
 

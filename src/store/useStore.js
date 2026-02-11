@@ -435,7 +435,7 @@ const useStore = create((set, get) => ({
     gradientEndY: 100,
     lineCount: 120,
     radiusMin: 0.1,
-    radiusMax: 0.45,
+    radiusMax: 0.8,
     speed: 0.3,
     thickness: 1.5,
     dotSize: 3,
