@@ -18,4 +18,11 @@ export { ProjectsPanel } from './ProjectsControls'
 export { ColorPalettePreview } from './ColorPalettePreview'
 export { ColorPaletteDialog } from './ColorPaletteDialog'
 
+// Dialog and modal components
+export { CaptureModal } from './CaptureModal'
+export { SaveSceneDialog } from './SaveSceneDialog'
+export { MobileDialogContent, getDialogTitle } from './MobileDialogContent'
 
+// Layout components
+export { MobilePanel } from './MobilePanel'
+export { DesktopPanel } from './DesktopPanel'
