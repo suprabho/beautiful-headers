@@ -469,6 +469,27 @@ const useStore = create((set, get) => ({
     particleRingConfig: { ...state.particleRingConfig, ...updates }
   })),
 
+  // ShapeTrail config
+  shapeTrailConfig: {
+    useGradientColors: true,
+    backgroundColor: '#f0f0f0',
+    shape: 'circle',
+    startScale: 1000,
+    endScale: 10000,
+    gap: 30,
+    rotationOffset: 15,
+    speed: 0.3,
+    pathComplexity: 4,
+    opacity: 0.8,
+    blendMode: 'normal',
+    trailCount: 3,
+    trailColorStops: null,
+  },
+  setShapeTrailConfig: (config) => set({ shapeTrailConfig: config }),
+  updateShapeTrailConfig: (updates) => set((state) => ({
+    shapeTrailConfig: { ...state.shapeTrailConfig, ...updates }
+  })),
+
   // Tessellation config
   tessellationConfig: {
     enabled: true,
@@ -596,6 +617,7 @@ const useStore = create((set, get) => ({
       ribbonConfig: state.ribbonConfig,
       dandelionConfig: state.dandelionConfig,
       particleRingConfig: state.particleRingConfig,
+      shapeTrailConfig: state.shapeTrailConfig,
       tessellationConfig: state.tessellationConfig,
       effectsConfig: state.effectsConfig,
       textSections: state.textSections,
@@ -619,6 +641,7 @@ const useStore = create((set, get) => ({
       ...(sceneData.ribbonConfig && { ribbonConfig: sceneData.ribbonConfig }),
       ...(sceneData.dandelionConfig && { dandelionConfig: sceneData.dandelionConfig }),
       ...(sceneData.particleRingConfig && { particleRingConfig: sceneData.particleRingConfig }),
+      ...(sceneData.shapeTrailConfig && { shapeTrailConfig: sceneData.shapeTrailConfig }),
       ...(sceneData.tessellationConfig && { tessellationConfig: sceneData.tessellationConfig }),
       ...(sceneData.effectsConfig && { effectsConfig: sceneData.effectsConfig }),
       ...(sceneData.textSections && { textSections: sceneData.textSections }),

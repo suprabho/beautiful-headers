@@ -8,7 +8,7 @@ export {
 } from './SharedControls'
 
 // Panel components
-export { GradientPanel, ColorsSection, RadialGradientSection, LiquidControls, AuroraControls, BlobControls, FluidControls, WavesControls } from './GradientControls'
+export { GradientPanel, ColorsSection, RadialGradientSection, LiquidControls, AuroraControls, BlobControls, FluidControls, WavesControls, ShapeTrailControls } from './GradientControls'
 export { PatternPanel, IconGridDropdown } from './PatternControls'
 export { EffectsPanel, DEFAULT_EFFECTS_CONFIG } from './EffectsControls'
 export { TextPanel } from './TextControls'

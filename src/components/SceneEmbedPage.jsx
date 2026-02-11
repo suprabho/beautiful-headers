@@ -12,6 +12,7 @@ import WavesLayer from './WavesLayer'
 import RibbonLayer from './RibbonLayer'
 import DandelionLayer from './DandelionLayer'
 import ParticleRingLayer from './ParticleRingLayer'
+import ShapeTrailLayer from './ShapeTrailLayer'
 import TessellationLayer from './TessellationLayer'
 import EffectsLayer from './EffectsLayer'
 import TextLayer from './TextLayer'
@@ -132,6 +133,7 @@ function SceneEmbedPage() {
   const ribbonConfig = sceneData.ribbonConfig || {}
   const dandelionConfig = sceneData.dandelionConfig || {}
   const particleRingConfig = sceneData.particleRingConfig || {}
+  const shapeTrailConfig = sceneData.shapeTrailConfig || {}
   const tessellationConfig = sceneData.tessellationConfig || {}
   const effectsConfig = sceneData.effectsConfig || {}
   const textSections = sceneData.textSections || []
@@ -176,6 +178,9 @@ function SceneEmbedPage() {
             )}
             {backgroundType === 'particleRing' && (
               <ParticleRingLayer config={particleRingConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
+            )}
+            {backgroundType === 'shapeTrail' && (
+              <ShapeTrailLayer config={shapeTrailConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
             )}
           </div>
 

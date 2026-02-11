@@ -1560,6 +1560,278 @@ export const ParticleRingControls = ({ particleRingConfig, setParticleRingConfig
 }
 
 // ============================================
+// SHAPE TRAIL CONTROLS
+// ============================================
+export const ShapeTrailControls = ({ shapeTrailConfig, setShapeTrailConfig, parsedPalette, gradientColors = [] }) => {
+  const sliderRef = useRef(null)
+  const [draggingIndex, setDraggingIndex] = useState(null)
+  const [selectedIndex, setSelectedIndex] = useState(null)
+
+  // Derive color stops - use saved stops or default to evenly distributed
+  const colorStops = shapeTrailConfig.trailColorStops && shapeTrailConfig.trailColorStops.length === gradientColors.length
+    ? shapeTrailConfig.trailColorStops
+    : gradientColors.map((_, i) => Math.round((i / Math.max(1, gradientColors.length - 1)) * 100))
+
+  const updateColorStops = useCallback((newStops) => {
+    setShapeTrailConfig({ ...shapeTrailConfig, trailColorStops: newStops })
+  }, [shapeTrailConfig, setShapeTrailConfig])
+
+  const handleDragStart = useCallback((e, index) => {
+    e.preventDefault()
+    setDraggingIndex(index)
+    setSelectedIndex(index)
+  }, [])
+
+  const handleDragMove = useCallback((clientX) => {
+    if (draggingIndex === null || !sliderRef.current) return
+    const rect = sliderRef.current.getBoundingClientRect()
+    const x = clientX - rect.left
+    const percentage = Math.max(0, Math.min(100, Math.round((x / rect.width) * 100)))
+    const newStops = [...colorStops]
+    newStops[draggingIndex] = percentage
+    updateColorStops(newStops)
+  }, [draggingIndex, colorStops, updateColorStops])
+
+  const handleMouseMove = useCallback((e) => {
+    handleDragMove(e.clientX)
+  }, [handleDragMove])
+
+  const handleTouchMove = useCallback((e) => {
+    if (draggingIndex !== null && e.touches.length > 0) {
+      e.preventDefault()
+      handleDragMove(e.touches[0].clientX)
+    }
+  }, [draggingIndex, handleDragMove])
+
+  const handleDragEnd = useCallback(() => {
+    setDraggingIndex(null)
+  }, [])
+
+  const updateStopPosition = (index, value) => {
+    const newStops = [...colorStops]
+    newStops[index] = Math.max(0, Math.min(100, parseInt(value) || 0))
+    updateColorStops(newStops)
+  }
+
+  // Build gradient string sorted by stop position
+  const sortedColorStops = gradientColors
+    .map((color, i) => ({ color, stop: colorStops[i] ?? Math.round((i / Math.max(1, gradientColors.length - 1)) * 100) }))
+    .sort((a, b) => a.stop - b.stop)
+  const gradientString = sortedColorStops.length >= 2
+    ? sortedColorStops.map(({ color, stop }) => `${color} ${stop}%`).join(', ')
+    : '#888 0%, #888 100%'
+
+  return (
+    <>
+      {/* Trail Gradient Slider */}
+      <div
+        className="flex flex-col gap-2"
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleDragEnd}
+        onMouseLeave={handleDragEnd}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleDragEnd}
+        onTouchCancel={handleDragEnd}
+      >
+        <Label className="text-xs uppercase tracking-wide font-semibold">Trail Gradient</Label>
+        <div
+          ref={sliderRef}
+          className="relative h-10 rounded-md cursor-pointer"
+          style={{
+            background: `linear-gradient(to right, ${gradientString})`,
+            border: '1px solid hsl(var(--border))',
+            touchAction: 'none',
+          }}
+        >
+          {gradientColors.map((color, index) => (
+            <div
+              key={index}
+              className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 cursor-grab active:cursor-grabbing transition-transform ${selectedIndex === index ? 'scale-110 z-10' : 'z-0'}`}
+              style={{
+                left: `${colorStops[index] ?? Math.round((index / Math.max(1, gradientColors.length - 1)) * 100)}%`,
+                touchAction: 'none',
+              }}
+              onMouseDown={(e) => handleDragStart(e, index)}
+              onTouchStart={(e) => handleDragStart(e, index)}
+              onClick={() => setSelectedIndex(index)}
+            >
+              <div className="absolute inset-0 -m-3" />
+              <div
+                className={`w-5 h-8 rounded-sm border-2 shadow-md ${selectedIndex === index ? 'border-white ring-2 ring-primary' : 'border-white'}`}
+                style={{
+                  backgroundColor: color,
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                }}
+              />
+            </div>
+          ))}
+        </div>
+        {selectedIndex !== null && selectedIndex < gradientColors.length && (
+          <div className="flex items-center gap-2 p-2 rounded-md bg-muted/50">
+            <div
+              className="w-8 h-8 rounded-sm border"
+              style={{ backgroundColor: gradientColors[selectedIndex] }}
+            />
+            <Input
+              type="number"
+              min="0"
+              max="100"
+              value={colorStops[selectedIndex] ?? 0}
+              onChange={(e) => updateStopPosition(selectedIndex, e.target.value)}
+              className="w-20 h-8 text-sm"
+            />
+            <span className="text-sm text-muted-foreground">%</span>
+          </div>
+        )}
+        <span className="text-[10px] text-muted-foreground">Drag handles to adjust color positions along the trail</span>
+      </div>
+
+      {/* Background Color */}
+      <ControlGroup label="Background Color">
+        <div className="flex items-center gap-2">
+          <PaletteColorPicker
+            value={shapeTrailConfig.backgroundColor}
+            onChange={(newColor) => setShapeTrailConfig({ ...shapeTrailConfig, backgroundColor: newColor })}
+            palette={parsedPalette}
+            className="w-10 h-9"
+          />
+          <Input
+            value={shapeTrailConfig.backgroundColor}
+            onChange={(e) => setShapeTrailConfig({ ...shapeTrailConfig, backgroundColor: e.target.value })}
+            className="h-9 font-mono text-xs flex-1"
+          />
+        </div>
+      </ControlGroup>
+
+      {/* Shape Type */}
+      <ControlGroup label="Shape">
+        <Select
+          value={shapeTrailConfig.shape}
+          onValueChange={(value) => setShapeTrailConfig({ ...shapeTrailConfig, shape: value })}
+        >
+          <SelectTrigger className="h-9">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="circle">Circle</SelectItem>
+            <SelectItem value="square">Square</SelectItem>
+            <SelectItem value="triangle">Triangle</SelectItem>
+          </SelectContent>
+        </Select>
+      </ControlGroup>
+
+      {/* Scale Range */}
+      <div className="grid grid-cols-2 gap-4">
+        <ControlGroup label="Start Scale">
+          <NumberInput
+            value={[shapeTrailConfig.startScale]}
+            onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, startScale: val })}
+            min={100}
+            max={1000}
+            step={100}
+          />
+        </ControlGroup>
+        <ControlGroup label="End Scale">
+          <NumberInput
+            value={[shapeTrailConfig.endScale]}
+            onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, endScale: val })}
+            min={100}
+            max={1000}
+            step={100}
+          />
+        </ControlGroup>
+      </div>
+
+      {/* Gap */}
+      <ControlGroup label="Gap">
+        <NumberInput
+          value={[shapeTrailConfig.gap]}
+          onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, gap: val })}
+          min={5}
+          max={100}
+          step={5}
+        />
+      </ControlGroup>
+
+      {/* Rotation Offset */}
+      <ControlGroup label={`Rotation Offset (\u00B0)`}>
+        <NumberInput
+          value={[shapeTrailConfig.rotationOffset]}
+          onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, rotationOffset: val })}
+          min={0}
+          max={180}
+          step={5}
+        />
+      </ControlGroup>
+
+      {/* Trail Count */}
+      <ControlGroup label="Trail Count">
+        <NumberInput
+          value={[shapeTrailConfig.trailCount]}
+          onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, trailCount: val })}
+          min={1}
+          max={8}
+          step={1}
+        />
+      </ControlGroup>
+
+      {/* Path Complexity */}
+      <ControlGroup label="Path Complexity">
+        <NumberInput
+          value={[shapeTrailConfig.pathComplexity]}
+          onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, pathComplexity: val })}
+          min={3}
+          max={8}
+          step={1}
+        />
+      </ControlGroup>
+
+      {/* Speed */}
+      <ControlGroup label="Speed">
+        <NumberInput
+          value={[shapeTrailConfig.speed]}
+          onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, speed: val })}
+          min={0}
+          max={2}
+          step={0.1}
+        />
+      </ControlGroup>
+
+      {/* Opacity */}
+      <ControlGroup label="Opacity">
+        <NumberInput
+          value={[shapeTrailConfig.opacity]}
+          onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, opacity: val })}
+          min={0.1}
+          max={1}
+          step={0.05}
+        />
+      </ControlGroup>
+
+      {/* Blend Mode */}
+      <ControlGroup label="Blend Mode">
+        <Select
+          value={shapeTrailConfig.blendMode}
+          onValueChange={(value) => setShapeTrailConfig({ ...shapeTrailConfig, blendMode: value })}
+        >
+          <SelectTrigger className="h-9">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="normal">Normal</SelectItem>
+            <SelectItem value="multiply">Multiply</SelectItem>
+            <SelectItem value="screen">Screen</SelectItem>
+            <SelectItem value="overlay">Overlay</SelectItem>
+            <SelectItem value="soft-light">Soft Light</SelectItem>
+            <SelectItem value="hard-light">Hard Light</SelectItem>
+          </SelectContent>
+        </Select>
+      </ControlGroup>
+    </>
+  )
+}
+
+// ============================================
 // MAIN GRADIENT PANEL - Restructured
 // ============================================
 export const GradientPanel = ({
@@ -1581,6 +1853,8 @@ export const GradientPanel = ({
   setDandelionConfig,
   particleRingConfig,
   setParticleRingConfig,
+  shapeTrailConfig,
+  setShapeTrailConfig,
   parsedPalette,
 }) => {
   return (
@@ -1612,6 +1886,7 @@ export const GradientPanel = ({
             <SelectItem value="ribbon">Ribbon</SelectItem>
             <SelectItem value="dandelion">Dandelion</SelectItem>
             <SelectItem value="particleRing">Particle Ring</SelectItem>
+            <SelectItem value="shapeTrail">Shape Trail</SelectItem>
           </SelectContent>
         </Select>
       </ControlGroup>
@@ -1668,6 +1943,14 @@ export const GradientPanel = ({
           particleRingConfig={particleRingConfig}
           setParticleRingConfig={setParticleRingConfig}
           parsedPalette={parsedPalette}
+        />
+      )}
+      {backgroundType === 'shapeTrail' && (
+        <ShapeTrailControls
+          shapeTrailConfig={shapeTrailConfig}
+          setShapeTrailConfig={setShapeTrailConfig}
+          parsedPalette={parsedPalette}
+          gradientColors={gradientConfig.colors}
         />
       )}
     </div>

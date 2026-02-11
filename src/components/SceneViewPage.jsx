@@ -27,6 +27,7 @@ import WavesLayer from './WavesLayer'
 import RibbonLayer from './RibbonLayer'
 import DandelionLayer from './DandelionLayer'
 import ParticleRingLayer from './ParticleRingLayer'
+import ShapeTrailLayer from './ShapeTrailLayer'
 import TessellationLayer, { ICON_PATHS } from './TessellationLayer'
 import EffectsLayer from './EffectsLayer'
 import TextLayer from './TextLayer'
@@ -736,6 +737,7 @@ function SceneViewPage() {
   const ribbonConfig = sceneData.ribbonConfig || {}
   const dandelionConfig = sceneData.dandelionConfig || {}
   const particleRingConfig = sceneData.particleRingConfig || {}
+  const shapeTrailConfig = sceneData.shapeTrailConfig || {}
   const tessellationConfig = sceneData.tessellationConfig || {}
   const effectsConfig = sceneData.effectsConfig || {}
   const textSections = sceneData.textSections || []
@@ -780,6 +782,9 @@ function SceneViewPage() {
             )}
             {backgroundType === 'particleRing' && (
               <ParticleRingLayer config={particleRingConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
+            )}
+            {backgroundType === 'shapeTrail' && (
+              <ShapeTrailLayer config={shapeTrailConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
             )}
           </div>
 
@@ -826,7 +831,7 @@ function SceneViewPage() {
 
       {/* Scene info panel - on mobile it appears in second fold, on desktop fixed bottom-right */}
       <div className="relative mt-[76vh] md:mt-0 md:fixed md:bottom-4 md:right-4 md:z-50 md:w-80 p-4 md:p-0">
-        <div className="flex flex-col gap-2 bg-background/80 backdrop-blur border border-border rounded-xl p-4 gap-0.5 shadow-lg">
+        <div className="flex flex-col bg-background/80 backdrop-blur border border-border rounded-xl p-4 gap-0.5 shadow-lg">
 
           {scene.title && (
             <div className="flex items-center justify-between">
