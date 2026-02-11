@@ -323,6 +323,7 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
           endY={dandelionConfig.gradientEndY ?? 100}
           onColorsChange={(newColors) => setDandelionConfig({ ...dandelionConfig, radialGradientColors: newColors })}
           onColorStopsChange={(newStops) => setDandelionConfig({ ...dandelionConfig, radialGradientStops: newStops })}
+          onBothChange={(newColors, newStops) => setDandelionConfig({ ...dandelionConfig, radialGradientColors: newColors, radialGradientStops: newStops })}
           onEndXChange={(val) => setDandelionConfig({ ...dandelionConfig, gradientEndX: val })}
           onEndYChange={(val) => setDandelionConfig({ ...dandelionConfig, gradientEndY: val })}
           parsedPalette={parsedPalette}
@@ -365,6 +366,7 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
           endY={particleRingConfig.gradientEndY ?? 100}
           onColorsChange={(newColors) => setParticleRingConfig({ ...particleRingConfig, radialGradientColors: newColors })}
           onColorStopsChange={(newStops) => setParticleRingConfig({ ...particleRingConfig, radialGradientStops: newStops })}
+          onBothChange={(newColors, newStops) => setParticleRingConfig({ ...particleRingConfig, radialGradientColors: newColors, radialGradientStops: newStops })}
           onEndXChange={(val) => setParticleRingConfig({ ...particleRingConfig, gradientEndX: val })}
           onEndYChange={(val) => setParticleRingConfig({ ...particleRingConfig, gradientEndY: val })}
           parsedPalette={parsedPalette}
