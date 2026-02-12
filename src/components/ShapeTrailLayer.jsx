@@ -74,22 +74,46 @@ function catmullRomPoint(p0, p1, p2, p3, t) {
   }
 }
 
-// Generate a single trail's control points
+// Generate points along a golden (Fibonacci) spiral in normalized [0,1] coords
 function generateTrailPoints(complexity) {
-  const numPoints = Math.max(3, complexity || 4)
+  const numTurns = Math.max(2, complexity || 4)
+  const maxTheta = numTurns * 2 * Math.PI
+  const numPoints = Math.max(16, numTurns * 8)
+
+  const minR = 0.01
+  const maxR = 1.2
+
+  // Slight center offset and random start angle for variety
+  const cx = 0.4 + Math.random() * 0.2
+  const cy = 0.4 + Math.random() * 0.2
+  const startAngle = Math.random() * 2 * Math.PI
+  const direction = Math.random() > 0.5 ? 1 : -1
+
   const points = []
   for (let i = 0; i < numPoints; i++) {
-    points.push({ x: Math.random(), y: Math.random() })
+    const t = i / (numPoints - 1)
+    const theta = startAngle + direction * t * maxTheta
+    // Logarithmic spiral growth (golden spiral characteristic)
+    const r = minR * Math.pow(maxR / minR, t)
+
+    points.push({
+      x: Math.max(0, Math.min(1, cx + r * Math.cos(theta))),
+      y: Math.max(0, Math.min(1, cy + r * Math.sin(theta))),
+    })
   }
-  return points
+
+  return { points, cx, cy }
 }
 
 // Generate trail paths with normalized [0,1] control points
 function generateTrails(count, complexity) {
   const trails = []
   for (let t = 0; t < count; t++) {
+    const { points, cx, cy } = generateTrailPoints(complexity)
     trails.push({
-      points: generateTrailPoints(complexity),
+      points,
+      cx,
+      cy,
       seed: Math.random() * 1000,
     })
   }
@@ -213,6 +237,7 @@ const ShapeTrailLayer = memo(({ config, paletteColors = [], effectsConfig, isPau
   const colorsRef = useRef([])
   const trailsRef = useRef(null)
   const trailStatesRef = useRef(null)
+  const timeRef = useRef(0)
 
   const flutedEnabled = effectsConfig?.flutedGlass?.enabled ?? false
 
@@ -316,6 +341,11 @@ const ShapeTrailLayer = memo(({ config, paletteColors = [], effectsConfig, isPau
       // Pre-compute RGB cache for smooth color interpolation
       const rgbCache = currentColors.map(c => hexToRgb(c))
 
+      // Advance time for continuous rotation
+      if (!isPausedRef.current) {
+        timeRef.current += 0.016
+      }
+
       // Draw each trail with progressive growth
       for (let t = 0; t < trails.length; t++) {
         const trail = trails[t]
@@ -346,20 +376,32 @@ const ShapeTrailLayer = memo(({ config, paletteColors = [], effectsConfig, isPau
             if (state.fadeAlpha <= 0) {
               // Phase 5: regenerate
               state.progress = 0
-              state.delay = 0.3 + Math.random() * 0.5
+              state.delay = Math.random() * 0.1
               state.holdTime = 0
               state.fadeAlpha = 1
-              trail.points = generateTrailPoints(cfg.pathComplexity || 4)
+              const generated = generateTrailPoints(cfg.pathComplexity || 4)
+              trail.points = generated.points
+              trail.cx = generated.cx
+              trail.cy = generated.cy
               trail.seed = Math.random() * 1000
               continue
             }
           }
         }
 
-        // Draw the trail
+        // Draw the trail, rotated around spiral center
         const trailOpacity = opacity * state.fadeAlpha
         const points = samplePath(trail.points, width, height, gap)
         if (points.length === 0) continue
+
+        const centerX = trail.cx * width
+        const centerY = trail.cy * height
+        const rotAngle = timeRef.current * speed * 0.5
+
+        ctx.save()
+        ctx.translate(centerX, centerY)
+        ctx.rotate(rotAngle)
+        ctx.translate(-centerX, -centerY)
 
         for (let i = 0; i < points.length; i++) {
           const pt = points[i]
@@ -379,6 +421,8 @@ const ShapeTrailLayer = memo(({ config, paletteColors = [], effectsConfig, isPau
 
           drawShape(ctx, shape, pt.x, pt.y, scale, rotation, color, shapeOpacity, blendMode)
         }
+
+        ctx.restore()
       }
 
       animationRef.current = requestAnimationFrame(animate)

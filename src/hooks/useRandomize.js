@@ -194,14 +194,13 @@ export function useRandomize() {
     setShapeTrailConfig({
       ...shapeTrailConfig,
       shape: pickOne(['circle', 'square', 'triangle']),
-      startScale: Math.floor(randomInRange(100, 400)),
-      endScale: Math.floor(randomInRange(100, 1000)),
+      startScale: Math.floor(randomInRange(10, 100)),
+      endScale: Math.floor(randomInRange(1000, 2000)),
       gap: Math.floor(randomInRange(10, 60)),
       rotationOffset: Math.floor(randomInRange(0, 90)),
       speed: Math.round(randomInRange(0.1, 1.5) * 10) / 10,
       pathComplexity: Math.floor(randomInRange(3, 7)),
       opacity: Math.round(randomInRange(0.3, 1) * 20) / 20,
-      blendMode: pickOne(['normal', 'multiply', 'screen', 'overlay']),
       trailCount: Math.floor(randomInRange(1, 6)),
     })
 

@@ -1736,7 +1736,7 @@ export const ShapeTrailControls = ({ shapeTrailConfig, setShapeTrailConfig, pars
             value={[shapeTrailConfig.endScale]}
             onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, endScale: val })}
             min={100}
-            max={1000}
+            max={2000}
             step={100}
           />
         </ControlGroup>
@@ -1808,25 +1808,6 @@ export const ShapeTrailControls = ({ shapeTrailConfig, setShapeTrailConfig, pars
         />
       </ControlGroup>
 
-      {/* Blend Mode */}
-      <ControlGroup label="Blend Mode">
-        <Select
-          value={shapeTrailConfig.blendMode}
-          onValueChange={(value) => setShapeTrailConfig({ ...shapeTrailConfig, blendMode: value })}
-        >
-          <SelectTrigger className="h-9">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="normal">Normal</SelectItem>
-            <SelectItem value="multiply">Multiply</SelectItem>
-            <SelectItem value="screen">Screen</SelectItem>
-            <SelectItem value="overlay">Overlay</SelectItem>
-            <SelectItem value="soft-light">Soft Light</SelectItem>
-            <SelectItem value="hard-light">Hard Light</SelectItem>
-          </SelectContent>
-        </Select>
-      </ControlGroup>
     </>
   )
 }
