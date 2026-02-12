@@ -175,6 +175,8 @@ export function useRandomize() {
       particleSize: Math.round(randomInRange(1, 6) * 10) / 10,
       dispersion: Math.round(randomInRange(0.1, 0.5) * 100) / 100,
       rotationSpeed: Math.round(randomInRange(0.05, 0.5) * 100) / 100,
+      tiltX: Math.round(randomInRange(-45, 45)),
+      tiltZ: Math.round(randomInRange(-45, 45)),
     })
 
     // Randomize aurora config

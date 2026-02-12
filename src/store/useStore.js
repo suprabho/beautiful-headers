@@ -463,6 +463,8 @@ const useStore = create((set, get) => ({
     particleSize: 3,
     dispersion: 0.3,
     rotationSpeed: 0.2,
+    tiltX: 0,
+    tiltZ: 0,
   },
   setParticleRingConfig: (config) => set({ particleRingConfig: config }),
   updateParticleRingConfig: (updates) => set((state) => ({

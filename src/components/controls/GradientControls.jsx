@@ -1555,6 +1555,28 @@ export const ParticleRingControls = ({ particleRingConfig, setParticleRingConfig
           step={0.05}
         />
       </ControlGroup>
+
+      {/* Tilt X */}
+      <ControlGroup label="Tilt X">
+        <NumberInput
+          value={[particleRingConfig.tiltX ?? 0]}
+          onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, tiltX: val })}
+          min={-90}
+          max={90}
+          step={5}
+        />
+      </ControlGroup>
+
+      {/* Tilt Z */}
+      <ControlGroup label="Tilt Z">
+        <NumberInput
+          value={[particleRingConfig.tiltZ ?? 0]}
+          onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, tiltZ: val })}
+          min={-90}
+          max={90}
+          step={5}
+        />
+      </ControlGroup>
     </>
   )
 }
