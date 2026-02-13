@@ -53,7 +53,7 @@ export const ColorsSection = ({
       {/* Color grid */}
       <div className="flex flex-wrap w-full flex-1 gap-2">
         {gradientConfig.colors.map((color, index) => (
-          <div key={index} className="relative flex w-full min-w-10 flex-1">
+          <div key={index} className="group relative flex w-full min-w-10 flex-1">
             <PaletteColorPicker
               value={color}
               onChange={(newColor) => updateGradientColor(index, newColor)}
@@ -62,7 +62,7 @@ export const ColorsSection = ({
             />
             {gradientConfig.colors.length > 2 && (
               <button
-                className="absolute -top-1 -right-1 w-4 h-4 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                className="absolute -top-1 -right-1 w-4 h-4 bg-destructive text-destructive-foreground rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center"
                 onClick={() => removeGradientColor(index)}
               >
                 <Trash size={10} />
