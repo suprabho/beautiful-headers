@@ -13,6 +13,7 @@ import {
   ContrastAwarePaletteColorPicker,
   ColorsSection,
   RadialGradientSection,
+  LockedGradientSection,
   IconGridDropdown,
 } from './index'
 
@@ -126,21 +127,50 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
         />
       )
     case 'simple-type':
+      return (
+        <div className="space-y-2">
+          <LockedGradientSection
+            colors={gradientConfig.colors}
+            colorStops={gradientConfig.colorStops}
+            onColorStopsChange={(newStops) => setGradientConfig({ ...gradientConfig, colorStops: newStops })}
+          />
+          <ControlGroup label="Gradient Type">
+            <Select
+              value={gradientConfig.type}
+              onValueChange={(value) => setGradientConfig({ ...gradientConfig, type: value })}
+            >
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="linear">Linear</SelectItem>
+                <SelectItem value="radial">Radial</SelectItem>
+                <SelectItem value="conic">Conic</SelectItem>
+              </SelectContent>
+            </Select>
+          </ControlGroup>
+        </div>
+      )
     case 'gradient-type':
       return (
-        <ControlGroup label="Gradient Type">
-          <Select
-            value={gradientConfig.type}
-            onValueChange={(value) => setGradientConfig({ ...gradientConfig, type: value })}
-          >
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="linear">Linear</SelectItem>
-              <SelectItem value="radial">Radial</SelectItem>
-              <SelectItem value="conic">Conic</SelectItem>
-            </SelectContent>
-          </Select>
-        </ControlGroup>
+        <div className="space-y-2">
+          <LockedGradientSection
+            colors={gradientConfig.colors}
+            colorStops={gradientConfig.colorStops}
+            onColorStopsChange={(newStops) => setGradientConfig({ ...gradientConfig, colorStops: newStops })}
+          />
+          <ControlGroup label="Gradient Type">
+            <Select
+              value={gradientConfig.type}
+              onValueChange={(value) => setGradientConfig({ ...gradientConfig, type: value })}
+            >
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="linear">Linear</SelectItem>
+                <SelectItem value="radial">Radial</SelectItem>
+                <SelectItem value="conic">Conic</SelectItem>
+              </SelectContent>
+            </Select>
+          </ControlGroup>
+        </div>
       )
     case 'simple-position':
       return (
@@ -256,7 +286,8 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
     case 'fluid-settings':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Intensity`}><NumberInput value={[fluidConfig.intensity]} onValueChange={([val]) => setFluidConfig({ ...fluidConfig, intensity: val })} min={0.1} max={10} step={0.1} showButtons /></ControlGroup>
+          <ControlGroup label={`Intensity`}><NumberInput value={[fluidConfig.intensity]} onValueChange={([val]) => setFluidConfig({ ...fluidConfig, intensity: val })} min={0.5} max={2} step={0.1} showButtons /></ControlGroup>
+          <ControlGroup label={`Scale`}><NumberInput value={[fluidConfig.scale]} onValueChange={([val]) => setFluidConfig({ ...fluidConfig, scale: val })} min={0.1} max={10} step={0.1} showButtons /></ControlGroup>
           <ControlGroup label={`Blur`}><NumberInput value={[fluidConfig.blurAmount]} onValueChange={([val]) => setFluidConfig({ ...fluidConfig, blurAmount: val })} min={0} max={100} step={1} showButtons /></ControlGroup>
         </div>
       )
@@ -325,8 +356,8 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
         <RadialGradientSection
           colors={dandelionColors}
           colorStops={dandelionStops}
-          endX={dandelionConfig.gradientEndX ?? 100}
-          endY={dandelionConfig.gradientEndY ?? 100}
+          endX={dandelionConfig.gradientEndX ?? 200}
+          endY={dandelionConfig.gradientEndY ?? 200}
           onColorsChange={(newColors) => setDandelionConfig({ ...dandelionConfig, radialGradientColors: newColors })}
           onColorStopsChange={(newStops) => setDandelionConfig({ ...dandelionConfig, radialGradientStops: newStops })}
           onBothChange={(newColors, newStops) => setDandelionConfig({ ...dandelionConfig, radialGradientColors: newColors, radialGradientStops: newStops })}
@@ -339,10 +370,9 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
     case 'dandelion-lines':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Line Count`}><NumberInput value={[dandelionConfig.lineCount]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, lineCount: val })} min={20} max={300} step={10} showButtons /></ControlGroup>
+          <ControlGroup label={`Line Count`}><NumberInput value={[dandelionConfig.lineCount]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, lineCount: val })} min={20} max={3000} step={50} showButtons /></ControlGroup>
           <ControlGroup label={`Thickness`}><NumberInput value={[dandelionConfig.thickness]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, thickness: val })} min={0.5} max={5} step={0.5} showButtons /></ControlGroup>
           <ControlGroup label={`Dot Size`}><NumberInput value={[dandelionConfig.dotSize]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, dotSize: val })} min={1} max={8} step={0.5} showButtons /></ControlGroup>
-          <ControlGroup label={`Line Opacity`}><NumberInput value={[dandelionConfig.lineOpacity]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, lineOpacity: val })} min={0.1} max={1} step={0.05} showButtons /></ControlGroup>
         </div>
       )
     case 'dandelion-shape':
@@ -399,17 +429,30 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
         <div className="space-y-2">
           <ControlGroup label={`Pulse Speed`}><NumberInput value={[particleRingConfig.speed]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, speed: val })} min={0} max={2} step={0.1} showButtons /></ControlGroup>
           <ControlGroup label={`Rotation Speed`}><NumberInput value={[particleRingConfig.rotationSpeed]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, rotationSpeed: val })} min={0} max={1} step={0.05} showButtons /></ControlGroup>
+          <ControlGroup label={`Tilt X`}><NumberInput value={[particleRingConfig.tiltX ?? 0]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, tiltX: val })} min={-90} max={90} step={5} showButtons /></ControlGroup>
+          <ControlGroup label={`Tilt Z`}><NumberInput value={[particleRingConfig.tiltZ ?? 0]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, tiltZ: val })} min={-90} max={90} step={5} showButtons /></ControlGroup>
         </div>
       )
-    case 'shapeTrail-background':
+    case 'shapeTrail-background': {
+      const trailColorStops = shapeTrailConfig.trailColorStops && shapeTrailConfig.trailColorStops.length === gradientConfig.colors.length
+        ? shapeTrailConfig.trailColorStops
+        : gradientConfig.colors.map((_, i) => Math.round((i / Math.max(1, gradientConfig.colors.length - 1)) * 100))
       return (
-        <ControlGroup label="Background Color">
-          <div className="flex items-center gap-2">
-            <PaletteColorPicker value={shapeTrailConfig.backgroundColor} onChange={(newColor) => setShapeTrailConfig({ ...shapeTrailConfig, backgroundColor: newColor })} palette={parsedPalette} className="w-10 h-10" />
-            <Input value={shapeTrailConfig.backgroundColor} onChange={(e) => setShapeTrailConfig({ ...shapeTrailConfig, backgroundColor: e.target.value })} className="h-9 font-mono text-xs flex-1" />
-          </div>
-        </ControlGroup>
+        <div className="space-y-2">
+          <LockedGradientSection
+            colors={gradientConfig.colors}
+            colorStops={trailColorStops}
+            onColorStopsChange={(newStops) => setShapeTrailConfig({ ...shapeTrailConfig, trailColorStops: newStops })}
+          />
+          <ControlGroup label="Background Color">
+            <div className="flex items-center gap-2">
+              <PaletteColorPicker value={shapeTrailConfig.backgroundColor} onChange={(newColor) => setShapeTrailConfig({ ...shapeTrailConfig, backgroundColor: newColor })} palette={parsedPalette} className="w-10 h-10" />
+              <Input value={shapeTrailConfig.backgroundColor} onChange={(e) => setShapeTrailConfig({ ...shapeTrailConfig, backgroundColor: e.target.value })} className="h-9 font-mono text-xs flex-1" />
+            </div>
+          </ControlGroup>
+        </div>
       )
+    }
     case 'shapeTrail-shape':
       return (
         <div className="space-y-2">
@@ -423,8 +466,9 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
               </SelectContent>
             </Select>
           </ControlGroup>
-          <ControlGroup label="Start Scale"><NumberInput value={[shapeTrailConfig.startScale]} onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, startScale: val })} min={5} max={100} step={5} showButtons /></ControlGroup>
-          <ControlGroup label="End Scale"><NumberInput value={[shapeTrailConfig.endScale]} onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, endScale: val })} min={2} max={100} step={5} showButtons /></ControlGroup>
+          <ControlGroup label="Start Scale"><NumberInput value={[shapeTrailConfig.startScale]} onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, startScale: val })} min={100} max={1000} step={100} showButtons /></ControlGroup>
+          <ControlGroup label="End Scale"><NumberInput value={[shapeTrailConfig.endScale]} onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, endScale: val })} min={100} max={2000} step={100} showButtons /></ControlGroup>
+          <ControlGroup label="Size Cycles"><NumberInput value={[shapeTrailConfig.sizeCycles ?? 1]} onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, sizeCycles: val })} min={1} max={100} step={1} showButtons /></ControlGroup>
           <ControlGroup label="Gap"><NumberInput value={[shapeTrailConfig.gap]} onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, gap: val })} min={5} max={100} step={5} showButtons /></ControlGroup>
           <ControlGroup label="Rotation Offset"><NumberInput value={[shapeTrailConfig.rotationOffset]} onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, rotationOffset: val })} min={0} max={180} step={5} showButtons /></ControlGroup>
           <ControlGroup label="Opacity"><NumberInput value={[shapeTrailConfig.opacity]} onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, opacity: val })} min={0.1} max={1} step={0.05} showButtons /></ControlGroup>
@@ -435,18 +479,6 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
         <div className="space-y-2">
           <ControlGroup label="Trail Count"><NumberInput value={[shapeTrailConfig.trailCount]} onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, trailCount: val })} min={1} max={8} step={1} showButtons /></ControlGroup>
           <ControlGroup label="Path Complexity"><NumberInput value={[shapeTrailConfig.pathComplexity]} onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, pathComplexity: val })} min={3} max={8} step={1} showButtons /></ControlGroup>
-          <ControlGroup label="Blend Mode">
-            <Select value={shapeTrailConfig.blendMode} onValueChange={(value) => setShapeTrailConfig({ ...shapeTrailConfig, blendMode: value })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="normal">Normal</SelectItem>
-                <SelectItem value="multiply">Multiply</SelectItem>
-                <SelectItem value="screen">Screen</SelectItem>
-                <SelectItem value="overlay">Overlay</SelectItem>
-                <SelectItem value="soft-light">Soft Light</SelectItem>
-              </SelectContent>
-            </Select>
-          </ControlGroup>
         </div>
       )
     case 'shapeTrail-animation':
@@ -463,7 +495,12 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
             />
           </ControlGroup>
           <ControlGroup label={`Size`}><NumberInput value={[tessellationConfig.size]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, size: val })} min={8} max={100} step={4} showButtons /></ControlGroup>
-          <ControlGroup label="Color"><PaletteColorPicker value={tessellationConfig.color} onChange={(newColor) => setTessellationConfig({ ...tessellationConfig, color: newColor })} palette={parsedPalette} className="w-10 h-10" /></ControlGroup>
+          <ControlGroup label="Color">
+            <div className="flex items-center gap-2">
+              <PaletteColorPicker value={tessellationConfig.color} onChange={(newColor) => setTessellationConfig({ ...tessellationConfig, color: newColor })} palette={parsedPalette} className="w-10 h-10" />
+              <Input value={tessellationConfig.color} onChange={(e) => setTessellationConfig({ ...tessellationConfig, color: e.target.value })} className="h-9 font-mono text-xs flex-1" />
+            </div>
+          </ControlGroup>
           <ControlGroup label={`Opacity`}><NumberInput value={[tessellationConfig.opacity]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, opacity: val })} max={1} step={0.05} showButtons /></ControlGroup>
           <ControlGroup label={`Rotation`}><NumberInput value={[tessellationConfig.rotation]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, rotation: val })} max={360} step={15} showButtons /></ControlGroup>
         </div>
@@ -480,7 +517,7 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
         <ControlGroup label={`Mouse Rotation`}><NumberInput value={[tessellationConfig.mouseRotationInfluence || 0]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, mouseRotationInfluence: val })} max={1} step={0.05} showButtons /></ControlGroup>
       )
     case 'effects-blur':
-      return <ControlGroup label={`Blur`}><NumberInput value={[effectsConfig.blur]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, blur: val })} max={30} step={2} showButtons /></ControlGroup>
+      return <ControlGroup label={`Blur`}><NumberInput value={[effectsConfig.blur]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, blur: val })} max={50} step={2} showButtons /></ControlGroup>
     case 'effects-texture':
       return (
         <div className="space-y-2">
@@ -499,8 +536,27 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
           </ControlGroup>
           {effectsConfig.texture !== 'none' && (
             <>
-              <ControlGroup label={`Size`}><NumberInput value={[effectsConfig.textureSize]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, textureSize: val })} min={4} max={100} step={4} showButtons /></ControlGroup>
+              <ControlGroup label={`Size`}><NumberInput value={[effectsConfig.textureSize]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, textureSize: val })} min={4} max={100} step={2} showButtons /></ControlGroup>
               <ControlGroup label={`Opacity`}><NumberInput value={[effectsConfig.textureOpacity]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, textureOpacity: val })} max={1} step={0.05} showButtons /></ControlGroup>
+              <ControlGroup label="Blend Mode">
+                <Select value={effectsConfig.textureBlendMode} onValueChange={(v) => setEffectsConfig({ ...effectsConfig, textureBlendMode: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="normal">Normal</SelectItem>
+                    <SelectItem value="multiply">Multiply</SelectItem>
+                    <SelectItem value="screen">Screen</SelectItem>
+                    <SelectItem value="overlay">Overlay</SelectItem>
+                    <SelectItem value="darken">Darken</SelectItem>
+                    <SelectItem value="lighten">Lighten</SelectItem>
+                    <SelectItem value="color-dodge">Color Dodge</SelectItem>
+                    <SelectItem value="color-burn">Color Burn</SelectItem>
+                    <SelectItem value="hard-light">Hard Light</SelectItem>
+                    <SelectItem value="soft-light">Soft Light</SelectItem>
+                    <SelectItem value="difference">Difference</SelectItem>
+                    <SelectItem value="exclusion">Exclusion</SelectItem>
+                  </SelectContent>
+                </Select>
+              </ControlGroup>
             </>
           )}
         </div>
@@ -523,7 +579,7 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
         </ControlGroup>
       )
     case 'effects-vignette':
-      return <ControlGroup label={`Intensity`}><NumberInput value={[effectsConfig.vignetteIntensity]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, vignetteIntensity: val })} max={0.8} step={0.05} showButtons /></ControlGroup>
+      return <ControlGroup label={`Intensity`}><NumberInput value={[effectsConfig.vignetteIntensity]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, vignetteIntensity: val })} max={1} step={0.05} showButtons /></ControlGroup>
     case 'effects-color':
       return (
         <div className="space-y-2">
@@ -564,7 +620,7 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
                     ...effectsConfig,
                     flutedGlass: { ...effectsConfig.flutedGlass, distortionStrength: val }
                   })}
-                  min={0.005} max={0.1} step={0.005} showButtons
+                  min={0} max={0.1} step={0.01} showButtons
                 />
               </ControlGroup>
               <ControlGroup label={`Wave Frequency`}>
@@ -585,6 +641,16 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
                     flutedGlass: { ...effectsConfig.flutedGlass, rotation: val }
                   })}
                   min={0} max={180} step={5} showButtons
+                />
+              </ControlGroup>
+              <ControlGroup label={`Motion Value`}>
+                <NumberInput
+                  value={[effectsConfig.flutedGlass?.motionValue ?? 0.5]}
+                  onValueChange={([val]) => setEffectsConfig({
+                    ...effectsConfig,
+                    flutedGlass: { ...effectsConfig.flutedGlass, motionValue: val }
+                  })}
+                  min={0} max={2} step={0.1} showButtons
                 />
               </ControlGroup>
               <ControlGroup label={`Motion Speed`}>
@@ -618,7 +684,7 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
             <ContrastAwarePaletteColorPicker value={textConfig.color} onChange={(newColor) => setTextConfig({ ...textConfig, color: newColor })} palette={parsedPalette} gradientColors={gradientConfig.colors} className="w-16 h-8" />
           </ControlGroup>
           <ControlGroup label="Text Opacity"><NumberInput value={[textConfig.opacity]} onValueChange={([val]) => setTextConfig({ ...textConfig, opacity: val })} min={0} max={1} step={0.05} showButtons={true} /></ControlGroup>
-          <ControlGroup label="Section Gap"><NumberInput value={[textGap]} onValueChange={([val]) => setTextGap(val)} min={-10} max={100} step={4} showButtons={true} /></ControlGroup>
+          <ControlGroup label="Section Gap"><NumberInput value={[textGap]} onValueChange={([val]) => setTextGap(val)} min={0} max={100} step={4} showButtons={true} /></ControlGroup>
         </div>
       )
     default:

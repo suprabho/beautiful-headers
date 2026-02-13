@@ -322,8 +322,8 @@ const ShapeTrailLayer = memo(({ config, paletteColors = [], effectsConfig, isPau
       }
 
       const shape = cfg.shape || 'circle'
-      const startScale = cfg.startScale ?? 4000
-      const endScale = cfg.endScale ?? 10000
+      const startScale = cfg.startScale ?? 1000
+      const endScale = cfg.endScale ?? 2000
       const gap = cfg.gap ?? 30
       const rotationOffset = ((cfg.rotationOffset ?? 15) * Math.PI) / 180
       const speed = cfg.speed ?? 0.3
@@ -408,7 +408,17 @@ const ShapeTrailLayer = memo(({ config, paletteColors = [], effectsConfig, isPau
           if (pt.progress > state.progress) break
 
           const progress = pt.progress
-          const scale = startScale + (endScale - startScale) * progress
+          // Ping-pong size: triangle wave so size oscillates start→end→start→end...
+          const sizeCycles = cfg.sizeCycles ?? 1
+          let sizeT
+          if (sizeCycles <= 1) {
+            sizeT = progress
+          } else {
+            const scaled = progress * sizeCycles
+            const phase = scaled % 1
+            sizeT = Math.floor(scaled) % 2 === 1 ? 1 - phase : phase
+          }
+          const scale = startScale + (endScale - startScale) * sizeT
           const rotation = rotationOffset * i
           const color = lerpColorArray(currentColors, rgbCache, progress, trailColorStops)
 

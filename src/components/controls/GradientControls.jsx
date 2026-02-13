@@ -1764,6 +1764,17 @@ export const ShapeTrailControls = ({ shapeTrailConfig, setShapeTrailConfig, pars
         </ControlGroup>
       </div>
 
+      {/* Size Cycles */}
+      <ControlGroup label="Size Cycles">
+        <NumberInput
+          value={[shapeTrailConfig.sizeCycles ?? 1]}
+          onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, sizeCycles: val })}
+          min={1}
+          max={100}
+          step={1}
+        />
+      </ControlGroup>
+
       {/* Gap */}
       <ControlGroup label="Gap">
         <NumberInput
