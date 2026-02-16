@@ -47,6 +47,7 @@ export const getDialogTitle = (key, textSections) => {
     'particleRing-ring': 'Ring Settings',
     'particleRing-particles': 'Particle Settings',
     'particleRing-animation': 'Ring Animation',
+    'particleRing-tilt': 'Ring Tilt',
     'shapeTrail-background': 'Trail Background',
     'shapeTrail-shape': 'Shape Settings',
     'shapeTrail-path': 'Path Settings',
@@ -429,6 +430,11 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
         <div className="space-y-2">
           <ControlGroup label={`Pulse Speed`}><NumberInput value={[particleRingConfig.speed]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, speed: val })} min={0} max={2} step={0.1} showButtons /></ControlGroup>
           <ControlGroup label={`Rotation Speed`}><NumberInput value={[particleRingConfig.rotationSpeed]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, rotationSpeed: val })} min={0} max={1} step={0.05} showButtons /></ControlGroup>
+        </div>
+      )
+    case 'particleRing-tilt':
+      return (
+        <div className="space-y-2">
           <ControlGroup label={`Tilt X`}><NumberInput value={[particleRingConfig.tiltX ?? 0]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, tiltX: val })} min={-90} max={90} step={5} showButtons /></ControlGroup>
           <ControlGroup label={`Tilt Z`}><NumberInput value={[particleRingConfig.tiltZ ?? 0]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, tiltZ: val })} min={-90} max={90} step={5} showButtons /></ControlGroup>
         </div>

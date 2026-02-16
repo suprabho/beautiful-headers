@@ -206,6 +206,7 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
                       <SubsectionButton title="Ring" onClick={() => openDialog('particleRing-ring')} />
                       <SubsectionButton title="Particles" onClick={() => openDialog('particleRing-particles')} />
                       <SubsectionButton title="Animation" onClick={() => openDialog('particleRing-animation')} />
+                      <SubsectionButton title="Tilt" onClick={() => openDialog('particleRing-tilt')} />
                     </>
                   )}
                   {backgroundType === 'shapeTrail' && (
