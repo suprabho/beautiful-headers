@@ -336,7 +336,7 @@ const DandelionLayer = memo(({ config, paletteColors = [], effectsConfig, isPaus
       }}
     >
       <Canvas
-        gl={{ preserveDrawingBuffer: true, antialias: true }}
+        gl={{ preserveDrawingBuffer: true, antialias: true, alpha: false }}
         camera={{ position: [0, 0, 8], fov: 50 }}
         style={{ width: '100%', height: '100%' }}
         dpr={Math.min(window.devicePixelRatio, 2)}
