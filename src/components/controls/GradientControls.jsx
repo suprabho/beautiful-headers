@@ -51,7 +51,7 @@ export const ColorsSection = ({
       <Label className="text-sm md:text-xs md:uppercase tracking-wide font-medium md:font-semibold">Background Colors</Label>
 
       {/* Color grid */}
-      <div className="flex flex-wrap w-full flex-1 gap-2">
+      <div className="flex flex-wrap w-full flex-1 gap-2 px-1">
         {gradientConfig.colors.map((color, index) => (
           <div key={index} className="group relative flex w-full min-w-10 flex-1">
             <PaletteColorPicker
@@ -157,8 +157,10 @@ export const RadialGradientSection = ({
     if (draggingIndex === null || !sliderRef.current) return
 
     const rect = sliderRef.current.getBoundingClientRect()
-    const x = clientX - rect.left
-    const percentage = Math.max(0, Math.min(100, Math.round((x / rect.width) * 100)))
+    const handleOffset = 10 // half of w-5 (20px)
+    const x = clientX - rect.left - handleOffset
+    const usableWidth = rect.width - handleOffset * 2
+    const percentage = Math.max(0, Math.min(100, Math.round((x / usableWidth) * 100)))
 
     const newStops = [...colorStops]
     newStops[draggingIndex] = percentage
@@ -217,7 +219,7 @@ export const RadialGradientSection = ({
             className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 cursor-grab active:cursor-grabbing transition-transform ${selectedIndex === index ? 'scale-110 z-10' : 'z-0'
               }`}
             style={{
-              left: `${colorStops[index]}%`,
+              left: `calc(10px + ${colorStops[index]} * (100% - 20px) / 100)`,
               touchAction: 'none',
             }}
             onMouseDown={(e) => handleDragStart(e, index)}
@@ -328,8 +330,10 @@ export const LockedGradientSection = ({
     if (draggingIndex === null || !sliderRef.current) return
 
     const rect = sliderRef.current.getBoundingClientRect()
-    const x = clientX - rect.left
-    const percentage = Math.max(0, Math.min(100, Math.round((x / rect.width) * 100)))
+    const handleOffset = 8 // half of w-4 (16px)
+    const x = clientX - rect.left - handleOffset
+    const usableWidth = rect.width - handleOffset * 2
+    const percentage = Math.max(0, Math.min(100, Math.round((x / usableWidth) * 100)))
 
     const newStops = [...colorStops]
     newStops[draggingIndex] = percentage
@@ -381,13 +385,15 @@ export const LockedGradientSection = ({
         }}
       >
         {/* Color stop handles */}
-        {colors.map((color, index) => (
+        {colors.map((color, index) => {
+          const stop = colorStops[index] ?? Math.round((index / (colors.length - 1)) * 100)
+          return (
           <div
             key={index}
             className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 cursor-grab active:cursor-grabbing transition-transform ${selectedIndex === index ? 'scale-125 z-10' : 'z-0'
               }`}
             style={{
-              left: `${colorStops[index] ?? Math.round((index / (colors.length - 1)) * 100)}%`,
+              left: `calc(8px + ${stop} * (100% - 16px) / 100)`,
             }}
             onMouseDown={(e) => handleDragStart(e, index)}
             onTouchStart={(e) => handleDragStart(e, index)}
@@ -402,7 +408,7 @@ export const LockedGradientSection = ({
               }}
             />
           </div>
-        ))}
+        )})}
       </div>
 
       {/* Selected stop controls - position only, no color editing */}
@@ -739,7 +745,7 @@ export const AuroraControls = ({
               ...auroraConfig,
               backgroundColor: e.target.value
             })}
-            className="h-9 font-mono text-xs flex-1"
+            className="h-9 w-24 font-mono text-xs"
           />
         </div>
       </ControlGroup>
@@ -887,7 +893,7 @@ export const FluidControls = ({
               ...fluidConfig,
               backgroundColor: e.target.value
             })}
-            className="h-9 font-mono text-xs flex-1"
+            className="h-9 w-24 font-mono text-xs"
           />
         </div>
       </ControlGroup>
@@ -979,7 +985,7 @@ export const BlobControls = ({
               ...blobConfig,
               backgroundColor: e.target.value
             })}
-            className="h-9 font-mono text-xs flex-1"
+            className="h-9 w-24 font-mono text-xs"
           />
         </div>
       </ControlGroup>
@@ -1227,7 +1233,7 @@ const RibbonControls = ({ ribbonConfig, setRibbonConfig, parsedPalette }) => {
           <Input
             value={ribbonConfig.backgroundColor}
             onChange={(e) => setRibbonConfig({ ...ribbonConfig, backgroundColor: e.target.value })}
-            className="h-9 font-mono text-xs flex-1"
+            className="h-9 w-24 font-mono text-xs"
           />
         </div>
       </ControlGroup>
@@ -1607,8 +1613,10 @@ export const ShapeTrailControls = ({ shapeTrailConfig, setShapeTrailConfig, pars
   const handleDragMove = useCallback((clientX) => {
     if (draggingIndex === null || !sliderRef.current) return
     const rect = sliderRef.current.getBoundingClientRect()
-    const x = clientX - rect.left
-    const percentage = Math.max(0, Math.min(100, Math.round((x / rect.width) * 100)))
+    const handleOffset = 10 // half of w-5 (20px)
+    const x = clientX - rect.left - handleOffset
+    const usableWidth = rect.width - handleOffset * 2
+    const percentage = Math.max(0, Math.min(100, Math.round((x / usableWidth) * 100)))
     const newStops = [...colorStops]
     newStops[draggingIndex] = percentage
     updateColorStops(newStops)
@@ -1665,12 +1673,14 @@ export const ShapeTrailControls = ({ shapeTrailConfig, setShapeTrailConfig, pars
             touchAction: 'none',
           }}
         >
-          {gradientColors.map((color, index) => (
+          {gradientColors.map((color, index) => {
+            const stop = colorStops[index] ?? Math.round((index / Math.max(1, gradientColors.length - 1)) * 100)
+            return (
             <div
               key={index}
               className={`absolute top-1/2 -translate-y-1/2 -translate-x-1/2 cursor-grab active:cursor-grabbing transition-transform ${selectedIndex === index ? 'scale-110 z-10' : 'z-0'}`}
               style={{
-                left: `${colorStops[index] ?? Math.round((index / Math.max(1, gradientColors.length - 1)) * 100)}%`,
+                left: `calc(10px + ${stop} * (100% - 20px) / 100)`,
                 touchAction: 'none',
               }}
               onMouseDown={(e) => handleDragStart(e, index)}
@@ -1686,7 +1696,7 @@ export const ShapeTrailControls = ({ shapeTrailConfig, setShapeTrailConfig, pars
                 }}
               />
             </div>
-          ))}
+          )})}
         </div>
         {selectedIndex !== null && selectedIndex < gradientColors.length && (
           <div className="flex items-center gap-2 p-2 rounded-md bg-muted/50">
@@ -1720,7 +1730,7 @@ export const ShapeTrailControls = ({ shapeTrailConfig, setShapeTrailConfig, pars
           <Input
             value={shapeTrailConfig.backgroundColor}
             onChange={(e) => setShapeTrailConfig({ ...shapeTrailConfig, backgroundColor: e.target.value })}
-            className="h-9 font-mono text-xs flex-1"
+            className="h-9 w-24 font-mono text-xs"
           />
         </div>
       </ControlGroup>

@@ -20,10 +20,11 @@
   --color-border: oklch(0.30 0.02 260);
   --color-input: oklch(0.24 0.02 260);
   --color-ring: oklch(0.70 0.20 280);
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.25rem;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  
 }
 
 @layer base {
@@ -31,6 +32,10 @@
     @apply border-border;
   }
   
+  html {
+    font-size: 12px;
+  }
+
   body {
     font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     -webkit-font-smoothing: antialiased;

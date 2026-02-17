@@ -11,7 +11,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover
 export const ControlGroup = memo(({ label, children, className }) => (
   <div className={cn(className, "flex flex-row items-center justify-between")}>
     <Label className="text-xs font-semibold tracking-wide">{label}</Label>
-    <div className="py-2 flex items-center gap-1">
+    <div className="py-0.5 flex items-center gap-1">
       {children}
     </div>
   </div>
@@ -108,7 +108,7 @@ export const NumberInput = memo(({ value, onValueChange, min = 0, max = 100, ste
       min={min}
       max={max}
       step={step}
-      className={cn("h-9", className)}
+      className={cn("h-9 w-20", className)}
     />
   )
 })
