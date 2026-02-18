@@ -55,9 +55,9 @@ function SceneCard({ scene, onNavigate, onDelete }) {
 
       {/* Info */}
       <div className="p-3">
-        <h3 className="font-medium text-sm truncate">{scene.title}</h3>
+        <h3 className="font-medium text-base truncate">{scene.title}</h3>
         {scene.short_description && (
-          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+          <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
             {scene.short_description}
           </p>
         )}
@@ -214,7 +214,7 @@ function SavedScenesPage() {
       </header>
 
       {/* Content */}
-      <main className="container mx-auto px-4 py-6">
+      <main className="container w-800 mx-auto px-4 py-6">
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <CircleNotch size={32} className="animate-spin text-muted-foreground" />
