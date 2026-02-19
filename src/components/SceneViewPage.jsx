@@ -78,6 +78,7 @@ function SceneViewPage() {
   const [recaptureError, setRecaptureError] = useState('')
   const [isRecapturing, setIsRecapturing] = useState(false)
   const [thumbnailCacheBuster, setThumbnailCacheBuster] = useState('')
+  const [thumbnailCopied, setThumbnailCopied] = useState(false)
 
   // Update document meta tags with scene data (use large for OG image)
   useDocumentMeta({
@@ -1030,12 +1031,39 @@ function SceneViewPage() {
 
           {/* Thumbnail - use medium size for info panel (800px width) */}
           {(scene.thumbnail?.medium || scene.thumbnail?.small) && (
-            <div className="h-full">
+            <div className="h-full relative group">
               <img
                 src={`${scene.thumbnail.medium || scene.thumbnail.small}${thumbnailCacheBuster}`}
                 alt={scene.title}
                 className="w-full h-40 object-cover rounded-md"
               />
+              <Button
+                size="sm"
+                variant="secondary"
+                className="absolute top-2 right-2 h-7 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={async () => {
+                  const url = scene.thumbnail.large || scene.thumbnail.medium || scene.thumbnail.small
+                  try {
+                    await navigator.clipboard.writeText(url)
+                    setThumbnailCopied(true)
+                    setTimeout(() => setThumbnailCopied(false), 2000)
+                  } catch (err) {
+                    console.error('Failed to copy thumbnail URL:', err)
+                  }
+                }}
+              >
+                {thumbnailCopied ? (
+                  <>
+                    <Check size={12} className="mr-1" />
+                    Copied
+                  </>
+                ) : (
+                  <>
+                    <Copy size={12} className="mr-1" />
+                    Copy Link
+                  </>
+                )}
+              </Button>
             </div>
           )}
 
