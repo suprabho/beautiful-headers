@@ -10,7 +10,7 @@ export const AUDIO_MAPPINGS = {
     { param: 'wave2Speed',     band: 'treble',    weight: 0.2  },
   ],
   aurora: [
-    { param: 'width',       band: 'amplitude',      weight: 420  },
+    { param: 'width',       band: 'mid',      weight: 42  },
   ],
   fluid: [
     { param: 'speed',      band: 'amplitude', weight: 2    },

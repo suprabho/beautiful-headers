@@ -294,7 +294,6 @@ const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig,
       const ctxB = ctxBRef.current
       const canvasA = canvasARef.current
       const canvasB = canvasBRef.current
-      const lines = linesRef.current
 
       if (!ctxA || !ctxB || !canvasA || !canvasB) {
         animationRef.current = requestAnimationFrame(animate)
@@ -308,6 +307,19 @@ const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig,
       const blurAmount = cfg.blurAmount ?? 13
       const backgroundColor = cfg.backgroundColor ?? derived?.backgroundColor ?? '#000000'
 
+      // Use logical dimensions (since we set transform with dpr)
+      const logicalWidth = canvasA.width / dpr
+      const logicalHeight = canvasA.height / dpr
+
+      // Rebuild lines if count changed at runtime
+      const desiredCount = (cfg.lineCount ?? 0) > 0
+        ? cfg.lineCount
+        : Math.floor(logicalWidth / (cfg.width ?? 20) * 5)
+      if (linesRef.current.length !== desiredCount) {
+        linesRef.current = initLines(logicalWidth, logicalHeight)
+      }
+      const lines = linesRef.current
+
       // Smooth mouse following (using centralized mapping)
       smoothMouse(currentMouseRef.current, targetMouseRef.current, 'aurora')
 
@@ -320,10 +332,6 @@ const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig,
           audioWidthBoost = (audioData[widthMapping.band] ?? 0) * widthMapping.weight
         }
       }
-
-      // Use logical dimensions (since we set transform with dpr)
-      const logicalWidth = canvasA.width / dpr
-      const logicalHeight = canvasA.height / dpr
 
       // Mouse proximity: cursor x in canvas coords, radius, and strength from mapping
       const cursorX = currentMouseRef.current.x * logicalWidth
