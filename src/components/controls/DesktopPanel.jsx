@@ -4,6 +4,7 @@ import {
   Palette, GridFour, Sparkle, TextT, Waveform,
   Shuffle, DotsSixVertical, Camera,
   Pause, Play, FloppyDisk, Images, PaintBrushBroad, ArrowsInSimple, ArrowsOutSimple,
+  HandTap,
 } from '@phosphor-icons/react'
 import { AudioPanel } from './AudioControls'
 import { cn } from '@/lib/utils'
@@ -11,6 +12,10 @@ import { parsePaletteJson } from '@/lib/colorConversion'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
+import { ControlGroup, NumberInput } from './SharedControls'
 import useStore from '../../store/useStore'
 import {
   GradientPanel,
@@ -70,6 +75,8 @@ export const DesktopPanel = ({
   const colorPalette = useStore((state) => state.colorPalette)
   const isPaused = useStore((state) => state.isPaused)
   const setIsPaused = useStore((state) => state.setIsPaused)
+  const mouseConfig = useStore((state) => state.mouseConfig)
+  const setMouseConfig = useStore((state) => state.setMouseConfig)
 
   const parsedPalette = colorPalette ? parsePaletteJson(colorPalette) : null
 
@@ -113,6 +120,33 @@ export const DesktopPanel = ({
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsPaused(!isPaused)} title={isPaused ? "Resume Animations" : "Pause Animations"}>
             {isPaused ? <Play size={16} weight="fill" /> : <Pause size={16} />}
           </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8" title="Mouse Effect">
+                <HandTap size={16} weight={mouseConfig.enabled ? 'fill' : 'regular'} />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-64 p-3 space-y-3">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold">Mouse Effect</Label>
+                <Switch
+                  checked={mouseConfig.enabled}
+                  onCheckedChange={(checked) => setMouseConfig({ ...mouseConfig, enabled: checked })}
+                />
+              </div>
+              {mouseConfig.enabled && (
+                <ControlGroup label="Intensity">
+                  <NumberInput
+                    value={[mouseConfig.intensity]}
+                    onValueChange={([val]) => setMouseConfig({ ...mouseConfig, intensity: val })}
+                    max={1}
+                    step={0.05}
+                    showButtons
+                  />
+                </ControlGroup>
+              )}
+            </PopoverContent>
+          </Popover>
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onShowSave} title="Save Scene">
             <FloppyDisk size={16} />
           </Button>

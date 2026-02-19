@@ -24,7 +24,7 @@ const hexToRgbCached = (hex) => {
 }
 
 // Custom shader material that combines gradient generation with fluted glass effect
-const FlutedGradientMaterial = ({ config, effectsConfig, mousePos, isPaused }) => {
+const FlutedGradientMaterial = ({ config, effectsConfig, mousePos, isPaused, mouseIntensity = 1 }) => {
   const materialRef = useRef()
   const { size } = useThree()
   const timeRef = useRef(0)
@@ -370,7 +370,7 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos, isPaused }) =
     mat.uniforms.u_startPos.value.set(config.startPos.x, config.startPos.y)
     mat.uniforms.u_endPos.value.set(config.endPos.x, config.endPos.y)
     mat.uniforms.u_waveIntensity.value = config.waveIntensity
-    mat.uniforms.u_mouseInfluence.value = config.mouseInfluence
+    mat.uniforms.u_mouseInfluence.value = config.mouseInfluence * mouseIntensity
     mat.uniforms.u_wave1Speed.value = config.wave1Speed
     mat.uniforms.u_wave1Direction.value = config.wave1Direction
     mat.uniforms.u_wave2Speed.value = config.wave2Speed
@@ -556,19 +556,19 @@ const PostProcessingEffects = memo(({ effectsConfig }) => {
 
 PostProcessingEffects.displayName = 'PostProcessingEffects'
 
-const GradientScene = ({ config, effectsConfig, mousePos, isPaused }) => {
+const GradientScene = ({ config, effectsConfig, mousePos, isPaused, mouseIntensity }) => {
   return (
     <>
       <mesh>
         <planeGeometry args={[2, 2]} />
-        <FlutedGradientMaterial config={config} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={isPaused} />
+        <FlutedGradientMaterial config={config} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={isPaused} mouseIntensity={mouseIntensity} />
       </mesh>
       <PostProcessingEffects effectsConfig={effectsConfig} />
     </>
   )
 }
 
-const GradientLayer = memo(({ config, effectsConfig, mousePos, isPaused }) => {
+const GradientLayer = memo(({ config, effectsConfig, mousePos, isPaused, mouseIntensity = 1 }) => {
   return (
     <div
       className="gradient-layer"
@@ -591,7 +591,7 @@ const GradientLayer = memo(({ config, effectsConfig, mousePos, isPaused }) => {
         // Animation updates are skipped in useFrame when isPaused is true
         frameloop="always"
       >
-        <GradientScene config={config} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={isPaused} />
+        <GradientScene config={config} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={isPaused} mouseIntensity={mouseIntensity} />
       </Canvas>
     </div>
   )

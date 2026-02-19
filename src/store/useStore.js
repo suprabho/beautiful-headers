@@ -302,6 +302,10 @@ const useStore = create((set, get) => ({
   mousePos: { x: 0.5, y: 0.5 },
   setMousePos: (pos) => set({ mousePos: pos }),
 
+  // Global mouse effect config
+  mouseConfig: { enabled: true, intensity: 0.5 },
+  setMouseConfig: (config) => set({ mouseConfig: config }),
+
   // UI state
   activePanel: 'gradient',
   setActivePanel: (panel) => set({ activePanel: panel }),
@@ -666,6 +670,7 @@ const useStore = create((set, get) => ({
       ...(sceneData.colorPalette !== undefined && { colorPalette: sceneData.colorPalette }),
       ...(sceneData.selectedProjectIds && { selectedProjectIds: sceneData.selectedProjectIds }),
       ...(sceneData.audioConfig && { audioConfig: { ...sceneData.audioConfig, enabled: false, fileName: null } }),
+      ...(sceneData.mouseConfig && { mouseConfig: sceneData.mouseConfig }),
     })
   },
 }))
