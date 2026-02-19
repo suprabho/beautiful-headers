@@ -2,6 +2,7 @@ import { useRef, useEffect, useState, useMemo, memo } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import FlutedGlassCanvas from './FlutedGlassCanvas'
+import { audioData } from '../audio/audioData'
 
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5))
 
@@ -184,7 +185,8 @@ function DandelionMesh({ config, colors, isPaused }) {
 
   useFrame((state, delta) => {
     const cfg = configRef.current
-    if (!isPaused) timeRef.current += delta * (cfg.speed ?? 0.3)
+    const audioSpeedBoost = audioData.isActive ? audioData.amplitude * 1.0 : 0
+    if (!isPaused) timeRef.current += delta * ((cfg.speed ?? 0.3) + audioSpeedBoost)
     const time = timeRef.current
 
     // Smooth mouse tracking (from window-level listener)

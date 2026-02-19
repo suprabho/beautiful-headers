@@ -1,5 +1,6 @@
 import { useRef, useEffect, useMemo, useState, memo } from 'react'
 import FlutedGlassCanvas from './FlutedGlassCanvas'
+import { getAudioModulatedConfig } from '../audio/applyAudioModulation'
 
 // Color cache for hex to RGB conversions
 const colorCache = new Map()
@@ -311,7 +312,7 @@ const ShapeTrailLayer = memo(({ config, paletteColors = [], effectsConfig, isPau
         return
       }
 
-      const cfg = configRef.current
+      const cfg = getAudioModulatedConfig(configRef.current, 'shapeTrail')
       const currentColors = colorsRef.current
       const trails = trailsRef.current
       const trailStates = trailStatesRef.current

@@ -2,6 +2,7 @@ import { useRef, useEffect, useState, useMemo, memo } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import FlutedGlassCanvas from './FlutedGlassCanvas'
+import { audioData } from '../audio/audioData'
 
 const DEG2RAD = Math.PI / 180
 const MAX_PARTICLES = 2000
@@ -135,7 +136,8 @@ function ParticleRingMesh({ config, colors, isPaused }) {
 
   useFrame((_, delta) => {
     const cfg = configRef.current
-    if (!isPaused) timeRef.current += delta * cfg.speed
+    const audioSpeedBoost = audioData.isActive ? audioData.amplitude * 1.5 : 0
+    if (!isPaused) timeRef.current += delta * (cfg.speed + audioSpeedBoost)
     const time = timeRef.current
 
     if (!groupRef.current || !meshRef.current) return
@@ -158,9 +160,10 @@ function ParticleRingMesh({ config, colors, isPaused }) {
       // Each particle orbits along the ring at rotationSpeed + its own slight variation
       const angle = p.angle + time * cfg.rotationSpeed * (0.8 + p.pulseSpeed * 0.4)
 
-      // Pulse effect on radius
+      // Pulse effect on radius (with audio modulation)
       const pulse = Math.sin(time * p.pulseSpeed + p.phase) * 0.02
-      const currentRadius = (p.baseRadius + pulse) * maxRadius
+      const audioRadiusBoost = audioData.isActive ? audioData.bass * 0.15 : 0
+      const currentRadius = (p.baseRadius + pulse + audioRadiusBoost) * maxRadius
 
       // Position in XZ plane (horizontal ring) with dispersion in all axes
       const x = Math.cos(angle) * currentRadius + p.dispersionX * maxRadius

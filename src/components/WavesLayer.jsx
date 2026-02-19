@@ -1,5 +1,6 @@
 import { useRef, useEffect, useMemo, useState, memo } from 'react'
 import FlutedGlassCanvas from './FlutedGlassCanvas'
+import { getAudioModulatedConfig } from '../audio/applyAudioModulation'
 
 // Color cache for hex to RGB conversions
 const colorCache = new Map()
@@ -116,8 +117,8 @@ const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused }
         return
       }
 
-      // Read config values from ref
-      const cfg = configRef.current
+      // Read config values from ref, with audio modulation applied
+      const cfg = getAudioModulatedConfig(configRef.current, 'waves')
       const currentColors = colorsRef.current
 
       const numLayers = Math.max(1, cfg.layers ?? 3)

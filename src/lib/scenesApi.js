@@ -126,17 +126,30 @@ async function deleteThumbnail(sceneId) {
 }
 
 /**
- * Fetch saved scenes with pagination
+ * Fetch saved scenes with pagination and optional filters
  * @param {Object} options
  * @param {number} options.offset - Number of rows to skip (default 0)
  * @param {number} options.limit - Number of rows to fetch (default 20)
+ * @param {string|null} options.backgroundType - Filter by background type (e.g. 'aurora', 'fluid')
+ * @param {string|null} options.projectId - Filter by project ID (scenes linked to this project)
  */
-export async function getScenes({ offset = 0, limit = 20 } = {}) {
-  const { data, error, count } = await supabase
+export async function getScenes({ offset = 0, limit = 20, backgroundType = null, projectId = null } = {}) {
+  let query = supabase
     .from('scenes')
-    .select('id, title, slug, short_description, long_description, thumbnail, created_at', { count: 'exact' })
+    .select('id, title, slug, short_description, long_description, thumbnail, scene_data, created_at', { count: 'exact' })
     .order('created_at', { ascending: false })
-    .range(offset, offset + limit - 1)
+
+  if (backgroundType) {
+    query = query.eq('scene_data->>backgroundType', backgroundType)
+  }
+
+  if (projectId) {
+    query = query.contains('scene_data', { selectedProjectIds: [projectId] })
+  }
+
+  query = query.range(offset, offset + limit - 1)
+
+  const { data, error, count } = await query
 
   if (error) {
     throw new Error('Failed to fetch scenes')

@@ -1,5 +1,6 @@
 import { useRef, useEffect, useMemo, useState, memo } from 'react'
 import FlutedGlassCanvas from './FlutedGlassCanvas'
+import { getAudioModulatedConfig } from '../audio/applyAudioModulation'
 
 // Color cache for hex to HSL conversions
 const hslCache = new Map()
@@ -287,10 +288,10 @@ const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig,
         return
       }
 
-      // Read config values from refs
-      const cfg = configRef.current
+      // Read config values from refs, with audio modulation applied
+      const cfg = getAudioModulatedConfig(configRef.current, 'aurora')
       const derived = derivedColorsRef.current
-      
+
       const blurAmount = cfg.blurAmount ?? 13
       const decaySpeed = cfg.decaySpeed ?? 0.95
       const backgroundColor = cfg.backgroundColor ?? derived?.backgroundColor ?? '#000000'

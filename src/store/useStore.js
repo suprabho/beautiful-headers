@@ -599,6 +599,18 @@ const useStore = create((set, get) => ({
     set({ colorPalette: null })
   },
 
+  // Audio reactivity config
+  audioConfig: {
+    enabled: false,
+    source: 'mic',        // 'mic' | 'file'
+    sensitivity: 1.0,
+    smoothing: 0.8,
+    fileName: null,
+  },
+  updateAudioConfig: (updates) => set((state) => ({
+    audioConfig: { ...state.audioConfig, ...updates }
+  })),
+
   // Scene management
   currentSceneId: null,
   setCurrentSceneId: (id) => set({ currentSceneId: id }),
@@ -628,6 +640,7 @@ const useStore = create((set, get) => ({
       textConfig: state.textConfig,
       colorPalette: state.colorPalette,
       selectedProjectIds: state.selectedProjectIds,
+      audioConfig: { ...state.audioConfig, enabled: false, fileName: null },
     }
   },
 
@@ -652,6 +665,7 @@ const useStore = create((set, get) => ({
       ...(sceneData.textConfig && { textConfig: sceneData.textConfig }),
       ...(sceneData.colorPalette !== undefined && { colorPalette: sceneData.colorPalette }),
       ...(sceneData.selectedProjectIds && { selectedProjectIds: sceneData.selectedProjectIds }),
+      ...(sceneData.audioConfig && { audioConfig: { ...sceneData.audioConfig, enabled: false, fileName: null } }),
     })
   },
 }))

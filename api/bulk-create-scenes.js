@@ -40,7 +40,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { password, scenes } = req.body
+  const { password, scenes, projectId } = req.body
 
   if (!password) {
     return res.status(401).json({ error: 'Password is required' })
@@ -79,7 +79,11 @@ export default async function handler(req, res) {
       const row = {
         title: scene.title,
         slug: titleToSlug(scene.title),
-        scene_data: scene.scene_data,
+        scene_data: {
+          ...scene.scene_data,
+          pendingReview: true,
+          ...(projectId ? { selectedProjectIds: [...(scene.scene_data.selectedProjectIds || []), projectId] } : {}),
+        },
         short_description: scene.short_description || null,
         long_description: scene.long_description || null,
         thumbnail: scene.thumbnail || null,
