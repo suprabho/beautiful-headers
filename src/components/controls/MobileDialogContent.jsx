@@ -25,7 +25,7 @@ export const getDialogTitle = (key, textSections) => {
     'gradient-type': 'Gradient Type',
     'gradient-stops': 'Position Stops',
     'gradient-wave': 'Wave Settings',
-    'gradient-mouse': 'Mouse Influence',
+    'gradient-mouse': 'Decay Speed',
     'aurora-background': 'Background',
     'aurora-lines': 'Line Settings',
     'aurora-animation': 'Animation',
@@ -54,7 +54,7 @@ export const getDialogTitle = (key, textSections) => {
     'shapeTrail-animation': 'Trail Animation',
     'pattern-icon': 'Icon Settings',
     'pattern-spacing': 'Spacing',
-    'pattern-mouse': 'Mouse Influence',
+    'mouse-effect': 'Mouse Effect',
     'effects-blur': 'Background Blur',
     'effects-texture': 'Texture',
     'effects-colormap': 'Color Map',
@@ -119,6 +119,32 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
   }
 
   switch (activeDialog) {
+    case 'mouse-effect': {
+      const mouseConfig = useStore.getState().mouseConfig
+      const setMouseConfig = useStore.getState().setMouseConfig
+      return (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <Label className="text-sm">Enable Mouse Effect</Label>
+            <Switch
+              checked={mouseConfig.enabled}
+              onCheckedChange={(checked) => setMouseConfig({ ...mouseConfig, enabled: checked })}
+            />
+          </div>
+          {mouseConfig.enabled && (
+            <ControlGroup label="Intensity">
+              <NumberInput
+                value={[mouseConfig.intensity]}
+                onValueChange={([val]) => setMouseConfig({ ...mouseConfig, intensity: val })}
+                max={1}
+                step={0.05}
+                showButtons
+              />
+            </ControlGroup>
+          )}
+        </div>
+      )
+    }
     case 'gradient-colors':
       return (
         <ColorsSection
@@ -234,9 +260,6 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
     case 'gradient-mouse':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Mouse Influence`}>
-            <NumberInput value={[gradientConfig.mouseInfluence]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, mouseInfluence: val })} max={1} step={0.05} showButtons />
-          </ControlGroup>
           <ControlGroup label={`Decay Speed`}>
             <NumberInput value={[gradientConfig.decaySpeed]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, decaySpeed: val })} min={0.8} max={0.99} step={0.01} showButtons />
           </ControlGroup>
@@ -517,10 +540,6 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
           <ControlGroup label={`Row Gap`}><NumberInput value={[tessellationConfig.rowGap]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, rowGap: val })} min={20} max={200} step={10} showButtons /></ControlGroup>
           <ControlGroup label={`Col Gap`}><NumberInput value={[tessellationConfig.colGap]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, colGap: val })} min={20} max={200} step={10} showButtons /></ControlGroup>
         </div>
-      )
-    case 'pattern-mouse':
-      return (
-        <ControlGroup label={`Mouse Rotation`}><NumberInput value={[tessellationConfig.mouseRotationInfluence || 0]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, mouseRotationInfluence: val })} max={1} step={0.05} showButtons /></ControlGroup>
       )
     case 'effects-blur':
       return <ControlGroup label={`Blur`}><NumberInput value={[effectsConfig.blur]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, blur: val })} max={50} step={2} showButtons /></ControlGroup>

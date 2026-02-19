@@ -4,12 +4,17 @@ import {
   Palette, GridFour, Sparkle, TextT,
   Shuffle, DotsSixVertical, Camera,
   Pause, Play, FloppyDisk, Images, PaintBrushBroad, ArrowsInSimple, ArrowsOutSimple,
+  HandTap,
 } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
 import { parsePaletteJson } from '@/lib/colorConversion'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
+import { ControlGroup, NumberInput } from './SharedControls'
 import useStore from '../../store/useStore'
 import {
   GradientPanel,
@@ -26,7 +31,7 @@ const tabs = [
 ]
 
 export const DesktopPanel = ({
-  panelRef, position, isDragging, handleMouseDown,
+  panelRef, position, isDragging, handleHandTapDown,
   isCapturing, onRandomize, onShowPalette, onShowSave, onShowCapture,
 }) => {
   const navigate = useNavigate()
@@ -67,6 +72,8 @@ export const DesktopPanel = ({
   const colorPalette = useStore((state) => state.colorPalette)
   const isPaused = useStore((state) => state.isPaused)
   const setIsPaused = useStore((state) => state.setIsPaused)
+  const mouseConfig = useStore((state) => state.mouseConfig)
+  const setHandTapConfig = useStore((state) => state.setHandTapConfig)
 
   const parsedPalette = colorPalette ? parsePaletteJson(colorPalette) : null
 
@@ -90,7 +97,7 @@ export const DesktopPanel = ({
       {/* Header */}
       <div
         className="flex items-center justify-between p-2 border-b border-border select-none"
-        onMouseDown={handleMouseDown}
+        onHandTapDown={handleHandTapDown}
         style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
       >
         <div className="flex items-center gap-2">
@@ -110,6 +117,32 @@ export const DesktopPanel = ({
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsPaused(!isPaused)} title={isPaused ? "Resume Animations" : "Pause Animations"}>
             {isPaused ? <Play size={16} weight="fill" /> : <Pause size={16} />}
           </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8" title="HandTap Effect">
+                <HandTap size={16} weight={mouseConfig.enabled ? 'fill' : 'regular'} />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-56 p-3 space-y-3">
+              <div className="flex items-center justify-between">
+                <Label className="text-xs font-semibold">HandTap Effect</Label>
+                <Switch
+                  checked={mouseConfig.enabled}
+                  onCheckedChange={(checked) => setHandTapConfig({ ...mouseConfig, enabled: checked })}
+                />
+              </div>
+              {mouseConfig.enabled && (
+                <ControlGroup label="Intensity">
+                  <NumberInput
+                    value={[mouseConfig.intensity]}
+                    onValueChange={([val]) => setHandTapConfig({ ...mouseConfig, intensity: val })}
+                    max={1}
+                    step={0.01}
+                  />
+                </ControlGroup>
+              )}
+            </PopoverContent>
+          </Popover>
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onShowSave} title="Save Scene">
             <FloppyDisk size={16} />
           </Button>
