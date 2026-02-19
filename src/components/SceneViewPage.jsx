@@ -750,9 +750,10 @@ function SceneViewPage() {
   const textSections = sceneData.textSections || []
   const textGap = sceneData.textGap || 0
   const textConfig = sceneData.textConfig || {}
+  const mouseConfig = sceneData.mouseConfig || { enabled: true, intensity: 0.5 }
 
   return (
-    <div className="min-h-screen bg-background" onMouseMove={handleMouseMove}>
+    <div className="min-h-screen bg-background" onMouseMove={mouseConfig.enabled ? handleMouseMove : undefined}>
       {/* Full-screen scene preview */}
       <div className="fixed inset-0 z-0">
         <div ref={layersContainerRef} className="layers-container" style={{ position: 'absolute', inset: 0 }}>
@@ -770,7 +771,7 @@ function SceneViewPage() {
               <SimpleGradientLayer config={gradientConfig} gradientColors={gradientConfig.colors} effectsConfig={effectsConfig} />
             )}
             {backgroundType === 'liquid' && (
-              <GradientLayer config={gradientConfig} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={false} />
+              <GradientLayer config={gradientConfig} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={false} mouseIntensity={mouseConfig.intensity} />
             )}
             {backgroundType === 'aurora' && (
               <AuroraLayer config={auroraConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
@@ -785,7 +786,7 @@ function SceneViewPage() {
               <RibbonLayer config={ribbonConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
             )}
             {backgroundType === 'dandelion' && (
-              <DandelionLayer config={dandelionConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
+              <DandelionLayer config={dandelionConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} mouseEnabled={mouseConfig.enabled} mouseIntensity={mouseConfig.intensity} />
             )}
             {backgroundType === 'particleRing' && (
               <ParticleRingLayer config={particleRingConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
@@ -797,7 +798,7 @@ function SceneViewPage() {
 
           {/* Tessellation layer */}
           {tessellationConfig.enabled && (
-            <TessellationLayer config={tessellationConfig} mousePos={mousePos} isPaused={false} />
+            <TessellationLayer config={tessellationConfig} mousePos={mousePos} isPaused={false} mouseIntensity={mouseConfig.intensity} />
           )}
 
           {/* Effects layer */}

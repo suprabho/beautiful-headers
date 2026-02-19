@@ -182,17 +182,6 @@ export const PatternPanel = ({
         </div>
       </ControlGroup>
 
-      <ControlGroup label={`Mouse Rotation: ${(tessellationConfig.mouseRotationInfluence || 0).toFixed(2)}`}>
-        <NumberInput
-          value={[tessellationConfig.mouseRotationInfluence || 0]}
-          onValueChange={([val]) => setTessellationConfig({
-            ...tessellationConfig,
-            mouseRotationInfluence: val
-          })}
-          max={1}
-          step={0.01}
-        />
-      </ControlGroup>
     </div>
   )
 }

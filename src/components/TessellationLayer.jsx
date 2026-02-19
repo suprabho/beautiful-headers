@@ -85,7 +85,7 @@ const hexToRgb = (hex) => {
   return { r: 255, g: 255, b: 255 }
 }
 
-const TessellationLayer = memo(({ config, mousePos = { x: 0.5, y: 0.5 }, isPaused }) => {
+const TessellationLayer = memo(({ config, mousePos = { x: 0.5, y: 0.5 }, isPaused, mouseIntensity = 1 }) => {
   const { icon, rowGap, colGap, size, opacity, rotation, color, mouseRotationInfluence = 0 } = config
 
   const canvasRef = useRef(null)
@@ -198,7 +198,7 @@ const TessellationLayer = memo(({ config, mousePos = { x: 0.5, y: 0.5 }, isPause
             const angle = Math.atan2(dy, dx)
             const distance = Math.sqrt(dx * dx + dy * dy)
             const falloff = Math.max(0, 1 - distance / maxDistance)
-            totalRotation += angle * falloff * mouseRotationInfluence
+            totalRotation += angle * falloff * mouseRotationInfluence * mouseIntensity
           }
 
           ctx.save()

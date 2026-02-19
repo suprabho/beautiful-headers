@@ -122,7 +122,7 @@ function SceneSetup({ config, colors }) {
   return null
 }
 
-function DandelionMesh({ config, colors, isPaused }) {
+function DandelionMesh({ config, colors, isPaused, mouseEnabled = true, mouseIntensity = 1 }) {
   const groupRef = useRef()
   const lineMeshRef = useRef()
   const dotMeshRef = useRef()
@@ -137,13 +137,14 @@ function DandelionMesh({ config, colors, isPaused }) {
 
   // Track mouse at window level so overlapping layers don't block events
   useEffect(() => {
+    if (!mouseEnabled) return
     const onMove = (e) => {
       mouseNDC.x = (e.clientX / window.innerWidth) * 2 - 1
       mouseNDC.y = -(e.clientY / window.innerHeight) * 2 + 1
     }
     window.addEventListener('mousemove', onMove)
     return () => window.removeEventListener('mousemove', onMove)
-  }, [])
+  }, [mouseEnabled])
 
   const lineUniforms = useMemo(() => ({
     opacity: { value: 0.8 },
@@ -243,7 +244,7 @@ function DandelionMesh({ config, colors, isPaused }) {
       const repelRadius = 0.35
       if (screenDist < repelRadius && screenDist > 0.001) {
         const strength = (1 - screenDist / repelRadius)
-        const repel = strength * strength * 1.2
+        const repel = strength * strength * 1.2 * mouseIntensity
         // Push direction away from cursor in screen-aligned axes
         const pushX = (sdx / screenDist) * repel
         const pushY = (sdy / screenDist) * repel
@@ -311,7 +312,7 @@ function CanvasRefExporter({ canvasRef, onReady }) {
   return null
 }
 
-const DandelionLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused }) => {
+const DandelionLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mouseEnabled = true, mouseIntensity = 1 }) => {
   const canvasRef = useRef(null)
   const [canvasReady, setCanvasReady] = useState(false)
 
@@ -343,7 +344,7 @@ const DandelionLayer = memo(({ config, paletteColors = [], effectsConfig, isPaus
       >
         <CanvasRefExporter canvasRef={canvasRef} onReady={handleCanvasReady} />
         <SceneSetup config={config} colors={colors} />
-        <DandelionMesh config={config} colors={colors} isPaused={isPaused} />
+        <DandelionMesh config={config} colors={colors} isPaused={isPaused} mouseEnabled={mouseEnabled} mouseIntensity={mouseIntensity} />
       </Canvas>
       {flutedEnabled && canvasReady && canvasRef.current && (
         <FlutedGlassCanvas

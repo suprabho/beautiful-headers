@@ -20,6 +20,7 @@ function App() {
   // Subscribe to Zustand store slices
   const mousePos = useStore((state) => state.mousePos)
   const setMousePos = useStore((state) => state.setMousePos)
+  const mouseConfig = useStore((state) => state.mouseConfig)
   const backgroundType = useStore((state) => state.backgroundType)
   const gradientConfig = useStore((state) => state.gradientConfig)
   const auroraConfig = useStore((state) => state.auroraConfig)
@@ -68,6 +69,9 @@ function App() {
 
   // Throttled mouse move handler using requestAnimationFrame (PERFORMANCE OPTIMIZATION)
   const handleMouseMove = useCallback((e) => {
+    // Skip mouse tracking when mouse effects are disabled
+    if (!mouseConfig.enabled) return
+
     // Store the latest position
     pendingMouseRef.current.x = e.clientX / window.innerWidth
     pendingMouseRef.current.y = e.clientY / window.innerHeight
@@ -83,7 +87,7 @@ function App() {
       })
       rafPendingRef.current = false
     })
-  }, [setMousePos])
+  }, [setMousePos, mouseConfig.enabled])
 
   // Build the gradient filter string
   // Note: For 'liquid' background type, post-processing is handled in WebGL via Three.js EffectComposer
@@ -132,7 +136,7 @@ function App() {
             <SimpleGradientLayer config={gradientConfig} gradientColors={gradientConfig.colors} effectsConfig={effectsConfig} />
           )}
           {backgroundType === 'liquid' && (
-            <GradientLayer config={gradientConfig} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={isPaused} />
+            <GradientLayer config={gradientConfig} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={isPaused} mouseIntensity={mouseConfig.intensity} />
           )}
           {backgroundType === 'aurora' && (
             <AuroraLayer config={auroraConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} />
@@ -147,7 +151,7 @@ function App() {
             <RibbonLayer config={ribbonConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} />
           )}
           {backgroundType === 'dandelion' && (
-            <DandelionLayer config={dandelionConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} />
+            <DandelionLayer config={dandelionConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mouseEnabled={mouseConfig.enabled} mouseIntensity={mouseConfig.intensity} />
           )}
           {backgroundType === 'particleRing' && (
             <ParticleRingLayer config={particleRingConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} />
@@ -159,7 +163,7 @@ function App() {
 
         {/* Layer 2: Tessellation (no filter effects) */}
         {tessellationConfig.enabled && (
-          <TessellationLayer config={tessellationConfig} mousePos={mousePos} isPaused={isPaused} />
+          <TessellationLayer config={tessellationConfig} mousePos={mousePos} isPaused={isPaused} mouseIntensity={mouseConfig.intensity} />
         )}
 
         {/* Layer 3: Overlay effects (noise, texture, vignette) */}

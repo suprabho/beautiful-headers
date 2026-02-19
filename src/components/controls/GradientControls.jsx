@@ -688,19 +688,6 @@ export const LiquidControls = ({
         </ControlGroup>
       </div>
 
-      {/* Mouse Influence */}
-      <ControlGroup label={`Mouse Influence`}>
-        <NumberInput
-          value={[Math.round(gradientConfig.mouseInfluence * 100) / 100]}
-          onValueChange={([val]) => setGradientConfig({
-            ...gradientConfig,
-            mouseInfluence: val
-          })}
-          max={1}
-          step={0.01}
-        />
-      </ControlGroup>
-
       <ControlGroup label={`Decay Speed`}>
         <NumberInput
           value={[Math.round(gradientConfig.decaySpeed * 100) / 100]}
@@ -1088,19 +1075,6 @@ export const BlobControls = ({
         />
       </ControlGroup>
 
-      {/* Mouse Influence */}
-      <ControlGroup label={`Mouse Influence`}>
-        <NumberInput
-          value={[blobConfig.mouseInfluence]}
-          onValueChange={([val]) => setBlobConfig({
-            ...blobConfig,
-            mouseInfluence: val
-          })}
-          min={0}
-          max={1}
-          step={0.1}
-        />
-      </ControlGroup>
     </>
   )
 }
