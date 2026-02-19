@@ -1,4 +1,5 @@
 import { useEffect, useRef, memo } from 'react'
+import { audioData } from '../audio/audioData'
 
 // SVG path data for icons - extracted from Phosphor Icons (regular weight)
 // This allows us to draw directly to canvas without React component overhead
@@ -177,7 +178,8 @@ const TessellationLayer = memo(({ config, mousePos = { x: 0.5, y: 0.5 }, isPause
       const mouseX = smoothedMouseRef.current.x * width
       const mouseY = smoothedMouseRef.current.y * height
       const maxDistance = 300
-      const rotationRad = (rotation * Math.PI) / 180
+      const audioRotationBoost = audioData.isActive ? audioData.amplitude * Math.PI : 0
+      const rotationRad = (rotation * Math.PI) / 180 + audioRotationBoost
 
       // Draw all icons
       for (let row = 0; row < rows; row++) {

@@ -1,6 +1,7 @@
 import { useRef, useEffect, useMemo, useState, memo } from 'react'
 import FlutedGlassCanvas from './FlutedGlassCanvas'
 import { getAudioModulatedConfig } from '../audio/applyAudioModulation'
+import { smoothMouse, getMouseEffects } from '../mouse/applyMouseEffect'
 
 // Color cache for hex to RGB conversions
 const colorCache = new Map()
@@ -20,7 +21,7 @@ const hexToRgb = (hex) => {
   return rgb
 }
 
-const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused }) => {
+const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1 }) => {
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
   const tempCanvasRef = useRef(null)
@@ -29,6 +30,9 @@ const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused }
   const timeRef = useRef(0)
   const isVisibleRef = useRef(true)
   const isPausedRef = useRef(false)
+  const targetMouseRef = useRef({ x: 0.5, y: 0.5 })
+  const smoothedMouseRef = useRef({ x: 0.5, y: 0.5 })
+  const mouseIntensityRef = useRef(mouseIntensity)
 
   // Store config values in refs to avoid animation restarts
   const configRef = useRef(config)
@@ -56,6 +60,14 @@ const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused }
   useEffect(() => {
     isPausedRef.current = isPaused
   }, [isPaused])
+
+  useEffect(() => {
+    targetMouseRef.current = mousePos
+  }, [mousePos])
+
+  useEffect(() => {
+    mouseIntensityRef.current = mouseIntensity
+  }, [mouseIntensity])
 
   // Animation setup - runs only once on mount
   useEffect(() => {
@@ -134,6 +146,11 @@ const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused }
         timeRef.current += 0.016 * speed
       }
 
+      // Smooth mouse interpolation (using centralized mapping)
+      smoothMouse(smoothedMouseRef.current, targetMouseRef.current, 'waves')
+      const mouseFx = getMouseEffects('waves', smoothedMouseRef.current, mouseIntensityRef.current)
+      const mousePhaseOffset = mouseFx.layerPhase ?? 0
+
       const time = timeRef.current
 
       // Clear canvas
@@ -186,7 +203,7 @@ const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused }
         // Calculate wave parameters for this layer
         const amplitude = waveRegionHeight * waveHeight * (0.5 + i * 0.15)
         const freq = waveFrequency * (1 + i * 0.2)
-        const layerPhase = phaseOffset * i * Math.PI * 0.5 + time
+        const layerPhase = phaseOffset * i * Math.PI * 0.5 + time + mousePhaseOffset
 
         ctx.beginPath()
 

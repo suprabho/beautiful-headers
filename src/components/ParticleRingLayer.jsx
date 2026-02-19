@@ -3,6 +3,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import FlutedGlassCanvas from './FlutedGlassCanvas'
 import { audioData } from '../audio/audioData'
+import { smoothMouse, getMouseEffects } from '../mouse/applyMouseEffect'
 
 const DEG2RAD = Math.PI / 180
 const MAX_PARTICLES = 2000
@@ -90,13 +91,18 @@ function generateParticles(count, ringRadius, ringWidth, dispersion) {
   return particles
 }
 
-function ParticleRingMesh({ config, colors, isPaused }) {
+function ParticleRingMesh({ config, colors, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1 }) {
   const groupRef = useRef()
   const meshRef = useRef()
   const timeRef = useRef(0)
   const configRef = useRef(config)
+  const targetMouseRef = useRef({ x: 0.5, y: 0.5 })
+  const smoothedMouseRef = useRef({ x: 0.5, y: 0.5 })
+  const mouseIntensityRef = useRef(mouseIntensity)
 
   useEffect(() => { configRef.current = config }, [config])
+  useEffect(() => { targetMouseRef.current = mousePos }, [mousePos])
+  useEffect(() => { mouseIntensityRef.current = mouseIntensity }, [mouseIntensity])
 
   const tempObj = useMemo(() => new THREE.Object3D(), [])
   const tempColor = useMemo(() => new THREE.Color(), [])
@@ -142,9 +148,13 @@ function ParticleRingMesh({ config, colors, isPaused }) {
 
     if (!groupRef.current || !meshRef.current) return
 
-    // Apply tilt only — no group Y rotation since particles orbit individually
-    const tiltX = (cfg.tiltX ?? 0) * DEG2RAD
-    const tiltZ = (cfg.tiltZ ?? 0) * DEG2RAD
+    // Smooth mouse interpolation (using centralized mapping)
+    smoothMouse(smoothedMouseRef.current, targetMouseRef.current, 'particleRing')
+    const mouseFx = getMouseEffects('particleRing', smoothedMouseRef.current, mouseIntensityRef.current)
+
+    // Apply tilt — config tilt + mouse-driven tilt
+    const tiltX = (cfg.tiltX ?? 0) * DEG2RAD + (mouseFx.tiltX ?? 0)
+    const tiltZ = (cfg.tiltZ ?? 0) * DEG2RAD + (mouseFx.tiltZ ?? 0)
     groupRef.current.rotation.x = tiltX
     groupRef.current.rotation.z = tiltZ
     groupRef.current.rotation.y = 0
@@ -203,7 +213,7 @@ function CanvasRefExporter({ canvasRef, onReady }) {
   return null
 }
 
-const ParticleRingLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused }) => {
+const ParticleRingLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1 }) => {
   const canvasRef = useRef(null)
   const [canvasReady, setCanvasReady] = useState(false)
 
@@ -236,7 +246,7 @@ const ParticleRingLayer = memo(({ config, paletteColors = [], effectsConfig, isP
       >
         <CanvasRefExporter canvasRef={canvasRef} onReady={handleCanvasReady} />
         <SceneSetup config={config} colors={colors} />
-        <ParticleRingMesh config={config} colors={colors} isPaused={isPaused} />
+        <ParticleRingMesh config={config} colors={colors} isPaused={isPaused} mousePos={mousePos} mouseIntensity={mouseIntensity} />
       </Canvas>
       {flutedEnabled && canvasReady && canvasRef.current && (
         <FlutedGlassCanvas

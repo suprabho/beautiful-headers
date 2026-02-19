@@ -1,6 +1,7 @@
 import { useRef, useEffect, useMemo, useState, memo } from 'react'
 import FlutedGlassCanvas from './FlutedGlassCanvas'
 import { getAudioModulatedConfig } from '../audio/applyAudioModulation'
+import { smoothMouse, getMouseEffects } from '../mouse/applyMouseEffect'
 
 // Detect mobile device for performance optimizations
 const isMobile = typeof window !== 'undefined' && (
@@ -77,7 +78,7 @@ const interpolateValues = (values, progress) => {
   }
 }
 
-const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused }) => {
+const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1 }) => {
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
   const tempCanvasRef = useRef(null)
@@ -86,6 +87,9 @@ const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, is
   const timeRef = useRef(0)
   const isVisibleRef = useRef(true)
   const isPausedRef = useRef(false)
+  const targetMouseRef = useRef({ x: 0.5, y: 0.5 })
+  const smoothedMouseRef = useRef({ x: 0.5, y: 0.5 })
+  const mouseIntensityRef = useRef(mouseIntensity)
   
   // Store config values in refs to avoid animation restarts
   const configRef = useRef(config)
@@ -130,6 +134,14 @@ const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, is
   useEffect(() => {
     isPausedRef.current = isPaused
   }, [isPaused])
+
+  useEffect(() => {
+    targetMouseRef.current = mousePos
+  }, [mousePos])
+
+  useEffect(() => {
+    mouseIntensityRef.current = mouseIntensity
+  }, [mouseIntensity])
 
   // Animation setup - runs only once on mount
   useEffect(() => {
@@ -233,6 +245,12 @@ const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, is
         timeRef.current += 0.016 * speed
       }
 
+      // Smooth mouse interpolation (using centralized mapping)
+      smoothMouse(smoothedMouseRef.current, targetMouseRef.current, 'fluid')
+      const mouseFx = getMouseEffects('fluid', smoothedMouseRef.current, mouseIntensityRef.current)
+      const mouseOffsetX = (mouseFx.centerOffsetX ?? 0) * width
+      const mouseOffsetY = (mouseFx.centerOffsetY ?? 0) * height
+
       // Clear and fill background
       ctx.fillStyle = background
       ctx.fillRect(0, 0, width, height)
@@ -257,8 +275,8 @@ const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, is
 
         const rotation = (time / circle.rotDur) * Math.PI * 2 * circle.rotDir
 
-        const circleCenterX = centerX + offsetX
-        const circleCenterY = centerY + offsetY
+        const circleCenterX = centerX + offsetX + mouseOffsetX
+        const circleCenterY = centerY + offsetY + mouseOffsetY
 
         ctx.save()
 

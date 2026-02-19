@@ -182,12 +182,10 @@ export function useRandomize() {
     // Randomize aurora config
     setAuroraConfig({
       ...auroraConfig,
-      minWidth: Math.floor(randomInRange(1, 100) / 5) * 5,
-      maxWidth: Math.floor(randomInRange(1, 100) / 5) * 5,
+      width: Math.floor(randomInRange(1, 100) / 5) * 5,
       minHeight: Math.floor(randomInRange(50, 1000) / 50) * 50,
       maxHeight: Math.floor(randomInRange(50, 1000) / 50) * 50,
-      minTTL: Math.floor(randomInRange(10, 500) / 10) * 10,
-      maxTTL: Math.floor(randomInRange(10, 500) / 10) * 10,
+      ttl: Math.floor(randomInRange(10, 500) / 10) * 10,
       blurAmount: Math.floor(randomInRange(0, 50)),
       lineCount: Math.floor(randomInRange(0, 500) / 10) * 10,
     })

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  Palette, GridFour, Sparkle, TextT,
+  Palette, GridFour, Sparkle, TextT, Waveform,
   Shuffle, Plus, Camera, Check, ArrowCounterClockwise,
   CaretCircleUp, CaretCircleDown,
   Pause, Play, FloppyDisk, Images, PaintBrushBroad,
@@ -21,6 +21,7 @@ import {
   ColorsSection,
   DEFAULT_EFFECTS_CONFIG,
 } from './index'
+import { AudioPanel } from './AudioControls'
 import { MobileDialogContent, getDialogTitle } from './MobileDialogContent'
 
 const tabs = [
@@ -28,9 +29,10 @@ const tabs = [
   { id: 'tessellation', label: 'Pattern', icon: GridFour },
   { id: 'effects', label: 'Effects', icon: Sparkle },
   { id: 'text', label: 'Text', icon: TextT },
+  { id: 'audio', label: 'Input', icon: Waveform },
 ]
 
-export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapture }) => {
+export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapture, audioAnalyser }) => {
   const navigate = useNavigate()
   const [isMobileCollapsed, setIsMobileCollapsed] = useState(true)
 
@@ -270,6 +272,16 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
                     <Plus size={14} className="mr-1" /><span className="text-sm">Add</span>
                   </Button>
                 </div>
+              </div>
+            )}
+            {activePanel === 'audio' && (
+              <div className="px-3 py-2">
+                <AudioPanel
+                  loadAudioFile={audioAnalyser?.loadAudioFile}
+                  playAudio={audioAnalyser?.playAudio}
+                  pauseAudio={audioAnalyser?.pauseAudio}
+                  audioElement={audioAnalyser?.audioElement}
+                />
               </div>
             )}
           </ScrollArea>

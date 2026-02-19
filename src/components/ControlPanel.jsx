@@ -50,6 +50,7 @@ const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
           onShowPalette={() => setShowPaletteDialog(true)}
           onShowSave={() => setShowSaveDialog(true)}
           onShowCapture={() => setShowCaptureModal(true)}
+          audioAnalyser={audioAnalyser}
         />
       ) : (
         <DesktopPanel

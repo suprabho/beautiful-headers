@@ -29,15 +29,9 @@ All values normalized to `0–1` with exponential smoothing.
 
 ### AuroraLayer — Modulated config
 
-- `blurAmount`
-  - Band: Bass
-  - Modifier: +bass × 10
-- `minHeight`
+- `width`
   - Band: Amplitude
-  - Modifier: +amplitude × 200
-- `maxHeight`
-  - Band: Treble
-  - Modifier: +treble × 300
+  - Modifier: +amplitude × 10
 
 ### FluidGradientLayer — Modulated config
 
@@ -102,9 +96,14 @@ All values normalized to `0–1` with exponential smoothing.
   - Band: Bass
   - Modifier: +bass × 0.3
 
+### TessellationLayer — Direct access
+
+- `rotation`
+  - Band: Amplitude
+  - Modifier: +amplitude × π radians (up to 180° at full amplitude)
+
 ### Non-reactive Layers
 
 - **SimpleGradientLayer** — No audio reactivity
-- **TessellationLayer** — No audio reactivity
 - **EffectsLayer** — No audio reactivity
 - **TextLayer** — No audio reactivity

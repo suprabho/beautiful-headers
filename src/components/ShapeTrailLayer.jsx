@@ -1,6 +1,7 @@
 import { useRef, useEffect, useMemo, useState, memo } from 'react'
 import FlutedGlassCanvas from './FlutedGlassCanvas'
 import { getAudioModulatedConfig } from '../audio/applyAudioModulation'
+import { smoothMouse, getMouseEffects } from '../mouse/applyMouseEffect'
 
 // Color cache for hex to RGB conversions
 const colorCache = new Map()
@@ -226,13 +227,16 @@ function drawShape(ctx, shape, x, y, size, rotation, color, opacity, blendMode) 
   ctx.restore()
 }
 
-const ShapeTrailLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused }) => {
+const ShapeTrailLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1 }) => {
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
   const [canvasReady, setCanvasReady] = useState(false)
   const animationRef = useRef(null)
   const isVisibleRef = useRef(true)
   const isPausedRef = useRef(false)
+  const targetMouseRef = useRef({ x: 0.5, y: 0.5 })
+  const smoothedMouseRef = useRef({ x: 0.5, y: 0.5 })
+  const mouseIntensityRef = useRef(mouseIntensity)
 
   const configRef = useRef(config)
   const colorsRef = useRef([])
@@ -250,6 +254,8 @@ const ShapeTrailLayer = memo(({ config, paletteColors = [], effectsConfig, isPau
   useEffect(() => { configRef.current = config }, [config])
   useEffect(() => { colorsRef.current = trailColors }, [trailColors])
   useEffect(() => { isPausedRef.current = isPaused }, [isPaused])
+  useEffect(() => { targetMouseRef.current = mousePos }, [mousePos])
+  useEffect(() => { mouseIntensityRef.current = mouseIntensity }, [mouseIntensity])
 
   // Generate trails on mount and when key params change
   useEffect(() => {
@@ -316,6 +322,12 @@ const ShapeTrailLayer = memo(({ config, paletteColors = [], effectsConfig, isPau
       const currentColors = colorsRef.current
       const trails = trailsRef.current
       const trailStates = trailStatesRef.current
+
+      // Smooth mouse interpolation (using centralized mapping)
+      smoothMouse(smoothedMouseRef.current, targetMouseRef.current, 'shapeTrail')
+      const mouseFx = getMouseEffects('shapeTrail', smoothedMouseRef.current, mouseIntensityRef.current)
+      const mouseOffsetX = mouseFx.centerOffsetX ?? 0
+      const mouseOffsetY = mouseFx.centerOffsetY ?? 0
 
       if (!trails || !trailStates || trails.length === 0) {
         animationRef.current = requestAnimationFrame(animate)
@@ -395,8 +407,8 @@ const ShapeTrailLayer = memo(({ config, paletteColors = [], effectsConfig, isPau
         const points = samplePath(trail.points, width, height, gap)
         if (points.length === 0) continue
 
-        const centerX = trail.cx * width
-        const centerY = trail.cy * height
+        const centerX = trail.cx * width + mouseOffsetX * width
+        const centerY = trail.cy * height + mouseOffsetY * height
         const rotAngle = timeRef.current * speed * 0.5
 
         ctx.save()

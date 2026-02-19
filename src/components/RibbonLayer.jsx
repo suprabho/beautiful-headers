@@ -4,6 +4,7 @@ import * as THREE from 'three'
 import FlutedGlassCanvas from './FlutedGlassCanvas'
 import { audioData } from '../audio/audioData'
 import { AUDIO_MAPPINGS } from '../audio/audioMappings'
+import { smoothMouse, getMouseEffects } from '../mouse/applyMouseEffect'
 
 // Color cache for hex to RGB conversions
 const colorCache = new Map()
@@ -172,7 +173,7 @@ const ribbonFragmentShader = `
 `
 
 // Single ribbon mesh component
-const Ribbon = ({ index, totalRibbons, config, colors, isPausedRef }) => {
+const Ribbon = ({ index, totalRibbons, config, colors, isPausedRef, smoothedMouseRef, mouseIntensityRef }) => {
   const materialRef = useRef()
   const meshRef = useRef()
   const timeRef = useRef(Math.random() * 100) // Random start time for variety
@@ -265,6 +266,10 @@ const Ribbon = ({ index, totalRibbons, config, colors, isPausedRef }) => {
           mat.uniforms[uniformName].value = config[m.param] * baseScale + audioData[m.band] * m.weight * baseScale
         }
       }
+    } else if (smoothedMouseRef) {
+      // Mouse reactivity: modulate speed (using centralized mapping)
+      const mouseFx = getMouseEffects('ribbon', smoothedMouseRef.current, mouseIntensityRef?.current ?? 0)
+      mat.uniforms.u_speed.value = config.speed * (mouseFx.u_speed ?? 1)
     }
   })
 
@@ -306,12 +311,28 @@ const Background = ({ color }) => {
   )
 }
 
-const RibbonScene = ({ config, paletteColors, isPaused }) => {
+const RibbonScene = ({ config, paletteColors, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1 }) => {
   const isPausedRef = useRef(false)
+  const smoothedMouseRef = useRef({ x: 0.5, y: 0.5 })
+  const targetMouseRef = useRef({ x: 0.5, y: 0.5 })
+  const mouseIntensityRef = useRef(mouseIntensity)
 
   useEffect(() => {
     isPausedRef.current = isPaused
   }, [isPaused])
+
+  useEffect(() => {
+    targetMouseRef.current = mousePos
+  }, [mousePos])
+
+  useEffect(() => {
+    mouseIntensityRef.current = mouseIntensity
+  }, [mouseIntensity])
+
+  // Smooth mouse in useFrame so it updates per-frame (using centralized mapping)
+  useFrame(() => {
+    smoothMouse(smoothedMouseRef.current, targetMouseRef.current, 'ribbon')
+  })
 
   const colors = useMemo(() => {
     if (paletteColors && paletteColors.length >= 2) return paletteColors
@@ -335,13 +356,15 @@ const RibbonScene = ({ config, paletteColors, isPaused }) => {
           config={config}
           colors={colors}
           isPausedRef={isPausedRef}
+          smoothedMouseRef={smoothedMouseRef}
+          mouseIntensityRef={mouseIntensityRef}
         />
       ))}
     </>
   )
 }
 
-const RibbonLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused }) => {
+const RibbonLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1 }) => {
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
   const [canvasReady, setCanvasReady] = useState(false)
@@ -384,6 +407,8 @@ const RibbonLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused 
           config={config}
           paletteColors={paletteColors}
           isPaused={isPaused}
+          mousePos={mousePos}
+          mouseIntensity={mouseIntensity}
         />
       </Canvas>
       {flutedEnabled && canvasReady && canvasRef.current && (

@@ -340,12 +340,10 @@ const useStore = create((set, get) => ({
 
   // Aurora config
   auroraConfig: {
-    minWidth: 10,
-    maxWidth: 30,
+    width: 20,
     minHeight: 200,
     maxHeight: 600,
-    minTTL: 100,
-    maxTTL: 300,
+    ttl: 200,
     blurAmount: 13,
     hueStart: 120,
     hueEnd: 180,
@@ -651,10 +649,26 @@ const useStore = create((set, get) => ({
   // Load scene data from JSON
   loadSceneData: (sceneData) => {
     if (!sceneData) return
+
+    // Migrate legacy aurora config: minWidth/maxWidth → width, minTTL/maxTTL → ttl
+    let auroraConfig = sceneData.auroraConfig
+    if (auroraConfig && ('minWidth' in auroraConfig || 'minTTL' in auroraConfig)) {
+      const { minWidth, maxWidth, minTTL, maxTTL, ...rest } = auroraConfig
+      auroraConfig = {
+        ...rest,
+        ...((minWidth != null || maxWidth != null) && {
+          width: Math.round(((minWidth ?? 10) + (maxWidth ?? 30)) / 2)
+        }),
+        ...((minTTL != null || maxTTL != null) && {
+          ttl: Math.round(((minTTL ?? 100) + (maxTTL ?? 300)) / 2)
+        }),
+      }
+    }
+
     set({
       ...(sceneData.backgroundType && { backgroundType: sceneData.backgroundType }),
       ...(sceneData.gradientConfig && { gradientConfig: sceneData.gradientConfig }),
-      ...(sceneData.auroraConfig && { auroraConfig: sceneData.auroraConfig }),
+      ...(auroraConfig && { auroraConfig }),
       ...(sceneData.blobConfig && { blobConfig: sceneData.blobConfig }),
       ...(sceneData.fluidConfig && { fluidConfig: sceneData.fluidConfig }),
       ...(sceneData.wavesConfig && { wavesConfig: sceneData.wavesConfig }),

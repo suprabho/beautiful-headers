@@ -10,11 +10,10 @@ export const AUDIO_MAPPINGS = {
     { param: 'wave2Speed',     band: 'treble',    weight: 0.2  },
   ],
   aurora: [
-    { param: 'blurAmount',  band: 'bass',      weight: 10   },
-    { param: 'minHeight',   band: 'amplitude', weight: 200  },
-    { param: 'maxHeight',   band: 'treble',    weight: 300  },
+    { param: 'width',       band: 'amplitude',      weight: 420  },
   ],
   fluid: [
+    { param: 'speed',      band: 'amplitude', weight: 2    },
     { param: 'speed',      band: 'amplitude', weight: 2    },
     { param: 'intensity',  band: 'treble',    weight: 3    },
   ],
@@ -30,7 +29,7 @@ export const AUDIO_MAPPINGS = {
   ],
   dandelion: [
     { param: 'speed',  band: 'treble',    weight: 1.5  },
-    { param: 'spread', band: 'amplitude', weight: 0.005    },
+    { param: 'spread', band: 'amplitude', weight: 0.0005    },
   ],
   particleRing: [
     { param: 'speed',      band: 'treble',    weight: 1.5  },

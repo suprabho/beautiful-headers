@@ -1,6 +1,10 @@
 import { useRef, useEffect, useMemo, useState, memo } from 'react'
 import FlutedGlassCanvas from './FlutedGlassCanvas'
 import { getAudioModulatedConfig } from '../audio/applyAudioModulation'
+import { audioData } from '../audio/audioData'
+import { AUDIO_MAPPINGS } from '../audio/audioMappings'
+import { smoothMouse } from '../mouse/applyMouseEffect'
+import { MOUSE_MAPPINGS } from '../mouse/mouseMappings'
 
 // Color cache for hex to HSL conversions
 const hslCache = new Map()
@@ -63,7 +67,7 @@ const fadeInOut = (t, m) => {
   return Math.abs((t + hm) % m - hm) / hm
 }
 
-const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig, isPaused }) => {
+const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig, isPaused, mouseIntensity = 1 }) => {
   const containerRef = useRef(null)
   const canvasARef = useRef(null)
   const canvasBRef = useRef(null)
@@ -76,6 +80,7 @@ const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig,
   const currentMouseRef = useRef({ x: 0.5, y: 0.5 })
   const isVisibleRef = useRef(true)
   const isPausedRef = useRef(false)
+  const mouseIntensityRef = useRef(mouseIntensity)
   
   // Store config values in refs to avoid animation restarts
   const configRef = useRef(config)
@@ -118,6 +123,10 @@ const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig,
   useEffect(() => {
     isPausedRef.current = isPaused
   }, [isPaused])
+
+  useEffect(() => {
+    mouseIntensityRef.current = mouseIntensity
+  }, [mouseIntensity])
 
   // Animation setup - runs only once on mount
   useEffect(() => {
@@ -162,23 +171,29 @@ const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig,
 
       reset() {
         const cfg = configRef.current
-        const minWidth = cfg.minWidth ?? 10
-        const maxWidth = cfg.maxWidth ?? 30
+        const width = cfg.width ?? 20
         const minHeight = cfg.minHeight ?? 200
         const maxHeight = cfg.maxHeight ?? 600
-        const minTTL = cfg.minTTL ?? 100
-        const maxTTL = cfg.maxTTL ?? 300
-        
+        const ttl = cfg.ttl ?? 200
+
         this.x = getRandomInt(0, this.canvasWidth)
         this.y = this.canvasHeight
-        this.width = getRandomInt(minWidth, maxWidth)
+        this.width = width
         this.height = getRandomInt(minHeight, maxHeight)
         this.hue = this.getHue()
-        this.ttl = getRandomInt(minTTL, maxTTL)
+        this.ttl = getRandomInt(Math.round(ttl * 0.8), Math.round(ttl * 1.2))
         this.life = 0
       }
 
-      draw(ctx) {
+      draw(ctx, audioWidthBoost = 0, cursorX = -1, mouseRadius = 200, mouseStrength = 0) {
+        // Per-line proximity width boost: lines near cursor get wider
+        let proximityBoost = 0
+        if (cursorX >= 0 && mouseStrength > 0) {
+          const dist = Math.abs(this.x - cursorX)
+          const influence = Math.max(0, 1 - dist / mouseRadius)
+          proximityBoost = influence * mouseStrength
+        }
+
         const gradient = ctx.createLinearGradient(this.x, this.y - this.height, this.x, this.y)
         gradient.addColorStop(0, `hsla(${this.hue}, 100%, 65%, 0)`)
         gradient.addColorStop(0.5, `hsla(${this.hue}, 100%, 65%, ${fadeInOut(this.life, this.ttl)})`)
@@ -187,7 +202,7 @@ const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig,
         ctx.save()
         ctx.beginPath()
         ctx.strokeStyle = gradient
-        ctx.lineWidth = this.width
+        ctx.lineWidth = this.width + audioWidthBoost + proximityBoost
         ctx.moveTo(this.x, this.y - this.height)
         ctx.lineTo(this.x, this.y)
         ctx.stroke()
@@ -197,31 +212,29 @@ const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig,
 
       update() {
         const cfg = configRef.current
-        const minWidth = cfg.minWidth ?? 10
-        const maxWidth = cfg.maxWidth ?? 30
+        const width = cfg.width ?? 20
         const minHeight = cfg.minHeight ?? 200
         const maxHeight = cfg.maxHeight ?? 600
-        const minTTL = cfg.minTTL ?? 100
-        const maxTTL = cfg.maxTTL ?? 300
-        
+        const ttl = cfg.ttl ?? 200
+
         this.life++
         if (this.life > this.ttl) {
           this.life = 0
           this.x = getRandomInt(0, this.canvasWidth)
-          this.width = getRandomInt(minWidth, maxWidth)
+          this.width = width
           this.height = getRandomInt(minHeight, maxHeight)
           this.hue = this.getHue()
-          this.ttl = getRandomInt(minTTL, maxTTL)
+          this.ttl = getRandomInt(Math.round(ttl * 0.8), Math.round(ttl * 1.2))
         }
       }
     }
 
     const initLines = (width, height) => {
       const cfg = configRef.current
-      const minWidth = cfg.minWidth ?? 10
+      const lineWidth = cfg.width ?? 20
       const lineCount = cfg.lineCount ?? 0
-      
-      const count = lineCount > 0 ? lineCount : Math.floor(width / minWidth * 5)
+
+      const count = lineCount > 0 ? lineCount : Math.floor(width / lineWidth * 5)
       const lines = []
       for (let i = 0; i < count; i++) {
         lines.push(new Line(width, height))
@@ -293,19 +306,30 @@ const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig,
       const derived = derivedColorsRef.current
 
       const blurAmount = cfg.blurAmount ?? 13
-      const decaySpeed = cfg.decaySpeed ?? 0.95
       const backgroundColor = cfg.backgroundColor ?? derived?.backgroundColor ?? '#000000'
 
-      // Smooth mouse following (only when not paused)
-      if (!isPausedRef.current) {
-        const lerpFactor = 1 - decaySpeed
-        currentMouseRef.current.x += (targetMouseRef.current.x - currentMouseRef.current.x) * lerpFactor
-        currentMouseRef.current.y += (targetMouseRef.current.y - currentMouseRef.current.y) * lerpFactor
+      // Smooth mouse following (using centralized mapping)
+      smoothMouse(currentMouseRef.current, targetMouseRef.current, 'aurora')
+
+      // Audio width boost — 'width' isn't a base config prop so getAudioModulatedConfig
+      // can't handle it; read the mapping directly (additive to drawn lineWidth)
+      let audioWidthBoost = 0
+      if (audioData.isActive) {
+        const widthMapping = AUDIO_MAPPINGS.aurora?.find(m => m.param === 'width')
+        if (widthMapping) {
+          audioWidthBoost = (audioData[widthMapping.band] ?? 0) * widthMapping.weight
+        }
       }
 
       // Use logical dimensions (since we set transform with dpr)
       const logicalWidth = canvasA.width / dpr
       const logicalHeight = canvasA.height / dpr
+
+      // Mouse proximity: cursor x in canvas coords, radius, and strength from mapping
+      const cursorX = currentMouseRef.current.x * logicalWidth
+      const mouseRadius = logicalWidth * 0.2
+      const mouseMapping = MOUSE_MAPPINGS.aurora?.effects?.find(e => e.param === 'width')
+      const mouseStrength = mouseMapping ? mouseMapping.strength * mouseIntensityRef.current : 0
 
       // Clear canvas A
       ctxA.clearRect(0, 0, logicalWidth, logicalHeight)
@@ -319,7 +343,7 @@ const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig,
         if (!isPausedRef.current) {
           lines[i].update()
         }
-        lines[i].draw(ctxA)
+        lines[i].draw(ctxA, audioWidthBoost, cursorX, mouseRadius, mouseStrength)
       }
 
       // Apply blur and composite

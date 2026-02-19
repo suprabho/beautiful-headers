@@ -250,8 +250,7 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
     case 'aurora-lines':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Min Width`}><NumberInput value={[auroraConfig.minWidth]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, minWidth: val })} min={1} max={100} step={5} showButtons /></ControlGroup>
-          <ControlGroup label={`Max Width`}><NumberInput value={[auroraConfig.maxWidth]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, maxWidth: val })} min={1} max={100} step={5} showButtons /></ControlGroup>
+          <ControlGroup label={`Width`}><NumberInput value={[auroraConfig.width]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, width: val })} min={1} max={100} step={5} showButtons /></ControlGroup>
           <ControlGroup label={`Min Height`}><NumberInput value={[auroraConfig.minHeight]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, minHeight: val })} min={50} max={1000} step={50} showButtons /></ControlGroup>
           <ControlGroup label={`Max Height`}><NumberInput value={[auroraConfig.maxHeight]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, maxHeight: val })} min={50} max={1000} step={50} showButtons /></ControlGroup>
           <ControlGroup label={`Line Count (0 = auto)`}><NumberInput value={[auroraConfig.lineCount]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, lineCount: val })} min={0} max={500} step={10} showButtons /></ControlGroup>
@@ -260,8 +259,7 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
     case 'aurora-animation':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Min TTL`}><NumberInput value={[auroraConfig.minTTL]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, minTTL: val })} min={10} max={500} step={10} showButtons /></ControlGroup>
-          <ControlGroup label={`Max TTL`}><NumberInput value={[auroraConfig.maxTTL]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, maxTTL: val })} min={10} max={500} step={10} showButtons /></ControlGroup>
+          <ControlGroup label={`TTL`}><NumberInput value={[auroraConfig.ttl]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, ttl: val })} min={10} max={500} step={10} showButtons /></ControlGroup>
           <ControlGroup label={`Blur Amount`}><NumberInput value={[auroraConfig.blurAmount]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, blurAmount: val })} min={0} max={50} step={1} showButtons /></ControlGroup>
         </div>
       )

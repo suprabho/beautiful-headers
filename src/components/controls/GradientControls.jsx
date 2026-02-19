@@ -738,32 +738,18 @@ export const AuroraControls = ({
       </ControlGroup>
 
       {/* Line Width */}
-      <div className="grid grid-cols-2 gap-4">
-        <ControlGroup label={`Min Width`}>
-          <NumberInput
-            value={[auroraConfig.minWidth]}
-            onValueChange={([val]) => setAuroraConfig({
-              ...auroraConfig,
-              minWidth: val
-            })}
-            min={1}
-            max={100}
-            step={5}
-          />
-        </ControlGroup>
-        <ControlGroup label={`Max Width`}>
-          <NumberInput
-            value={[auroraConfig.maxWidth]}
-            onValueChange={([val]) => setAuroraConfig({
-              ...auroraConfig,
-              maxWidth: val
-            })}
-            min={1}
-            max={100}
-            step={5}
-          />
-        </ControlGroup>
-      </div>
+      <ControlGroup label={`Width`}>
+        <NumberInput
+          value={[auroraConfig.width]}
+          onValueChange={([val]) => setAuroraConfig({
+            ...auroraConfig,
+            width: val
+          })}
+          min={1}
+          max={100}
+          step={5}
+        />
+      </ControlGroup>
 
       {/* Line Height */}
       <div className="grid grid-cols-2 gap-4">
@@ -794,32 +780,18 @@ export const AuroraControls = ({
       </div>
 
       {/* Animation Speed (TTL) */}
-      <div className="grid grid-cols-2 gap-4">
-        <ControlGroup label={`Min TTL`}>
-          <NumberInput
-            value={[auroraConfig.minTTL]}
-            onValueChange={([val]) => setAuroraConfig({
-              ...auroraConfig,
-              minTTL: val
-            })}
-            min={10}
-            max={500}
-            step={10}
-          />
-        </ControlGroup>
-        <ControlGroup label={`Max TTL`}>
-          <NumberInput
-            value={[auroraConfig.maxTTL]}
-            onValueChange={([val]) => setAuroraConfig({
-              ...auroraConfig,
-              maxTTL: val
-            })}
-            min={10}
-            max={500}
-            step={10}
-          />
-        </ControlGroup>
-      </div>
+      <ControlGroup label={`TTL`}>
+        <NumberInput
+          value={[auroraConfig.ttl]}
+          onValueChange={([val]) => setAuroraConfig({
+            ...auroraConfig,
+            ttl: val
+          })}
+          min={10}
+          max={500}
+          step={10}
+        />
+      </ControlGroup>
 
       {/* Blur Amount */}
       <ControlGroup label={`Blur Amount`}>
