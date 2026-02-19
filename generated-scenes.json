@@ -1,23 +1,23 @@
 [
   {
-    "title": "Candy Bubble Fluid – Bright Playful Kids Header",
-    "short_description": "Bubbly candy-colored fluid swirls on a soft lavender backdrop",
-    "long_description": "A joyful, kid-friendly header bursting with candy pink, sky blue, and lemon yellow fluid motion. The soft lavender background keeps it bright and inviting — perfect for children's apps, learning platforms, and playful brands.",
+    "title": "Vibrant Indian Festival Header – Holi Color Splash Fluid",
+    "short_description": "Explosive magenta, saffron, and turquoise fluid like Holi powder.",
+    "long_description": "A maximalist celebration of color inspired by the Indian festival of Holi. Intense fluid motion swirls magenta, saffron yellow, deep turquoise, and violet together in a joyous explosion. Rich saturation and warm vignette create an immersive, festive energy perfect for cultural brands and creative agencies.",
     "scene_data": {
       "backgroundType": "fluid",
       "gradientConfig": {
-        "colors": ["#f472b6", "#38bdf8", "#facc15", "#34d399"],
+        "colors": ["#e6005c", "#ff9933", "#00b3b3", "#7b2d8e"],
         "numColors": 4,
-        "type": "radial",
-        "startPos": { "x": 25, "y": 20 },
-        "endPos": { "x": 75, "y": 80 },
-        "colorStops": [0, 30, 60, 100],
-        "waveIntensity": 0.5,
-        "mouseInfluence": 0.6,
-        "decaySpeed": 0.94,
-        "wave1Speed": 0.25,
+        "type": "conic",
+        "startPos": { "x": 40, "y": 55 },
+        "endPos": { "x": 90, "y": 30 },
+        "colorStops": [0, 25, 55, 100],
+        "waveIntensity": 0.6,
+        "mouseInfluence": 0.65,
+        "decaySpeed": 0.93,
+        "wave1Speed": 0.35,
         "wave1Direction": 1,
-        "wave2Speed": 0.18,
+        "wave2Speed": 0.2,
         "wave2Direction": -1
       },
       "auroraConfig": {
@@ -28,9 +28,9 @@
         "minTTL": 100,
         "maxTTL": 300,
         "blurAmount": 13,
-        "hueStart": 280,
-        "hueEnd": 340,
-        "backgroundColor": "#f3e8ff",
+        "hueStart": 320,
+        "hueEnd": 40,
+        "backgroundColor": "#1a0a2e",
         "lineCount": 0,
         "decaySpeed": 0.95,
         "useGradientColors": true
@@ -46,20 +46,20 @@
         "mouseInfluence": 0.3,
         "decaySpeed": 0.95,
         "useGradientColors": true,
-        "colors": ["#f472b6", "#38bdf8", "#facc15"],
-        "backgroundColor": "#f3e8ff"
+        "colors": ["#40204c", "#a3225c", "#e24926"],
+        "backgroundColor": "#152a8e"
       },
       "fluidConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#ede9fe",
-        "colors": ["#f472b6", "#38bdf8", "#facc15", "#34d399"],
-        "speed": 0.9,
-        "intensity": 1.8,
-        "blurAmount": 22
+        "backgroundColor": "#1a0a2e",
+        "colors": ["#e6005c", "#ff9933", "#00b3b3", "#7b2d8e"],
+        "speed": 1.2,
+        "intensity": 2.5,
+        "blurAmount": 18
       },
       "wavesConfig": {
         "useGradientColors": true,
-        "colors": ["#f472b6", "#38bdf8", "#facc15", "#34d399"],
+        "colors": ["#e6005c", "#ff9933", "#00b3b3", "#7b2d8e"],
         "waveHeight": 0.05,
         "waveFrequency": 2,
         "rotation": 0,
@@ -70,7 +70,7 @@
       },
       "ribbonConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#f3e8ff",
+        "backgroundColor": "#1a0a2e",
         "ribbonCount": 5,
         "speed": 0.5,
         "amplitude": 1.0,
@@ -83,7 +83,7 @@
       },
       "dandelionConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#f3e8ff",
+        "backgroundColor": "#e8f4fc",
         "lineCount": 120,
         "radiusMin": 0.1,
         "radiusMax": 0.8,
@@ -95,7 +95,7 @@
       },
       "particleRingConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#f3e8ff",
+        "backgroundColor": "#fef6f9",
         "particleCount": 800,
         "ringRadius": 0.35,
         "ringWidth": 0.15,
@@ -108,7 +108,7 @@
       },
       "shapeTrailConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#f3e8ff",
+        "backgroundColor": "#f0f0f0",
         "shape": "circle",
         "startScale": 1000,
         "endScale": 2000,
@@ -130,20 +130,20 @@
         "size": 24,
         "opacity": 0.15,
         "rotation": 0,
-        "color": "#f472b6",
+        "color": "#ff9933",
         "mouseRotationInfluence": 0.5
       },
       "effectsConfig": {
-        "blur": 4,
-        "texture": "none",
-        "textureSize": 20,
-        "textureOpacity": 0.5,
+        "blur": 2,
+        "texture": "dots",
+        "textureSize": 18,
+        "textureOpacity": 0.12,
         "textureBlendMode": "overlay",
         "colorMap": "none",
-        "vignetteIntensity": 0.1,
-        "saturation": 115,
-        "contrast": 100,
-        "brightness": 105,
+        "vignetteIntensity": 0.35,
+        "saturation": 130,
+        "contrast": 110,
+        "brightness": 100,
         "flutedGlass": {
           "enabled": false,
           "segments": 80,
@@ -156,38 +156,38 @@
         }
       },
       "textSections": [
-        { "id": 1, "text": "Kidzovo", "size": 115, "weight": 800, "spacing": -0.03, "font": "sans-serif", "italic": false },
-        { "id": 2, "text": "learn & play", "size": 24, "weight": 400, "spacing": 0.2, "font": "sans-serif", "italic": false }
+        { "id": 1, "text": "Ranga", "size": 120, "weight": 900, "spacing": -0.06, "font": "serif", "italic": true },
+        { "id": 2, "text": "FESTIVAL OF COLORS", "size": 20, "weight": 400, "spacing": 0.35, "font": "sans-serif", "italic": false }
       ],
-      "textGap": 14,
+      "textGap": 16,
       "textConfig": {
         "enabled": true,
         "color": "#ffffff",
-        "opacity": 1
+        "opacity": 0.95
       },
       "selectedProjectIds": []
     }
   },
   {
-    "title": "Rainbow Waves – Cheerful Colorful Kids Background",
-    "short_description": "Bright rainbow wave layers on a sunny cream background",
-    "long_description": "A carefree rainbow wave header that radiates pure joy. Coral, sky blue, mint green, and sunny yellow layers ripple across a warm cream canvas. Designed for kids' platforms, educational sites, and brands that celebrate childhood.",
+    "title": "Royal Indian Silk Header – Jewel Tone Ribbon Drape",
+    "short_description": "Flowing silk ribbons in royal blue, gold, and deep crimson.",
+    "long_description": "Opulent flowing ribbons evoke the drape of fine Indian silk in royal blue, molten gold, deep crimson, and emerald. This maximalist header channels the richness of Mughal-era textiles and palace interiors. Perfect for luxury brands, wedding platforms, and heritage-inspired design.",
     "scene_data": {
-      "backgroundType": "waves",
+      "backgroundType": "ribbon",
       "gradientConfig": {
-        "colors": ["#fb7185", "#60a5fa", "#4ade80", "#fbbf24"],
+        "colors": ["#1a0533", "#d4af37", "#8b0a1a", "#0a5c36"],
         "numColors": 4,
-        "type": "linear",
-        "startPos": { "x": 0, "y": 0 },
-        "endPos": { "x": 100, "y": 100 },
-        "colorStops": [0, 30, 60, 100],
-        "waveIntensity": 0.4,
-        "mouseInfluence": 0.5,
-        "decaySpeed": 0.95,
-        "wave1Speed": 0.2,
-        "wave1Direction": 1,
+        "type": "conic",
+        "startPos": { "x": 25, "y": 60 },
+        "endPos": { "x": 75, "y": 15 },
+        "colorStops": [0, 28, 58, 100],
+        "waveIntensity": 0.45,
+        "mouseInfluence": 0.55,
+        "decaySpeed": 0.94,
+        "wave1Speed": 0.25,
+        "wave1Direction": -1,
         "wave2Speed": 0.15,
-        "wave2Direction": -1
+        "wave2Direction": 1
       },
       "auroraConfig": {
         "minWidth": 10,
@@ -197,9 +197,9 @@
         "minTTL": 100,
         "maxTTL": 300,
         "blurAmount": 13,
-        "hueStart": 0,
-        "hueEnd": 60,
-        "backgroundColor": "#fffbeb",
+        "hueStart": 35,
+        "hueEnd": 55,
+        "backgroundColor": "#1a0533",
         "lineCount": 0,
         "decaySpeed": 0.95,
         "useGradientColors": true
@@ -215,44 +215,44 @@
         "mouseInfluence": 0.3,
         "decaySpeed": 0.95,
         "useGradientColors": true,
-        "colors": ["#fb7185", "#60a5fa", "#4ade80"],
-        "backgroundColor": "#fffbeb"
+        "colors": ["#40204c", "#a3225c", "#e24926"],
+        "backgroundColor": "#152a8e"
       },
       "fluidConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#fffbeb",
-        "colors": ["#fb7185", "#60a5fa", "#4ade80", "#fbbf24"],
+        "backgroundColor": "#1a0533",
+        "colors": ["#d4af37", "#8b0a1a", "#0a5c36", "#d4af37"],
         "speed": 1,
         "intensity": 1,
         "blurAmount": 20
       },
       "wavesConfig": {
         "useGradientColors": true,
-        "colors": ["#fb7185", "#60a5fa", "#4ade80", "#fbbf24"],
-        "waveHeight": 0.07,
-        "waveFrequency": 3,
-        "rotation": 5,
-        "speed": 0.4,
-        "blur": 30,
-        "layers": 6,
-        "phaseOffset": 0.3
+        "colors": ["#1a0533", "#d4af37", "#8b0a1a", "#0a5c36"],
+        "waveHeight": 0.05,
+        "waveFrequency": 2,
+        "rotation": 0,
+        "speed": 0.5,
+        "blur": 40,
+        "layers": 5,
+        "phaseOffset": 0
       },
       "ribbonConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#fffbeb",
-        "ribbonCount": 5,
-        "speed": 0.5,
-        "amplitude": 1.0,
-        "spread": 0.5,
-        "rotation": -30,
-        "thickness": 1,
-        "taper": -0.3,
-        "noise": 0.5,
-        "opacity": 0.85
+        "backgroundColor": "#1a0533",
+        "ribbonCount": 7,
+        "speed": 0.35,
+        "amplitude": 1.2,
+        "spread": 0.65,
+        "rotation": -25,
+        "thickness": 1.1,
+        "taper": -0.15,
+        "noise": 0.3,
+        "opacity": 0.8
       },
       "dandelionConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#fffbeb",
+        "backgroundColor": "#e8f4fc",
         "lineCount": 120,
         "radiusMin": 0.1,
         "radiusMax": 0.8,
@@ -264,7 +264,7 @@
       },
       "particleRingConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#fffbeb",
+        "backgroundColor": "#fef6f9",
         "particleCount": 800,
         "ringRadius": 0.35,
         "ringWidth": 0.15,
@@ -277,8 +277,8 @@
       },
       "shapeTrailConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#fffbeb",
-        "shape": "star",
+        "backgroundColor": "#f0f0f0",
+        "shape": "circle",
         "startScale": 1000,
         "endScale": 2000,
         "sizeCycles": 1,
@@ -299,20 +299,20 @@
         "size": 24,
         "opacity": 0.15,
         "rotation": 0,
-        "color": "#fbbf24",
+        "color": "#d4af37",
         "mouseRotationInfluence": 0.5
       },
       "effectsConfig": {
         "blur": 0,
-        "texture": "none",
-        "textureSize": 20,
-        "textureOpacity": 0.5,
+        "texture": "dots",
+        "textureSize": 14,
+        "textureOpacity": 0.1,
         "textureBlendMode": "overlay",
         "colorMap": "none",
-        "vignetteIntensity": 0.05,
+        "vignetteIntensity": 0.3,
         "saturation": 120,
-        "contrast": 100,
-        "brightness": 105,
+        "contrast": 108,
+        "brightness": 98,
         "flutedGlass": {
           "enabled": false,
           "segments": 80,
@@ -325,37 +325,37 @@
         }
       },
       "textSections": [
-        { "id": 1, "text": "Kidzovo", "size": 120, "weight": 900, "spacing": -0.02, "font": "sans-serif", "italic": false },
-        { "id": 2, "text": "where fun meets learning", "size": 20, "weight": 300, "spacing": 0.15, "font": "sans-serif", "italic": true }
+        { "id": 1, "text": "Vastra", "size": 115, "weight": 800, "spacing": -0.04, "font": "serif", "italic": false },
+        { "id": 2, "text": "ROYAL HERITAGE", "size": 18, "weight": 300, "spacing": 0.4, "font": "sans-serif", "italic": false }
       ],
-      "textGap": 16,
+      "textGap": 14,
       "textConfig": {
         "enabled": true,
-        "color": "#1e293b",
-        "opacity": 0.9
+        "color": "#d4af37",
+        "opacity": 0.92
       },
       "selectedProjectIds": []
     }
   },
   {
-    "title": "Star Burst Trail – Fun Colorful Kids Shape Animation",
-    "short_description": "Playful star trails in primary colors on a bright mint canvas",
-    "long_description": "Stars burst and trail across a fresh mint background in cheerful red, blue, yellow, and purple. This carefree, high-energy header brings a sense of wonder and excitement — ideal for kids' apps, toy brands, and playful digital experiences.",
+    "title": "Indian Diwali Particle Ring – Golden Light Mandala",
+    "short_description": "Glowing golden particle ring on deep indigo like Diwali diyas.",
+    "long_description": "A shimmering mandala of golden light particles orbits against a deep indigo sky, evoking the radiance of countless Diwali diyas. Warm amber, saffron, and rose gold tones create a luminous, celebratory glow. Designed for festive campaigns, spiritual brands, and luxury Indian aesthetics.",
     "scene_data": {
-      "backgroundType": "shapeTrail",
+      "backgroundType": "particleRing",
       "gradientConfig": {
-        "colors": ["#ef4444", "#3b82f6", "#eab308", "#a855f7"],
+        "colors": ["#0f0a2a", "#d4a017", "#e8912d", "#c77986"],
         "numColors": 4,
-        "type": "conic",
+        "type": "radial",
         "startPos": { "x": 50, "y": 50 },
         "endPos": { "x": 100, "y": 100 },
-        "colorStops": [0, 25, 50, 100],
+        "colorStops": [0, 30, 60, 100],
         "waveIntensity": 0.35,
-        "mouseInfluence": 0.55,
-        "decaySpeed": 0.94,
-        "wave1Speed": 0.22,
+        "mouseInfluence": 0.45,
+        "decaySpeed": 0.95,
+        "wave1Speed": 0.18,
         "wave1Direction": 1,
-        "wave2Speed": 0.16,
+        "wave2Speed": 0.12,
         "wave2Direction": -1
       },
       "auroraConfig": {
@@ -366,9 +366,9 @@
         "minTTL": 100,
         "maxTTL": 300,
         "blurAmount": 13,
-        "hueStart": 120,
-        "hueEnd": 180,
-        "backgroundColor": "#ecfdf5",
+        "hueStart": 35,
+        "hueEnd": 55,
+        "backgroundColor": "#0f0a2a",
         "lineCount": 0,
         "decaySpeed": 0.95,
         "useGradientColors": true
@@ -384,20 +384,20 @@
         "mouseInfluence": 0.3,
         "decaySpeed": 0.95,
         "useGradientColors": true,
-        "colors": ["#ef4444", "#3b82f6", "#eab308"],
-        "backgroundColor": "#ecfdf5"
+        "colors": ["#40204c", "#a3225c", "#e24926"],
+        "backgroundColor": "#152a8e"
       },
       "fluidConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#ecfdf5",
-        "colors": ["#ef4444", "#3b82f6", "#eab308", "#a855f7"],
+        "backgroundColor": "#0f0a2a",
+        "colors": ["#d4a017", "#e8912d", "#c77986", "#d4a017"],
         "speed": 1,
         "intensity": 1,
         "blurAmount": 20
       },
       "wavesConfig": {
         "useGradientColors": true,
-        "colors": ["#ef4444", "#3b82f6", "#eab308", "#a855f7"],
+        "colors": ["#0f0a2a", "#d4a017", "#e8912d", "#c77986"],
         "waveHeight": 0.05,
         "waveFrequency": 2,
         "rotation": 0,
@@ -408,7 +408,7 @@
       },
       "ribbonConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#ecfdf5",
+        "backgroundColor": "#0f0a2a",
         "ribbonCount": 5,
         "speed": 0.5,
         "amplitude": 1.0,
@@ -421,7 +421,7 @@
       },
       "dandelionConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#ecfdf5",
+        "backgroundColor": "#e8f4fc",
         "lineCount": 120,
         "radiusMin": 0.1,
         "radiusMax": 0.8,
@@ -433,31 +433,31 @@
       },
       "particleRingConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#ecfdf5",
-        "particleCount": 800,
-        "ringRadius": 0.35,
-        "ringWidth": 0.15,
-        "speed": 0.5,
-        "particleSize": 3,
-        "dispersion": 0.3,
-        "rotationSpeed": 0.2,
-        "tiltX": 0,
-        "tiltZ": 0
+        "backgroundColor": "#0f0a2a",
+        "particleCount": 1200,
+        "ringRadius": 0.38,
+        "ringWidth": 0.18,
+        "speed": 0.3,
+        "particleSize": 2.2,
+        "dispersion": 0.35,
+        "rotationSpeed": 0.15,
+        "tiltX": 25,
+        "tiltZ": 15
       },
       "shapeTrailConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#ecfdf5",
-        "shape": "star",
-        "startScale": 300,
-        "endScale": 1600,
-        "sizeCycles": 2,
-        "gap": 22,
-        "rotationOffset": 25,
-        "speed": 0.5,
-        "pathComplexity": 5,
-        "opacity": 0.9,
+        "backgroundColor": "#f0f0f0",
+        "shape": "circle",
+        "startScale": 1000,
+        "endScale": 2000,
+        "sizeCycles": 1,
+        "gap": 30,
+        "rotationOffset": 15,
+        "speed": 0.3,
+        "pathComplexity": 4,
+        "opacity": 0.8,
         "blendMode": "normal",
-        "trailCount": 4,
+        "trailCount": 3,
         "trailColorStops": null
       },
       "tessellationConfig": {
@@ -468,20 +468,20 @@
         "size": 24,
         "opacity": 0.15,
         "rotation": 0,
-        "color": "#eab308",
+        "color": "#d4a017",
         "mouseRotationInfluence": 0.5
       },
       "effectsConfig": {
         "blur": 0,
         "texture": "dots",
-        "textureSize": 15,
-        "textureOpacity": 0.04,
+        "textureSize": 22,
+        "textureOpacity": 0.08,
         "textureBlendMode": "overlay",
         "colorMap": "none",
-        "vignetteIntensity": 0.08,
-        "saturation": 125,
-        "contrast": 102,
-        "brightness": 105,
+        "vignetteIntensity": 0.4,
+        "saturation": 115,
+        "contrast": 105,
+        "brightness": 102,
         "flutedGlass": {
           "enabled": false,
           "segments": 80,
@@ -494,14 +494,14 @@
         }
       },
       "textSections": [
-        { "id": 1, "text": "Kidzovo", "size": 125, "weight": 900, "spacing": 0.02, "font": "sans-serif", "italic": false },
-        { "id": 2, "text": "adventure awaits!", "size": 22, "weight": 400, "spacing": 0.18, "font": "serif", "italic": true }
+        { "id": 1, "text": "Jyoti", "size": 125, "weight": 700, "spacing": -0.03, "font": "serif", "italic": true },
+        { "id": 2, "text": "LIGHT OF A THOUSAND DIYAS", "size": 16, "weight": 300, "spacing": 0.3, "font": "sans-serif", "italic": false }
       ],
-      "textGap": 14,
+      "textGap": 18,
       "textConfig": {
         "enabled": true,
-        "color": "#1e293b",
-        "opacity": 0.92
+        "color": "#f5d98e",
+        "opacity": 0.95
       },
       "selectedProjectIds": []
     }

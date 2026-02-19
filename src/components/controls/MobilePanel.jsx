@@ -4,7 +4,7 @@ import {
   Palette, GridFour, Sparkle, TextT,
   Shuffle, Plus, Camera, Check, ArrowCounterClockwise,
   CaretCircleUp, CaretCircleDown,
-  Pause, Play, FloppyDisk, Images, PaintBrushBroad, HandTap,
+  Pause, Play, FloppyDisk, Images, PaintBrushBroad,
 } from '@phosphor-icons/react'
 import { parsePaletteJson } from '@/lib/colorConversion'
 import { cn } from '@/lib/utils'
@@ -51,8 +51,6 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
   const colorPalette = useStore((state) => state.colorPalette)
   const isPaused = useStore((state) => state.isPaused)
   const setIsPaused = useStore((state) => state.setIsPaused)
-  const mouseConfig = useStore((state) => state.mouseConfig)
-  const setMouseConfig = useStore((state) => state.setMouseConfig)
 
   const parsedPalette = colorPalette ? parsePaletteJson(colorPalette) : null
 
@@ -80,9 +78,6 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
           </Button>
           <Button variant="outline" size="sm" className="bg-background/30 backdrop-blur-md flex items-center gap-2 h-10 px-3 border-primary/50" onClick={() => setIsPaused(!isPaused)} title={isPaused ? "Resume Animations" : "Pause Animations"}>
             {isPaused ? <Play size={18} weight="fill" /> : <Pause size={18} />}
-          </Button>
-          <Button variant="outline" size="sm" className="bg-background/30 backdrop-blur-md flex items-center gap-2 h-10 px-3 border-primary/50" onClick={() => openDialog('mouse-effect')} title="Mouse Effect">
-            <HandTap size={18} weight={mouseConfig.enabled ? 'fill' : 'regular'} />
           </Button>
           <Button variant="outline" size="sm" className="bg-background/30 backdrop-blur-md flex items-center gap-2 h-10 px-3 border-primary/50" onClick={onRandomize} title="Shuffle Gradient">
             <Shuffle size={18} />

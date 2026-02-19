@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import html2canvas from 'html2canvas'
-import { ArrowLeft, CircleNotch, Warning, Play, Code, Check, Copy, Download, ArrowCounterClockwiseIcon as ArrowCounterClockwise, CameraIcon } from '@phosphor-icons/react'
-import { getSceneBySlug, getProjects, updateScene, verifyDeletePassword, titleToSlug, recaptureThumbnail } from '@/lib/scenesApi'
+import { ArrowLeft, CircleNotch, Warning, Play, Code, Check, Copy, Download, ArrowCounterClockwiseIcon as ArrowCounterClockwise, CameraIcon, CheckCircle, XCircle } from '@phosphor-icons/react'
+import { getSceneBySlug, getProjects, updateScene, verifyDeletePassword, titleToSlug, recaptureThumbnail, deleteScene } from '@/lib/scenesApi'
 import { generateSceneDescriptions } from '@/lib/gemini'
 import { prepareForCapture } from '@/lib/colorConversion'
 import { Button } from '@/components/ui/button'
@@ -79,6 +79,18 @@ function SceneViewPage() {
   const [isRecapturing, setIsRecapturing] = useState(false)
   const [thumbnailCacheBuster, setThumbnailCacheBuster] = useState('')
   const [thumbnailCopied, setThumbnailCopied] = useState(false)
+
+  // Accept review state
+  const [acceptDialogOpen, setAcceptDialogOpen] = useState(false)
+  const [acceptPassword, setAcceptPassword] = useState('')
+  const [acceptError, setAcceptError] = useState('')
+  const [isAccepting, setIsAccepting] = useState(false)
+
+  // Reject review state
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false)
+  const [rejectPassword, setRejectPassword] = useState('')
+  const [rejectError, setRejectError] = useState('')
+  const [isRejecting, setIsRejecting] = useState(false)
 
   // Update document meta tags with scene data (use large for OG image)
   useDocumentMeta({
@@ -463,6 +475,169 @@ function SceneViewPage() {
       setRecaptureError('Failed to recapture thumbnail. Please try again.')
     } finally {
       setIsRecapturing(false)
+    }
+  }
+
+  // Accept review: recapture thumbnail + remove pendingReview
+  const handleAcceptReview = async () => {
+    if (!acceptPassword.trim()) {
+      setAcceptError('Password is required')
+      return
+    }
+
+    if (!layersContainerRef?.current) {
+      setAcceptError('Scene not ready for capture')
+      return
+    }
+
+    setIsAccepting(true)
+    setAcceptError('')
+
+    try {
+      const isValid = await verifyDeletePassword(acceptPassword)
+      if (!isValid) {
+        setAcceptError('Incorrect password')
+        setIsAccepting(false)
+        return
+      }
+
+      const restoreColors = prepareForCapture(document.body)
+
+      try {
+        await new Promise(resolve => requestAnimationFrame(resolve))
+
+        const container = layersContainerRef.current
+        const width = container.offsetWidth
+        const height = container.offsetHeight
+        const scale = 2
+
+        const outputCanvas = document.createElement('canvas')
+        outputCanvas.width = width * scale
+        outputCanvas.height = height * scale
+        const ctx = outputCanvas.getContext('2d')
+
+        ctx.fillStyle = '#000000'
+        ctx.fillRect(0, 0, outputCanvas.width, outputCanvas.height)
+
+        const getLastCanvas = (selector) => {
+          const canvases = container.querySelectorAll(`${selector} canvas`)
+          return canvases.length > 0 ? canvases[canvases.length - 1] : null
+        }
+
+        const backgroundCanvas =
+          container.querySelector('.gradient-layer canvas') ||
+          getLastCanvas('.simple-gradient-layer') ||
+          getLastCanvas('.fluid-gradient-layer') ||
+          getLastCanvas('.aurora-layer') ||
+          getLastCanvas('.waves-layer') ||
+          getLastCanvas('.ribbon-layer') ||
+          getLastCanvas('.dandelion-layer') ||
+          getLastCanvas('.particle-ring-layer') ||
+          getLastCanvas('.shape-trail-layer')
+
+        if (backgroundCanvas) {
+          const wrapper = container.querySelector('.gradient-effects-wrapper')
+          const filterStyle = wrapper ? getComputedStyle(wrapper).filter : 'none'
+          ctx.filter = filterStyle !== 'none' ? filterStyle : 'none'
+          ctx.drawImage(backgroundCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
+          ctx.filter = 'none'
+        }
+
+        const currentEffectsConfig = scene?.scene_data?.effectsConfig || {}
+        drawTextureToCanvas(
+          ctx,
+          outputCanvas.width,
+          outputCanvas.height,
+          currentEffectsConfig.texture,
+          (currentEffectsConfig.textureSize || 20) * scale,
+          currentEffectsConfig.textureOpacity || 0.5,
+          currentEffectsConfig.textureBlendMode || 'overlay'
+        )
+        drawVignetteToCanvas(ctx, outputCanvas.width, outputCanvas.height, currentEffectsConfig.vignetteIntensity || 0)
+
+        const tessellationLayer = container.querySelector('.tessellation-layer')
+        if (tessellationLayer) {
+          const tessCanvas = await html2canvas(tessellationLayer, {
+            useCORS: true,
+            allowTaint: true,
+            scale: scale,
+            backgroundColor: null,
+            logging: false,
+          })
+          ctx.drawImage(tessCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
+        }
+
+        const textLayer = container.querySelector('.text-layer')
+        if (textLayer) {
+          const textCanvas = await html2canvas(textLayer, {
+            useCORS: true,
+            allowTaint: true,
+            scale: scale,
+            backgroundColor: null,
+            logging: false,
+          })
+          ctx.drawImage(textCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
+        }
+
+        const base64Data = outputCanvas.toDataURL('image/jpeg', 0.9)
+
+        restoreColors()
+
+        // Upload new thumbnail
+        const updatedScene = await recaptureThumbnail(scene.id, base64Data)
+
+        // Remove pendingReview flag
+        const updatedSceneData = { ...scene.scene_data }
+        delete updatedSceneData.pendingReview
+        await updateScene(scene.id, { sceneData: updatedSceneData })
+
+        // Update local state
+        setScene(prev => ({
+          ...prev,
+          thumbnail: updatedScene.thumbnail,
+          scene_data: updatedSceneData,
+        }))
+
+        setThumbnailCacheBuster(`?t=${Date.now()}`)
+        setAcceptDialogOpen(false)
+        setAcceptPassword('')
+      } catch (captureError) {
+        restoreColors()
+        throw captureError
+      }
+    } catch (err) {
+      console.error('Failed to accept review:', err)
+      setAcceptError('Failed to accept review. Please try again.')
+    } finally {
+      setIsAccepting(false)
+    }
+  }
+
+  // Reject review: delete scene
+  const handleRejectReview = async () => {
+    if (!rejectPassword.trim()) {
+      setRejectError('Password is required')
+      return
+    }
+
+    setIsRejecting(true)
+    setRejectError('')
+
+    try {
+      const isValid = await verifyDeletePassword(rejectPassword)
+      if (!isValid) {
+        setRejectError('Incorrect password')
+        setIsRejecting(false)
+        return
+      }
+
+      await deleteScene(scene.id)
+      navigate('/scenes')
+    } catch (err) {
+      console.error('Failed to reject/delete scene:', err)
+      setRejectError('Failed to delete scene. Please try again.')
+    } finally {
+      setIsRejecting(false)
     }
   }
 
@@ -852,6 +1027,34 @@ function SceneViewPage() {
               <h1 className="text-lg font-semibold">{scene.title}</h1>
             </div>
           )}
+
+          {/* Pending Review: Accept / Reject */}
+          {scene.scene_data?.pendingReview && (
+            <div className="flex items-center gap-2 p-2 rounded-lg bg-amber-500/10 border border-amber-500/25">
+              <span className="text-xs font-semibold uppercase tracking-wide text-amber-500 flex-1">
+                Pending Review
+              </span>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-7 text-xs text-green-500 hover:text-green-400 hover:bg-green-500/10"
+                onClick={() => { setAcceptDialogOpen(true); setAcceptError(''); setAcceptPassword('') }}
+              >
+                <CheckCircle size={14} weight="bold" className="mr-1" />
+                Accept
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-7 text-xs text-red-500 hover:text-red-400 hover:bg-red-500/10"
+                onClick={() => { setRejectDialogOpen(true); setRejectError(''); setRejectPassword('') }}
+              >
+                <XCircle size={14} weight="bold" className="mr-1" />
+                Reject
+              </Button>
+            </div>
+          )}
+
           <div className="flex w-full flex-wrap gap-2">
             <Button className="flex flex-row flex-1 border border-primary" variant="outline" onClick={() => setEmbedDialogOpen(true)}>
               <Code size={16} weight="bold" />
@@ -1413,6 +1616,108 @@ function SceneViewPage() {
               disabled={isSavingProjects || allProjects.length === 0}
             >
               {isSavingProjects ? 'Saving...' : 'Save'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Accept Review Dialog */}
+      <Dialog open={acceptDialogOpen} onOpenChange={setAcceptDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Accept Scene</DialogTitle>
+            <DialogDescription>
+              This will recapture the thumbnail and mark the scene as reviewed.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {isAccepting ? (
+              <div className="flex items-center justify-center gap-3 py-8">
+                <CircleNotch size={24} className="animate-spin text-primary" />
+                <span className="text-muted-foreground">Accepting &amp; recapturing thumbnail...</span>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Label htmlFor="accept-password">Password</Label>
+                <Input
+                  id="accept-password"
+                  type="password"
+                  value={acceptPassword}
+                  onChange={(e) => { setAcceptPassword(e.target.value); setAcceptError('') }}
+                  placeholder="Enter admin password"
+                />
+              </div>
+            )}
+
+            {acceptError && (
+              <p className="text-sm text-destructive">{acceptError}</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setAcceptDialogOpen(false)}
+              disabled={isAccepting}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAcceptReview}
+              disabled={isAccepting}
+            >
+              {isAccepting ? 'Accepting...' : 'Accept'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Reject Review Dialog */}
+      <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Reject Scene</DialogTitle>
+            <DialogDescription>
+              This will permanently delete "{scene.title}". This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="reject-password">Enter password to confirm</Label>
+              <Input
+                id="reject-password"
+                type="password"
+                value={rejectPassword}
+                onChange={(e) => { setRejectPassword(e.target.value); setRejectError('') }}
+                placeholder="Password"
+                disabled={isRejecting}
+              />
+            </div>
+
+            {rejectError && (
+              <p className="text-sm text-destructive">{rejectError}</p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setRejectDialogOpen(false)}
+              disabled={isRejecting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleRejectReview}
+              disabled={isRejecting}
+            >
+              {isRejecting ? (
+                <>
+                  <CircleNotch size={16} className="animate-spin" />
+                  Deleting...
+                </>
+              ) : (
+                'Delete'
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>

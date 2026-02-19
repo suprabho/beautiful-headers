@@ -71,6 +71,8 @@ const LevelMeter = () => {
 export const AudioPanel = ({ loadAudioFile, playAudio, pauseAudio, audioElement }) => {
   const audioConfig = useStore((s) => s.audioConfig)
   const updateAudioConfig = useStore((s) => s.updateAudioConfig)
+  const mouseConfig = useStore((s) => s.mouseConfig)
+  const setMouseConfig = useStore((s) => s.setMouseConfig)
   const fileInputRef = useRef(null)
   const isPlayingRef = useRef(false)
 
@@ -148,11 +150,22 @@ export const AudioPanel = ({ loadAudioFile, playAudio, pauseAudio, audioElement 
         </Select>
       </ControlGroup>
 
-      {/* Mouse mode hint */}
+      {/* Mouse mode controls */}
       {inputMode === 'mouse' && (
-        <p className="text-xs text-muted-foreground">
-          Move your cursor to influence the background effects.
-        </p>
+        <>
+          <p className="text-xs text-muted-foreground">
+            Move your cursor to influence the background effects.
+          </p>
+          <ControlGroup label="Intensity">
+            <NumberInput
+              value={[mouseConfig.intensity]}
+              onValueChange={([val]) => setMouseConfig({ ...mouseConfig, intensity: val })}
+              max={1}
+              step={0.05}
+              showButtons
+            />
+          </ControlGroup>
+        </>
       )}
 
       {/* Audio controls (mic or file) */}

@@ -54,7 +54,6 @@ export const getDialogTitle = (key, textSections) => {
     'shapeTrail-animation': 'Trail Animation',
     'pattern-icon': 'Icon Settings',
     'pattern-spacing': 'Spacing',
-    'mouse-effect': 'Mouse Effect',
     'effects-blur': 'Background Blur',
     'effects-texture': 'Texture',
     'effects-colormap': 'Color Map',
@@ -119,32 +118,6 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
   }
 
   switch (activeDialog) {
-    case 'mouse-effect': {
-      const mouseConfig = useStore.getState().mouseConfig
-      const setMouseConfig = useStore.getState().setMouseConfig
-      return (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <Label className="text-sm">Enable Mouse Effect</Label>
-            <Switch
-              checked={mouseConfig.enabled}
-              onCheckedChange={(checked) => setMouseConfig({ ...mouseConfig, enabled: checked })}
-            />
-          </div>
-          {mouseConfig.enabled && (
-            <ControlGroup label="Intensity">
-              <NumberInput
-                value={[mouseConfig.intensity]}
-                onValueChange={([val]) => setMouseConfig({ ...mouseConfig, intensity: val })}
-                max={1}
-                step={0.05}
-                showButtons
-              />
-            </ControlGroup>
-          )}
-        </div>
-      )
-    }
     case 'gradient-colors':
       return (
         <ColorsSection
