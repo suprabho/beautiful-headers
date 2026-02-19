@@ -51,19 +51,12 @@ const lineFragmentShader = `
 const MAX_LINES = 3000
 const LINE_SCALE = 6
 
-function generateLineData(lineCount, spread, radiusMin, radiusMax) {
-  const maxPolarAngle = Math.PI * (spread ?? 0.3)
+function generateLineData(lineCount, radiusMin, radiusMax) {
   const lines = []
   for (let i = 0; i < lineCount; i++) {
-    const t = i / Math.max(lineCount - 1, 1)
-    const polarAngle = t * maxPolarAngle
-    const azimuthal = GOLDEN_ANGLE * i
-    const sinP = Math.sin(polarAngle)
-    const cosP = Math.cos(polarAngle)
     lines.push({
-      dx: sinP * Math.cos(azimuthal),
-      dy: cosP,
-      dz: sinP * Math.sin(azimuthal),
+      t: i / Math.max(lineCount - 1, 1),
+      azimuthal: GOLDEN_ANGLE * i,
       length: radiusMin + Math.random() * (radiusMax - radiusMin),
       phaseOffset: Math.random() * Math.PI * 2,
       swayAmount: 0.02 + Math.random() * 0.03,
@@ -163,8 +156,8 @@ function DandelionMesh({ config, colors, isPaused, mouseEnabled = true, mouseInt
   const vpMatrix = useMemo(() => new THREE.Matrix4(), [])
 
   const lineData = useMemo(() =>
-    generateLineData(config.lineCount, config.spread, config.radiusMin, config.radiusMax),
-    [config.lineCount, config.spread, config.radiusMin, config.radiusMax]
+    generateLineData(config.lineCount, config.radiusMin, config.radiusMax),
+    [config.lineCount, config.radiusMin, config.radiusMax]
   )
 
   // Set instance count and colors
@@ -186,9 +179,13 @@ function DandelionMesh({ config, colors, isPaused, mouseEnabled = true, mouseInt
 
   useFrame((state, delta) => {
     const cfg = configRef.current
-    const audioSpeedBoost = audioData.isActive ? audioData.amplitude * 1.0 : 0
+    const audioSpeedBoost = audioData.isActive ? audioData.treble * 1.5 : 0
+    const audioSpreadBoost = audioData.isActive ? audioData.treble * 20 : 0
     if (!isPaused) timeRef.current += delta * ((cfg.speed ?? 0.3) + audioSpeedBoost)
     const time = timeRef.current
+
+    // Compute spread-modulated polar angle range (reactive to audio)
+    const maxPolarAngle = Math.PI * ((cfg.spread ?? 0.3) + audioSpreadBoost)
 
     // Smooth mouse tracking (from window-level listener)
     smoothMouse.x += (mouseNDC.x - smoothMouse.x) * 0.05
@@ -228,13 +225,21 @@ function DandelionMesh({ config, colors, isPaused, mouseEnabled = true, mouseInt
     for (let i = 0; i < lineData.length; i++) {
       const line = lineData[i]
 
+      // Compute direction from spread (reactive to audio each frame)
+      const polarAngle = line.t * maxPolarAngle
+      const sinP = Math.sin(polarAngle)
+      const cosP = Math.cos(polarAngle)
+      const baseDx = sinP * Math.cos(line.azimuthal)
+      const baseDy = cosP
+      const baseDz = sinP * Math.sin(line.azimuthal)
+
       // Base sway
       const sway = Math.sin(time * 2 + line.phaseOffset) * line.swayAmount
       const swayX = Math.cos(time * 1.5 + line.phaseOffset * 2) * line.swayAmount * 0.5
 
-      let dx = line.dx + swayX
-      let dy = line.dy + sway
-      let dz = line.dz
+      let dx = baseDx + swayX
+      let dy = baseDy + sway
+      let dz = baseDz
 
       // Project tip to screen NDC to check mouse proximity
       const len = line.length * LINE_SCALE

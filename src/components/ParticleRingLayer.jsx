@@ -136,7 +136,7 @@ function ParticleRingMesh({ config, colors, isPaused }) {
 
   useFrame((_, delta) => {
     const cfg = configRef.current
-    const audioSpeedBoost = audioData.isActive ? audioData.amplitude * 1.5 : 0
+    const audioSpeedBoost = audioData.isActive ? audioData.treble * 1.5 : 0
     if (!isPaused) timeRef.current += delta * (cfg.speed + audioSpeedBoost)
     const time = timeRef.current
 
@@ -162,7 +162,7 @@ function ParticleRingMesh({ config, colors, isPaused }) {
 
       // Pulse effect on radius (with audio modulation)
       const pulse = Math.sin(time * p.pulseSpeed + p.phase) * 0.02
-      const audioRadiusBoost = audioData.isActive ? audioData.bass * 0.15 : 0
+      const audioRadiusBoost = audioData.isActive ? audioData.amplitude * 0.25 : 0
       const currentRadius = (p.baseRadius + pulse + audioRadiusBoost) * maxRadius
 
       // Position in XZ plane (horizontal ring) with dispersion in all axes
