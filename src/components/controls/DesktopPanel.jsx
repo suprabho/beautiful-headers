@@ -31,7 +31,7 @@ const tabs = [
 ]
 
 export const DesktopPanel = ({
-  panelRef, position, isDragging, handleHandTapDown,
+  panelRef, position, isDragging, handleMouseDown,
   isCapturing, onRandomize, onShowPalette, onShowSave, onShowCapture,
 }) => {
   const navigate = useNavigate()
@@ -73,7 +73,7 @@ export const DesktopPanel = ({
   const isPaused = useStore((state) => state.isPaused)
   const setIsPaused = useStore((state) => state.setIsPaused)
   const mouseConfig = useStore((state) => state.mouseConfig)
-  const setHandTapConfig = useStore((state) => state.setHandTapConfig)
+  const setMouseConfig = useStore((state) => state.setMouseConfig)
 
   const parsedPalette = colorPalette ? parsePaletteJson(colorPalette) : null
 
@@ -97,7 +97,7 @@ export const DesktopPanel = ({
       {/* Header */}
       <div
         className="flex items-center justify-between p-2 border-b border-border select-none"
-        onHandTapDown={handleHandTapDown}
+        onMouseDown={handleMouseDown}
         style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
       >
         <div className="flex items-center gap-2">
@@ -119,25 +119,26 @@ export const DesktopPanel = ({
           </Button>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8" title="HandTap Effect">
+              <Button variant="ghost" size="icon" className="h-8 w-8" title="Mouse Effect">
                 <HandTap size={16} weight={mouseConfig.enabled ? 'fill' : 'regular'} />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-56 p-3 space-y-3">
+            <PopoverContent className="w-64 p-3 space-y-3">
               <div className="flex items-center justify-between">
-                <Label className="text-xs font-semibold">HandTap Effect</Label>
+                <Label className="text-xs font-semibold">Mouse Effect</Label>
                 <Switch
                   checked={mouseConfig.enabled}
-                  onCheckedChange={(checked) => setHandTapConfig({ ...mouseConfig, enabled: checked })}
+                  onCheckedChange={(checked) => setMouseConfig({ ...mouseConfig, enabled: checked })}
                 />
               </div>
               {mouseConfig.enabled && (
                 <ControlGroup label="Intensity">
                   <NumberInput
                     value={[mouseConfig.intensity]}
-                    onValueChange={([val]) => setHandTapConfig({ ...mouseConfig, intensity: val })}
+                    onValueChange={([val]) => setMouseConfig({ ...mouseConfig, intensity: val })}
                     max={1}
-                    step={0.01}
+                    step={0.05}
+                    showButtons
                   />
                 </ControlGroup>
               )}
