@@ -383,7 +383,10 @@ function SceneViewPage() {
           getLastCanvas('.fluid-gradient-layer') ||
           getLastCanvas('.aurora-layer') ||
           getLastCanvas('.waves-layer') ||
-          getLastCanvas('.ribbon-layer')
+          getLastCanvas('.ribbon-layer') ||
+          getLastCanvas('.dandelion-layer') ||
+          getLastCanvas('.particle-ring-layer') ||
+          getLastCanvas('.shape-trail-layer')
 
         if (backgroundCanvas) {
           const wrapper = container.querySelector('.gradient-effects-wrapper')
@@ -591,7 +594,10 @@ function SceneViewPage() {
         getLastCanvas('.fluid-gradient-layer') ||
         getLastCanvas('.aurora-layer') ||
         getLastCanvas('.waves-layer') ||
-        getLastCanvas('.ribbon-layer')
+        getLastCanvas('.ribbon-layer') ||
+        getLastCanvas('.dandelion-layer') ||
+        getLastCanvas('.particle-ring-layer') ||
+        getLastCanvas('.shape-trail-layer')
 
       if (backgroundCanvas) {
         const wrapper = container.querySelector('.gradient-effects-wrapper')

@@ -1,5 +1,6 @@
 import { useRef, useEffect, useMemo, useState, memo } from 'react'
 import FlutedGlassCanvas from './FlutedGlassCanvas'
+import { getAudioModulatedConfig } from '../audio/applyAudioModulation'
 
 // Detect mobile device for performance optimizations
 const isMobile = typeof window !== 'undefined' && (
@@ -214,8 +215,8 @@ const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, is
         return
       }
 
-      // Read config values from refs
-      const cfg = configRef.current
+      // Read config values from refs, with audio modulation applied
+      const cfg = getAudioModulatedConfig(configRef.current, 'fluid')
       const colors = gradientColorsRef.current
       const background = bgColorRef.current
       

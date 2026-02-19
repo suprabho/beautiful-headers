@@ -23,6 +23,7 @@ Content-Type: application/json
 ```json
 {
   "password": "your-admin-password",
+  "projectId": "optional-project-uuid",
   "scenes": [
     {
       "title": "Ocean Gradient Header",
@@ -58,6 +59,14 @@ Content-Type: application/json
   ]
 }
 ```
+
+### Top-Level Fields
+
+| Field | Required | Description |
+|---|---|---|
+| `password` | Yes | Admin password |
+| `scenes` | Yes | Array of scene objects (see below) |
+| `projectId` | No | UUID of a project — all scenes will be linked to this project |
 
 ### Scene Fields
 
@@ -104,6 +113,7 @@ curl -X POST https://your-domain.vercel.app/api/bulk-create-scenes \
   -H "Content-Type: application/json" \
   -d '{
     "password": "your-password",
+    "projectId": "optional-project-uuid",
     "scenes": [
       {
         "title": "My Scene",

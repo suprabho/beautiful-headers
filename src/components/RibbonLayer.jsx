@@ -2,6 +2,8 @@ import { useRef, useEffect, useMemo, useState, memo } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import FlutedGlassCanvas from './FlutedGlassCanvas'
+import { audioData } from '../audio/audioData'
+import { AUDIO_MAPPINGS } from '../audio/audioMappings'
 
 // Color cache for hex to RGB conversions
 const colorCache = new Map()
@@ -250,7 +252,20 @@ const Ribbon = ({ index, totalRibbons, config, colors, isPausedRef }) => {
     if (!isPausedRef.current) {
       timeRef.current += delta
     }
-    materialRef.current.uniforms.u_time.value = timeRef.current
+    const mat = materialRef.current
+    mat.uniforms.u_time.value = timeRef.current
+
+    // Audio reactivity: modulate amplitude, noise, speed
+    if (audioData.isActive) {
+      const mappings = AUDIO_MAPPINGS.ribbon
+      for (const m of mappings) {
+        const uniformName = `u_${m.param}`
+        if (mat.uniforms[uniformName]) {
+          const baseScale = m.param === 'amplitude' ? 0.3 : m.param === 'noise' ? 0.2 : 1
+          mat.uniforms[uniformName].value = config[m.param] * baseScale + audioData[m.band] * m.weight * baseScale
+        }
+      }
+    }
   })
 
   // Geometry dimensions: wide ribbon

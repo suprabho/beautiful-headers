@@ -1,17 +1,22 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Trash, CircleNotch, Warning, ImageBroken } from '@phosphor-icons/react'
-import { getScenes, deleteScene, checkCmsHealth, titleToSlug, verifyDeletePassword } from '@/lib/scenesApi'
+import { ArrowLeft, Trash, CircleNotch, Warning, ImageBroken, Sparkle } from '@phosphor-icons/react'
+import { SlidersHorizontal } from 'lucide-react'
+import { getScenes, getProjects, deleteScene, checkCmsHealth, titleToSlug, verifyDeletePassword } from '@/lib/scenesApi'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog'
+import { sceneMatchesColorFamily } from '@/lib/sceneFilters'
+import SceneFilterBar from '@/components/SceneFilterBar'
 import '../App.css'
 
 function SceneCard({ scene, onNavigate, onDelete }) {
   const [isHovered, setIsHovered] = useState(false)
   const [imageError, setImageError] = useState(false)
+
+  const isPendingReview = scene.scene_data?.pendingReview === true
 
   // Supabase returns full URLs, no need to prepend base
   const thumbnailUrl = scene.thumbnail?.small || null
@@ -42,6 +47,13 @@ function SceneCard({ scene, onNavigate, onDelete }) {
           </div>
         )}
 
+        {/* AI-generated static icon */}
+        {isPendingReview && (
+          <div className="absolute bottom-2 left-2 p-1.5 rounded-lg bg-black/50">
+            <Sparkle size={16} weight="fill" className="text-amber-400" />
+          </div>
+        )}
+
         {/* Hover overlay */}
         <div
           className={cn(
@@ -55,7 +67,14 @@ function SceneCard({ scene, onNavigate, onDelete }) {
 
       {/* Info */}
       <div className="p-3">
-        <h3 className="font-medium text-base truncate">{scene.title}</h3>
+        <div className="flex items-center gap-2">
+          <h3 className="font-medium text-base truncate">{scene.title}</h3>
+          {isPendingReview && (
+            <span className="shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wide bg-amber-500/15 text-amber-500 border border-amber-500/25">
+              Pending Review
+            </span>
+          )}
+        </div>
         {scene.short_description && (
           <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
             {scene.short_description}
@@ -96,8 +115,27 @@ function SavedScenesPage() {
   const [deletePassword, setDeletePassword] = useState('')
   const [passwordError, setPasswordError] = useState('')
 
+  // Filter state
+  const [backgroundType, setBackgroundType] = useState(null)
+  const [projectId, setProjectId] = useState(null)
+  const [colorFamily, setColorFamily] = useState(null)
+  const [projects, setProjects] = useState([])
+  const [showFilters, setShowFilters] = useState(false)
+
   const sentinelRef = useRef(null)
-  const hasMore = scenes.length < totalDocs
+  const serverFilteredTotal = useRef(0)
+
+  const hasActiveFilters = backgroundType || projectId || colorFamily
+
+  // Apply color filter client-side
+  const filteredScenes = useMemo(() => {
+    if (!colorFamily) return scenes
+    return scenes.filter((scene) => sceneMatchesColorFamily(scene, colorFamily))
+  }, [scenes, colorFamily])
+
+  const hasMore = colorFamily
+    ? scenes.length < serverFilteredTotal.current
+    : scenes.length < totalDocs
 
   // Check CMS and fetch scenes on mount
   useEffect(() => {
@@ -107,6 +145,7 @@ function SavedScenesPage() {
 
       if (isHealthy) {
         fetchScenes()
+        getProjects().then(setProjects).catch(() => {})
       } else {
         setIsLoading(false)
         setError('Unable to connect to database. Check your internet connection.')
@@ -115,13 +154,25 @@ function SavedScenesPage() {
     init()
   }, [])
 
+  // Re-fetch when server-side filters change
+  useEffect(() => {
+    if (!cmsAvailable) return
+    fetchScenes()
+  }, [backgroundType, projectId])
+
   const fetchScenes = async () => {
     try {
       setIsLoading(true)
       setError(null)
-      const response = await getScenes({ offset: 0, limit: PAGE_SIZE })
+      const response = await getScenes({
+        offset: 0,
+        limit: PAGE_SIZE,
+        backgroundType,
+        projectId,
+      })
       setScenes(response.docs || [])
       setTotalDocs(response.totalDocs || 0)
+      serverFilteredTotal.current = response.totalDocs || 0
     } catch (err) {
       console.error('Failed to fetch scenes:', err)
       setError('Failed to load scenes. Please try again.')
@@ -134,15 +185,21 @@ function SavedScenesPage() {
     if (isLoadingMore || !hasMore) return
     try {
       setIsLoadingMore(true)
-      const response = await getScenes({ offset: scenes.length, limit: PAGE_SIZE })
+      const response = await getScenes({
+        offset: scenes.length,
+        limit: PAGE_SIZE,
+        backgroundType,
+        projectId,
+      })
       setScenes((prev) => [...prev, ...(response.docs || [])])
       setTotalDocs(response.totalDocs || 0)
+      serverFilteredTotal.current = response.totalDocs || 0
     } catch (err) {
       console.error('Failed to load more scenes:', err)
     } finally {
       setIsLoadingMore(false)
     }
-  }, [isLoadingMore, hasMore, scenes.length])
+  }, [isLoadingMore, hasMore, scenes.length, backgroundType, projectId])
 
   // Infinite scroll via IntersectionObserver
   useEffect(() => {
@@ -161,6 +218,12 @@ function SavedScenesPage() {
   const handleNavigateToScene = (scene) => {
     const slug = titleToSlug(scene.title)
     navigate(`/scenes/${slug}`)
+  }
+
+  const handleClearFilters = () => {
+    setBackgroundType(null)
+    setProjectId(null)
+    setColorFamily(null)
   }
 
   const handleDeleteScene = async () => {
@@ -194,6 +257,9 @@ function SavedScenesPage() {
     }
   }
 
+  const displayedCount = filteredScenes.length
+  const displayedTotal = colorFamily ? filteredScenes.length : totalDocs
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -208,10 +274,38 @@ function SavedScenesPage() {
           </Button>
           <h1 className="text-lg font-semibold">Saved Scenes</h1>
           <span className="text-sm text-muted-foreground">
-            {scenes.length} of {totalDocs} {totalDocs === 1 ? 'scene' : 'scenes'}
+            {displayedCount} of {displayedTotal} {displayedTotal === 1 ? 'scene' : 'scenes'}
           </span>
+          <div className="ml-auto">
+            <Button
+              variant={hasActiveFilters ? "default" : "ghost"}
+              size="icon"
+              onClick={() => setShowFilters((v) => !v)}
+              className="relative"
+            >
+              <SlidersHorizontal size={20} />
+              {hasActiveFilters && (
+                <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-primary" />
+              )}
+            </Button>
+          </div>
         </div>
       </header>
+
+      {/* Filter bar */}
+      {showFilters && (
+        <SceneFilterBar
+          projects={projects}
+          projectId={projectId}
+          onProjectChange={setProjectId}
+          backgroundType={backgroundType}
+          onBackgroundTypeChange={setBackgroundType}
+          colorFamily={colorFamily}
+          onColorFamilyChange={setColorFamily}
+          onClear={handleClearFilters}
+          hasActiveFilters={hasActiveFilters}
+        />
+      )}
 
       {/* Content */}
       <main className="container w-800 mx-auto px-4 py-6">
@@ -233,20 +327,30 @@ function SavedScenesPage() {
               </Button>
             )}
           </div>
-        ) : scenes.length === 0 ? (
+        ) : filteredScenes.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <p className="text-muted-foreground mb-4">No saved scenes yet</p>
-            <Button
-              variant="outline"
-              onClick={() => navigate('/')}
-            >
-              Create your first scene
-            </Button>
+            <p className="text-muted-foreground mb-4">
+              {hasActiveFilters
+                ? 'No scenes match the current filters'
+                : 'No saved scenes yet'}
+            </p>
+            {hasActiveFilters ? (
+              <Button variant="outline" onClick={handleClearFilters}>
+                Clear Filters
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                onClick={() => navigate('/')}
+              >
+                Create your first scene
+              </Button>
+            )}
           </div>
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {scenes.map((scene) => (
+              {filteredScenes.map((scene) => (
                 <SceneCard
                   key={scene.id}
                   scene={scene}

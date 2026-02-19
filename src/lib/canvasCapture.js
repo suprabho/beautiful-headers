@@ -157,7 +157,8 @@ export const captureLayersToCanvas = async (container, effectsConfig, { scale = 
     getLastCanvas('.waves-layer') ||
     getLastCanvas('.ribbon-layer') ||
     getLastCanvas('.dandelion-layer') ||
-    getLastCanvas('.particle-ring-layer')
+    getLastCanvas('.particle-ring-layer') ||
+    getLastCanvas('.shape-trail-layer')
 
   if (backgroundCanvas) {
     const wrapper = container.querySelector('.gradient-effects-wrapper')

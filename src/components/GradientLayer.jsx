@@ -2,6 +2,8 @@ import { useRef, useEffect, useMemo, memo } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { EffectComposer, BrightnessContrast, HueSaturation, Sepia } from '@react-three/postprocessing'
 import * as THREE from 'three'
+import { audioData } from '../audio/audioData'
+import { AUDIO_MAPPINGS } from '../audio/audioMappings'
 
 // Color cache for hex to RGB conversions (PERFORMANCE OPTIMIZATION)
 const colorCache = new Map()
@@ -435,6 +437,18 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos, isPaused, mou
     mat.uniforms.u_time.value = timeRef.current
     mat.uniforms.u_mouse.value.set(currentMouseRef.current.x, 1 - currentMouseRef.current.y)
     mat.uniforms.u_resolution.value.set(size.width, size.height)
+
+    // Audio reactivity: modulate wave uniforms, disable mouse influence
+    if (audioData.isActive) {
+      const mappings = AUDIO_MAPPINGS.liquid
+      for (const m of mappings) {
+        const uniformName = `u_${m.param}`
+        if (mat.uniforms[uniformName]) {
+          mat.uniforms[uniformName].value = config[m.param] + audioData[m.band] * m.weight
+        }
+      }
+      mat.uniforms.u_mouseInfluence.value = 0
+    }
   })
 
   return (

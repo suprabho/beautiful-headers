@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  Palette, GridFour, Sparkle, TextT,
+  Palette, GridFour, Sparkle, TextT, Waveform,
   Shuffle, DotsSixVertical, Camera,
   Pause, Play, FloppyDisk, Images, PaintBrushBroad, ArrowsInSimple, ArrowsOutSimple,
   HandTap,
 } from '@phosphor-icons/react'
+import { AudioPanel } from './AudioControls'
 import { cn } from '@/lib/utils'
 import { parsePaletteJson } from '@/lib/colorConversion'
 import { Button } from '@/components/ui/button'
@@ -28,11 +29,13 @@ const tabs = [
   { id: 'tessellation', label: 'Pattern', icon: GridFour },
   { id: 'effects', label: 'Effects', icon: Sparkle },
   { id: 'text', label: 'Text', icon: TextT },
+  { id: 'audio', label: 'Input', icon: Waveform },
 ]
 
 export const DesktopPanel = ({
   panelRef, position, isDragging, handleMouseDown,
   isCapturing, onRandomize, onShowPalette, onShowSave, onShowCapture,
+  audioAnalyser,
 }) => {
   const navigate = useNavigate()
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -215,6 +218,14 @@ export const DesktopPanel = ({
                   setTextConfig={setTextConfig}
                   parsedPalette={parsedPalette}
                   gradientColors={gradientConfig.colors}
+                />
+              </TabsContent>
+              <TabsContent value="audio" className="m-0">
+                <AudioPanel
+                  loadAudioFile={audioAnalyser?.loadAudioFile}
+                  playAudio={audioAnalyser?.playAudio}
+                  pauseAudio={audioAnalyser?.pauseAudio}
+                  audioElement={audioAnalyser?.audioElement}
                 />
               </TabsContent>
             </ScrollArea>

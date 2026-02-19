@@ -1,4 +1,5 @@
 import { useCallback, useRef, useEffect } from 'react'
+import { useAudioAnalyser } from './audio/useAudioAnalyser'
 import GradientLayer from './components/GradientLayer'
 import SimpleGradientLayer from './components/SimpleGradientLayer'
 import AuroraLayer from './components/AuroraLayer'
@@ -38,8 +39,12 @@ function App() {
   const isPaused = useStore((state) => state.isPaused)
   const loadSceneData = useStore((state) => state.loadSceneData)
   const currentSceneId = useStore((state) => state.currentSceneId)
+  const audioEnabled = useStore((state) => state.audioConfig.enabled)
 
   const layersContainerRef = useRef(null)
+
+  // Audio analyser — writes to audioData singleton, read by layers
+  const audioAnalyser = useAudioAnalyser()
 
   // Load a random saved scene on initial mount (only if no scene already loaded)
   useEffect(() => {
@@ -68,7 +73,10 @@ function App() {
   const pendingMouseRef = useRef({ x: 0, y: 0 })
 
   // Throttled mouse move handler using requestAnimationFrame (PERFORMANCE OPTIMIZATION)
+  // Disabled when audio reactivity is active (mouse and audio are mutually exclusive)
   const handleMouseMove = useCallback((e) => {
+    // Skip mouse tracking when audio is driving the effects
+    if (audioEnabled) return
     // Skip mouse tracking when mouse effects are disabled
     if (!mouseConfig.enabled) return
 
@@ -87,7 +95,14 @@ function App() {
       })
       rafPendingRef.current = false
     })
-  }, [setMousePos, mouseConfig.enabled])
+  }, [setMousePos, audioEnabled, mouseConfig.enabled])
+
+  // Reset mouse to neutral center when audio becomes active
+  useEffect(() => {
+    if (audioEnabled) {
+      setMousePos({ x: 0.5, y: 0.5 })
+    }
+  }, [audioEnabled, setMousePos])
 
   // Build the gradient filter string
   // Note: For 'liquid' background type, post-processing is handled in WebGL via Three.js EffectComposer
@@ -180,7 +195,7 @@ function App() {
         )}
       </div>
 
-      <ControlPanel layersContainerRef={layersContainerRef} />
+      <ControlPanel layersContainerRef={layersContainerRef} audioAnalyser={audioAnalyser} />
     </div>
   )
 }

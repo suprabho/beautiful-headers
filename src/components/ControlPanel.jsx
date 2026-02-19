@@ -10,7 +10,7 @@ import { CaptureModal } from './controls/CaptureModal'
 import { SaveSceneDialog } from './controls/SaveSceneDialog'
 import { ColorPaletteDialog } from './controls'
 
-const ControlPanel = ({ layersContainerRef }) => {
+const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
   // Minimal store subscriptions — only what the orchestrator needs
   const colorPalette = useStore((state) => state.colorPalette)
   const setColorPalette = useStore((state) => state.setColorPalette)
@@ -62,6 +62,7 @@ const ControlPanel = ({ layersContainerRef }) => {
           onShowPalette={() => setShowPaletteDialog(true)}
           onShowSave={() => setShowSaveDialog(true)}
           onShowCapture={() => setShowCaptureModal(true)}
+          audioAnalyser={audioAnalyser}
         />
       )}
 

@@ -355,6 +355,7 @@ export const EffectsPanel = ({
           )}
         </CollapsibleContent>
       </Collapsible>
+
     </div>
   )
 }
