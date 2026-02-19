@@ -21,7 +21,7 @@ import {
   ColorsSection,
   DEFAULT_EFFECTS_CONFIG,
 } from './index'
-import { AudioPanel } from './AudioControls'
+import { InputPanel } from './InputControls'
 import { MobileDialogContent, getDialogTitle } from './MobileDialogContent'
 
 const tabs = [
@@ -276,7 +276,7 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
             )}
             {activePanel === 'audio' && (
               <div className="px-3 py-2">
-                <AudioPanel
+                <InputPanel
                   loadAudioFile={audioAnalyser?.loadAudioFile}
                   playAudio={audioAnalyser?.playAudio}
                   pauseAudio={audioAnalyser?.pauseAudio}

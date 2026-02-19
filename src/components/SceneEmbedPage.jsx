@@ -3,6 +3,7 @@ import { useParams, useSearchParams } from 'react-router-dom'
 import { CircleNotch } from '@phosphor-icons/react'
 import { getSceneBySlug } from '@/lib/scenesApi'
 import { useDocumentMeta } from '@/hooks/useDocumentMeta'
+import { audioData } from '@/audio/audioData'
 import '../App.css'
 import GradientLayer from './GradientLayer'
 import SimpleGradientLayer from './SimpleGradientLayer'
@@ -21,9 +22,10 @@ function SceneEmbedPage() {
   const { slug } = useParams()
   const [searchParams] = useSearchParams()
 
-  // Parse query parameters for hiding elements
+  // Parse query parameters for hiding elements and input mode
   const hideText = searchParams.get('hideText') === 'true'
   const hideIcons = searchParams.get('hideIcons') === 'true'
+  const inputMode = searchParams.get('input') || 'mouse' // 'off' | 'mouse' | 'mic'
 
   const [scene, setScene] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -58,6 +60,82 @@ function SceneEmbedPage() {
       rafPendingRef.current = false
     })
   }, [])
+
+  // Mic audio analyser for embed
+  useEffect(() => {
+    if (inputMode !== 'mic') return
+
+    let audioContext, analyser, dataArray, stream, rafId
+    const smoothed = { bass: 0, mid: 0, treble: 0, amplitude: 0 }
+
+    const BAND_RANGES = {
+      bass:   { start: 0,   end: 12  },
+      mid:    { start: 12,  end: 186 },
+      treble: { start: 186, end: 744 },
+    }
+
+    const computeBand = (data, start, end) => {
+      let sum = 0
+      const len = Math.min(end, data.length)
+      for (let i = start; i < len; i++) sum += data[i]
+      return sum / ((len - start) * 255)
+    }
+
+    const analyse = () => {
+      analyser.getByteFrequencyData(dataArray)
+      const rawBass = computeBand(dataArray, BAND_RANGES.bass.start, BAND_RANGES.bass.end)
+      const rawMid = computeBand(dataArray, BAND_RANGES.mid.start, BAND_RANGES.mid.end)
+      const rawTreble = computeBand(dataArray, BAND_RANGES.treble.start, BAND_RANGES.treble.end)
+      const rawAmplitude = rawBass * 0.5 + rawMid * 0.35 + rawTreble * 0.15
+      const smoothing = 0.8
+
+      smoothed.bass = smoothed.bass * smoothing + rawBass * (1 - smoothing)
+      smoothed.mid = smoothed.mid * smoothing + rawMid * (1 - smoothing)
+      smoothed.treble = smoothed.treble * smoothing + rawTreble * (1 - smoothing)
+      smoothed.amplitude = smoothed.amplitude * smoothing + rawAmplitude * (1 - smoothing)
+
+      audioData.bass = Math.min(1, smoothed.bass)
+      audioData.mid = Math.min(1, smoothed.mid)
+      audioData.treble = Math.min(1, smoothed.treble)
+      audioData.amplitude = Math.min(1, smoothed.amplitude)
+      audioData.frequencyData = dataArray
+      audioData.isActive = true
+
+      rafId = requestAnimationFrame(analyse)
+    }
+
+    const startMic = async () => {
+      try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)()
+        analyser = audioContext.createAnalyser()
+        analyser.fftSize = 2048
+        analyser.smoothingTimeConstant = 0.3
+        dataArray = new Uint8Array(analyser.frequencyBinCount)
+
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+        const source = audioContext.createMediaStreamSource(stream)
+        source.connect(analyser)
+
+        rafId = requestAnimationFrame(analyse)
+      } catch (err) {
+        console.error('Microphone access denied:', err)
+      }
+    }
+
+    startMic()
+
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId)
+      if (stream) stream.getTracks().forEach(t => t.stop())
+      if (audioContext) audioContext.close()
+      audioData.bass = 0
+      audioData.mid = 0
+      audioData.treble = 0
+      audioData.amplitude = 0
+      audioData.frequencyData = null
+      audioData.isActive = false
+    }
+  }, [inputMode])
 
   useEffect(() => {
     const fetchScene = async () => {
@@ -140,9 +218,12 @@ function SceneEmbedPage() {
   const textGap = sceneData.textGap || 0
   const textConfig = sceneData.textConfig || {}
   const mouseConfig = sceneData.mouseConfig || { enabled: true, intensity: 0.5 }
+  const inputEnabled = inputMode !== 'off' && (sceneData.inputEnabled !== undefined ? sceneData.inputEnabled : true)
+  const effectiveMouseIntensity = inputEnabled && inputMode !== 'mic' ? mouseConfig.intensity : 0
+  const effectiveMouseEnabled = inputEnabled && inputMode !== 'mic' && mouseConfig.enabled
 
   return (
-    <div className="w-full h-screen overflow-hidden" onMouseMove={mouseConfig.enabled ? handleMouseMove : undefined}>
+    <div className="w-full h-screen overflow-hidden" onMouseMove={effectiveMouseEnabled ? handleMouseMove : undefined}>
       {/* Full-screen scene - no UI overlay */}
       <div className="absolute inset-0">
         <div className="layers-container" style={{ position: 'absolute', inset: 0 }}>
@@ -160,7 +241,7 @@ function SceneEmbedPage() {
               <SimpleGradientLayer config={gradientConfig} gradientColors={gradientConfig.colors} effectsConfig={effectsConfig} />
             )}
             {backgroundType === 'liquid' && (
-              <GradientLayer config={gradientConfig} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={false} mouseIntensity={mouseConfig.intensity} />
+              <GradientLayer config={gradientConfig} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={false} mouseIntensity={effectiveMouseIntensity} />
             )}
             {backgroundType === 'aurora' && (
               <AuroraLayer config={auroraConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
@@ -175,7 +256,7 @@ function SceneEmbedPage() {
               <RibbonLayer config={ribbonConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
             )}
             {backgroundType === 'dandelion' && (
-              <DandelionLayer config={dandelionConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} mouseEnabled={mouseConfig.enabled} mouseIntensity={mouseConfig.intensity} />
+              <DandelionLayer config={dandelionConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} mouseEnabled={effectiveMouseEnabled} mouseIntensity={effectiveMouseIntensity} />
             )}
             {backgroundType === 'particleRing' && (
               <ParticleRingLayer config={particleRingConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
@@ -187,7 +268,7 @@ function SceneEmbedPage() {
 
           {/* Tessellation layer */}
           {tessellationConfig.enabled && !hideIcons && (
-            <TessellationLayer config={tessellationConfig} mousePos={mousePos} isPaused={false} mouseIntensity={mouseConfig.intensity} />
+            <TessellationLayer config={tessellationConfig} mousePos={mousePos} isPaused={false} mouseIntensity={effectiveMouseIntensity} />
           )}
 
           {/* Effects layer */}

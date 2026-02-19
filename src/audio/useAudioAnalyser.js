@@ -34,6 +34,7 @@ export function useAudioAnalyser() {
 
   const audioConfig = useStore((s) => s.audioConfig)
   const updateAudioConfig = useStore((s) => s.updateAudioConfig)
+  const inputEnabled = useStore((s) => s.inputEnabled)
 
   // Keep a ref to latest config for the RAF loop
   const configRef = useRef(audioConfig)
@@ -125,13 +126,16 @@ export function useAudioAnalyser() {
 
   const startMic = useCallback(async () => {
     try {
-      const { analyser } = ensureAudioContext()
+      const { analyser, audioContext } = ensureAudioContext()
       disconnectSource()
 
       // Pause audio element if playing
       if (audioElementRef.current) {
         audioElementRef.current.pause()
       }
+
+      // Disconnect analyser from speakers so mic input isn't played back
+      try { analyser.disconnect(audioContext.destination) } catch {}
 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       streamRef.current = stream
@@ -171,9 +175,10 @@ export function useAudioAnalyser() {
     if (!mediaSourceRef.current) {
       const mediaSource = audioContext.createMediaElementSource(audio)
       mediaSource.connect(analyser)
-      analyser.connect(audioContext.destination) // so the audio is actually heard
       mediaSourceRef.current = mediaSource
     }
+    // Ensure analyser is connected to speakers so the file audio is heard
+    try { analyser.connect(audioContext.destination) } catch {}
 
     updateAudioConfig({ fileName: file.name })
     startAnalysisLoop()
@@ -202,7 +207,7 @@ export function useAudioAnalyser() {
 
   // React to config changes
   useEffect(() => {
-    if (!audioConfig.enabled) {
+    if (!audioConfig.enabled || !inputEnabled) {
       stopAll()
       return
     }
@@ -210,12 +215,12 @@ export function useAudioAnalyser() {
     if (audioConfig.source === 'mic') {
       startMic()
     }
-    // File source is handled via loadAudioFile called from AudioControls
+    // File source is handled via loadAudioFile called from InputControls
 
     return () => {
       // Only clean up if disabling — not on every config change
     }
-  }, [audioConfig.enabled, audioConfig.source])
+  }, [audioConfig.enabled, audioConfig.source, inputEnabled])
 
   // Cleanup on unmount
   useEffect(() => {

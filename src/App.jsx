@@ -40,6 +40,7 @@ function App() {
   const loadSceneData = useStore((state) => state.loadSceneData)
   const currentSceneId = useStore((state) => state.currentSceneId)
   const audioEnabled = useStore((state) => state.audioConfig.enabled)
+  const inputEnabled = useStore((state) => state.inputEnabled)
 
   const layersContainerRef = useRef(null)
 
@@ -75,6 +76,8 @@ function App() {
   // Throttled mouse move handler using requestAnimationFrame (PERFORMANCE OPTIMIZATION)
   // Disabled when audio reactivity is active (mouse and audio are mutually exclusive)
   const handleMouseMove = useCallback((e) => {
+    // Skip mouse tracking when input is globally disabled
+    if (!inputEnabled) return
     // Skip mouse tracking when audio is driving the effects
     if (audioEnabled) return
     // Skip mouse tracking when mouse effects are disabled
@@ -95,14 +98,18 @@ function App() {
       })
       rafPendingRef.current = false
     })
-  }, [setMousePos, audioEnabled, mouseConfig.enabled])
+  }, [setMousePos, audioEnabled, mouseConfig.enabled, inputEnabled])
 
-  // Reset mouse to neutral center when audio becomes active
+  // Reset mouse to neutral center when audio becomes active or input is disabled
   useEffect(() => {
-    if (audioEnabled) {
+    if (audioEnabled || !inputEnabled) {
       setMousePos({ x: 0.5, y: 0.5 })
     }
-  }, [audioEnabled, setMousePos])
+  }, [audioEnabled, inputEnabled, setMousePos])
+
+  // Effective input values — zeroed when input is globally disabled
+  const effectiveMouseIntensity = inputEnabled ? mouseConfig.intensity : 0
+  const effectiveMouseEnabled = inputEnabled && mouseConfig.enabled
 
   // Build the gradient filter string
   // Note: For 'liquid' background type, post-processing is handled in WebGL via Three.js EffectComposer
@@ -151,34 +158,34 @@ function App() {
             <SimpleGradientLayer config={gradientConfig} gradientColors={gradientConfig.colors} effectsConfig={effectsConfig} />
           )}
           {backgroundType === 'liquid' && (
-            <GradientLayer config={gradientConfig} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={isPaused} mouseIntensity={mouseConfig.intensity} />
+            <GradientLayer config={gradientConfig} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={isPaused} mouseIntensity={effectiveMouseIntensity} />
           )}
           {backgroundType === 'aurora' && (
-            <AuroraLayer config={auroraConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mouseIntensity={mouseConfig.intensity} />
+            <AuroraLayer config={auroraConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mouseIntensity={effectiveMouseIntensity} />
           )}
           {backgroundType === 'fluid' && (
-            <FluidGradientLayer config={fluidConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={mouseConfig.intensity} />
+            <FluidGradientLayer config={fluidConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
           )}
           {backgroundType === 'waves' && (
-            <WavesLayer config={wavesConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={mouseConfig.intensity} />
+            <WavesLayer config={wavesConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
           )}
           {backgroundType === 'ribbon' && (
-            <RibbonLayer config={ribbonConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={mouseConfig.intensity} />
+            <RibbonLayer config={ribbonConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
           )}
           {backgroundType === 'dandelion' && (
-            <DandelionLayer config={dandelionConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mouseEnabled={mouseConfig.enabled} mouseIntensity={mouseConfig.intensity} />
+            <DandelionLayer config={dandelionConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mouseEnabled={effectiveMouseEnabled} mouseIntensity={effectiveMouseIntensity} />
           )}
           {backgroundType === 'particleRing' && (
-            <ParticleRingLayer config={particleRingConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={mouseConfig.intensity} />
+            <ParticleRingLayer config={particleRingConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
           )}
           {backgroundType === 'shapeTrail' && (
-            <ShapeTrailLayer config={shapeTrailConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={mouseConfig.intensity} />
+            <ShapeTrailLayer config={shapeTrailConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
           )}
         </div>
 
         {/* Layer 2: Tessellation (no filter effects) */}
         {tessellationConfig.enabled && (
-          <TessellationLayer config={tessellationConfig} mousePos={mousePos} isPaused={isPaused} mouseIntensity={mouseConfig.intensity} />
+          <TessellationLayer config={tessellationConfig} mousePos={mousePos} isPaused={isPaused} mouseIntensity={effectiveMouseIntensity} />
         )}
 
         {/* Layer 3: Overlay effects (noise, texture, vignette) */}

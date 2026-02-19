@@ -264,7 +264,7 @@ function SavedScenesPage() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-        <div className="container mx-auto px-4 h-14 flex items-center gap-4">
+        <div className="container max-w-420 mx-auto px-4 h-14 flex items-center gap-4">
           <Button
             variant="ghost"
             size="icon"
@@ -272,10 +272,12 @@ function SavedScenesPage() {
           >
             <ArrowLeft size={20} weight="bold" />
           </Button>
-          <h1 className="text-lg font-semibold">Saved Scenes</h1>
-          <span className="text-sm text-muted-foreground">
-            {displayedCount} of {displayedTotal} {displayedTotal === 1 ? 'scene' : 'scenes'}
-          </span>
+          <div className="flex flex-row flex-wrap justify-start items-baseline gap-4">
+            <h1 className="text-lg font-semibold">Saved Scenes</h1>
+            <span className="text-sm text-muted-foreground">
+              {displayedCount} of {displayedTotal} {displayedTotal === 1 ? 'scene' : 'scenes'}
+            </span>
+          </div>
           <div className="ml-auto">
             <Button
               variant={hasActiveFilters ? "default" : "ghost"}
@@ -308,7 +310,7 @@ function SavedScenesPage() {
       )}
 
       {/* Content */}
-      <main className="container w-800 mx-auto px-4 py-6">
+      <main className="container w-full max-w-420 mx-auto px-4 py-6">
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <CircleNotch size={32} className="animate-spin text-muted-foreground" />

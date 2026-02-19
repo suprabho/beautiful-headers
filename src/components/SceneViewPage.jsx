@@ -6,18 +6,6 @@ import { getSceneBySlug, getProjects, updateScene, verifyDeletePassword, titleTo
 import { generateSceneDescriptions } from '@/lib/gemini'
 import { prepareForCapture } from '@/lib/colorConversion'
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { Switch } from '@/components/ui/switch'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
 import { useDocumentMeta } from '@/hooks/useDocumentMeta'
 import '../App.css'
 import GradientLayer from './GradientLayer'
@@ -32,6 +20,13 @@ import ShapeTrailLayer from './ShapeTrailLayer'
 import TessellationLayer, { ICON_PATHS } from './TessellationLayer'
 import EffectsLayer from './EffectsLayer'
 import TextLayer from './TextLayer'
+import EmbedDialog from './EmbedDialog'
+import DownloadDialog from './dialogs/DownloadDialog'
+import RegenerateDialog from './dialogs/RegenerateDialog'
+import RecaptureDialog from './dialogs/RecaptureDialog'
+import ProjectsDialog from './dialogs/ProjectsDialog'
+import AcceptReviewDialog from './dialogs/AcceptReviewDialog'
+import RejectReviewDialog from './dialogs/RejectReviewDialog'
 import useStore from '../store/useStore'
 
 function SceneViewPage() {
@@ -47,50 +42,21 @@ function SceneViewPage() {
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 })
   const [embedDialogOpen, setEmbedDialogOpen] = useState(false)
   const [downloadDialogOpen, setDownloadDialogOpen] = useState(false)
-  const [copied, setCopied] = useState(false)
-  const [embedOptions, setEmbedOptions] = useState({ hideText: false, hideIcons: false })
-  const [downloadOptions, setDownloadOptions] = useState({
-    size: 'full',
-    hideText: false,
-    hideIcons: false
-  })
-  const [isDownloading, setIsDownloading] = useState(false)
   const [projects, setProjects] = useState([])
 
   // Projects dialog state
   const [projectsDialogOpen, setProjectsDialogOpen] = useState(false)
   const [allProjects, setAllProjects] = useState([])
-  const [selectedProjectIds, setSelectedProjectIds] = useState([])
-  const [projectsPassword, setProjectsPassword] = useState('')
-  const [projectsError, setProjectsError] = useState('')
-  const [isSavingProjects, setIsSavingProjects] = useState(false)
   const [loadingAllProjects, setLoadingAllProjects] = useState(false)
 
-  // Regenerate AI descriptions state
+  // Dialog open states
   const [regenerateDialogOpen, setRegenerateDialogOpen] = useState(false)
-  const [regeneratePassword, setRegeneratePassword] = useState('')
-  const [regenerateError, setRegenerateError] = useState('')
-  const [isRegenerating, setIsRegenerating] = useState(false)
-
-  // Recapture thumbnail state
   const [recaptureDialogOpen, setRecaptureDialogOpen] = useState(false)
-  const [recapturePassword, setRecapturePassword] = useState('')
-  const [recaptureError, setRecaptureError] = useState('')
-  const [isRecapturing, setIsRecapturing] = useState(false)
+  const [acceptDialogOpen, setAcceptDialogOpen] = useState(false)
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false)
+
   const [thumbnailCacheBuster, setThumbnailCacheBuster] = useState('')
   const [thumbnailCopied, setThumbnailCopied] = useState(false)
-
-  // Accept review state
-  const [acceptDialogOpen, setAcceptDialogOpen] = useState(false)
-  const [acceptPassword, setAcceptPassword] = useState('')
-  const [acceptError, setAcceptError] = useState('')
-  const [isAccepting, setIsAccepting] = useState(false)
-
-  // Reject review state
-  const [rejectDialogOpen, setRejectDialogOpen] = useState(false)
-  const [rejectPassword, setRejectPassword] = useState('')
-  const [rejectError, setRejectError] = useState('')
-  const [isRejecting, setIsRejecting] = useState(false)
 
   // Update document meta tags with scene data (use large for OG image)
   useDocumentMeta({
@@ -159,105 +125,40 @@ function SceneViewPage() {
     }
   }
 
-  const getEmbedCode = () => {
-    const params = new URLSearchParams()
-    if (embedOptions.hideText) params.set('hideText', 'true')
-    if (embedOptions.hideIcons) params.set('hideIcons', 'true')
-    const queryString = params.toString()
-    const embedUrl = `${window.location.origin}/embed/${slug}${queryString ? `?${queryString}` : ''}`
-    return `<iframe src="${embedUrl}" width="100%" height="600" frameborder="0" style="border:0;border-radius:8px;" allowfullscreen></iframe>`
-  }
-
-  const getGenerationEmbedCode = () => {
-    const title = scene?.title || slug
-    return `<iframe title="${title}" src="https://aura.promad.design/embed/${slug}" style={{width:100%, height:1000px}} allowFullScreen></iframe>`
-  }
-
-  const handleCopyEmbed = async (code) => {
-    try {
-      await navigator.clipboard.writeText(code || getEmbedCode())
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch (err) {
-      console.error('Failed to copy:', err)
-    }
-  }
-
   // Open projects dialog and load all projects
   const handleOpenProjectsDialog = async () => {
     setProjectsDialogOpen(true)
-    setProjectsError('')
-    setProjectsPassword('')
     setLoadingAllProjects(true)
 
     try {
       const all = await getProjects()
       setAllProjects(all)
-      // Initialize selected with current scene's projects
-      const currentIds = scene?.scene_data?.selectedProjectIds || []
-      setSelectedProjectIds(currentIds)
     } catch (err) {
       console.error('Failed to load projects:', err)
-      setProjectsError('Failed to load projects')
     } finally {
       setLoadingAllProjects(false)
     }
   }
 
-  // Toggle project selection
-  const toggleProjectSelection = (projectId) => {
-    setSelectedProjectIds(prev =>
-      prev.includes(projectId)
-        ? prev.filter(id => id !== projectId)
-        : [...prev, projectId]
-    )
-  }
+  // Save project assignments (called from ProjectsDialog)
+  const handleSaveProjects = async (selectedProjectIds, password) => {
+    const isValid = await verifyDeletePassword(password)
+    if (!isValid) throw new Error('Incorrect password')
 
-  // Save project assignments
-  const handleSaveProjects = async () => {
-    if (!projectsPassword.trim()) {
-      setProjectsError('Password is required')
-      return
+    const updatedSceneData = {
+      ...scene.scene_data,
+      selectedProjectIds,
     }
 
-    setIsSavingProjects(true)
-    setProjectsError('')
+    await updateScene(scene.id, { sceneData: updatedSceneData })
 
-    try {
-      // Verify password first
-      const isValid = await verifyDeletePassword(projectsPassword)
-      if (!isValid) {
-        setProjectsError('Incorrect password')
-        setIsSavingProjects(false)
-        return
-      }
+    setScene(prev => ({
+      ...prev,
+      scene_data: updatedSceneData,
+    }))
 
-      // Update scene with new project IDs
-      const updatedSceneData = {
-        ...scene.scene_data,
-        selectedProjectIds: selectedProjectIds
-      }
-
-      await updateScene(scene.id, { sceneData: updatedSceneData })
-
-      // Update local state
-      setScene(prev => ({
-        ...prev,
-        scene_data: updatedSceneData
-      }))
-
-      // Update displayed projects
-      const linkedProjects = allProjects.filter(p => selectedProjectIds.includes(p.id))
-      setProjects(linkedProjects)
-
-      setProjectsDialogOpen(false)
-      setProjectsPassword('')
-    } catch (err) {
-      console.error('Failed to save projects:', err)
-      setProjectsError('Failed to save projects')
-    } finally {
-      setIsSavingProjects(false)
-    }
+    const linkedProjects = allProjects.filter(p => selectedProjectIds.includes(p.id))
+    setProjects(linkedProjects)
   }
 
   // Convert a thumbnail URL to a resized base64 string for the AI API
@@ -279,366 +180,250 @@ function SceneViewPage() {
     })
   }
 
-  // Regenerate AI descriptions
-  const handleRegenerate = async () => {
-    if (!regeneratePassword.trim()) {
-      setRegenerateError('Password is required')
-      return
-    }
+  // Regenerate AI descriptions (called from RegenerateDialog)
+  const handleRegenerate = async (password) => {
+    const isValid = await verifyDeletePassword(password)
+    if (!isValid) throw new Error('Incorrect password')
 
-    setIsRegenerating(true)
-    setRegenerateError('')
+    const thumbnailUrl = scene.thumbnail?.medium || scene.thumbnail?.small || scene.thumbnail?.large
+    if (!thumbnailUrl) throw new Error('No thumbnail available for this scene')
+
+    const base64Thumbnail = await thumbnailUrlToBase64(thumbnailUrl)
+    const content = await generateSceneDescriptions(base64Thumbnail)
+
+    if (!content) throw new Error('AI generation failed. Please try again.')
+
+    await updateScene(scene.id, {
+      title: content.title,
+      short_description: content.shortDescription,
+      long_description: content.longDescription,
+    })
+
+    setScene(prev => ({
+      ...prev,
+      title: content.title,
+      slug: titleToSlug(content.title),
+      short_description: content.shortDescription,
+      long_description: content.longDescription,
+    }))
+  }
+
+  // Recapture thumbnail (called from RecaptureDialog)
+  const handleRecaptureThumbnail = async (password) => {
+    const isValid = await verifyDeletePassword(password)
+    if (!isValid) throw new Error('Incorrect password')
+
+    if (!layersContainerRef?.current) throw new Error('Scene not ready for capture')
+
+    const restoreColors = prepareForCapture(document.body)
 
     try {
-      // Verify password
-      const isValid = await verifyDeletePassword(regeneratePassword)
-      if (!isValid) {
-        setRegenerateError('Incorrect password')
-        setIsRegenerating(false)
-        return
+      await new Promise(resolve => requestAnimationFrame(resolve))
+
+      const container = layersContainerRef.current
+      const width = container.offsetWidth
+      const height = container.offsetHeight
+      const scale = 2
+
+      const outputCanvas = document.createElement('canvas')
+      outputCanvas.width = width * scale
+      outputCanvas.height = height * scale
+      const ctx = outputCanvas.getContext('2d')
+
+      ctx.fillStyle = '#000000'
+      ctx.fillRect(0, 0, outputCanvas.width, outputCanvas.height)
+
+      const getLastCanvas = (selector) => {
+        const canvases = container.querySelectorAll(`${selector} canvas`)
+        return canvases.length > 0 ? canvases[canvases.length - 1] : null
       }
 
-      // Get thumbnail URL and convert to base64
-      const thumbnailUrl = scene.thumbnail?.medium || scene.thumbnail?.small || scene.thumbnail?.large
-      if (!thumbnailUrl) {
-        setRegenerateError('No thumbnail available for this scene')
-        setIsRegenerating(false)
-        return
+      const backgroundCanvas =
+        container.querySelector('.gradient-layer canvas') ||
+        getLastCanvas('.simple-gradient-layer') ||
+        getLastCanvas('.fluid-gradient-layer') ||
+        getLastCanvas('.aurora-layer') ||
+        getLastCanvas('.waves-layer') ||
+        getLastCanvas('.ribbon-layer') ||
+        getLastCanvas('.dandelion-layer') ||
+        getLastCanvas('.particle-ring-layer') ||
+        getLastCanvas('.shape-trail-layer')
+
+      if (backgroundCanvas) {
+        const wrapper = container.querySelector('.gradient-effects-wrapper')
+        const filterStyle = wrapper ? getComputedStyle(wrapper).filter : 'none'
+        ctx.filter = filterStyle !== 'none' ? filterStyle : 'none'
+        ctx.drawImage(backgroundCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
+        ctx.filter = 'none'
       }
 
-      const base64Thumbnail = await thumbnailUrlToBase64(thumbnailUrl)
-      const content = await generateSceneDescriptions(base64Thumbnail)
+      const currentEffectsConfig = scene?.scene_data?.effectsConfig || {}
+      drawTextureToCanvas(
+        ctx,
+        outputCanvas.width,
+        outputCanvas.height,
+        currentEffectsConfig.texture,
+        (currentEffectsConfig.textureSize || 20) * scale,
+        currentEffectsConfig.textureOpacity || 0.5,
+        currentEffectsConfig.textureBlendMode || 'overlay'
+      )
+      drawVignetteToCanvas(ctx, outputCanvas.width, outputCanvas.height, currentEffectsConfig.vignetteIntensity || 0)
 
-      if (!content) {
-        setRegenerateError('AI generation failed. Please try again.')
-        setIsRegenerating(false)
-        return
+      const tessellationLayer = container.querySelector('.tessellation-layer')
+      if (tessellationLayer) {
+        const tessCanvas = await html2canvas(tessellationLayer, {
+          useCORS: true,
+          allowTaint: true,
+          scale: scale,
+          backgroundColor: null,
+          logging: false,
+        })
+        ctx.drawImage(tessCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
       }
 
-      // Update scene in database
-      await updateScene(scene.id, {
-        title: content.title,
-        short_description: content.shortDescription,
-        long_description: content.longDescription,
-      })
+      const textLayer = container.querySelector('.text-layer')
+      if (textLayer) {
+        const textCanvas = await html2canvas(textLayer, {
+          useCORS: true,
+          allowTaint: true,
+          scale: scale,
+          backgroundColor: null,
+          logging: false,
+        })
+        ctx.drawImage(textCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
+      }
 
-      // Update local state
+      const base64Data = outputCanvas.toDataURL('image/jpeg', 0.9)
+      restoreColors()
+
+      const updatedScene = await recaptureThumbnail(scene.id, base64Data)
+
       setScene(prev => ({
         ...prev,
-        title: content.title,
-        slug: titleToSlug(content.title),
-        short_description: content.shortDescription,
-        long_description: content.longDescription,
+        thumbnail: updatedScene.thumbnail,
       }))
 
-      setRegenerateDialogOpen(false)
-      setRegeneratePassword('')
-    } catch (err) {
-      console.error('Failed to regenerate descriptions:', err)
-      setRegenerateError('Failed to regenerate. Please try again.')
-    } finally {
-      setIsRegenerating(false)
+      setThumbnailCacheBuster(`?t=${Date.now()}`)
+    } catch (captureError) {
+      restoreColors()
+      throw captureError
     }
   }
 
-  // Recapture thumbnail
-  const handleRecaptureThumbnail = async () => {
-    if (!recapturePassword.trim()) {
-      setRecaptureError('Password is required')
-      return
-    }
+  // Accept review: recapture thumbnail + remove pendingReview (called from AcceptReviewDialog)
+  const handleAcceptReview = async (password) => {
+    const isValid = await verifyDeletePassword(password)
+    if (!isValid) throw new Error('Incorrect password')
 
-    if (!layersContainerRef?.current) {
-      setRecaptureError('Scene not ready for capture')
-      return
-    }
+    if (!layersContainerRef?.current) throw new Error('Scene not ready for capture')
 
-    setIsRecapturing(true)
-    setRecaptureError('')
+    const restoreColors = prepareForCapture(document.body)
 
     try {
-      // Verify password
-      const isValid = await verifyDeletePassword(recapturePassword)
-      if (!isValid) {
-        setRecaptureError('Incorrect password')
-        setIsRecapturing(false)
-        return
+      await new Promise(resolve => requestAnimationFrame(resolve))
+
+      const container = layersContainerRef.current
+      const width = container.offsetWidth
+      const height = container.offsetHeight
+      const scale = 2
+
+      const outputCanvas = document.createElement('canvas')
+      outputCanvas.width = width * scale
+      outputCanvas.height = height * scale
+      const ctx = outputCanvas.getContext('2d')
+
+      ctx.fillStyle = '#000000'
+      ctx.fillRect(0, 0, outputCanvas.width, outputCanvas.height)
+
+      const getLastCanvas = (selector) => {
+        const canvases = container.querySelectorAll(`${selector} canvas`)
+        return canvases.length > 0 ? canvases[canvases.length - 1] : null
       }
 
-      const restoreColors = prepareForCapture(document.body)
+      const backgroundCanvas =
+        container.querySelector('.gradient-layer canvas') ||
+        getLastCanvas('.simple-gradient-layer') ||
+        getLastCanvas('.fluid-gradient-layer') ||
+        getLastCanvas('.aurora-layer') ||
+        getLastCanvas('.waves-layer') ||
+        getLastCanvas('.ribbon-layer') ||
+        getLastCanvas('.dandelion-layer') ||
+        getLastCanvas('.particle-ring-layer') ||
+        getLastCanvas('.shape-trail-layer')
 
-      try {
-        await new Promise(resolve => requestAnimationFrame(resolve))
-
-        const container = layersContainerRef.current
-        const width = container.offsetWidth
-        const height = container.offsetHeight
-        const scale = 2 // Full resolution
-
-        const outputCanvas = document.createElement('canvas')
-        outputCanvas.width = width * scale
-        outputCanvas.height = height * scale
-        const ctx = outputCanvas.getContext('2d')
-
-        ctx.fillStyle = '#000000'
-        ctx.fillRect(0, 0, outputCanvas.width, outputCanvas.height)
-
-        // Get the last canvas from layer (for fluted glass overlay support)
-        const getLastCanvas = (selector) => {
-          const canvases = container.querySelectorAll(`${selector} canvas`)
-          return canvases.length > 0 ? canvases[canvases.length - 1] : null
-        }
-
-        const backgroundCanvas =
-          container.querySelector('.gradient-layer canvas') ||
-          getLastCanvas('.simple-gradient-layer') ||
-          getLastCanvas('.fluid-gradient-layer') ||
-          getLastCanvas('.aurora-layer') ||
-          getLastCanvas('.waves-layer') ||
-          getLastCanvas('.ribbon-layer') ||
-          getLastCanvas('.dandelion-layer') ||
-          getLastCanvas('.particle-ring-layer') ||
-          getLastCanvas('.shape-trail-layer')
-
-        if (backgroundCanvas) {
-          const wrapper = container.querySelector('.gradient-effects-wrapper')
-          const filterStyle = wrapper ? getComputedStyle(wrapper).filter : 'none'
-          ctx.filter = filterStyle !== 'none' ? filterStyle : 'none'
-          ctx.drawImage(backgroundCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
-          ctx.filter = 'none'
-        }
-
-        // Draw texture and vignette
-        const currentEffectsConfig = scene?.scene_data?.effectsConfig || {}
-        drawTextureToCanvas(
-          ctx,
-          outputCanvas.width,
-          outputCanvas.height,
-          currentEffectsConfig.texture,
-          (currentEffectsConfig.textureSize || 20) * scale,
-          currentEffectsConfig.textureOpacity || 0.5,
-          currentEffectsConfig.textureBlendMode || 'overlay'
-        )
-        drawVignetteToCanvas(ctx, outputCanvas.width, outputCanvas.height, currentEffectsConfig.vignetteIntensity || 0)
-
-        // Capture tessellation layer (icons)
-        const tessellationLayer = container.querySelector('.tessellation-layer')
-        if (tessellationLayer) {
-          const tessCanvas = await html2canvas(tessellationLayer, {
-            useCORS: true,
-            allowTaint: true,
-            scale: scale,
-            backgroundColor: null,
-            logging: false,
-          })
-          ctx.drawImage(tessCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
-        }
-
-        // Capture text layer
-        const textLayer = container.querySelector('.text-layer')
-        if (textLayer) {
-          const textCanvas = await html2canvas(textLayer, {
-            useCORS: true,
-            allowTaint: true,
-            scale: scale,
-            backgroundColor: null,
-            logging: false,
-          })
-          ctx.drawImage(textCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
-        }
-
-        // Convert canvas to base64
-        const base64Data = outputCanvas.toDataURL('image/jpeg', 0.9)
-
-        restoreColors()
-
-        // Upload new thumbnail
-        const updatedScene = await recaptureThumbnail(scene.id, base64Data)
-
-        // Update local state with new thumbnail URLs
-        setScene(prev => ({
-          ...prev,
-          thumbnail: updatedScene.thumbnail,
-        }))
-
-        // Force browser to reload cached images
-        setThumbnailCacheBuster(`?t=${Date.now()}`)
-
-        setRecaptureDialogOpen(false)
-        setRecapturePassword('')
-      } catch (captureError) {
-        restoreColors()
-        throw captureError
+      if (backgroundCanvas) {
+        const wrapper = container.querySelector('.gradient-effects-wrapper')
+        const filterStyle = wrapper ? getComputedStyle(wrapper).filter : 'none'
+        ctx.filter = filterStyle !== 'none' ? filterStyle : 'none'
+        ctx.drawImage(backgroundCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
+        ctx.filter = 'none'
       }
-    } catch (err) {
-      console.error('Failed to recapture thumbnail:', err)
-      setRecaptureError('Failed to recapture thumbnail. Please try again.')
-    } finally {
-      setIsRecapturing(false)
+
+      const currentEffectsConfig = scene?.scene_data?.effectsConfig || {}
+      drawTextureToCanvas(
+        ctx,
+        outputCanvas.width,
+        outputCanvas.height,
+        currentEffectsConfig.texture,
+        (currentEffectsConfig.textureSize || 20) * scale,
+        currentEffectsConfig.textureOpacity || 0.5,
+        currentEffectsConfig.textureBlendMode || 'overlay'
+      )
+      drawVignetteToCanvas(ctx, outputCanvas.width, outputCanvas.height, currentEffectsConfig.vignetteIntensity || 0)
+
+      const tessellationLayer = container.querySelector('.tessellation-layer')
+      if (tessellationLayer) {
+        const tessCanvas = await html2canvas(tessellationLayer, {
+          useCORS: true,
+          allowTaint: true,
+          scale: scale,
+          backgroundColor: null,
+          logging: false,
+        })
+        ctx.drawImage(tessCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
+      }
+
+      const textLayer = container.querySelector('.text-layer')
+      if (textLayer) {
+        const textCanvas = await html2canvas(textLayer, {
+          useCORS: true,
+          allowTaint: true,
+          scale: scale,
+          backgroundColor: null,
+          logging: false,
+        })
+        ctx.drawImage(textCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
+      }
+
+      const base64Data = outputCanvas.toDataURL('image/jpeg', 0.9)
+      restoreColors()
+
+      const updatedScene = await recaptureThumbnail(scene.id, base64Data)
+
+      const updatedSceneData = { ...scene.scene_data }
+      delete updatedSceneData.pendingReview
+      await updateScene(scene.id, { sceneData: updatedSceneData })
+
+      setScene(prev => ({
+        ...prev,
+        thumbnail: updatedScene.thumbnail,
+        scene_data: updatedSceneData,
+      }))
+
+      setThumbnailCacheBuster(`?t=${Date.now()}`)
+    } catch (captureError) {
+      restoreColors()
+      throw captureError
     }
   }
 
-  // Accept review: recapture thumbnail + remove pendingReview
-  const handleAcceptReview = async () => {
-    if (!acceptPassword.trim()) {
-      setAcceptError('Password is required')
-      return
-    }
+  // Reject review: delete scene (called from RejectReviewDialog)
+  const handleRejectReview = async (password) => {
+    const isValid = await verifyDeletePassword(password)
+    if (!isValid) throw new Error('Incorrect password')
 
-    if (!layersContainerRef?.current) {
-      setAcceptError('Scene not ready for capture')
-      return
-    }
-
-    setIsAccepting(true)
-    setAcceptError('')
-
-    try {
-      const isValid = await verifyDeletePassword(acceptPassword)
-      if (!isValid) {
-        setAcceptError('Incorrect password')
-        setIsAccepting(false)
-        return
-      }
-
-      const restoreColors = prepareForCapture(document.body)
-
-      try {
-        await new Promise(resolve => requestAnimationFrame(resolve))
-
-        const container = layersContainerRef.current
-        const width = container.offsetWidth
-        const height = container.offsetHeight
-        const scale = 2
-
-        const outputCanvas = document.createElement('canvas')
-        outputCanvas.width = width * scale
-        outputCanvas.height = height * scale
-        const ctx = outputCanvas.getContext('2d')
-
-        ctx.fillStyle = '#000000'
-        ctx.fillRect(0, 0, outputCanvas.width, outputCanvas.height)
-
-        const getLastCanvas = (selector) => {
-          const canvases = container.querySelectorAll(`${selector} canvas`)
-          return canvases.length > 0 ? canvases[canvases.length - 1] : null
-        }
-
-        const backgroundCanvas =
-          container.querySelector('.gradient-layer canvas') ||
-          getLastCanvas('.simple-gradient-layer') ||
-          getLastCanvas('.fluid-gradient-layer') ||
-          getLastCanvas('.aurora-layer') ||
-          getLastCanvas('.waves-layer') ||
-          getLastCanvas('.ribbon-layer') ||
-          getLastCanvas('.dandelion-layer') ||
-          getLastCanvas('.particle-ring-layer') ||
-          getLastCanvas('.shape-trail-layer')
-
-        if (backgroundCanvas) {
-          const wrapper = container.querySelector('.gradient-effects-wrapper')
-          const filterStyle = wrapper ? getComputedStyle(wrapper).filter : 'none'
-          ctx.filter = filterStyle !== 'none' ? filterStyle : 'none'
-          ctx.drawImage(backgroundCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
-          ctx.filter = 'none'
-        }
-
-        const currentEffectsConfig = scene?.scene_data?.effectsConfig || {}
-        drawTextureToCanvas(
-          ctx,
-          outputCanvas.width,
-          outputCanvas.height,
-          currentEffectsConfig.texture,
-          (currentEffectsConfig.textureSize || 20) * scale,
-          currentEffectsConfig.textureOpacity || 0.5,
-          currentEffectsConfig.textureBlendMode || 'overlay'
-        )
-        drawVignetteToCanvas(ctx, outputCanvas.width, outputCanvas.height, currentEffectsConfig.vignetteIntensity || 0)
-
-        const tessellationLayer = container.querySelector('.tessellation-layer')
-        if (tessellationLayer) {
-          const tessCanvas = await html2canvas(tessellationLayer, {
-            useCORS: true,
-            allowTaint: true,
-            scale: scale,
-            backgroundColor: null,
-            logging: false,
-          })
-          ctx.drawImage(tessCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
-        }
-
-        const textLayer = container.querySelector('.text-layer')
-        if (textLayer) {
-          const textCanvas = await html2canvas(textLayer, {
-            useCORS: true,
-            allowTaint: true,
-            scale: scale,
-            backgroundColor: null,
-            logging: false,
-          })
-          ctx.drawImage(textCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
-        }
-
-        const base64Data = outputCanvas.toDataURL('image/jpeg', 0.9)
-
-        restoreColors()
-
-        // Upload new thumbnail
-        const updatedScene = await recaptureThumbnail(scene.id, base64Data)
-
-        // Remove pendingReview flag
-        const updatedSceneData = { ...scene.scene_data }
-        delete updatedSceneData.pendingReview
-        await updateScene(scene.id, { sceneData: updatedSceneData })
-
-        // Update local state
-        setScene(prev => ({
-          ...prev,
-          thumbnail: updatedScene.thumbnail,
-          scene_data: updatedSceneData,
-        }))
-
-        setThumbnailCacheBuster(`?t=${Date.now()}`)
-        setAcceptDialogOpen(false)
-        setAcceptPassword('')
-      } catch (captureError) {
-        restoreColors()
-        throw captureError
-      }
-    } catch (err) {
-      console.error('Failed to accept review:', err)
-      setAcceptError('Failed to accept review. Please try again.')
-    } finally {
-      setIsAccepting(false)
-    }
-  }
-
-  // Reject review: delete scene
-  const handleRejectReview = async () => {
-    if (!rejectPassword.trim()) {
-      setRejectError('Password is required')
-      return
-    }
-
-    setIsRejecting(true)
-    setRejectError('')
-
-    try {
-      const isValid = await verifyDeletePassword(rejectPassword)
-      if (!isValid) {
-        setRejectError('Incorrect password')
-        setIsRejecting(false)
-        return
-      }
-
-      await deleteScene(scene.id)
-      navigate('/scenes')
-    } catch (err) {
-      console.error('Failed to reject/delete scene:', err)
-      setRejectError('Failed to delete scene. Please try again.')
-    } finally {
-      setIsRejecting(false)
-    }
+    await deleteScene(scene.id)
+    navigate('/scenes')
   }
 
   // Helper function to draw texture to canvas
@@ -726,10 +511,9 @@ function SceneViewPage() {
     ctx.fillRect(0, 0, width, height)
   }
 
-  const handleDownload = async () => {
-    if (!layersContainerRef?.current || isDownloading) return
-
-    setIsDownloading(true)
+  // Download handler (called from DownloadDialog)
+  const handleDownload = async (downloadOptions) => {
+    if (!layersContainerRef?.current) return
 
     const restoreColors = prepareForCapture(document.body)
 
@@ -740,13 +524,7 @@ function SceneViewPage() {
       const width = container.offsetWidth
       const height = container.offsetHeight
 
-      // Get scale based on selected size
-      const scaleMap = {
-        'small': 0.5,
-        'medium': 1,
-        'large': 1.5,
-        'full': 2,
-      }
+      const scaleMap = { 'small': 0.5, 'medium': 1, 'large': 1.5, 'full': 2 }
       const scale = scaleMap[downloadOptions.size] || 2
 
       const outputCanvas = document.createElement('canvas')
@@ -757,7 +535,6 @@ function SceneViewPage() {
       ctx.fillStyle = '#000000'
       ctx.fillRect(0, 0, outputCanvas.width, outputCanvas.height)
 
-      // Get the last canvas from layer (for fluted glass overlay support)
       const getLastCanvas = (selector) => {
         const canvases = container.querySelectorAll(`${selector} canvas`)
         return canvases.length > 0 ? canvases[canvases.length - 1] : null
@@ -782,7 +559,6 @@ function SceneViewPage() {
         ctx.filter = 'none'
       }
 
-      // Draw texture and vignette
       const currentEffectsConfig = scene?.scene_data?.effectsConfig || {}
       drawTextureToCanvas(
         ctx,
@@ -795,7 +571,6 @@ function SceneViewPage() {
       )
       drawVignetteToCanvas(ctx, outputCanvas.width, outputCanvas.height, currentEffectsConfig.vignetteIntensity || 0)
 
-      // Capture tessellation layer (icons) if not hidden
       if (!downloadOptions.hideIcons) {
         const tessellationLayer = container.querySelector('.tessellation-layer')
         if (tessellationLayer) {
@@ -810,7 +585,6 @@ function SceneViewPage() {
         }
       }
 
-      // Capture text layer if not hidden
       if (!downloadOptions.hideText) {
         const textLayer = container.querySelector('.text-layer')
         if (textLayer) {
@@ -827,33 +601,26 @@ function SceneViewPage() {
 
       const filename = `${scene.title || slug}-${downloadOptions.size}.png`
 
-      outputCanvas.toBlob((blob) => {
-        if (blob) {
-          const url = URL.createObjectURL(blob)
-          const link = document.createElement('a')
-          link.download = filename
-          link.href = url
-          link.click()
-          URL.revokeObjectURL(url)
-        }
-        restoreColors()
-        setDownloadDialogOpen(false)
-        setIsDownloading(false)
-      }, 'image/png')
+      await new Promise((resolve) => {
+        outputCanvas.toBlob((blob) => {
+          if (blob) {
+            const url = URL.createObjectURL(blob)
+            const link = document.createElement('a')
+            link.download = filename
+            link.href = url
+            link.click()
+            URL.revokeObjectURL(url)
+          }
+          restoreColors()
+          resolve()
+        }, 'image/png')
+      })
     } catch (error) {
       console.error('Failed to download:', error)
       restoreColors()
-      setIsDownloading(false)
+      throw error
     }
   }
-
-  // Available download sizes
-  const downloadSizes = [
-    { label: 'Small', value: 'small' },
-    { label: 'Medium', value: 'medium' },
-    { label: 'Large', value: 'large' },
-    { label: 'Full (2x)', value: 'full' },
-  ]
 
   // Build the gradient filter string
   const getGradientFilter = () => {
@@ -896,7 +663,7 @@ function SceneViewPage() {
     return (
       <div className="min-h-screen bg-background">
         <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-          <div className="container mx-auto px-4 h-14 flex items-center gap-4">
+          <div className="container max-w-420 w-full mx-auto px-4 h-14 flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={() => navigate('/scenes')}>
               <ArrowLeft size={20} weight="bold" />
             </Button>
@@ -932,9 +699,12 @@ function SceneViewPage() {
   const textGap = sceneData.textGap || 0
   const textConfig = sceneData.textConfig || {}
   const mouseConfig = sceneData.mouseConfig || { enabled: true, intensity: 0.5 }
+  const inputEnabled = sceneData.inputEnabled !== undefined ? sceneData.inputEnabled : true
+  const effectiveMouseIntensity = inputEnabled ? mouseConfig.intensity : 0
+  const effectiveMouseEnabled = inputEnabled && mouseConfig.enabled
 
   return (
-    <div className="min-h-screen bg-background" onMouseMove={mouseConfig.enabled ? handleMouseMove : undefined}>
+    <div className="min-h-screen bg-background" onMouseMove={effectiveMouseEnabled ? handleMouseMove : undefined}>
       {/* Full-screen scene preview */}
       <div className="fixed inset-0 z-0">
         <div ref={layersContainerRef} className="layers-container" style={{ position: 'absolute', inset: 0 }}>
@@ -952,7 +722,7 @@ function SceneViewPage() {
               <SimpleGradientLayer config={gradientConfig} gradientColors={gradientConfig.colors} effectsConfig={effectsConfig} />
             )}
             {backgroundType === 'liquid' && (
-              <GradientLayer config={gradientConfig} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={false} mouseIntensity={mouseConfig.intensity} />
+              <GradientLayer config={gradientConfig} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={false} mouseIntensity={effectiveMouseIntensity} />
             )}
             {backgroundType === 'aurora' && (
               <AuroraLayer config={auroraConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
@@ -967,7 +737,7 @@ function SceneViewPage() {
               <RibbonLayer config={ribbonConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
             )}
             {backgroundType === 'dandelion' && (
-              <DandelionLayer config={dandelionConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} mouseEnabled={mouseConfig.enabled} mouseIntensity={mouseConfig.intensity} />
+              <DandelionLayer config={dandelionConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} mouseEnabled={effectiveMouseEnabled} mouseIntensity={effectiveMouseIntensity} />
             )}
             {backgroundType === 'particleRing' && (
               <ParticleRingLayer config={particleRingConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
@@ -979,7 +749,7 @@ function SceneViewPage() {
 
           {/* Tessellation layer */}
           {tessellationConfig.enabled && (
-            <TessellationLayer config={tessellationConfig} mousePos={mousePos} isPaused={false} mouseIntensity={mouseConfig.intensity} />
+            <TessellationLayer config={tessellationConfig} mousePos={mousePos} isPaused={false} mouseIntensity={effectiveMouseIntensity} />
           )}
 
           {/* Effects layer */}
@@ -997,9 +767,9 @@ function SceneViewPage() {
         </div>
       </div>
 
-      {/* Overlay header */}
+      {/* Page header */}
       <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur">
-        <div className="container mx-auto p-2 h-14 flex items-center justify-between">
+        <div className="container max-w-420 w-full mx-auto p-2 h-14 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={() => navigate('/scenes')}>
               <ArrowLeft size={20} weight="bold" />
@@ -1038,7 +808,7 @@ function SceneViewPage() {
                 size="sm"
                 variant="ghost"
                 className="h-7 text-xs text-green-500 hover:text-green-400 hover:bg-green-500/10"
-                onClick={() => { setAcceptDialogOpen(true); setAcceptError(''); setAcceptPassword('') }}
+                onClick={() => setAcceptDialogOpen(true)}
               >
                 <CheckCircle size={14} weight="bold" className="mr-1" />
                 Accept
@@ -1047,7 +817,7 @@ function SceneViewPage() {
                 size="sm"
                 variant="ghost"
                 className="h-7 text-xs text-red-500 hover:text-red-400 hover:bg-red-500/10"
-                onClick={() => { setRejectDialogOpen(true); setRejectError(''); setRejectPassword('') }}
+                onClick={() => setRejectDialogOpen(true)}
               >
                 <XCircle size={14} weight="bold" className="mr-1" />
                 Reject
@@ -1188,7 +958,7 @@ function SceneViewPage() {
               variant="ghost"
               size="sm"
               className="h-6 text-xs"
-              onClick={() => { setRegenerateDialogOpen(true); setRegenerateError(''); setRegeneratePassword('') }}
+              onClick={() => setRegenerateDialogOpen(true)}
             >
               <ArrowCounterClockwise size={12} className="mr-1" />
               Regenerate
@@ -1197,7 +967,7 @@ function SceneViewPage() {
               variant="ghost"
               size="sm"
               className="h-6 text-xs"
-              onClick={() => { setRecaptureDialogOpen(true); setRecaptureError(''); setRecapturePassword('') }}
+              onClick={() => setRecaptureDialogOpen(true)}
             >
               <CameraIcon size={12} className="mr-1" />
               Recapture
@@ -1280,448 +1050,52 @@ function SceneViewPage() {
         </div>
       </div>
 
-      {/* Embed Dialog */}
-      <Dialog open={embedDialogOpen} onOpenChange={(open) => { setEmbedDialogOpen(open); if (!open) setCopied(false) }}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Embed this scene</DialogTitle>
-            <DialogDescription>
-              Copy the code below to embed this scene on your website.
-            </DialogDescription>
-          </DialogHeader>
-          <Tabs defaultValue="scene" onValueChange={() => setCopied(false)}>
-            <TabsList className="w-full">
-              <TabsTrigger value="scene" className="flex-1">Scene Embed</TabsTrigger>
-              <TabsTrigger value="generation" className="flex-1">Generation Embed</TabsTrigger>
-            </TabsList>
+      <EmbedDialog
+        open={embedDialogOpen}
+        onOpenChange={setEmbedDialogOpen}
+        slug={slug}
+        sceneTitle={scene?.title}
+      />
 
-            <TabsContent value="scene" className="space-y-4 mt-4">
-              {/* Embed Options */}
-              <div className="flex flex-col gap-3 p-3 bg-muted/50 rounded-lg">
-                <span className="text-xs text-muted-foreground uppercase tracking-wide">Options</span>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="hide-text" className="text-sm cursor-pointer">Hide text</Label>
-                  <Switch
-                    id="hide-text"
-                    checked={embedOptions.hideText}
-                    onCheckedChange={(checked) => setEmbedOptions(prev => ({ ...prev, hideText: checked }))}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="hide-icons" className="text-sm cursor-pointer">Hide icons</Label>
-                  <Switch
-                    id="hide-icons"
-                    checked={embedOptions.hideIcons}
-                    onCheckedChange={(checked) => setEmbedOptions(prev => ({ ...prev, hideIcons: checked }))}
-                  />
-                </div>
-              </div>
+      <DownloadDialog
+        open={downloadDialogOpen}
+        onOpenChange={setDownloadDialogOpen}
+        onDownload={handleDownload}
+      />
 
-              <div className="relative">
-                <pre className="bg-muted p-4 rounded-lg text-xs overflow-x-auto whitespace-pre-wrap break-all">
-                  {getEmbedCode()}
-                </pre>
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  className="absolute top-2 right-2"
-                  onClick={() => handleCopyEmbed(getEmbedCode())}
-                >
-                  {copied ? (
-                    <>
-                      <Check size={14} className="mr-1" />
-                      Copied
-                    </>
-                  ) : (
-                    <>
-                      <Copy size={14} className="mr-1" />
-                      Copy
-                    </>
-                  )}
-                </Button>
-              </div>
-              <div className="text-sm text-muted-foreground">
-                <p>Preview URL: <a href={`/embed/${slug}`} target="_blank" rel="noopener noreferrer" className="text-primary underline">{window.location.origin}/embed/{slug}</a></p>
-              </div>
-            </TabsContent>
+      <RegenerateDialog
+        open={regenerateDialogOpen}
+        onOpenChange={setRegenerateDialogOpen}
+        onSubmit={handleRegenerate}
+      />
 
-            <TabsContent value="generation" className="space-y-4 mt-4">
-              <div className="relative">
-                <pre className="bg-muted p-4 rounded-lg text-xs overflow-x-auto whitespace-pre-wrap break-all">
-                  {getGenerationEmbedCode()}
-                </pre>
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  className="absolute top-2 right-2"
-                  onClick={() => handleCopyEmbed(getGenerationEmbedCode())}
-                >
-                  {copied ? (
-                    <>
-                      <Check size={14} className="mr-1" />
-                      Copied
-                    </>
-                  ) : (
-                    <>
-                      <Copy size={14} className="mr-1" />
-                      Copy
-                    </>
-                  )}
-                </Button>
-              </div>
-              <div className="text-sm text-muted-foreground">
-                <p>Production URL: <a href={`https://aura.promad.design/embed/${slug}`} target="_blank" rel="noopener noreferrer" className="text-primary underline">https://aura.promad.design/embed/{slug}</a></p>
-              </div>
-            </TabsContent>
-          </Tabs>
-        </DialogContent>
-      </Dialog>
+      <RecaptureDialog
+        open={recaptureDialogOpen}
+        onOpenChange={setRecaptureDialogOpen}
+        onSubmit={handleRecaptureThumbnail}
+      />
 
-      {/* Download Dialog */}
-      <Dialog open={downloadDialogOpen} onOpenChange={setDownloadDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Download Image</DialogTitle>
-            <DialogDescription>
-              Choose the size and options for your download.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            {/* Size Selection */}
-            <div className="space-y-2">
-              <span className="text-xs text-muted-foreground uppercase tracking-wide">Size</span>
-              <div className="grid grid-cols-2 gap-2">
-                {downloadSizes.map((size) => (
-                  <Button
-                    key={size.value}
-                    variant={downloadOptions.size === size.value ? 'default' : 'outline'}
-                    size="sm"
-                    className="justify-start text-xs"
-                    onClick={() => setDownloadOptions(prev => ({ ...prev, size: size.value }))}
-                  >
-                    {size.label}
-                  </Button>
-                ))}
-              </div>
-            </div>
+      <ProjectsDialog
+        open={projectsDialogOpen}
+        onOpenChange={setProjectsDialogOpen}
+        allProjects={allProjects}
+        loadingAllProjects={loadingAllProjects}
+        initialSelectedIds={scene?.scene_data?.selectedProjectIds || []}
+        onSave={handleSaveProjects}
+      />
 
-            {/* Options */}
-            <div className="flex flex-col gap-3 p-3 bg-muted/50 rounded-lg">
-              <span className="text-xs text-muted-foreground uppercase tracking-wide">Options</span>
-              <div className="flex items-center justify-between">
-                <Label htmlFor="download-hide-text" className="text-sm cursor-pointer">Hide text</Label>
-                <Switch
-                  id="download-hide-text"
-                  checked={downloadOptions.hideText}
-                  onCheckedChange={(checked) => setDownloadOptions(prev => ({ ...prev, hideText: checked }))}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label htmlFor="download-hide-icons" className="text-sm cursor-pointer">Hide icons</Label>
-                <Switch
-                  id="download-hide-icons"
-                  checked={downloadOptions.hideIcons}
-                  onCheckedChange={(checked) => setDownloadOptions(prev => ({ ...prev, hideIcons: checked }))}
-                />
-              </div>
-            </div>
+      <AcceptReviewDialog
+        open={acceptDialogOpen}
+        onOpenChange={setAcceptDialogOpen}
+        onSubmit={handleAcceptReview}
+      />
 
-            {/* Download Button */}
-            <Button
-              className="w-full"
-              onClick={handleDownload}
-              disabled={isDownloading}
-            >
-              {isDownloading ? (
-                <>
-                  <CircleNotch size={16} className="mr-2 animate-spin" />
-                  Downloading...
-                </>
-              ) : (
-                <>
-                  <Download size={16} className="mr-2" />
-                  Download PNG
-                </>
-              )}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Regenerate AI Descriptions Dialog */}
-      <Dialog open={regenerateDialogOpen} onOpenChange={setRegenerateDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Regenerate AI Descriptions</DialogTitle>
-            <DialogDescription>
-              This will regenerate the title, short description, and long description using AI.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            {isRegenerating ? (
-              <div className="flex items-center justify-center gap-3 py-8">
-                <CircleNotch size={24} className="animate-spin text-primary" />
-                <span className="text-muted-foreground">Generating new descriptions...</span>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                <Label htmlFor="regenerate-password">Password</Label>
-                <Input
-                  id="regenerate-password"
-                  type="password"
-                  value={regeneratePassword}
-                  onChange={(e) => setRegeneratePassword(e.target.value)}
-                  placeholder="Enter admin password"
-                />
-              </div>
-            )}
-
-            {regenerateError && (
-              <p className="text-sm text-destructive">{regenerateError}</p>
-            )}
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setRegenerateDialogOpen(false)}
-              disabled={isRegenerating}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleRegenerate}
-              disabled={isRegenerating}
-            >
-              {isRegenerating ? 'Generating...' : 'Regenerate'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Recapture Thumbnail Dialog */}
-      <Dialog open={recaptureDialogOpen} onOpenChange={setRecaptureDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Recapture Thumbnail</DialogTitle>
-            <DialogDescription>
-              This will capture the current scene and update the thumbnail image.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            {isRecapturing ? (
-              <div className="flex items-center justify-center gap-3 py-8">
-                <CircleNotch size={24} className="animate-spin text-primary" />
-                <span className="text-muted-foreground">Capturing thumbnail...</span>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                <Label htmlFor="recapture-password">Password</Label>
-                <Input
-                  id="recapture-password"
-                  type="password"
-                  value={recapturePassword}
-                  onChange={(e) => setRecapturePassword(e.target.value)}
-                  placeholder="Enter admin password"
-                />
-              </div>
-            )}
-
-            {recaptureError && (
-              <p className="text-sm text-destructive">{recaptureError}</p>
-            )}
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setRecaptureDialogOpen(false)}
-              disabled={isRecapturing}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleRecaptureThumbnail}
-              disabled={isRecapturing}
-            >
-              {isRecapturing ? 'Capturing...' : 'Recapture'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Projects Dialog */}
-      <Dialog open={projectsDialogOpen} onOpenChange={setProjectsDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Assign Projects</DialogTitle>
-            <DialogDescription>
-              Select which projects to link to this scene.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            {loadingAllProjects ? (
-              <div className="flex items-center justify-center py-8">
-                <CircleNotch size={24} className="animate-spin text-muted-foreground" />
-              </div>
-            ) : allProjects.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                No projects available. Create projects first.
-              </p>
-            ) : (
-              <div className="space-y-2 max-h-60 overflow-y-auto">
-                {allProjects.map((project) => (
-                  <div
-                    key={project.id}
-                    className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{project.name}</p>
-                      <p className="text-xs text-muted-foreground truncate">{project.url}</p>
-                    </div>
-                    <Switch
-                      checked={selectedProjectIds.includes(project.id)}
-                      onCheckedChange={() => toggleProjectSelection(project.id)}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {allProjects.length > 0 && (
-              <div className="space-y-2">
-                <Label htmlFor="projects-password">Password</Label>
-                <Input
-                  id="projects-password"
-                  type="password"
-                  value={projectsPassword}
-                  onChange={(e) => setProjectsPassword(e.target.value)}
-                  placeholder="Enter admin password"
-                />
-              </div>
-            )}
-
-            {projectsError && (
-              <p className="text-sm text-destructive">{projectsError}</p>
-            )}
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setProjectsDialogOpen(false)}
-              disabled={isSavingProjects}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleSaveProjects}
-              disabled={isSavingProjects || allProjects.length === 0}
-            >
-              {isSavingProjects ? 'Saving...' : 'Save'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Accept Review Dialog */}
-      <Dialog open={acceptDialogOpen} onOpenChange={setAcceptDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Accept Scene</DialogTitle>
-            <DialogDescription>
-              This will recapture the thumbnail and mark the scene as reviewed.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            {isAccepting ? (
-              <div className="flex items-center justify-center gap-3 py-8">
-                <CircleNotch size={24} className="animate-spin text-primary" />
-                <span className="text-muted-foreground">Accepting &amp; recapturing thumbnail...</span>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                <Label htmlFor="accept-password">Password</Label>
-                <Input
-                  id="accept-password"
-                  type="password"
-                  value={acceptPassword}
-                  onChange={(e) => { setAcceptPassword(e.target.value); setAcceptError('') }}
-                  placeholder="Enter admin password"
-                />
-              </div>
-            )}
-
-            {acceptError && (
-              <p className="text-sm text-destructive">{acceptError}</p>
-            )}
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setAcceptDialogOpen(false)}
-              disabled={isAccepting}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleAcceptReview}
-              disabled={isAccepting}
-            >
-              {isAccepting ? 'Accepting...' : 'Accept'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Reject Review Dialog */}
-      <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Reject Scene</DialogTitle>
-            <DialogDescription>
-              This will permanently delete "{scene.title}". This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="reject-password">Enter password to confirm</Label>
-              <Input
-                id="reject-password"
-                type="password"
-                value={rejectPassword}
-                onChange={(e) => { setRejectPassword(e.target.value); setRejectError('') }}
-                placeholder="Password"
-                disabled={isRejecting}
-              />
-            </div>
-
-            {rejectError && (
-              <p className="text-sm text-destructive">{rejectError}</p>
-            )}
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setRejectDialogOpen(false)}
-              disabled={isRejecting}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleRejectReview}
-              disabled={isRejecting}
-            >
-              {isRejecting ? (
-                <>
-                  <CircleNotch size={16} className="animate-spin" />
-                  Deleting...
-                </>
-              ) : (
-                'Delete'
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <RejectReviewDialog
+        open={rejectDialogOpen}
+        onOpenChange={setRejectDialogOpen}
+        sceneTitle={scene.title}
+        onSubmit={handleRejectReview}
+      />
     </div>
   )
 }

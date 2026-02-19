@@ -302,6 +302,10 @@ const useStore = create((set, get) => ({
   mousePos: { x: 0.5, y: 0.5 },
   setMousePos: (pos) => set({ mousePos: pos }),
 
+  // Master input toggle (mouse + audio)
+  inputEnabled: true,
+  setInputEnabled: (enabled) => set({ inputEnabled: enabled }),
+
   // Global mouse effect config
   mouseConfig: { enabled: true, intensity: 0.5 },
   setMouseConfig: (config) => set({ mouseConfig: config }),
@@ -643,6 +647,7 @@ const useStore = create((set, get) => ({
       colorPalette: state.colorPalette,
       selectedProjectIds: state.selectedProjectIds,
       audioConfig: { ...state.audioConfig, enabled: false, fileName: null },
+      inputEnabled: state.inputEnabled,
     }
   },
 
@@ -685,6 +690,7 @@ const useStore = create((set, get) => ({
       ...(sceneData.selectedProjectIds && { selectedProjectIds: sceneData.selectedProjectIds }),
       ...(sceneData.audioConfig && { audioConfig: { ...sceneData.audioConfig, enabled: false, fileName: null } }),
       ...(sceneData.mouseConfig && { mouseConfig: sceneData.mouseConfig }),
+      ...(sceneData.inputEnabled !== undefined && { inputEnabled: sceneData.inputEnabled }),
     })
   },
 }))

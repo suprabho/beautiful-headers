@@ -5,7 +5,7 @@ import {
   Shuffle, DotsSixVertical, Camera,
   Pause, Play, FloppyDisk, Images, PaintBrushBroad, ArrowsInSimple, ArrowsOutSimple,
 } from '@phosphor-icons/react'
-import { AudioPanel } from './AudioControls'
+import { InputPanel } from './InputControls'
 import { cn } from '@/lib/utils'
 import { parsePaletteJson } from '@/lib/colorConversion'
 import { Button } from '@/components/ui/button'
@@ -187,7 +187,7 @@ export const DesktopPanel = ({
                 />
               </TabsContent>
               <TabsContent value="audio" className="m-0">
-                <AudioPanel
+                <InputPanel
                   loadAudioFile={audioAnalyser?.loadAudioFile}
                   playAudio={audioAnalyser?.playAudio}
                   pauseAudio={audioAnalyser?.pauseAudio}
