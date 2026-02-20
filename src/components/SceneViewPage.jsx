@@ -790,7 +790,7 @@ function SceneViewPage() {
 
       {/* Scene info panel - on mobile it appears in second fold, on desktop fixed bottom-right */}
       <div className="relative mt-[76vh] md:mt-0 md:fixed md:bottom-4 md:right-4 md:z-50 md:w-80 p-4 md:p-0">
-        <div className="flex flex-col bg-background/80 backdrop-blur border border-border rounded-xl p-4 gap-0.5 shadow-lg">
+        <div className="flex flex-col bg-background/80 backdrop-blur border border-border rounded-xl p-4 gap-2 shadow-lg">
 
           {scene.title && (
             <div className="flex items-center justify-between">
@@ -858,7 +858,14 @@ function SceneViewPage() {
               </div>
             </div>
           )}
-
+          <div className="flex flex-col gap-0.5">
+            <span className="text-xs text-muted-foreground uppercase tracking-wide">Backgroun Name</span>
+              <div className="flex flex-wrap gap-1.5 items-center">
+                <span className="px-2 py-0.5 text-xs bg-muted rounded-md capitalize">
+                  {sceneData.backgroundType}
+                </span>
+              </div>
+          </div>  
           {/* Effects */}
           {(() => {
             const effects = []
@@ -879,7 +886,7 @@ function SceneViewPage() {
             }
 
             return effects.length > 0 ? (
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-0.5">
                 <span className="text-xs text-muted-foreground uppercase tracking-wide">Effects</span>
                 <div className="flex flex-wrap gap-1.5 items-center">
                   {effects.map((effect, idx) => (
