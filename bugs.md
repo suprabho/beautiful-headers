@@ -13,7 +13,7 @@
 - **Notes:** ...
 -->
 
-[] Add Background Meta in SceneViewPage
+[-] Add Background Meta in SceneViewPage
 [] End X and Y > Dandelion and Particle Ring > Background Colors
 [] Text Spacing - limit to 3 decimal points
 [] Italics stays toggled on when font is changed.

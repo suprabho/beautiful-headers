@@ -278,7 +278,7 @@ export const RadialGradientSection = ({
       )}
 
       {/* End X / End Y position controls */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="flex flex-col lg:flex-row gap-4 justify-between">
         <ControlGroup label="End X (in %)">
           <NumberInput
             value={[endX]}
