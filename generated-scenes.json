@@ -6,12 +6,28 @@
     "scene_data": {
       "backgroundType": "ribbon",
       "gradientConfig": {
-        "colors": ["#2c2c2c", "#8a7d72", "#b87333", "#4a4a4a"],
+        "colors": [
+          "#2c2c2c",
+          "#8a7d72",
+          "#b87333",
+          "#4a4a4a"
+        ],
         "numColors": 4,
         "type": "linear",
-        "startPos": { "x": 0, "y": 30 },
-        "endPos": { "x": 100, "y": 70 },
-        "colorStops": [0, 35, 65, 100],
+        "startPos": {
+          "x": 0,
+          "y": 30
+        },
+        "endPos": {
+          "x": 100,
+          "y": 70
+        },
+        "colorStops": [
+          0,
+          35,
+          65,
+          100
+        ],
         "waveIntensity": 0.2,
         "mouseInfluence": 0.35,
         "decaySpeed": 0.96,
@@ -46,20 +62,34 @@
         "mouseInfluence": 0.3,
         "decaySpeed": 0.95,
         "useGradientColors": true,
-        "colors": ["#40204c", "#a3225c", "#e24926"],
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926"
+        ],
         "backgroundColor": "#152a8e"
       },
       "fluidConfig": {
         "useGradientColors": true,
         "backgroundColor": "#2c2c2c",
-        "colors": ["#8a7d72", "#b87333", "#4a4a4a", "#8a7d72"],
+        "colors": [
+          "#8a7d72",
+          "#b87333",
+          "#4a4a4a",
+          "#8a7d72"
+        ],
         "speed": 1,
         "intensity": 1,
         "blurAmount": 20
       },
       "wavesConfig": {
         "useGradientColors": true,
-        "colors": ["#2c2c2c", "#8a7d72", "#b87333", "#4a4a4a"],
+        "colors": [
+          "#2c2c2c",
+          "#8a7d72",
+          "#b87333",
+          "#4a4a4a"
+        ],
         "waveHeight": 0.05,
         "waveFrequency": 2,
         "rotation": 0,
@@ -156,8 +186,24 @@
         }
       },
       "textSections": [
-        { "id": 1, "text": "FORMA", "size": 120, "weight": 800, "spacing": 0.12, "font": "sans-serif", "italic": false },
-        { "id": 2, "text": "ARCHITECTURE STUDIO", "size": 16, "weight": 300, "spacing": 0.4, "font": "sans-serif", "italic": false }
+        {
+          "id": 1,
+          "text": "FORMA",
+          "size": 120,
+          "weight": 800,
+          "spacing": 0.12,
+          "font": "sans-serif",
+          "italic": false
+        },
+        {
+          "id": 2,
+          "text": "ARCHITECTURE STUDIO",
+          "size": 16,
+          "weight": 300,
+          "spacing": 0.4,
+          "font": "sans-serif",
+          "italic": false
+        }
       ],
       "textGap": 14,
       "textConfig": {
@@ -175,12 +221,28 @@
     "scene_data": {
       "backgroundType": "waves",
       "gradientConfig": {
-        "colors": ["#e8ecf0", "#7a8ea0", "#b0bec5", "#4a6274"],
+        "colors": [
+          "#e8ecf0",
+          "#7a8ea0",
+          "#b0bec5",
+          "#4a6274"
+        ],
         "numColors": 4,
         "type": "linear",
-        "startPos": { "x": 0, "y": 0 },
-        "endPos": { "x": 100, "y": 100 },
-        "colorStops": [0, 30, 60, 100],
+        "startPos": {
+          "x": 0,
+          "y": 0
+        },
+        "endPos": {
+          "x": 100,
+          "y": 100
+        },
+        "colorStops": [
+          0,
+          30,
+          60,
+          100
+        ],
         "waveIntensity": 0.18,
         "mouseInfluence": 0.3,
         "decaySpeed": 0.96,
@@ -215,20 +277,34 @@
         "mouseInfluence": 0.3,
         "decaySpeed": 0.95,
         "useGradientColors": true,
-        "colors": ["#40204c", "#a3225c", "#e24926"],
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926"
+        ],
         "backgroundColor": "#152a8e"
       },
       "fluidConfig": {
         "useGradientColors": true,
         "backgroundColor": "#e8ecf0",
-        "colors": ["#7a8ea0", "#b0bec5", "#4a6274", "#7a8ea0"],
+        "colors": [
+          "#7a8ea0",
+          "#b0bec5",
+          "#4a6274",
+          "#7a8ea0"
+        ],
         "speed": 1,
         "intensity": 1,
         "blurAmount": 20
       },
       "wavesConfig": {
         "useGradientColors": true,
-        "colors": ["#7a8ea0", "#b0bec5", "#4a6274", "#94a7b5"],
+        "colors": [
+          "#7a8ea0",
+          "#b0bec5",
+          "#4a6274",
+          "#94a7b5"
+        ],
         "waveHeight": 0.04,
         "waveFrequency": 1.6,
         "rotation": 3,
@@ -242,7 +318,7 @@
         "backgroundColor": "#e8ecf0",
         "ribbonCount": 5,
         "speed": 0.5,
-        "amplitude": 1.0,
+        "amplitude": 1,
         "spread": 0.5,
         "rotation": -30,
         "thickness": 1,
@@ -325,8 +401,24 @@
         }
       },
       "textSections": [
-        { "id": 1, "text": "Elevation", "size": 105, "weight": 300, "spacing": -0.03, "font": "sans-serif", "italic": false },
-        { "id": 2, "text": "CURTAIN WALL SYSTEMS", "size": 15, "weight": 400, "spacing": 0.35, "font": "sans-serif", "italic": false }
+        {
+          "id": 1,
+          "text": "Elevation",
+          "size": 105,
+          "weight": 300,
+          "spacing": -0.03,
+          "font": "sans-serif",
+          "italic": false
+        },
+        {
+          "id": 2,
+          "text": "CURTAIN WALL SYSTEMS",
+          "size": 15,
+          "weight": 400,
+          "spacing": 0.35,
+          "font": "sans-serif",
+          "italic": false
+        }
       ],
       "textGap": 12,
       "textConfig": {
@@ -344,12 +436,28 @@
     "scene_data": {
       "backgroundType": "shapeTrail",
       "gradientConfig": {
-        "colors": ["#0a1628", "#2980b9", "#85c1e9", "#d6eaf8"],
+        "colors": [
+          "#0a1628",
+          "#2980b9",
+          "#85c1e9",
+          "#d6eaf8"
+        ],
         "numColors": 4,
         "type": "linear",
-        "startPos": { "x": 20, "y": 80 },
-        "endPos": { "x": 80, "y": 20 },
-        "colorStops": [0, 30, 65, 100],
+        "startPos": {
+          "x": 20,
+          "y": 80
+        },
+        "endPos": {
+          "x": 80,
+          "y": 20
+        },
+        "colorStops": [
+          0,
+          30,
+          65,
+          100
+        ],
         "waveIntensity": 0.15,
         "mouseInfluence": 0.25,
         "decaySpeed": 0.96,
@@ -384,20 +492,34 @@
         "mouseInfluence": 0.3,
         "decaySpeed": 0.95,
         "useGradientColors": true,
-        "colors": ["#40204c", "#a3225c", "#e24926"],
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926"
+        ],
         "backgroundColor": "#152a8e"
       },
       "fluidConfig": {
         "useGradientColors": true,
         "backgroundColor": "#0a1628",
-        "colors": ["#2980b9", "#85c1e9", "#d6eaf8", "#2980b9"],
+        "colors": [
+          "#2980b9",
+          "#85c1e9",
+          "#d6eaf8",
+          "#2980b9"
+        ],
         "speed": 1,
         "intensity": 1,
         "blurAmount": 20
       },
       "wavesConfig": {
         "useGradientColors": true,
-        "colors": ["#0a1628", "#2980b9", "#85c1e9", "#d6eaf8"],
+        "colors": [
+          "#0a1628",
+          "#2980b9",
+          "#85c1e9",
+          "#d6eaf8"
+        ],
         "waveHeight": 0.05,
         "waveFrequency": 2,
         "rotation": 0,
@@ -411,7 +533,7 @@
         "backgroundColor": "#0a1628",
         "ribbonCount": 5,
         "speed": 0.5,
-        "amplitude": 1.0,
+        "amplitude": 1,
         "spread": 0.5,
         "rotation": -30,
         "thickness": 1,
@@ -494,8 +616,24 @@
         }
       },
       "textSections": [
-        { "id": 1, "text": "STRUCT", "size": 130, "weight": 900, "spacing": 0.08, "font": "mono", "italic": false },
-        { "id": 2, "text": "blueprint series", "size": 18, "weight": 300, "spacing": 0.25, "font": "mono", "italic": false }
+        {
+          "id": 1,
+          "text": "STRUCT",
+          "size": 130,
+          "weight": 900,
+          "spacing": 0.08,
+          "font": "mono",
+          "italic": false
+        },
+        {
+          "id": 2,
+          "text": "blueprint series",
+          "size": 18,
+          "weight": 300,
+          "spacing": 0.25,
+          "font": "mono",
+          "italic": false
+        }
       ],
       "textGap": 16,
       "textConfig": {
@@ -513,12 +651,28 @@
     "scene_data": {
       "backgroundType": "fluid",
       "gradientConfig": {
-        "colors": ["#f5f0e8", "#3d3d3d", "#c9a84c", "#8c8278"],
+        "colors": [
+          "#f5f0e8",
+          "#3d3d3d",
+          "#c9a84c",
+          "#8c8278"
+        ],
         "numColors": 4,
         "type": "conic",
-        "startPos": { "x": 45, "y": 50 },
-        "endPos": { "x": 90, "y": 85 },
-        "colorStops": [0, 25, 55, 100],
+        "startPos": {
+          "x": 45,
+          "y": 50
+        },
+        "endPos": {
+          "x": 90,
+          "y": 85
+        },
+        "colorStops": [
+          0,
+          25,
+          55,
+          100
+        ],
         "waveIntensity": 0.3,
         "mouseInfluence": 0.4,
         "decaySpeed": 0.96,
@@ -553,20 +707,34 @@
         "mouseInfluence": 0.3,
         "decaySpeed": 0.95,
         "useGradientColors": true,
-        "colors": ["#40204c", "#a3225c", "#e24926"],
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926"
+        ],
         "backgroundColor": "#152a8e"
       },
       "fluidConfig": {
         "useGradientColors": true,
         "backgroundColor": "#f5f0e8",
-        "colors": ["#3d3d3d", "#c9a84c", "#8c8278", "#f5f0e8"],
+        "colors": [
+          "#3d3d3d",
+          "#c9a84c",
+          "#8c8278",
+          "#f5f0e8"
+        ],
         "speed": 0.6,
         "intensity": 1.8,
         "blurAmount": 25
       },
       "wavesConfig": {
         "useGradientColors": true,
-        "colors": ["#f5f0e8", "#3d3d3d", "#c9a84c", "#8c8278"],
+        "colors": [
+          "#f5f0e8",
+          "#3d3d3d",
+          "#c9a84c",
+          "#8c8278"
+        ],
         "waveHeight": 0.05,
         "waveFrequency": 2,
         "rotation": 0,
@@ -580,7 +748,7 @@
         "backgroundColor": "#f5f0e8",
         "ribbonCount": 5,
         "speed": 0.5,
-        "amplitude": 1.0,
+        "amplitude": 1,
         "spread": 0.5,
         "rotation": -30,
         "thickness": 1,
@@ -663,8 +831,24 @@
         }
       },
       "textSections": [
-        { "id": 1, "text": "Atelier", "size": 110, "weight": 400, "spacing": -0.02, "font": "serif", "italic": true },
-        { "id": 2, "text": "INTERIOR ARCHITECTURE", "size": 15, "weight": 400, "spacing": 0.4, "font": "sans-serif", "italic": false }
+        {
+          "id": 1,
+          "text": "Atelier",
+          "size": 110,
+          "weight": 400,
+          "spacing": -0.02,
+          "font": "serif",
+          "italic": true
+        },
+        {
+          "id": 2,
+          "text": "INTERIOR ARCHITECTURE",
+          "size": 15,
+          "weight": 400,
+          "spacing": 0.4,
+          "font": "sans-serif",
+          "italic": false
+        }
       ],
       "textGap": 14,
       "textConfig": {
@@ -682,12 +866,28 @@
     "scene_data": {
       "backgroundType": "particleRing",
       "gradientConfig": {
-        "colors": ["#121218", "#6b7280", "#9ca3af", "#d1d5db"],
+        "colors": [
+          "#121218",
+          "#6b7280",
+          "#9ca3af",
+          "#d1d5db"
+        ],
         "numColors": 4,
         "type": "radial",
-        "startPos": { "x": 50, "y": 50 },
-        "endPos": { "x": 100, "y": 100 },
-        "colorStops": [0, 35, 65, 100],
+        "startPos": {
+          "x": 50,
+          "y": 50
+        },
+        "endPos": {
+          "x": 100,
+          "y": 100
+        },
+        "colorStops": [
+          0,
+          35,
+          65,
+          100
+        ],
         "waveIntensity": 0.12,
         "mouseInfluence": 0.2,
         "decaySpeed": 0.97,
@@ -722,20 +922,34 @@
         "mouseInfluence": 0.3,
         "decaySpeed": 0.95,
         "useGradientColors": true,
-        "colors": ["#40204c", "#a3225c", "#e24926"],
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926"
+        ],
         "backgroundColor": "#152a8e"
       },
       "fluidConfig": {
         "useGradientColors": true,
         "backgroundColor": "#121218",
-        "colors": ["#6b7280", "#9ca3af", "#d1d5db", "#6b7280"],
+        "colors": [
+          "#6b7280",
+          "#9ca3af",
+          "#d1d5db",
+          "#6b7280"
+        ],
         "speed": 1,
         "intensity": 1,
         "blurAmount": 20
       },
       "wavesConfig": {
         "useGradientColors": true,
-        "colors": ["#121218", "#6b7280", "#9ca3af", "#d1d5db"],
+        "colors": [
+          "#121218",
+          "#6b7280",
+          "#9ca3af",
+          "#d1d5db"
+        ],
         "waveHeight": 0.05,
         "waveFrequency": 2,
         "rotation": 0,
@@ -749,7 +963,7 @@
         "backgroundColor": "#121218",
         "ribbonCount": 5,
         "speed": 0.5,
-        "amplitude": 1.0,
+        "amplitude": 1,
         "spread": 0.5,
         "rotation": -30,
         "thickness": 1,
@@ -832,14 +1046,1888 @@
         }
       },
       "textSections": [
-        { "id": 1, "text": "TENSILE", "size": 115, "weight": 200, "spacing": 0.2, "font": "sans-serif", "italic": false },
-        { "id": 2, "text": "STRUCTURAL ENGINEERING", "size": 14, "weight": 400, "spacing": 0.45, "font": "sans-serif", "italic": false }
+        {
+          "id": 1,
+          "text": "TENSILE",
+          "size": 115,
+          "weight": 200,
+          "spacing": 0.2,
+          "font": "sans-serif",
+          "italic": false
+        },
+        {
+          "id": 2,
+          "text": "STRUCTURAL ENGINEERING",
+          "size": 14,
+          "weight": 400,
+          "spacing": 0.45,
+          "font": "sans-serif",
+          "italic": false
+        }
       ],
       "textGap": 16,
       "textConfig": {
         "enabled": true,
         "color": "#d1d5db",
         "opacity": 0.9
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Fluid Azure Tech Dashboard",
+    "short_description": "A dynamic blue fluid background for modern tech interfaces.",
+    "long_description": "Flowing blue and cyan fluid layers shift and blend with soft scanline texture, creating a polished tech-forward atmosphere. Perfect for SaaS dashboards, developer tools, and data visualization headers.",
+    "scene_data": {
+      "backgroundType": "fluid",
+      "gradientConfig": {
+        "colors": [
+          "#818cf8",
+          "#3b82f6",
+          "#06b6d4",
+          "#1C89FF"
+        ],
+        "numColors": 4,
+        "type": "linear",
+        "startPos": {
+          "x": 0,
+          "y": 20
+        },
+        "endPos": {
+          "x": 100,
+          "y": 80
+        },
+        "colorStops": [
+          0,
+          30,
+          60,
+          100
+        ],
+        "waveIntensity": 0.25,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.96,
+        "wave1Speed": 0.12,
+        "wave1Direction": 1,
+        "wave2Speed": 0.07,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10,
+        "maxWidth": 30,
+        "minHeight": 200,
+        "maxHeight": 600,
+        "minTTL": 100,
+        "maxTTL": 300,
+        "blurAmount": 13,
+        "hueStart": 190,
+        "hueEnd": 220,
+        "backgroundColor": "#1C89FF",
+        "lineCount": 0,
+        "decaySpeed": 0.95,
+        "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5,
+        "minRadius": 40,
+        "maxRadius": 120,
+        "speed": 0.5,
+        "orbitRadius": 150,
+        "blurAmount": 12,
+        "threshold": 180,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.95,
+        "useGradientColors": true,
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926"
+        ],
+        "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#1C89FF",
+        "colors": [
+          "#818cf8",
+          "#3b82f6",
+          "#06b6d4",
+          "#1C89FF"
+        ],
+        "speed": 0.8,
+        "intensity": 2.2,
+        "blurAmount": 35
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": [
+          "#818cf8",
+          "#3b82f6",
+          "#06b6d4",
+          "#1C89FF"
+        ],
+        "waveHeight": 0.05,
+        "waveFrequency": 2,
+        "rotation": 0,
+        "speed": 0.5,
+        "blur": 40,
+        "layers": 5,
+        "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#1C89FF",
+        "ribbonCount": 5,
+        "speed": 0.5,
+        "amplitude": 1,
+        "spread": 0.5,
+        "rotation": -30,
+        "thickness": 1,
+        "taper": -0.3,
+        "noise": 0.5,
+        "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#e8f4fc",
+        "lineCount": 120,
+        "radiusMin": 0.1,
+        "radiusMax": 0.8,
+        "speed": 0.3,
+        "thickness": 1.5,
+        "dotSize": 3,
+        "spread": 0.3,
+        "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fef6f9",
+        "particleCount": 800,
+        "ringRadius": 0.35,
+        "ringWidth": 0.15,
+        "speed": 0.5,
+        "particleSize": 3,
+        "dispersion": 0.3,
+        "rotationSpeed": 0.2,
+        "tiltX": 0,
+        "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#f0f0f0",
+        "shape": "circle",
+        "startScale": 1000,
+        "endScale": 2000,
+        "sizeCycles": 1,
+        "gap": 30,
+        "rotationOffset": 15,
+        "speed": 0.3,
+        "pathComplexity": 4,
+        "opacity": 0.8,
+        "blendMode": "normal",
+        "trailCount": 3,
+        "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false,
+        "icon": "Star",
+        "rowGap": 60,
+        "colGap": 60,
+        "size": 24,
+        "opacity": 0.15,
+        "rotation": 0,
+        "color": "#3b82f6",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 10,
+        "texture": "scanlines",
+        "textureSize": 25,
+        "textureOpacity": 0.35,
+        "textureBlendMode": "overlay",
+        "colorMap": "none",
+        "vignetteIntensity": 0,
+        "saturation": 100,
+        "contrast": 100,
+        "brightness": 100,
+        "flutedGlass": {
+          "enabled": false,
+          "segments": 80,
+          "rotation": 0,
+          "motionValue": 0.5,
+          "motionSpeed": 0.5,
+          "overlayOpacity": 0,
+          "distortionStrength": 0.02,
+          "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        {
+          "id": 1,
+          "text": "NEXUS",
+          "size": 120,
+          "weight": 700,
+          "spacing": 0.08,
+          "font": "sans-serif",
+          "italic": false
+        },
+        {
+          "id": 2,
+          "text": "cloud platform",
+          "size": 16,
+          "weight": 300,
+          "spacing": 0.3,
+          "font": "sans-serif",
+          "italic": false
+        }
+      ],
+      "textGap": 14,
+      "textConfig": {
+        "enabled": true,
+        "color": "#ffffff",
+        "opacity": 0.85
+      },
+      "colorPalette": {
+        "cyan": {
+          "50": "#ecfeff",
+          "100": "#cffafe",
+          "200": "#a5f3fc",
+          "300": "#67e8f9",
+          "400": "#22d3ee",
+          "500": "#06b6d4",
+          "600": "#0891b2",
+          "700": "#0e7490",
+          "800": "#155e75",
+          "900": "#164e63",
+          "950": "#083344"
+        },
+        "black": "#000",
+        "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Liquid Velvet Premium Portfolio",
+    "short_description": "Warm purple and burgundy liquid blobs with vintage grain texture.",
+    "long_description": "Rich liquid blobs morph through deep purple, burgundy, and burnt orange with film grain overlay and fluted glass refraction. The vintage color map adds analog warmth perfect for luxury brands and creative portfolios.",
+    "scene_data": {
+      "backgroundType": "liquid",
+      "gradientConfig": {
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926",
+          "#152a8e"
+        ],
+        "numColors": 4,
+        "type": "radial",
+        "startPos": {
+          "x": 50,
+          "y": 50
+        },
+        "endPos": {
+          "x": 100,
+          "y": 100
+        },
+        "colorStops": [
+          0,
+          30,
+          60,
+          100
+        ],
+        "waveIntensity": 0.3,
+        "mouseInfluence": 0.35,
+        "decaySpeed": 0.95,
+        "wave1Speed": 0.1,
+        "wave1Direction": 1,
+        "wave2Speed": 0.06,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10,
+        "maxWidth": 30,
+        "minHeight": 200,
+        "maxHeight": 600,
+        "minTTL": 100,
+        "maxTTL": 300,
+        "blurAmount": 13,
+        "hueStart": 280,
+        "hueEnd": 320,
+        "backgroundColor": "#000000",
+        "lineCount": 0,
+        "decaySpeed": 0.95,
+        "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5,
+        "minRadius": 40,
+        "maxRadius": 120,
+        "speed": 0.5,
+        "orbitRadius": 150,
+        "blurAmount": 12,
+        "threshold": 180,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.95,
+        "useGradientColors": true,
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926"
+        ],
+        "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#152a8e",
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926",
+          "#152a8e"
+        ],
+        "speed": 1,
+        "intensity": 1,
+        "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926",
+          "#152a8e"
+        ],
+        "waveHeight": 0.05,
+        "waveFrequency": 2,
+        "rotation": 0,
+        "speed": 0.5,
+        "blur": 40,
+        "layers": 5,
+        "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#152a8e",
+        "ribbonCount": 5,
+        "speed": 0.5,
+        "amplitude": 1,
+        "spread": 0.5,
+        "rotation": -30,
+        "thickness": 1,
+        "taper": -0.3,
+        "noise": 0.5,
+        "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#e8f4fc",
+        "lineCount": 120,
+        "radiusMin": 0.1,
+        "radiusMax": 0.8,
+        "speed": 0.3,
+        "thickness": 1.5,
+        "dotSize": 3,
+        "spread": 0.3,
+        "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fef6f9",
+        "particleCount": 800,
+        "ringRadius": 0.35,
+        "ringWidth": 0.15,
+        "speed": 0.5,
+        "particleSize": 3,
+        "dispersion": 0.3,
+        "rotationSpeed": 0.2,
+        "tiltX": 0,
+        "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#f0f0f0",
+        "shape": "circle",
+        "startScale": 1000,
+        "endScale": 2000,
+        "sizeCycles": 1,
+        "gap": 30,
+        "rotationOffset": 15,
+        "speed": 0.3,
+        "pathComplexity": 4,
+        "opacity": 0.8,
+        "blendMode": "normal",
+        "trailCount": 3,
+        "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false,
+        "icon": "Star",
+        "rowGap": 60,
+        "colGap": 60,
+        "size": 24,
+        "opacity": 0.15,
+        "rotation": 0,
+        "color": "#a3225c",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 12,
+        "texture": "grain",
+        "textureSize": 30,
+        "textureOpacity": 0.45,
+        "textureBlendMode": "overlay",
+        "colorMap": "vintage",
+        "vignetteIntensity": 0.35,
+        "saturation": 110,
+        "contrast": 105,
+        "brightness": 100,
+        "flutedGlass": {
+          "enabled": true,
+          "rotation": 75,
+          "segments": 85,
+          "motionSpeed": 1,
+          "motionValue": 0,
+          "overlayOpacity": 11,
+          "distortionStrength": 0.02,
+          "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        {
+          "id": 1,
+          "text": "VELVET",
+          "size": 115,
+          "weight": 800,
+          "spacing": 0.1,
+          "font": "serif",
+          "italic": false
+        },
+        {
+          "id": 2,
+          "text": "creative studio",
+          "size": 16,
+          "weight": 300,
+          "spacing": 0.35,
+          "font": "sans-serif",
+          "italic": false
+        }
+      ],
+      "textGap": 14,
+      "textConfig": {
+        "enabled": true,
+        "color": "#faff00",
+        "opacity": 0.82
+      },
+      "colorPalette": {
+        "purple": {
+          "50": "#faf5ff",
+          "100": "#f3e8ff",
+          "200": "#e9d5ff",
+          "300": "#d8b4fe",
+          "400": "#c084fc",
+          "500": "#a855f7",
+          "600": "#9333ea",
+          "700": "#7e22ce",
+          "800": "#6b21a8",
+          "900": "#581c87",
+          "950": "#3b0764"
+        },
+        "black": "#000",
+        "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Ribbon Elegant White Corporate",
+    "short_description": "Clean white ribbons with a single blue accent for professional interfaces.",
+    "long_description": "Subtle ribbons sweep across a clean white canvas with soft blue accent tones. The minimal texture and restrained palette project corporate professionalism and clarity. Ideal for law firms, consultancies, and enterprise SaaS landing pages.",
+    "scene_data": {
+      "backgroundType": "ribbon",
+      "gradientConfig": {
+        "colors": [
+          "#3b82f6",
+          "#60a5fa",
+          "#93c5fd",
+          "#dbeafe"
+        ],
+        "numColors": 4,
+        "type": "linear",
+        "startPos": {
+          "x": 0,
+          "y": 0
+        },
+        "endPos": {
+          "x": 100,
+          "y": 100
+        },
+        "colorStops": [
+          0,
+          30,
+          60,
+          100
+        ],
+        "waveIntensity": 0.15,
+        "mouseInfluence": 0.2,
+        "decaySpeed": 0.96,
+        "wave1Speed": 0.08,
+        "wave1Direction": 1,
+        "wave2Speed": 0.05,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10,
+        "maxWidth": 30,
+        "minHeight": 200,
+        "maxHeight": 600,
+        "minTTL": 100,
+        "maxTTL": 300,
+        "blurAmount": 13,
+        "hueStart": 210,
+        "hueEnd": 230,
+        "backgroundColor": "#ffffff",
+        "lineCount": 0,
+        "decaySpeed": 0.95,
+        "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5,
+        "minRadius": 40,
+        "maxRadius": 120,
+        "speed": 0.5,
+        "orbitRadius": 150,
+        "blurAmount": 12,
+        "threshold": 180,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.95,
+        "useGradientColors": true,
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926"
+        ],
+        "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#ffffff",
+        "colors": [
+          "#3b82f6",
+          "#60a5fa",
+          "#93c5fd",
+          "#dbeafe"
+        ],
+        "speed": 1,
+        "intensity": 1,
+        "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": [
+          "#3b82f6",
+          "#60a5fa",
+          "#93c5fd",
+          "#dbeafe"
+        ],
+        "waveHeight": 0.05,
+        "waveFrequency": 2,
+        "rotation": 0,
+        "speed": 0.5,
+        "blur": 40,
+        "layers": 5,
+        "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#ffffff",
+        "ribbonCount": 3,
+        "speed": 0.35,
+        "amplitude": 0.8,
+        "spread": 0.5,
+        "rotation": 40,
+        "thickness": 1,
+        "taper": -0.1,
+        "noise": 0,
+        "opacity": 0.55,
+        "colorCycleSpeed": 1.2,
+        "enableHoverEffect": true
+      },
+      "dandelionConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#e8f4fc",
+        "lineCount": 120,
+        "radiusMin": 0.1,
+        "radiusMax": 0.8,
+        "speed": 0.3,
+        "thickness": 1.5,
+        "dotSize": 3,
+        "spread": 0.3,
+        "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fef6f9",
+        "particleCount": 800,
+        "ringRadius": 0.35,
+        "ringWidth": 0.15,
+        "speed": 0.5,
+        "particleSize": 3,
+        "dispersion": 0.3,
+        "rotationSpeed": 0.2,
+        "tiltX": 0,
+        "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#f0f0f0",
+        "shape": "circle",
+        "startScale": 1000,
+        "endScale": 2000,
+        "sizeCycles": 1,
+        "gap": 30,
+        "rotationOffset": 15,
+        "speed": 0.3,
+        "pathComplexity": 4,
+        "opacity": 0.8,
+        "blendMode": "normal",
+        "trailCount": 3,
+        "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false,
+        "icon": "Star",
+        "rowGap": 60,
+        "colGap": 60,
+        "size": 24,
+        "opacity": 0.15,
+        "rotation": 0,
+        "color": "#3b82f6",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 5,
+        "texture": "none",
+        "textureSize": 30,
+        "textureOpacity": 0,
+        "textureBlendMode": "overlay",
+        "colorMap": "none",
+        "vignetteIntensity": 0,
+        "saturation": 100,
+        "contrast": 100,
+        "brightness": 100,
+        "flutedGlass": {
+          "enabled": false,
+          "segments": 80,
+          "rotation": 0,
+          "motionValue": 0.5,
+          "motionSpeed": 0.5,
+          "overlayOpacity": 0,
+          "distortionStrength": 0.02,
+          "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        {
+          "id": 1,
+          "text": "Meridian",
+          "size": 100,
+          "weight": 300,
+          "spacing": -0.02,
+          "font": "serif",
+          "italic": false
+        },
+        {
+          "id": 2,
+          "text": "ADVISORY GROUP",
+          "size": 14,
+          "weight": 500,
+          "spacing": 0.4,
+          "font": "sans-serif",
+          "italic": false
+        }
+      ],
+      "textGap": 12,
+      "textConfig": {
+        "enabled": true,
+        "color": "#000000",
+        "opacity": 0.9
+      },
+      "colorPalette": {
+        "blue": {
+          "50": "#eff6ff",
+          "100": "#dbeafe",
+          "200": "#bfdbfe",
+          "300": "#93c5fd",
+          "400": "#60a5fa",
+          "500": "#3b82f6",
+          "600": "#2563eb",
+          "700": "#1d4ed8",
+          "800": "#1e40af",
+          "900": "#1e3a8a",
+          "950": "#172554"
+        },
+        "black": "#000",
+        "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Aurora Cinematic Dark Northern Lights",
+    "short_description": "Deep purple-to-cyan aurora on black with film grain and heavy vignette.",
+    "long_description": "Ethereal aurora bands sweep through deep space in vivid purple and electric cyan. Film grain adds analog warmth while a strong vignette draws the eye inward. An immersive cinematic hero background for creative agencies and portfolio showcases.",
+    "scene_data": {
+      "backgroundType": "aurora",
+      "gradientConfig": {
+        "colors": [
+          "#a855f7",
+          "#06b6d4",
+          "#71ECFF",
+          "#8b5cf6"
+        ],
+        "numColors": 4,
+        "type": "radial",
+        "startPos": {
+          "x": 50,
+          "y": 40
+        },
+        "endPos": {
+          "x": 100,
+          "y": 100
+        },
+        "colorStops": [
+          0,
+          25,
+          55,
+          100
+        ],
+        "waveIntensity": 0.35,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.95,
+        "wave1Speed": 0.1,
+        "wave1Direction": 1,
+        "wave2Speed": 0.07,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "hueStart": 130,
+        "hueEnd": 200,
+        "maxTTL": 50,
+        "minTTL": 190,
+        "maxWidth": 10,
+        "minWidth": 95,
+        "lineCount": 4,
+        "maxHeight": 50,
+        "minHeight": 900,
+        "blurAmount": 18,
+        "decaySpeed": 0.95,
+        "backgroundColor": "#000000",
+        "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5,
+        "minRadius": 40,
+        "maxRadius": 120,
+        "speed": 0.5,
+        "orbitRadius": 150,
+        "blurAmount": 12,
+        "threshold": 180,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.95,
+        "useGradientColors": true,
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926"
+        ],
+        "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#000000",
+        "colors": [
+          "#a855f7",
+          "#06b6d4",
+          "#71ECFF",
+          "#8b5cf6"
+        ],
+        "speed": 1,
+        "intensity": 1,
+        "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": [
+          "#a855f7",
+          "#06b6d4",
+          "#71ECFF",
+          "#8b5cf6"
+        ],
+        "waveHeight": 0.05,
+        "waveFrequency": 2,
+        "rotation": 0,
+        "speed": 0.5,
+        "blur": 40,
+        "layers": 5,
+        "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#000000",
+        "ribbonCount": 5,
+        "speed": 0.5,
+        "amplitude": 1,
+        "spread": 0.5,
+        "rotation": -30,
+        "thickness": 1,
+        "taper": -0.3,
+        "noise": 0.5,
+        "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#e8f4fc",
+        "lineCount": 120,
+        "radiusMin": 0.1,
+        "radiusMax": 0.8,
+        "speed": 0.3,
+        "thickness": 1.5,
+        "dotSize": 3,
+        "spread": 0.3,
+        "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fef6f9",
+        "particleCount": 800,
+        "ringRadius": 0.35,
+        "ringWidth": 0.15,
+        "speed": 0.5,
+        "particleSize": 3,
+        "dispersion": 0.3,
+        "rotationSpeed": 0.2,
+        "tiltX": 0,
+        "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#f0f0f0",
+        "shape": "circle",
+        "startScale": 1000,
+        "endScale": 2000,
+        "sizeCycles": 1,
+        "gap": 30,
+        "rotationOffset": 15,
+        "speed": 0.3,
+        "pathComplexity": 4,
+        "opacity": 0.8,
+        "blendMode": "normal",
+        "trailCount": 3,
+        "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false,
+        "icon": "Star",
+        "rowGap": 60,
+        "colGap": 60,
+        "size": 24,
+        "opacity": 0.15,
+        "rotation": 0,
+        "color": "#a855f7",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 20,
+        "texture": "grain",
+        "textureSize": 25,
+        "textureOpacity": 0.4,
+        "textureBlendMode": "overlay",
+        "colorMap": "none",
+        "vignetteIntensity": 0.4,
+        "saturation": 115,
+        "contrast": 110,
+        "brightness": 95,
+        "flutedGlass": {
+          "enabled": false,
+          "segments": 80,
+          "rotation": 0,
+          "motionValue": 0.5,
+          "motionSpeed": 0.5,
+          "overlayOpacity": 0,
+          "distortionStrength": 0.02,
+          "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        {
+          "id": 1,
+          "text": "POLARIS",
+          "size": 130,
+          "weight": 200,
+          "spacing": 0.15,
+          "font": "sans-serif",
+          "italic": false
+        },
+        {
+          "id": 2,
+          "text": "creative agency",
+          "size": 16,
+          "weight": 300,
+          "spacing": 0.3,
+          "font": "sans-serif",
+          "italic": false
+        }
+      ],
+      "textGap": 16,
+      "textConfig": {
+        "enabled": true,
+        "color": "#ffffff",
+        "opacity": 0.85
+      },
+      "colorPalette": {
+        "purple": {
+          "50": "#faf5ff",
+          "100": "#f3e8ff",
+          "200": "#e9d5ff",
+          "300": "#d8b4fe",
+          "400": "#c084fc",
+          "500": "#a855f7",
+          "600": "#9333ea",
+          "700": "#7e22ce",
+          "800": "#6b21a8",
+          "900": "#581c87",
+          "950": "#3b0764"
+        },
+        "black": "#000",
+        "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Waves Teal Ocean Motion Header",
+    "short_description": "Layered ocean waves in deep teal and aqua with smooth motion.",
+    "long_description": "Multiple wave layers in teal, aqua, and deep sky blue ripple with organic fluidity. The gentle motion and marine palette evoke calm seas and coastal energy. Ideal for travel brands, marine industry, and wellness platforms.",
+    "scene_data": {
+      "backgroundType": "waves",
+      "gradientConfig": {
+        "colors": [
+          "#0ea5e9",
+          "#06b6d4",
+          "#14b8a6",
+          "#0284c7"
+        ],
+        "numColors": 4,
+        "type": "linear",
+        "startPos": {
+          "x": 0,
+          "y": 30
+        },
+        "endPos": {
+          "x": 100,
+          "y": 70
+        },
+        "colorStops": [
+          0,
+          30,
+          60,
+          100
+        ],
+        "waveIntensity": 0.2,
+        "mouseInfluence": 0.25,
+        "decaySpeed": 0.96,
+        "wave1Speed": 0.1,
+        "wave1Direction": 1,
+        "wave2Speed": 0.06,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10,
+        "maxWidth": 30,
+        "minHeight": 200,
+        "maxHeight": 600,
+        "minTTL": 100,
+        "maxTTL": 300,
+        "blurAmount": 13,
+        "hueStart": 175,
+        "hueEnd": 200,
+        "backgroundColor": "#0ea5e9",
+        "lineCount": 0,
+        "decaySpeed": 0.95,
+        "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5,
+        "minRadius": 40,
+        "maxRadius": 120,
+        "speed": 0.5,
+        "orbitRadius": 150,
+        "blurAmount": 12,
+        "threshold": 180,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.95,
+        "useGradientColors": true,
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926"
+        ],
+        "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#0ea5e9",
+        "colors": [
+          "#0ea5e9",
+          "#06b6d4",
+          "#14b8a6",
+          "#0284c7"
+        ],
+        "speed": 1,
+        "intensity": 1,
+        "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": [
+          "#0ea5e9",
+          "#06b6d4",
+          "#14b8a6",
+          "#0284c7"
+        ],
+        "waveHeight": 0.06,
+        "waveFrequency": 1.8,
+        "rotation": 5,
+        "speed": 0.35,
+        "blur": 45,
+        "layers": 6,
+        "phaseOffset": 0.2
+      },
+      "ribbonConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#0ea5e9",
+        "ribbonCount": 5,
+        "speed": 0.5,
+        "amplitude": 1,
+        "spread": 0.5,
+        "rotation": -30,
+        "thickness": 1,
+        "taper": -0.3,
+        "noise": 0.5,
+        "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#e8f4fc",
+        "lineCount": 120,
+        "radiusMin": 0.1,
+        "radiusMax": 0.8,
+        "speed": 0.3,
+        "thickness": 1.5,
+        "dotSize": 3,
+        "spread": 0.3,
+        "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fef6f9",
+        "particleCount": 800,
+        "ringRadius": 0.35,
+        "ringWidth": 0.15,
+        "speed": 0.5,
+        "particleSize": 3,
+        "dispersion": 0.3,
+        "rotationSpeed": 0.2,
+        "tiltX": 0,
+        "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#f0f0f0",
+        "shape": "circle",
+        "startScale": 1000,
+        "endScale": 2000,
+        "sizeCycles": 1,
+        "gap": 30,
+        "rotationOffset": 15,
+        "speed": 0.3,
+        "pathComplexity": 4,
+        "opacity": 0.8,
+        "blendMode": "normal",
+        "trailCount": 3,
+        "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false,
+        "icon": "Star",
+        "rowGap": 60,
+        "colGap": 60,
+        "size": 24,
+        "opacity": 0.15,
+        "rotation": 0,
+        "color": "#06b6d4",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 5,
+        "texture": "none",
+        "textureSize": 30,
+        "textureOpacity": 0,
+        "textureBlendMode": "overlay",
+        "colorMap": "none",
+        "vignetteIntensity": 0.2,
+        "saturation": 105,
+        "contrast": 100,
+        "brightness": 100,
+        "flutedGlass": {
+          "enabled": false,
+          "segments": 80,
+          "rotation": 0,
+          "motionValue": 0.5,
+          "motionSpeed": 0.5,
+          "overlayOpacity": 0,
+          "distortionStrength": 0.02,
+          "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        {
+          "id": 1,
+          "text": "Oceana",
+          "size": 110,
+          "weight": 400,
+          "spacing": -0.01,
+          "font": "serif",
+          "italic": true
+        },
+        {
+          "id": 2,
+          "text": "COASTAL RETREATS",
+          "size": 15,
+          "weight": 400,
+          "spacing": 0.35,
+          "font": "sans-serif",
+          "italic": false
+        }
+      ],
+      "textGap": 14,
+      "textConfig": {
+        "enabled": true,
+        "color": "#ffffff",
+        "opacity": 0.9
+      },
+      "colorPalette": {
+        "cyan": {
+          "50": "#ecfeff",
+          "100": "#cffafe",
+          "200": "#a5f3fc",
+          "300": "#67e8f9",
+          "400": "#22d3ee",
+          "500": "#06b6d4",
+          "600": "#0891b2",
+          "700": "#0e7490",
+          "800": "#155e75",
+          "900": "#164e63",
+          "950": "#083344"
+        },
+        "black": "#000",
+        "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Dandelion Warm Gentle Wellness",
+    "short_description": "Soft dandelion wisps on a warm cream background with dot texture.",
+    "long_description": "Delicate dandelion tendrils float gently across a warm cream canvas with a subtle dot overlay. The warm amber and golden palette radiates calm and organic beauty. Built for wellness brands, yoga studios, and lifestyle blogs.",
+    "scene_data": {
+      "backgroundType": "dandelion",
+      "gradientConfig": {
+        "colors": [
+          "#f59e0b",
+          "#fbbf24",
+          "#fcd34d",
+          "#d97706"
+        ],
+        "numColors": 4,
+        "type": "linear",
+        "startPos": {
+          "x": 30,
+          "y": 0
+        },
+        "endPos": {
+          "x": 70,
+          "y": 100
+        },
+        "colorStops": [
+          0,
+          30,
+          60,
+          100
+        ],
+        "waveIntensity": 0.1,
+        "mouseInfluence": 0.15,
+        "decaySpeed": 0.96,
+        "wave1Speed": 0.06,
+        "wave1Direction": 1,
+        "wave2Speed": 0.04,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10,
+        "maxWidth": 30,
+        "minHeight": 200,
+        "maxHeight": 600,
+        "minTTL": 100,
+        "maxTTL": 300,
+        "blurAmount": 13,
+        "hueStart": 35,
+        "hueEnd": 50,
+        "backgroundColor": "#fef3c7",
+        "lineCount": 0,
+        "decaySpeed": 0.95,
+        "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5,
+        "minRadius": 40,
+        "maxRadius": 120,
+        "speed": 0.5,
+        "orbitRadius": 150,
+        "blurAmount": 12,
+        "threshold": 180,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.95,
+        "useGradientColors": true,
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926"
+        ],
+        "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fef3c7",
+        "colors": [
+          "#f59e0b",
+          "#fbbf24",
+          "#fcd34d",
+          "#d97706"
+        ],
+        "speed": 1,
+        "intensity": 1,
+        "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": [
+          "#f59e0b",
+          "#fbbf24",
+          "#fcd34d",
+          "#d97706"
+        ],
+        "waveHeight": 0.05,
+        "waveFrequency": 2,
+        "rotation": 0,
+        "speed": 0.5,
+        "blur": 40,
+        "layers": 5,
+        "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fef3c7",
+        "ribbonCount": 5,
+        "speed": 0.5,
+        "amplitude": 1,
+        "spread": 0.5,
+        "rotation": -30,
+        "thickness": 1,
+        "taper": -0.3,
+        "noise": 0.5,
+        "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fef3c7",
+        "lineCount": 100,
+        "radiusMin": 0.12,
+        "radiusMax": 0.75,
+        "speed": 0.25,
+        "thickness": 1.2,
+        "dotSize": 2.5,
+        "spread": 0.35,
+        "centerY": 0.8
+      },
+      "particleRingConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fef6f9",
+        "particleCount": 800,
+        "ringRadius": 0.35,
+        "ringWidth": 0.15,
+        "speed": 0.5,
+        "particleSize": 3,
+        "dispersion": 0.3,
+        "rotationSpeed": 0.2,
+        "tiltX": 0,
+        "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#f0f0f0",
+        "shape": "circle",
+        "startScale": 1000,
+        "endScale": 2000,
+        "sizeCycles": 1,
+        "gap": 30,
+        "rotationOffset": 15,
+        "speed": 0.3,
+        "pathComplexity": 4,
+        "opacity": 0.8,
+        "blendMode": "normal",
+        "trailCount": 3,
+        "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false,
+        "icon": "Star",
+        "rowGap": 60,
+        "colGap": 60,
+        "size": 24,
+        "opacity": 0.15,
+        "rotation": 0,
+        "color": "#f59e0b",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 3,
+        "texture": "dots",
+        "textureSize": 30,
+        "textureOpacity": 0.25,
+        "textureBlendMode": "overlay",
+        "colorMap": "none",
+        "vignetteIntensity": 0,
+        "saturation": 90,
+        "contrast": 100,
+        "brightness": 105,
+        "flutedGlass": {
+          "enabled": false,
+          "segments": 80,
+          "rotation": 0,
+          "motionValue": 0.5,
+          "motionSpeed": 0.5,
+          "overlayOpacity": 0,
+          "distortionStrength": 0.02,
+          "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        {
+          "id": 1,
+          "text": "Solace",
+          "size": 100,
+          "weight": 300,
+          "spacing": 0.02,
+          "font": "serif",
+          "italic": true
+        },
+        {
+          "id": 2,
+          "text": "WELLNESS COLLECTIVE",
+          "size": 13,
+          "weight": 400,
+          "spacing": 0.35,
+          "font": "sans-serif",
+          "italic": false
+        }
+      ],
+      "textGap": 12,
+      "textConfig": {
+        "enabled": true,
+        "color": "#78350f",
+        "opacity": 0.88
+      },
+      "colorPalette": {
+        "amber": {
+          "50": "#fffbeb",
+          "100": "#fef3c7",
+          "200": "#fde68a",
+          "300": "#fcd34d",
+          "400": "#fbbf24",
+          "500": "#f59e0b",
+          "600": "#d97706",
+          "700": "#b45309",
+          "800": "#92400e",
+          "900": "#78350f",
+          "950": "#451a03"
+        },
+        "black": "#000",
+        "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Simple Slate Minimal Gradient",
+    "short_description": "A clean slate gradient background with no texture or effects.",
+    "long_description": "A pure, distraction-free gradient from near-white to cool slate gray. Designed for maximum text readability and accessibility. Ideal for documentation sites, text-heavy pages, and content-first interfaces.",
+    "scene_data": {
+      "backgroundType": "simple",
+      "gradientConfig": {
+        "colors": [
+          "#f8fafc",
+          "#e2e8f0",
+          "#94a3b8",
+          "#64748b"
+        ],
+        "numColors": 4,
+        "type": "linear",
+        "startPos": {
+          "x": 0,
+          "y": 0
+        },
+        "endPos": {
+          "x": 100,
+          "y": 100
+        },
+        "colorStops": [
+          0,
+          30,
+          60,
+          100
+        ],
+        "waveIntensity": 0.08,
+        "mouseInfluence": 0.1,
+        "decaySpeed": 0.97,
+        "wave1Speed": 0.05,
+        "wave1Direction": 1,
+        "wave2Speed": 0.03,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10,
+        "maxWidth": 30,
+        "minHeight": 200,
+        "maxHeight": 600,
+        "minTTL": 100,
+        "maxTTL": 300,
+        "blurAmount": 13,
+        "hueStart": 210,
+        "hueEnd": 220,
+        "backgroundColor": "#f8fafc",
+        "lineCount": 0,
+        "decaySpeed": 0.95,
+        "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5,
+        "minRadius": 40,
+        "maxRadius": 120,
+        "speed": 0.5,
+        "orbitRadius": 150,
+        "blurAmount": 12,
+        "threshold": 180,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.95,
+        "useGradientColors": true,
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926"
+        ],
+        "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#f8fafc",
+        "colors": [
+          "#f8fafc",
+          "#e2e8f0",
+          "#94a3b8",
+          "#64748b"
+        ],
+        "speed": 1,
+        "intensity": 1,
+        "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": [
+          "#f8fafc",
+          "#e2e8f0",
+          "#94a3b8",
+          "#64748b"
+        ],
+        "waveHeight": 0.05,
+        "waveFrequency": 2,
+        "rotation": 0,
+        "speed": 0.5,
+        "blur": 40,
+        "layers": 5,
+        "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#f8fafc",
+        "ribbonCount": 5,
+        "speed": 0.5,
+        "amplitude": 1,
+        "spread": 0.5,
+        "rotation": -30,
+        "thickness": 1,
+        "taper": -0.3,
+        "noise": 0.5,
+        "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#e8f4fc",
+        "lineCount": 120,
+        "radiusMin": 0.1,
+        "radiusMax": 0.8,
+        "speed": 0.3,
+        "thickness": 1.5,
+        "dotSize": 3,
+        "spread": 0.3,
+        "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fef6f9",
+        "particleCount": 800,
+        "ringRadius": 0.35,
+        "ringWidth": 0.15,
+        "speed": 0.5,
+        "particleSize": 3,
+        "dispersion": 0.3,
+        "rotationSpeed": 0.2,
+        "tiltX": 0,
+        "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#f0f0f0",
+        "shape": "circle",
+        "startScale": 1000,
+        "endScale": 2000,
+        "sizeCycles": 1,
+        "gap": 30,
+        "rotationOffset": 15,
+        "speed": 0.3,
+        "pathComplexity": 4,
+        "opacity": 0.8,
+        "blendMode": "normal",
+        "trailCount": 3,
+        "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false,
+        "icon": "Star",
+        "rowGap": 60,
+        "colGap": 60,
+        "size": 24,
+        "opacity": 0.15,
+        "rotation": 0,
+        "color": "#94a3b8",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 3,
+        "texture": "none",
+        "textureSize": 30,
+        "textureOpacity": 0,
+        "textureBlendMode": "overlay",
+        "colorMap": "none",
+        "vignetteIntensity": 0,
+        "saturation": 100,
+        "contrast": 100,
+        "brightness": 100,
+        "flutedGlass": {
+          "enabled": false,
+          "segments": 80,
+          "rotation": 0,
+          "motionValue": 0.5,
+          "motionSpeed": 0.5,
+          "overlayOpacity": 0,
+          "distortionStrength": 0.02,
+          "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        {
+          "id": 1,
+          "text": "Clarity",
+          "size": 96,
+          "weight": 200,
+          "spacing": 0.05,
+          "font": "sans-serif",
+          "italic": false
+        },
+        {
+          "id": 2,
+          "text": "DOCUMENTATION",
+          "size": 14,
+          "weight": 500,
+          "spacing": 0.4,
+          "font": "sans-serif",
+          "italic": false
+        }
+      ],
+      "textGap": 12,
+      "textConfig": {
+        "enabled": true,
+        "color": "#0f172a",
+        "opacity": 0.9
+      },
+      "colorPalette": {
+        "slate": {
+          "50": "#f8fafc",
+          "100": "#f1f5f9",
+          "200": "#e2e8f0",
+          "300": "#cbd5e1",
+          "400": "#94a3b8",
+          "500": "#64748b",
+          "600": "#475569",
+          "700": "#334155",
+          "800": "#1e293b",
+          "900": "#0f172a",
+          "950": "#020617"
+        },
+        "black": "#000",
+        "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Particle Ring Neon Cyberpunk Orbit",
+    "short_description": "Neon pink and cyan particles orbiting in cyberpunk space.",
+    "long_description": "A dense ring of neon-lit particles orbits through dark space with diagonal texture and cyberpunk color mapping. Pink, cyan, and electric blue create a high-energy futuristic atmosphere. Perfect for gaming brands, startup launches, and sci-fi interfaces.",
+    "scene_data": {
+      "backgroundType": "particleRing",
+      "gradientConfig": {
+        "colors": [
+          "#ec4899",
+          "#71ECFF",
+          "#3b82f6",
+          "#a855f7"
+        ],
+        "numColors": 4,
+        "type": "radial",
+        "startPos": {
+          "x": 50,
+          "y": 50
+        },
+        "endPos": {
+          "x": 100,
+          "y": 100
+        },
+        "colorStops": [
+          0,
+          30,
+          60,
+          100
+        ],
+        "waveIntensity": 0.2,
+        "mouseInfluence": 0.25,
+        "decaySpeed": 0.96,
+        "wave1Speed": 0.1,
+        "wave1Direction": 1,
+        "wave2Speed": 0.06,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10,
+        "maxWidth": 30,
+        "minHeight": 200,
+        "maxHeight": 600,
+        "minTTL": 100,
+        "maxTTL": 300,
+        "blurAmount": 13,
+        "hueStart": 300,
+        "hueEnd": 340,
+        "backgroundColor": "#000000",
+        "lineCount": 0,
+        "decaySpeed": 0.95,
+        "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5,
+        "minRadius": 40,
+        "maxRadius": 120,
+        "speed": 0.5,
+        "orbitRadius": 150,
+        "blurAmount": 12,
+        "threshold": 180,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.95,
+        "useGradientColors": true,
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926"
+        ],
+        "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#000000",
+        "colors": [
+          "#ec4899",
+          "#71ECFF",
+          "#3b82f6",
+          "#a855f7"
+        ],
+        "speed": 1,
+        "intensity": 1,
+        "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": [
+          "#ec4899",
+          "#71ECFF",
+          "#3b82f6",
+          "#a855f7"
+        ],
+        "waveHeight": 0.05,
+        "waveFrequency": 2,
+        "rotation": 0,
+        "speed": 0.5,
+        "blur": 40,
+        "layers": 5,
+        "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#000000",
+        "ribbonCount": 5,
+        "speed": 0.5,
+        "amplitude": 1,
+        "spread": 0.5,
+        "rotation": -30,
+        "thickness": 1,
+        "taper": -0.3,
+        "noise": 0.5,
+        "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#e8f4fc",
+        "lineCount": 120,
+        "radiusMin": 0.1,
+        "radiusMax": 0.8,
+        "speed": 0.3,
+        "thickness": 1.5,
+        "dotSize": 3,
+        "spread": 0.3,
+        "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#000000",
+        "particleCount": 1200,
+        "ringRadius": 0.38,
+        "ringWidth": 0.12,
+        "speed": 0.4,
+        "particleSize": 2.5,
+        "dispersion": 0.2,
+        "rotationSpeed": 0.15,
+        "tiltX": 30,
+        "tiltZ": -10
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#f0f0f0",
+        "shape": "circle",
+        "startScale": 1000,
+        "endScale": 2000,
+        "sizeCycles": 1,
+        "gap": 30,
+        "rotationOffset": 15,
+        "speed": 0.3,
+        "pathComplexity": 4,
+        "opacity": 0.8,
+        "blendMode": "normal",
+        "trailCount": 3,
+        "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false,
+        "icon": "Star",
+        "rowGap": 60,
+        "colGap": 60,
+        "size": 24,
+        "opacity": 0.15,
+        "rotation": 0,
+        "color": "#ec4899",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 7,
+        "texture": "diagonal",
+        "textureSize": 35,
+        "textureOpacity": 0.3,
+        "textureBlendMode": "overlay",
+        "colorMap": "cyberpunk",
+        "vignetteIntensity": 0.2,
+        "saturation": 120,
+        "contrast": 110,
+        "brightness": 100,
+        "flutedGlass": {
+          "enabled": false,
+          "segments": 80,
+          "rotation": 0,
+          "motionValue": 0.5,
+          "motionSpeed": 0.5,
+          "overlayOpacity": 0,
+          "distortionStrength": 0.02,
+          "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        {
+          "id": 1,
+          "text": "VORTEX",
+          "size": 125,
+          "weight": 900,
+          "spacing": 0.06,
+          "font": "sans-serif",
+          "italic": false
+        },
+        {
+          "id": 2,
+          "text": "game studio",
+          "size": 16,
+          "weight": 300,
+          "spacing": 0.3,
+          "font": "sans-serif",
+          "italic": false
+        }
+      ],
+      "textGap": 14,
+      "textConfig": {
+        "enabled": true,
+        "color": "#71ECFF",
+        "opacity": 0.9
+      },
+      "colorPalette": {
+        "rose": {
+          "50": "#fff1f2",
+          "100": "#ffe4e6",
+          "200": "#fecdd3",
+          "300": "#fda4af",
+          "400": "#fb7185",
+          "500": "#f43f5e",
+          "600": "#e11d48",
+          "700": "#be123c",
+          "800": "#9f1239",
+          "900": "#881337",
+          "950": "#4c0519"
+        },
+        "black": "#000",
+        "white": "#fff"
       },
       "selectedProjectIds": []
     }
