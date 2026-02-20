@@ -83,7 +83,7 @@ export const NumberInput = memo(({ value, onValueChange, min = 0, max = 100, ste
           min={min}
           max={max}
           step={step}
-          className={cn("h-10 text-center", className)}
+          className={cn("h-10 w-20 text-center", className)}
         />
         <Button
           variant="outline"

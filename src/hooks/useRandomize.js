@@ -113,7 +113,7 @@ export function useRandomize() {
     setTextSections(randomizedSections)
 
     // Randomize text gap
-    setTextGap(Math.floor(randomInRange(10, 60)))
+    setTextGap(Math.floor(randomInRange(1, 10)))
 
     // Randomize effects
     const textures = ['none', 'grain', 'scanlines', 'dots', 'grid', 'diagonal']
@@ -133,7 +133,7 @@ export function useRandomize() {
         motionValue: Math.floor(randomInRange(0, 1)),
         motionSpeed: Math.floor(randomInRange(0, 2)),
         overlayOpacity: Math.floor(randomInRange(0, 50)),
-        distortionStrength: Math.floor(randomInRange(0.005, 0.08)),
+        distortionStrength: randomInRange(0.005, 0.08),
         waveFrequency: Math.floor(randomInRange(0.5, 4)),
       },
     })
@@ -153,9 +153,16 @@ export function useRandomize() {
     })
 
     // Randomize dandelion config
+    const dandelionRadialCount = Math.floor(randomInRange(2, 4))
+    const dandelionRadialColors = Array.from({ length: dandelionRadialCount }, () => pickOne(colors))
+    const dandelionRadialStops = dandelionRadialColors.map((_, i) => Math.round((i / (dandelionRadialCount - 1)) * 100))
     setDandelionConfig({
       ...dandelionConfig,
       lineCount: Math.floor(randomInRange(60, 200)),
+      radialGradientColors: dandelionRadialColors,
+      radialGradientStops: dandelionRadialStops,
+      gradientEndX: Math.floor(randomInRange(-200, 200)),
+      gradientEndY: Math.floor(randomInRange(-200, 200)),
       radiusMin: Math.round(randomInRange(0.05, 0.2) * 100) / 100,
       radiusMax: Math.round(randomInRange(0.3, 0.6) * 100) / 100,
       speed: Math.round(randomInRange(0.1, 1) * 10) / 10,
@@ -166,9 +173,16 @@ export function useRandomize() {
     })
 
     // Randomize particleRing config
+    const ringRadialCount = Math.floor(randomInRange(2, 4))
+    const ringRadialColors = Array.from({ length: ringRadialCount }, () => pickOne(colors))
+    const ringRadialStops = ringRadialColors.map((_, i) => Math.round((i / (ringRadialCount - 1)) * 100))
     setParticleRingConfig({
       ...particleRingConfig,
       particleCount: Math.floor(randomInRange(300, 1500)),
+      radialGradientColors: ringRadialColors,
+      radialGradientStops: ringRadialStops,
+      gradientEndX: Math.floor(randomInRange(-200, 200)),
+      gradientEndY: Math.floor(randomInRange(-200, 200)),
       ringRadius: Math.round(randomInRange(0.2, 0.5) * 100) / 100,
       ringWidth: Math.round(randomInRange(0.05, 0.3) * 100) / 100,
       speed: Math.round(randomInRange(0.1, 1) * 10) / 10,

@@ -143,7 +143,12 @@ export const TextPanel = ({
                 <ControlGroup label="Font">
                   <Select
                     value={section.font || 'sans-serif'}
-                    onValueChange={(value) => updateTextSection(section.id, 'font', value)}
+                    onValueChange={(value) => {
+                      updateTextSection(section.id, 'font', value)
+                      if (value !== 'serif' && value !== 'scribble') {
+                        updateTextSection(section.id, 'italic', false)
+                      }
+                    }}
                   >
                     <SelectTrigger className="h-9">
                       <SelectValue />
@@ -191,7 +196,7 @@ export const TextPanel = ({
                 <ControlGroup label="Spacing (in em)">
                   <NumberInput
                     value={[section.spacing]}
-                    onValueChange={([val]) => updateTextSection(section.id, 'spacing', val)}
+                    onValueChange={([val]) => updateTextSection(section.id, 'spacing', parseFloat(val.toFixed(3)))}
                     min={-0.1}
                     max={0.5}
                     step={0.01}

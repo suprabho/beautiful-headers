@@ -13,13 +13,14 @@
 - **Notes:** ...
 -->
 
-[-] Add Background Meta in SceneViewPage
-[] End X and Y > Dandelion and Particle Ring > Background Colors
-[] Text Spacing - limit to 3 decimal points
-[] Italics stays toggled on when font is changed.
-[] Distortion in flutted glass not randomizing
-[] Dandelion and Particle Ring > Background Colors not randomizing
-[] Make NumberInputs same width in Mobile Control Panel
-[] Make the bottom sheet repect keyboeard on mobile
 
 ## Closed
+
+[x] Add Background Meta in SceneViewPage
+[x] End X and Y > Dandelion and Particle Ring > Background Colors
+[x] Text Spacing - limit to 3 decimal points
+[x] Italics stays toggled on when font is changed.
+[x] Distortion in flutted glass not randomizing
+[x] Dandelion and Particle Ring > Background Colors not randomizing
+[x] Make NumberInputs same width in Mobile Control Panel
+[x] Make the bottom sheet repect keyboeard on mobile

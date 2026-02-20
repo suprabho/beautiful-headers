@@ -23,6 +23,7 @@ import {
 } from './index'
 import { InputPanel } from './InputControls'
 import { MobileDialogContent, getDialogTitle } from './MobileDialogContent'
+import { useKeyboardOffset } from '../../hooks/useKeyboardOffset'
 
 const tabs = [
   { id: 'gradient', label: 'Background', icon: PaintBrushBroad },
@@ -57,6 +58,7 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
   const parsedPalette = colorPalette ? parsePaletteJson(colorPalette) : null
 
   const { activeDialog, openDialog, applyDialog, backDialog, resetDialog } = useMobileDialogs()
+  const keyboardOffset = useKeyboardOffset()
 
   const addTextSection = () => {
     const newId = Math.max(...textSections.map(s => s.id), 0) + 1
@@ -94,7 +96,7 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
       </div>
 
       {/* Mobile Bottom Panel */}
-      <div className={cn("fixed left-0 right-0 bottom-0 z-50 bg-card/50 backdrop-blur-xl border-t border-border", "transition-transform duration-300 ease-out")}>
+      <div className={cn("fixed left-0 right-0 bottom-0 z-50 bg-card/50 backdrop-blur-xl border-t border-border", "transition-all duration-300 ease-out")} style={keyboardOffset ? { bottom: keyboardOffset } : undefined}>
         <div className="flex items-center gap-1 p-1 border-b border-border/50 safe-area-bottom">
           {tabs.map(tab => (
             <Button
@@ -290,7 +292,7 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
 
       {/* Mobile Dialog */}
       <Dialog open={!!activeDialog} onOpenChange={(open) => !open && backDialog()}>
-        <DialogContent className="max-h-[80vh]">
+        <DialogContent className="max-h-[80vh]" style={keyboardOffset ? { bottom: keyboardOffset } : undefined}>
           <DialogHeader>
             <DialogTitle>{getDialogTitle(activeDialog, textSections)}</DialogTitle>
             <DialogDescription className="sr-only">
