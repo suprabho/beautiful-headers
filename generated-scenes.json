@@ -3493,5 +3493,569 @@
       },
       "selectedProjectIds": []
     }
+  },
+  {
+    "title": "Spring Wedding Ribbon – Blush Petal Cascade",
+    "short_description": "Soft blush and peach ribbons flowing like bridal silk in warm spring light.",
+    "long_description": "Delicate ribbons in blush pink, warm peach, and champagne gold cascade across a creamy ivory backdrop. The gentle flowing motion evokes bridal veils caught in a spring breeze. Perfect for wedding invitations, engagement announcements, and bridal boutique sites.",
+    "scene_data": {
+      "backgroundType": "ribbon",
+      "gradientConfig": {
+        "colors": ["#fce4ec", "#f8bbd0", "#ffccbc", "#fff8e1"],
+        "numColors": 4,
+        "type": "linear",
+        "startPos": { "x": 10, "y": 0 },
+        "endPos": { "x": 90, "y": 100 },
+        "colorStops": [0, 30, 60, 100],
+        "waveIntensity": 0.1,
+        "mouseInfluence": 0.2,
+        "decaySpeed": 0.97,
+        "wave1Speed": 0.05,
+        "wave1Direction": 1,
+        "wave2Speed": 0.03,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10, "maxWidth": 30, "minHeight": 200, "maxHeight": 600,
+        "minTTL": 100, "maxTTL": 300, "blurAmount": 13,
+        "hueStart": 340, "hueEnd": 20, "backgroundColor": "#fff8f0",
+        "lineCount": 0, "decaySpeed": 0.95, "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5, "minRadius": 40, "maxRadius": 120, "speed": 0.5,
+        "orbitRadius": 150, "blurAmount": 12, "threshold": 180,
+        "mouseInfluence": 0.3, "decaySpeed": 0.95, "useGradientColors": true,
+        "colors": ["#fce4ec", "#f8bbd0", "#ffccbc"],
+        "backgroundColor": "#fff8f0"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fff8f0",
+        "colors": ["#fce4ec", "#f8bbd0", "#ffccbc", "#fff8e1"],
+        "speed": 1, "intensity": 1, "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": ["#fce4ec", "#f8bbd0", "#ffccbc", "#fff8e1"],
+        "waveHeight": 0.05, "waveFrequency": 2, "rotation": 0,
+        "speed": 0.5, "blur": 40, "layers": 5, "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fff8f0",
+        "ribbonCount": 7,
+        "speed": 0.2,
+        "amplitude": 1.6,
+        "spread": 0.7,
+        "rotation": -10,
+        "thickness": 1.8,
+        "taper": -0.6,
+        "noise": 0.2,
+        "opacity": 0.65
+      },
+      "dandelionConfig": {
+        "useGradientColors": true, "backgroundColor": "#fff8f0",
+        "lineCount": 120, "radiusMin": 0.1, "radiusMax": 0.8,
+        "speed": 0.3, "thickness": 1.5, "dotSize": 3, "spread": 0.3, "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true, "backgroundColor": "#fff8f0",
+        "particleCount": 800, "ringRadius": 0.35, "ringWidth": 0.15,
+        "speed": 0.5, "particleSize": 3, "dispersion": 0.3,
+        "rotationSpeed": 0.2, "tiltX": 0, "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true, "backgroundColor": "#fff8f0",
+        "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1,
+        "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4,
+        "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60,
+        "size": 24, "opacity": 0.15, "rotation": 0, "color": "#f8bbd0",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 0,
+        "texture": "none",
+        "textureSize": 30,
+        "textureOpacity": 0,
+        "textureBlendMode": "overlay",
+        "colorMap": "none",
+        "vignetteIntensity": 8,
+        "saturation": 110,
+        "contrast": 96,
+        "brightness": 108,
+        "flutedGlass": {
+          "enabled": false, "segments": 80, "rotation": 0,
+          "motionValue": 0.5, "motionSpeed": 0.5, "overlayOpacity": 0,
+          "distortionStrength": 0.02, "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        { "id": 1, "text": "Emma & James", "size": 90, "weight": 200, "spacing": 0.05, "font": "serif", "italic": true },
+        { "id": 2, "text": "JUNE 14, 2026", "size": 16, "weight": 400, "spacing": 0.45, "font": "sans-serif", "italic": false }
+      ],
+      "textGap": 18,
+      "textConfig": { "enabled": true, "color": "#8e4162", "opacity": 0.8 },
+      "colorPalette": {
+        "pink": {
+          "50": "#fdf2f8", "100": "#fce7f3", "200": "#fbcfe8", "300": "#f9a8d4",
+          "400": "#f472b6", "500": "#ec4899", "600": "#db2777", "700": "#be185d",
+          "800": "#9d174d", "900": "#831843", "950": "#500724"
+        },
+        "black": "#000", "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Spring Wedding Fluid – Golden Hour Garden",
+    "short_description": "Warm golden and sage fluid swirls evoking a sunlit garden reception.",
+    "long_description": "Soft golden amber and sage green fluid layers blend and drift like afternoon light filtering through a garden canopy. The warm, luminous tones capture the magic of a golden hour outdoor ceremony. Ideal for rustic weddings, garden venues, and floral styling brands.",
+    "scene_data": {
+      "backgroundType": "fluid",
+      "gradientConfig": {
+        "colors": ["#fbbf24", "#fde68a", "#a3be8c", "#fef9c3"],
+        "numColors": 4,
+        "type": "linear",
+        "startPos": { "x": 0, "y": 20 },
+        "endPos": { "x": 100, "y": 80 },
+        "colorStops": [0, 30, 60, 100],
+        "waveIntensity": 0.18,
+        "mouseInfluence": 0.25,
+        "decaySpeed": 0.97,
+        "wave1Speed": 0.08,
+        "wave1Direction": 1,
+        "wave2Speed": 0.05,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10, "maxWidth": 30, "minHeight": 200, "maxHeight": 600,
+        "minTTL": 100, "maxTTL": 300, "blurAmount": 13,
+        "hueStart": 45, "hueEnd": 90, "backgroundColor": "#fef9c3",
+        "lineCount": 0, "decaySpeed": 0.95, "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5, "minRadius": 40, "maxRadius": 120, "speed": 0.5,
+        "orbitRadius": 150, "blurAmount": 12, "threshold": 180,
+        "mouseInfluence": 0.3, "decaySpeed": 0.95, "useGradientColors": true,
+        "colors": ["#fbbf24", "#fde68a", "#a3be8c"],
+        "backgroundColor": "#fef9c3"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fef9c3",
+        "colors": ["#fbbf24", "#fde68a", "#a3be8c", "#fef9c3"],
+        "speed": 0.6,
+        "intensity": 1.8,
+        "blurAmount": 40
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": ["#fbbf24", "#fde68a", "#a3be8c", "#fef9c3"],
+        "waveHeight": 0.05, "waveFrequency": 2, "rotation": 0,
+        "speed": 0.5, "blur": 40, "layers": 5, "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true, "backgroundColor": "#fef9c3",
+        "ribbonCount": 5, "speed": 0.5, "amplitude": 1, "spread": 0.5,
+        "rotation": -30, "thickness": 1, "taper": -0.3, "noise": 0.5, "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true, "backgroundColor": "#fef9c3",
+        "lineCount": 120, "radiusMin": 0.1, "radiusMax": 0.8,
+        "speed": 0.3, "thickness": 1.5, "dotSize": 3, "spread": 0.3, "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true, "backgroundColor": "#fef9c3",
+        "particleCount": 800, "ringRadius": 0.35, "ringWidth": 0.15,
+        "speed": 0.5, "particleSize": 3, "dispersion": 0.3,
+        "rotationSpeed": 0.2, "tiltX": 0, "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true, "backgroundColor": "#fef9c3",
+        "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1,
+        "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4,
+        "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60,
+        "size": 24, "opacity": 0.15, "rotation": 0, "color": "#fbbf24",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 12,
+        "texture": "grain",
+        "textureSize": 10,
+        "textureOpacity": 0.05,
+        "textureBlendMode": "overlay",
+        "colorMap": "none",
+        "vignetteIntensity": 5,
+        "saturation": 115,
+        "contrast": 95,
+        "brightness": 110,
+        "flutedGlass": {
+          "enabled": false, "segments": 80, "rotation": 0,
+          "motionValue": 0.5, "motionSpeed": 0.5, "overlayOpacity": 0,
+          "distortionStrength": 0.02, "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        { "id": 1, "text": "Together", "size": 95, "weight": 200, "spacing": 0.04, "font": "serif", "italic": true },
+        { "id": 2, "text": "A GARDEN CELEBRATION", "size": 13, "weight": 500, "spacing": 0.5, "font": "sans-serif", "italic": false }
+      ],
+      "textGap": 16,
+      "textConfig": { "enabled": true, "color": "#78350f", "opacity": 0.75 },
+      "colorPalette": {
+        "yellow": {
+          "50": "#fefce8", "100": "#fef9c3", "200": "#fef08a", "300": "#fde047",
+          "400": "#facc15", "500": "#eab308", "600": "#ca8a04", "700": "#a16207",
+          "800": "#854d0e", "900": "#713f12", "950": "#422006"
+        },
+        "black": "#000", "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Spring Wedding Waves – Cherry Blossom Breeze",
+    "short_description": "Soft pink and white waves drifting like cherry blossom petals on water.",
+    "long_description": "Gentle layered waves in soft sakura pink, rose quartz, and white undulate with a dreamy slow rhythm. The blurred layers create the feeling of blossoms floating on still water. Perfect for spring wedding RSVP pages, save-the-dates, and floral event branding.",
+    "scene_data": {
+      "backgroundType": "waves",
+      "gradientConfig": {
+        "colors": ["#fbb6ce", "#fce4ec", "#ffffff", "#f9a8d4"],
+        "numColors": 4,
+        "type": "linear",
+        "startPos": { "x": 0, "y": 10 },
+        "endPos": { "x": 100, "y": 90 },
+        "colorStops": [0, 25, 55, 100],
+        "waveIntensity": 0.1,
+        "mouseInfluence": 0.2,
+        "decaySpeed": 0.97,
+        "wave1Speed": 0.05,
+        "wave1Direction": 1,
+        "wave2Speed": 0.03,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10, "maxWidth": 30, "minHeight": 200, "maxHeight": 600,
+        "minTTL": 100, "maxTTL": 300, "blurAmount": 13,
+        "hueStart": 330, "hueEnd": 350, "backgroundColor": "#fff0f5",
+        "lineCount": 0, "decaySpeed": 0.95, "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5, "minRadius": 40, "maxRadius": 120, "speed": 0.5,
+        "orbitRadius": 150, "blurAmount": 12, "threshold": 180,
+        "mouseInfluence": 0.3, "decaySpeed": 0.95, "useGradientColors": true,
+        "colors": ["#fbb6ce", "#fce4ec", "#f9a8d4"],
+        "backgroundColor": "#fff0f5"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fff0f5",
+        "colors": ["#fbb6ce", "#fce4ec", "#ffffff", "#f9a8d4"],
+        "speed": 1, "intensity": 1, "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": ["#fbb6ce", "#fce4ec", "#ffffff", "#f9a8d4"],
+        "waveHeight": 0.035,
+        "waveFrequency": 1.6,
+        "rotation": 2,
+        "speed": 0.2,
+        "blur": 55,
+        "layers": 7,
+        "phaseOffset": 0.2
+      },
+      "ribbonConfig": {
+        "useGradientColors": true, "backgroundColor": "#fff0f5",
+        "ribbonCount": 5, "speed": 0.5, "amplitude": 1, "spread": 0.5,
+        "rotation": -30, "thickness": 1, "taper": -0.3, "noise": 0.5, "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true, "backgroundColor": "#fff0f5",
+        "lineCount": 120, "radiusMin": 0.1, "radiusMax": 0.8,
+        "speed": 0.3, "thickness": 1.5, "dotSize": 3, "spread": 0.3, "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true, "backgroundColor": "#fff0f5",
+        "particleCount": 800, "ringRadius": 0.35, "ringWidth": 0.15,
+        "speed": 0.5, "particleSize": 3, "dispersion": 0.3,
+        "rotationSpeed": 0.2, "tiltX": 0, "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true, "backgroundColor": "#fff0f5",
+        "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1,
+        "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4,
+        "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60,
+        "size": 24, "opacity": 0.15, "rotation": 0, "color": "#f9a8d4",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 5,
+        "texture": "none",
+        "textureSize": 30,
+        "textureOpacity": 0,
+        "textureBlendMode": "overlay",
+        "colorMap": "none",
+        "vignetteIntensity": 6,
+        "saturation": 108,
+        "contrast": 95,
+        "brightness": 110,
+        "flutedGlass": {
+          "enabled": false, "segments": 80, "rotation": 0,
+          "motionValue": 0.5, "motionSpeed": 0.5, "overlayOpacity": 0,
+          "distortionStrength": 0.02, "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        { "id": 1, "text": "Sarah & David", "size": 85, "weight": 200, "spacing": 0.03, "font": "serif", "italic": true },
+        { "id": 2, "text": "APRIL 5 · CHERRY BLOSSOM PARK", "size": 12, "weight": 400, "spacing": 0.4, "font": "sans-serif", "italic": false }
+      ],
+      "textGap": 16,
+      "textConfig": { "enabled": true, "color": "#9d174d", "opacity": 0.7 },
+      "colorPalette": {
+        "rose": {
+          "50": "#fff1f2", "100": "#ffe4e6", "200": "#fecdd3", "300": "#fda4af",
+          "400": "#fb7185", "500": "#f43f5e", "600": "#e11d48", "700": "#be185d",
+          "800": "#9d174d", "900": "#881337", "950": "#4c0519"
+        },
+        "black": "#000", "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Spring Wedding Particle Ring – Champagne Toast Sparkle",
+    "short_description": "Sparkling champagne gold particles orbiting in warm celebration.",
+    "long_description": "Hundreds of champagne and rose gold particles orbit in a luminous ring against a warm cream backdrop. The gentle sparkle captures the effervescence of a wedding toast under string lights. Perfect for reception invites, wedding countdowns, and celebratory landing pages.",
+    "scene_data": {
+      "backgroundType": "particleRing",
+      "gradientConfig": {
+        "colors": ["#d4a574", "#f5deb3", "#daa520", "#faebd7"],
+        "numColors": 4,
+        "type": "radial",
+        "startPos": { "x": 50, "y": 50 },
+        "endPos": { "x": 100, "y": 100 },
+        "colorStops": [0, 30, 60, 100],
+        "waveIntensity": 0.12,
+        "mouseInfluence": 0.2,
+        "decaySpeed": 0.97,
+        "wave1Speed": 0.06,
+        "wave1Direction": 1,
+        "wave2Speed": 0.04,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10, "maxWidth": 30, "minHeight": 200, "maxHeight": 600,
+        "minTTL": 100, "maxTTL": 300, "blurAmount": 13,
+        "hueStart": 35, "hueEnd": 50, "backgroundColor": "#fdf5e6",
+        "lineCount": 0, "decaySpeed": 0.95, "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5, "minRadius": 40, "maxRadius": 120, "speed": 0.5,
+        "orbitRadius": 150, "blurAmount": 12, "threshold": 180,
+        "mouseInfluence": 0.3, "decaySpeed": 0.95, "useGradientColors": true,
+        "colors": ["#d4a574", "#f5deb3", "#daa520"],
+        "backgroundColor": "#fdf5e6"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fdf5e6",
+        "colors": ["#d4a574", "#f5deb3", "#daa520", "#faebd7"],
+        "speed": 1, "intensity": 1, "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": ["#d4a574", "#f5deb3", "#daa520", "#faebd7"],
+        "waveHeight": 0.05, "waveFrequency": 2, "rotation": 0,
+        "speed": 0.5, "blur": 40, "layers": 5, "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true, "backgroundColor": "#fdf5e6",
+        "ribbonCount": 5, "speed": 0.5, "amplitude": 1, "spread": 0.5,
+        "rotation": -30, "thickness": 1, "taper": -0.3, "noise": 0.5, "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true, "backgroundColor": "#fdf5e6",
+        "lineCount": 120, "radiusMin": 0.1, "radiusMax": 0.8,
+        "speed": 0.3, "thickness": 1.5, "dotSize": 3, "spread": 0.3, "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fdf5e6",
+        "particleCount": 1000,
+        "ringRadius": 0.32,
+        "ringWidth": 0.18,
+        "speed": 0.3,
+        "particleSize": 2.5,
+        "dispersion": 0.25,
+        "rotationSpeed": 0.12,
+        "tiltX": 20,
+        "tiltZ": -5
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true, "backgroundColor": "#fdf5e6",
+        "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1,
+        "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4,
+        "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60,
+        "size": 24, "opacity": 0.15, "rotation": 0, "color": "#daa520",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 6,
+        "texture": "grain",
+        "textureSize": 8,
+        "textureOpacity": 0.06,
+        "textureBlendMode": "overlay",
+        "colorMap": "none",
+        "vignetteIntensity": 10,
+        "saturation": 105,
+        "contrast": 100,
+        "brightness": 108,
+        "flutedGlass": {
+          "enabled": false, "segments": 80, "rotation": 0,
+          "motionValue": 0.5, "motionSpeed": 0.5, "overlayOpacity": 0,
+          "distortionStrength": 0.02, "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        { "id": 1, "text": "Cheers", "size": 100, "weight": 200, "spacing": 0.06, "font": "serif", "italic": true },
+        { "id": 2, "text": "TO FOREVER", "size": 15, "weight": 500, "spacing": 0.45, "font": "sans-serif", "italic": false }
+      ],
+      "textGap": 16,
+      "textConfig": { "enabled": true, "color": "#92400e", "opacity": 0.8 },
+      "colorPalette": {
+        "amber": {
+          "50": "#fffbeb", "100": "#fef3c7", "200": "#fde68a", "300": "#fcd34d",
+          "400": "#fbbf24", "500": "#f59e0b", "600": "#d97706", "700": "#b45309",
+          "800": "#92400e", "900": "#78350f", "950": "#451a03"
+        },
+        "black": "#000", "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Spring Wedding Dandelion – Wildflower Wish",
+    "short_description": "Warm coral and peach dandelion seeds floating like wildflower wishes.",
+    "long_description": "Delicate dandelion seed lines radiate in warm coral, soft peach, and blush from a low center against a warm ivory sky. The gentle motion captures the tradition of making a wish on a dandelion — a magical spring wedding moment. Ideal for boho weddings, outdoor ceremonies, and wildflower-themed stationery.",
+    "scene_data": {
+      "backgroundType": "dandelion",
+      "gradientConfig": {
+        "colors": ["#fb923c", "#fdba74", "#fda4af", "#fef3c7"],
+        "numColors": 4,
+        "type": "radial",
+        "startPos": { "x": 50, "y": 90 },
+        "endPos": { "x": 100, "y": 0 },
+        "colorStops": [0, 25, 55, 100],
+        "waveIntensity": 0.08,
+        "mouseInfluence": 0.15,
+        "decaySpeed": 0.98,
+        "wave1Speed": 0.04,
+        "wave1Direction": 1,
+        "wave2Speed": 0.02,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10, "maxWidth": 30, "minHeight": 200, "maxHeight": 600,
+        "minTTL": 100, "maxTTL": 300, "blurAmount": 13,
+        "hueStart": 15, "hueEnd": 35, "backgroundColor": "#fff7ed",
+        "lineCount": 0, "decaySpeed": 0.95, "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5, "minRadius": 40, "maxRadius": 120, "speed": 0.5,
+        "orbitRadius": 150, "blurAmount": 12, "threshold": 180,
+        "mouseInfluence": 0.3, "decaySpeed": 0.95, "useGradientColors": true,
+        "colors": ["#fb923c", "#fdba74", "#fda4af"],
+        "backgroundColor": "#fff7ed"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fff7ed",
+        "colors": ["#fb923c", "#fdba74", "#fda4af", "#fef3c7"],
+        "speed": 1, "intensity": 1, "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": ["#fb923c", "#fdba74", "#fda4af", "#fef3c7"],
+        "waveHeight": 0.05, "waveFrequency": 2, "rotation": 0,
+        "speed": 0.5, "blur": 40, "layers": 5, "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true, "backgroundColor": "#fff7ed",
+        "ribbonCount": 5, "speed": 0.5, "amplitude": 1, "spread": 0.5,
+        "rotation": -30, "thickness": 1, "taper": -0.3, "noise": 0.5, "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fff7ed",
+        "lineCount": 100,
+        "radiusMin": 0.12,
+        "radiusMax": 0.75,
+        "speed": 0.12,
+        "thickness": 1.0,
+        "dotSize": 3.5,
+        "spread": 0.35,
+        "centerY": 0.88
+      },
+      "particleRingConfig": {
+        "useGradientColors": true, "backgroundColor": "#fff7ed",
+        "particleCount": 800, "ringRadius": 0.35, "ringWidth": 0.15,
+        "speed": 0.5, "particleSize": 3, "dispersion": 0.3,
+        "rotationSpeed": 0.2, "tiltX": 0, "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true, "backgroundColor": "#fff7ed",
+        "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1,
+        "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4,
+        "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60,
+        "size": 24, "opacity": 0.15, "rotation": 0, "color": "#fb923c",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 0,
+        "texture": "none",
+        "textureSize": 30,
+        "textureOpacity": 0,
+        "textureBlendMode": "overlay",
+        "colorMap": "none",
+        "vignetteIntensity": 5,
+        "saturation": 110,
+        "contrast": 96,
+        "brightness": 108,
+        "flutedGlass": {
+          "enabled": false, "segments": 80, "rotation": 0,
+          "motionValue": 0.5, "motionSpeed": 0.5, "overlayOpacity": 0,
+          "distortionStrength": 0.02, "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        { "id": 1, "text": "Make a Wish", "size": 80, "weight": 200, "spacing": 0.04, "font": "serif", "italic": true },
+        { "id": 2, "text": "OLIVIA & NOAH · SPRING 2026", "size": 12, "weight": 400, "spacing": 0.4, "font": "sans-serif", "italic": false }
+      ],
+      "textGap": 18,
+      "textConfig": { "enabled": true, "color": "#9a3412", "opacity": 0.75 },
+      "colorPalette": {
+        "orange": {
+          "50": "#fff7ed", "100": "#ffedd5", "200": "#fed7aa", "300": "#fdba74",
+          "400": "#fb923c", "500": "#f97316", "600": "#ea580c", "700": "#c2410c",
+          "800": "#9a3412", "900": "#7c2d12", "950": "#431407"
+        },
+        "black": "#000", "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
   }
 ]
