@@ -11,10 +11,11 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
 
 function EmbedDialog({ open, onOpenChange, slug, sceneTitle }) {
   const [copied, setCopied] = useState(false)
-  const [embedOptions, setEmbedOptions] = useState({ hideText: false, hideIcons: false, input: 'mouse' })
+  const [embedOptions, setEmbedOptions] = useState({ hideText: false, hideIcons: false, input: 'mouse', height: 600 })
 
   const getEmbedCode = () => {
     const params = new URLSearchParams()
@@ -23,12 +24,17 @@ function EmbedDialog({ open, onOpenChange, slug, sceneTitle }) {
     if (embedOptions.input !== 'mouse') params.set('input', embedOptions.input)
     const queryString = params.toString()
     const embedUrl = `${window.location.origin}/embed/${slug}${queryString ? `?${queryString}` : ''}`
-    return `<iframe src="${embedUrl}" width="100%" height="600" frameborder="0" style="border:0;border-radius:8px;" allowfullscreen></iframe>`
+    return `<iframe src="${embedUrl}" width="100%" height="${embedOptions.height}" frameborder="0" style="border:0;border-radius:8px;" allowfullscreen></iframe>`
   }
 
   const getGenerationEmbedCode = () => {
     const title = sceneTitle || slug
-    return `<iframe title="${title}" src="https://aura.promad.design/embed/${slug}" style={{width:100%, height:1000px}} allowFullScreen></iframe>`
+    const params = new URLSearchParams()
+    if (embedOptions.hideText) params.set('hideText', 'true')
+    if (embedOptions.hideIcons) params.set('hideIcons', 'true')
+    if (embedOptions.input !== 'mouse') params.set('input', embedOptions.input)
+    const queryString = params.toString()
+    return `<iframe title="${title}" src="https://aura.promad.design/embed/${slug}${queryString ? `?${queryString}` : ''}" style={{width:"100%", height:"${embedOptions.height}px"}} allowFullScreen></iframe>`
   }
 
   const handleCopyEmbed = async (code) => {
@@ -55,50 +61,64 @@ function EmbedDialog({ open, onOpenChange, slug, sceneTitle }) {
             Copy the code below to embed this scene on your website.
           </DialogDescription>
         </DialogHeader>
+        {/* Embed Options */}
+        <div className="flex flex-col gap-3 p-3 bg-muted/50 rounded-lg">
+          <span className="text-xs text-muted-foreground uppercase tracking-wide">Options</span>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="hide-text" className="text-sm cursor-pointer">Hide text</Label>
+            <Switch
+              id="hide-text"
+              checked={embedOptions.hideText}
+              onCheckedChange={(checked) => setEmbedOptions(prev => ({ ...prev, hideText: checked }))}
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="hide-icons" className="text-sm cursor-pointer">Hide icons</Label>
+            <Switch
+              id="hide-icons"
+              checked={embedOptions.hideIcons}
+              onCheckedChange={(checked) => setEmbedOptions(prev => ({ ...prev, hideIcons: checked }))}
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="embed-height" className="text-sm cursor-pointer">Height</Label>
+            <div className="flex items-center gap-1.5">
+              <Input
+                id="embed-height"
+                type="number"
+                min={100}
+                value={embedOptions.height}
+                onChange={(e) => setEmbedOptions(prev => ({ ...prev, height: Number(e.target.value) || 100 }))}
+                className="h-7 w-20 text-xs"
+              />
+              <span className="text-xs text-muted-foreground">px</span>
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <Label className="text-sm">Input</Label>
+            <div className="flex gap-1">
+              {['off', 'mouse', 'mic'].map((mode) => (
+                <Button
+                  key={mode}
+                  size="sm"
+                  variant={embedOptions.input === mode ? 'default' : 'outline'}
+                  className="h-7 text-xs capitalize px-3"
+                  onClick={() => setEmbedOptions(prev => ({ ...prev, input: mode }))}
+                >
+                  {mode}
+                </Button>
+              ))}
+            </div>
+          </div>
+        </div>
+
         <Tabs defaultValue="scene" onValueChange={() => setCopied(false)}>
           <TabsList className="w-full">
-            <TabsTrigger value="scene" className="flex-1">Scene Embed</TabsTrigger>
-            <TabsTrigger value="generation" className="flex-1">Generation Embed</TabsTrigger>
+            <TabsTrigger value="scene" className="flex-1">HTML Embed</TabsTrigger>
+            <TabsTrigger value="generation" className="flex-1">NextJS Embed</TabsTrigger>
           </TabsList>
 
           <TabsContent value="scene" className="space-y-4 mt-4">
-            {/* Embed Options */}
-            <div className="flex flex-col gap-3 p-3 bg-muted/50 rounded-lg">
-              <span className="text-xs text-muted-foreground uppercase tracking-wide">Options</span>
-              <div className="flex items-center justify-between">
-                <Label htmlFor="hide-text" className="text-sm cursor-pointer">Hide text</Label>
-                <Switch
-                  id="hide-text"
-                  checked={embedOptions.hideText}
-                  onCheckedChange={(checked) => setEmbedOptions(prev => ({ ...prev, hideText: checked }))}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label htmlFor="hide-icons" className="text-sm cursor-pointer">Hide icons</Label>
-                <Switch
-                  id="hide-icons"
-                  checked={embedOptions.hideIcons}
-                  onCheckedChange={(checked) => setEmbedOptions(prev => ({ ...prev, hideIcons: checked }))}
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label className="text-sm">Input</Label>
-                <div className="flex gap-1">
-                  {['off', 'mouse', 'mic'].map((mode) => (
-                    <Button
-                      key={mode}
-                      size="sm"
-                      variant={embedOptions.input === mode ? 'default' : 'outline'}
-                      className="h-7 text-xs capitalize px-3"
-                      onClick={() => setEmbedOptions(prev => ({ ...prev, input: mode }))}
-                    >
-                      {mode}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
             <div className="relative">
               <pre className="bg-muted p-4 rounded-lg text-xs overflow-x-auto whitespace-pre-wrap break-all">
                 {getEmbedCode()}

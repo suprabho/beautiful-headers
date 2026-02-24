@@ -4,7 +4,6 @@ import { CircleNotch } from '@phosphor-icons/react'
 import { getSceneBySlug } from '@/lib/scenesApi'
 import { useDocumentMeta } from '@/hooks/useDocumentMeta'
 import { audioData } from '@/audio/audioData'
-import { useColorMode } from '@/hooks/useColorMode'
 import '../App.css'
 import GradientLayer from './GradientLayer'
 import SimpleGradientLayer from './SimpleGradientLayer'
@@ -27,9 +26,6 @@ function SceneEmbedPage() {
   const hideText = searchParams.get('hideText') === 'true'
   const hideIcons = searchParams.get('hideIcons') === 'true'
   const inputMode = searchParams.get('input') || 'mouse' // 'off' | 'mouse' | 'mic'
-
-  // Detect dark/light mode (URL param → postMessage → system preference)
-  const colorMode = useColorMode()
 
   const [scene, setScene] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -219,23 +215,13 @@ function SceneEmbedPage() {
   const effectiveMouseIntensity = inputEnabled && inputMode !== 'mic' ? mouseConfig.intensity : 0
   const effectiveMouseEnabled = inputEnabled && inputMode !== 'mic' && mouseConfig.enabled
 
-  // Resolve themed background color from themeConfig
-  const themeConfig = sceneData.themeConfig || {}
-  const themedBgColor = themeConfig[colorMode]?.backgroundColor ?? null
-
-  // Apply themed backgroundColor to each layer config that supports it.
-  // For gradient-based types (liquid/simple), themedBgColor is used as a CSS
-  // wrapper background so the canvas has a styled fallback behind it.
-  const withThemeBg = (config) =>
-    themedBgColor ? { ...config, backgroundColor: themedBgColor } : config
-
-  const auroraConfig = withThemeBg(sceneData.auroraConfig || {})
-  const fluidConfig = withThemeBg(sceneData.fluidConfig || {})
+  const auroraConfig = sceneData.auroraConfig || {}
+  const fluidConfig = sceneData.fluidConfig || {}
   const wavesConfig = sceneData.wavesConfig || {}
-  const ribbonConfig = withThemeBg(sceneData.ribbonConfig || {})
-  const dandelionConfig = withThemeBg(sceneData.dandelionConfig || {})
-  const particleRingConfig = withThemeBg(sceneData.particleRingConfig || {})
-  const shapeTrailConfig = withThemeBg(sceneData.shapeTrailConfig || {})
+  const ribbonConfig = sceneData.ribbonConfig || {}
+  const dandelionConfig = sceneData.dandelionConfig || {}
+  const particleRingConfig = sceneData.particleRingConfig || {}
+  const shapeTrailConfig = sceneData.shapeTrailConfig || {}
 
   return (
     <div className="w-full h-screen overflow-hidden" onMouseMove={effectiveMouseEnabled ? handleMouseMove : undefined}>
@@ -250,9 +236,6 @@ function SceneEmbedPage() {
               inset: 0,
               zIndex: 1,
               filter: getGradientFilter(),
-              // Fallback background for gradient-based types (liquid/simple/waves)
-              // that don't use a discrete backgroundColor prop
-              backgroundColor: themedBgColor ?? undefined,
             }}
           >
             {backgroundType === 'simple' && (

@@ -70,8 +70,6 @@ export const DesktopPanel = ({
   const colorPalette = useStore((state) => state.colorPalette)
   const isPaused = useStore((state) => state.isPaused)
   const setIsPaused = useStore((state) => state.setIsPaused)
-  const themeConfig = useStore((state) => state.themeConfig)
-  const updateThemeConfig = useStore((state) => state.updateThemeConfig)
 
   const parsedPalette = colorPalette ? parsePaletteJson(colorPalette) : null
 
@@ -161,8 +159,6 @@ export const DesktopPanel = ({
                   shapeTrailConfig={shapeTrailConfig}
                   setShapeTrailConfig={setShapeTrailConfig}
                   parsedPalette={parsedPalette}
-                  themeConfig={themeConfig}
-                  updateThemeConfig={updateThemeConfig}
                 />
               </TabsContent>
               <TabsContent value="tessellation" className="m-0">

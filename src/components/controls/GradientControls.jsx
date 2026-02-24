@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback, useEffect } from 'react'
-import { Plus, Trash, ArrowLeft, ArrowRight, Moon, Sun } from '@phosphor-icons/react'
+import { Plus, Trash, ArrowLeft, ArrowRight } from '@phosphor-icons/react'
 import { ControlGroup, NumberInput, PaletteColorPicker } from './SharedControls'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -1802,47 +1802,6 @@ export const ShapeTrailControls = ({ shapeTrailConfig, setShapeTrailConfig, pars
 }
 
 // ============================================
-// THEME SECTION - Dark/light background colors for embeds
-// ============================================
-const ThemeSection = ({ themeConfig, updateThemeConfig }) => {
-  const dark = themeConfig?.dark ?? {}
-  const light = themeConfig?.light ?? {}
-
-  return (
-    <div className="flex flex-col gap-3 pb-2 border-b border-border/50">
-      <Label className="text-sm md:text-xs md:uppercase tracking-wide font-medium md:font-semibold">
-        Embed Theme Colors
-      </Label>
-      <div className="flex flex-col gap-2">
-        <ControlGroup label={<span className="flex items-center gap-1.5"><Moon size={12} />Dark mode</span>}>
-          <input
-            type="color"
-            value={dark.backgroundColor ?? '#0a0a0a'}
-            onChange={(e) =>
-              updateThemeConfig({ dark: { ...dark, backgroundColor: e.target.value } })
-            }
-            className="w-8 h-8 rounded-md border border-border cursor-pointer bg-transparent"
-          />
-        </ControlGroup>
-        <ControlGroup label={<span className="flex items-center gap-1.5"><Sun size={12} />Light mode</span>}>
-          <input
-            type="color"
-            value={light.backgroundColor ?? '#f5f5f5'}
-            onChange={(e) =>
-              updateThemeConfig({ light: { ...light, backgroundColor: e.target.value } })
-            }
-            className="w-8 h-8 rounded-md border border-border cursor-pointer bg-transparent"
-          />
-        </ControlGroup>
-      </div>
-      <p className="text-[10px] text-muted-foreground leading-relaxed">
-        Background color used when the scene is embedded and the viewer's system is in dark or light mode.
-      </p>
-    </div>
-  )
-}
-
-// ============================================
 // MAIN GRADIENT PANEL - Restructured
 // ============================================
 export const GradientPanel = ({
@@ -1867,8 +1826,6 @@ export const GradientPanel = ({
   shapeTrailConfig,
   setShapeTrailConfig,
   parsedPalette,
-  themeConfig,
-  updateThemeConfig,
 }) => {
   return (
     <div className="space-y-0">
@@ -1966,14 +1923,6 @@ export const GradientPanel = ({
           gradientColors={gradientConfig.colors}
         />
       )}
-
-      <div className="h-px bg-border my-2" />
-
-      {/* SECTION 4: Embed theme colors */}
-      <ThemeSection
-        themeConfig={themeConfig}
-        updateThemeConfig={updateThemeConfig}
-      />
     </div>
   )
 }

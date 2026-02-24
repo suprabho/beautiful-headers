@@ -477,16 +477,6 @@ const useStore = create((set, get) => ({
     particleRingConfig: { ...state.particleRingConfig, ...updates }
   })),
 
-  // Theme config — dark/light background colors for embedded scenes
-  themeConfig: {
-    dark: { backgroundColor: '#0a0a0a' },
-    light: { backgroundColor: '#f5f5f5' },
-  },
-  setThemeConfig: (config) => set({ themeConfig: config }),
-  updateThemeConfig: (updates) => set((state) => ({
-    themeConfig: { ...state.themeConfig, ...updates }
-  })),
-
   // ShapeTrail config
   shapeTrailConfig: {
     useGradientColors: true,
@@ -658,7 +648,6 @@ const useStore = create((set, get) => ({
       selectedProjectIds: state.selectedProjectIds,
       audioConfig: { ...state.audioConfig, enabled: false, fileName: null },
       inputEnabled: state.inputEnabled,
-      themeConfig: state.themeConfig,
     }
   },
 
@@ -702,7 +691,6 @@ const useStore = create((set, get) => ({
       ...(sceneData.audioConfig && { audioConfig: { ...sceneData.audioConfig, enabled: false, fileName: null } }),
       ...(sceneData.mouseConfig && { mouseConfig: sceneData.mouseConfig }),
       ...(sceneData.inputEnabled !== undefined && { inputEnabled: sceneData.inputEnabled }),
-      ...(sceneData.themeConfig && { themeConfig: sceneData.themeConfig }),
     })
   },
 }))

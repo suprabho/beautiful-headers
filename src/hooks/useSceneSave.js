@@ -35,7 +35,7 @@ export function useSceneSave(layersContainerRef) {
       const outputCanvas = await captureLayersToCanvas(
         layersContainerRef.current,
         effectsConfig,
-        { scale: 2, mode: 'all' }
+        { scale: 2, mode: 'all', targetAspectRatio: 16 / 9 }
       )
 
       restoreColors()
