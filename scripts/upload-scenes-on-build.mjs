@@ -7,9 +7,11 @@
  * Behaviour:
  *  1. Reads generated-scenes.json from the repo root.
  *  2. For each scene, derives a slug from the title.
- *  3. Skips scenes whose slug already exists in the DB (idempotent).
+ *  3. Skips scenes whose slug exists in the DB OR in .uploaded-slugs.json
+ *     (prevents deleted/rejected scenes from being re-inserted).
  *  4. Inserts new scenes with pendingReview: true.
- *  5. Prints a summary and exits 0 (never fails the build).
+ *  5. Appends newly uploaded slugs to .uploaded-slugs.json.
+ *  6. Prints a summary and exits 0 (never fails the build).
  *
  * Environment variables (set in Vercel project settings):
  *   SCENES_UPLOAD_PASSWORD  — admin password (required to enable uploads)
@@ -18,12 +20,13 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const SCENES_FILE = resolve(__dirname, '..', 'generated-scenes.json');
+const UPLOADED_SLUGS_FILE = resolve(__dirname, '..', '.uploaded-slugs.json');
 
 const SUPABASE_URL =
   process.env.VITE_SUPABASE_URL || 'https://grbrfpaznehikakupavx.supabase.co';
@@ -38,6 +41,21 @@ function titleToSlug(title) {
     .replace(/[^\w\s-]/g, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-');
+}
+
+function loadUploadedSlugs() {
+  if (!existsSync(UPLOADED_SLUGS_FILE)) return new Set();
+  try {
+    const data = JSON.parse(readFileSync(UPLOADED_SLUGS_FILE, 'utf8'));
+    return new Set(Array.isArray(data) ? data : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function saveUploadedSlugs(slugSet) {
+  const sorted = [...slugSet].sort();
+  writeFileSync(UPLOADED_SLUGS_FILE, JSON.stringify(sorted, null, 2) + '\n');
 }
 
 async function main() {
@@ -64,6 +82,10 @@ async function main() {
 
   console.log(`Found ${scenes.length} scene(s) in generated-scenes.json`);
 
+  // ── Load previously uploaded slugs (persisted in repo) ─────────────────
+  const uploadedSlugs = loadUploadedSlugs();
+  console.log(`Loaded ${uploadedSlugs.size} previously uploaded slug(s) from .uploaded-slugs.json`);
+
   // ── Init Supabase ────────────────────────────────────────────────────────
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -78,11 +100,14 @@ async function main() {
     return;
   }
 
-  // ── Fetch existing slugs to skip duplicates ──────────────────────────────
+  // ── Fetch existing slugs from DB ───────────────────────────────────────
   const { data: existing } = await supabase
     .from('scenes')
     .select('slug');
-  const existingSlugs = new Set((existing || []).map((r) => r.slug));
+  const dbSlugs = new Set((existing || []).map((r) => r.slug));
+
+  // ── Merge: skip if slug is in DB OR was ever uploaded before ───────────
+  const knownSlugs = new Set([...dbSlugs, ...uploadedSlugs]);
 
   const now = new Date().toISOString();
   let created = 0;
@@ -98,8 +123,8 @@ async function main() {
 
     const slug = titleToSlug(scene.title);
 
-    if (existingSlugs.has(slug)) {
-      console.log(`  [skip] ${slug} (already exists)`);
+    if (knownSlugs.has(slug)) {
+      console.log(`  [skip] ${slug} (already known)`);
       skipped++;
       continue;
     }
@@ -123,11 +148,23 @@ async function main() {
     } else {
       console.log(`  [  ok] ${slug}`);
       created++;
-      existingSlugs.add(slug);
+      knownSlugs.add(slug);
+      uploadedSlugs.add(slug);
     }
   }
 
-  console.log(`\nDone: ${created} created, ${skipped} skipped, ${failed} failed.\n`);
+  // ── Persist uploaded slugs back to file ────────────────────────────────
+  // Also add all slugs from generated-scenes.json so they're tracked
+  // even if they already existed in DB (covers the initial backfill)
+  for (const scene of scenes) {
+    if (scene.title) {
+      uploadedSlugs.add(titleToSlug(scene.title));
+    }
+  }
+  saveUploadedSlugs(uploadedSlugs);
+
+  console.log(`\nDone: ${created} created, ${skipped} skipped, ${failed} failed.`);
+  console.log(`Tracking ${uploadedSlugs.size} total slug(s) in .uploaded-slugs.json\n`);
 }
 
 main().catch((err) => {
