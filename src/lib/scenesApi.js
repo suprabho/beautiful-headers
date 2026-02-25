@@ -97,7 +97,9 @@ async function uploadThumbnail(base64Data, sceneId) {
       .from('thumbnails')
       .getPublicUrl(filename)
 
-    return { sizeName, publicUrl: rewriteThumbnailUrl(publicUrl) }
+    // Append cache-buster so recaptured thumbnails aren't served stale by CDN/browser
+    const bustUrl = `${publicUrl}?t=${Date.now()}`
+    return { sizeName, publicUrl: rewriteThumbnailUrl(bustUrl) }
   })
 
   const results = await Promise.all(uploadPromises)

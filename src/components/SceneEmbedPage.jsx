@@ -205,13 +205,6 @@ function SceneEmbedPage() {
   const sceneData = scene.scene_data || {}
   const backgroundType = sceneData.backgroundType || 'liquid'
   const gradientConfig = sceneData.gradientConfig || {}
-  const auroraConfig = sceneData.auroraConfig || {}
-  const fluidConfig = sceneData.fluidConfig || {}
-  const wavesConfig = sceneData.wavesConfig || {}
-  const ribbonConfig = sceneData.ribbonConfig || {}
-  const dandelionConfig = sceneData.dandelionConfig || {}
-  const particleRingConfig = sceneData.particleRingConfig || {}
-  const shapeTrailConfig = sceneData.shapeTrailConfig || {}
   const tessellationConfig = sceneData.tessellationConfig || {}
   const effectsConfig = sceneData.effectsConfig || {}
   const textSections = sceneData.textSections || []
@@ -221,6 +214,14 @@ function SceneEmbedPage() {
   const inputEnabled = inputMode !== 'off' && (sceneData.inputEnabled !== undefined ? sceneData.inputEnabled : true)
   const effectiveMouseIntensity = inputEnabled && inputMode !== 'mic' ? mouseConfig.intensity : 0
   const effectiveMouseEnabled = inputEnabled && inputMode !== 'mic' && mouseConfig.enabled
+
+  const auroraConfig = sceneData.auroraConfig || {}
+  const fluidConfig = sceneData.fluidConfig || {}
+  const wavesConfig = sceneData.wavesConfig || {}
+  const ribbonConfig = sceneData.ribbonConfig || {}
+  const dandelionConfig = sceneData.dandelionConfig || {}
+  const particleRingConfig = sceneData.particleRingConfig || {}
+  const shapeTrailConfig = sceneData.shapeTrailConfig || {}
 
   return (
     <div className="w-full h-screen overflow-hidden" onMouseMove={effectiveMouseEnabled ? handleMouseMove : undefined}>

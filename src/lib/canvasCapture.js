@@ -129,7 +129,7 @@ export const resizeThumbnailForAI = (base64Data, maxWidth = 800) => {
  *   - scale: Resolution multiplier (default 2)
  *   - mode: 'all' captures tessellation + text layers, 'background' skips them
  */
-export const captureLayersToCanvas = async (container, effectsConfig, { scale = 2, mode = 'all' } = {}) => {
+export const captureLayersToCanvas = async (container, effectsConfig, { scale = 2, mode = 'all', targetAspectRatio = null } = {}) => {
   const width = container.offsetWidth
   const height = container.offsetHeight
 
@@ -204,6 +204,31 @@ export const captureLayersToCanvas = async (container, effectsConfig, { scale = 
       })
       ctx.drawImage(textCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
     }
+  }
+
+  // Crop to target aspect ratio if specified (center crop)
+  if (targetAspectRatio) {
+    const srcW = outputCanvas.width
+    const srcH = outputCanvas.height
+    const currentRatio = srcW / srcH
+
+    let cropX = 0, cropY = 0, cropW = srcW, cropH = srcH
+    if (currentRatio > targetAspectRatio) {
+      // Too wide — crop sides
+      cropW = Math.round(srcH * targetAspectRatio)
+      cropX = Math.round((srcW - cropW) / 2)
+    } else if (currentRatio < targetAspectRatio) {
+      // Too tall — crop top/bottom
+      cropH = Math.round(srcW / targetAspectRatio)
+      cropY = Math.round((srcH - cropH) / 2)
+    }
+
+    const croppedCanvas = document.createElement('canvas')
+    croppedCanvas.width = cropW
+    croppedCanvas.height = cropH
+    const croppedCtx = croppedCanvas.getContext('2d')
+    croppedCtx.drawImage(outputCanvas, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH)
+    return croppedCanvas
   }
 
   return outputCanvas
