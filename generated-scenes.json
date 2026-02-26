@@ -5165,5 +5165,478 @@
       },
       "selectedProjectIds": []
     }
+  },
+  {
+    "title": "Khajuraho Sandstone Ribbon – Carved Frieze Flow",
+    "short_description": "Warm sandstone ribbons flowing like the sculpted bands adorning Khajuraho's temple walls.",
+    "long_description": "Sinuous ribbons in warm sandstone gold and deep terracotta sweep across a weathered ochre canvas, evoking the flowing carved friezes that wrap Khajuraho's Kandariya Mahadeva temple. The gentle motion mirrors the rhythm of celestial dancers frozen in stone for a millennium. Grain texture adds the feel of ancient weathered sandstone. Perfect for heritage tourism, cultural documentation, and architecture showcases.",
+    "scene_data": {
+      "backgroundType": "ribbon",
+      "gradientConfig": {
+        "colors": ["#c4956a", "#d4a574", "#a0522d", "#e8c99b"],
+        "numColors": 4, "type": "linear",
+        "startPos": { "x": 0, "y": 20 }, "endPos": { "x": 100, "y": 80 },
+        "colorStops": [0, 30, 60, 100], "waveIntensity": 0.18,
+        "mouseInfluence": 0.2, "decaySpeed": 0.96,
+        "wave1Speed": 0.07, "wave1Direction": 1,
+        "wave2Speed": 0.04, "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10, "maxWidth": 30, "minHeight": 200, "maxHeight": 600,
+        "minTTL": 100, "maxTTL": 300, "blurAmount": 13,
+        "hueStart": 30, "hueEnd": 45, "backgroundColor": "#3d2b1f",
+        "lineCount": 0, "decaySpeed": 0.95, "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5, "minRadius": 40, "maxRadius": 120, "speed": 0.5,
+        "orbitRadius": 150, "blurAmount": 12, "threshold": 180,
+        "mouseInfluence": 0.3, "decaySpeed": 0.95, "useGradientColors": true,
+        "colors": ["#40204c", "#a3225c", "#e24926"],
+        "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true, "backgroundColor": "#3d2b1f",
+        "colors": ["#c4956a", "#d4a574", "#a0522d", "#e8c99b"],
+        "speed": 1, "intensity": 1, "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": ["#c4956a", "#d4a574", "#a0522d", "#e8c99b"],
+        "waveHeight": 0.05, "waveFrequency": 2, "rotation": 0,
+        "speed": 0.5, "blur": 40, "layers": 5, "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true, "backgroundColor": "#3d2b1f",
+        "ribbonCount": 6, "speed": 0.3, "amplitude": 0.9, "spread": 0.55,
+        "rotation": -25, "thickness": 1.2, "taper": -0.2, "noise": 0.35, "opacity": 0.8,
+        "colorCycleSpeed": 0.8, "enableHoverEffect": true
+      },
+      "dandelionConfig": {
+        "useGradientColors": true, "backgroundColor": "#e8f4fc",
+        "lineCount": 120, "radiusMin": 0.1, "radiusMax": 0.8,
+        "speed": 0.3, "thickness": 1.5, "dotSize": 3, "spread": 0.3, "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true, "backgroundColor": "#fef6f9",
+        "particleCount": 800, "ringRadius": 0.35, "ringWidth": 0.15,
+        "speed": 0.5, "particleSize": 3, "dispersion": 0.3,
+        "rotationSpeed": 0.2, "tiltX": 0, "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true, "backgroundColor": "#f0f0f0",
+        "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1,
+        "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4,
+        "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60,
+        "size": 24, "opacity": 0.15, "rotation": 0, "color": "#c4956a",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 6, "texture": "grain", "textureSize": 28,
+        "textureOpacity": 0.4, "textureBlendMode": "overlay",
+        "colorMap": "vintage", "vignetteIntensity": 0.3,
+        "saturation": 95, "contrast": 108, "brightness": 100,
+        "flutedGlass": {
+          "enabled": false, "segments": 80, "rotation": 0,
+          "motionValue": 0.5, "motionSpeed": 0.5, "overlayOpacity": 0,
+          "distortionStrength": 0.02, "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        { "id": 1, "text": "Khajuraho", "size": 105, "weight": 300, "spacing": 0.04, "font": "serif", "italic": false },
+        { "id": 2, "text": "SCULPTED IN ETERNITY", "size": 13, "weight": 400, "spacing": 0.4, "font": "sans-serif", "italic": false }
+      ],
+      "textGap": 14,
+      "textConfig": { "enabled": true, "color": "#fef3c7", "opacity": 0.92 },
+      "colorPalette": {
+        "amber": {
+          "50": "#fffbeb", "100": "#fef3c7", "200": "#fde68a", "300": "#fcd34d",
+          "400": "#fbbf24", "500": "#f59e0b", "600": "#d97706", "700": "#b45309",
+          "800": "#92400e", "900": "#78350f", "950": "#451a03"
+        },
+        "black": "#000", "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Khajuraho Temple Aurora – Sacred Dawn Glow",
+    "short_description": "Ethereal aurora bands in temple gold and saffron over deep sanctum darkness.",
+    "long_description": "Luminous bands of saffron, burnished gold, and warm amber sweep through the darkness of a temple sanctum at dawn. The aurora evokes the first rays of sun striking the shikhara spires of Khajuraho, illuminating centuries of devotional art. Heavy vignette draws the eye inward like entering the garbhagriha. Ideal for spiritual retreats, yoga brands, and Indian heritage platforms.",
+    "scene_data": {
+      "backgroundType": "aurora",
+      "gradientConfig": {
+        "colors": ["#daa520", "#cc7722", "#8b4513", "#e09540"],
+        "numColors": 4, "type": "radial",
+        "startPos": { "x": 50, "y": 40 }, "endPos": { "x": 100, "y": 100 },
+        "colorStops": [0, 25, 55, 100], "waveIntensity": 0.3,
+        "mouseInfluence": 0.25, "decaySpeed": 0.95,
+        "wave1Speed": 0.08, "wave1Direction": 1,
+        "wave2Speed": 0.05, "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "hueStart": 25, "hueEnd": 50, "maxTTL": 60, "minTTL": 200,
+        "maxWidth": 15, "minWidth": 80, "lineCount": 5,
+        "maxHeight": 60, "minHeight": 800, "blurAmount": 20,
+        "decaySpeed": 0.95, "backgroundColor": "#1a0e05",
+        "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5, "minRadius": 40, "maxRadius": 120, "speed": 0.5,
+        "orbitRadius": 150, "blurAmount": 12, "threshold": 180,
+        "mouseInfluence": 0.3, "decaySpeed": 0.95, "useGradientColors": true,
+        "colors": ["#40204c", "#a3225c", "#e24926"],
+        "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true, "backgroundColor": "#1a0e05",
+        "colors": ["#daa520", "#cc7722", "#8b4513", "#e09540"],
+        "speed": 1, "intensity": 1, "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": ["#daa520", "#cc7722", "#8b4513", "#e09540"],
+        "waveHeight": 0.05, "waveFrequency": 2, "rotation": 0,
+        "speed": 0.5, "blur": 40, "layers": 5, "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true, "backgroundColor": "#1a0e05",
+        "ribbonCount": 5, "speed": 0.5, "amplitude": 1.0, "spread": 0.5,
+        "rotation": -30, "thickness": 1, "taper": -0.3, "noise": 0.5, "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true, "backgroundColor": "#e8f4fc",
+        "lineCount": 120, "radiusMin": 0.1, "radiusMax": 0.8,
+        "speed": 0.3, "thickness": 1.5, "dotSize": 3, "spread": 0.3, "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true, "backgroundColor": "#fef6f9",
+        "particleCount": 800, "ringRadius": 0.35, "ringWidth": 0.15,
+        "speed": 0.5, "particleSize": 3, "dispersion": 0.3,
+        "rotationSpeed": 0.2, "tiltX": 0, "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true, "backgroundColor": "#f0f0f0",
+        "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1,
+        "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4,
+        "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60,
+        "size": 24, "opacity": 0.15, "rotation": 0, "color": "#daa520",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 18, "texture": "grain", "textureSize": 22,
+        "textureOpacity": 0.35, "textureBlendMode": "overlay",
+        "colorMap": "vintage", "vignetteIntensity": 0.45,
+        "saturation": 115, "contrast": 112, "brightness": 92,
+        "flutedGlass": {
+          "enabled": false, "segments": 80, "rotation": 0,
+          "motionValue": 0.5, "motionSpeed": 0.5, "overlayOpacity": 0,
+          "distortionStrength": 0.02, "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        { "id": 1, "text": "Kandariya", "size": 110, "weight": 200, "spacing": 0.08, "font": "serif", "italic": false },
+        { "id": 2, "text": "TEMPLE OF LIGHT", "size": 14, "weight": 400, "spacing": 0.35, "font": "sans-serif", "italic": false }
+      ],
+      "textGap": 16,
+      "textConfig": { "enabled": true, "color": "#fef3c7", "opacity": 0.88 },
+      "colorPalette": {
+        "orange": {
+          "50": "#fff7ed", "100": "#ffedd5", "200": "#fed7aa", "300": "#fdba74",
+          "400": "#fb923c", "500": "#f97316", "600": "#ea580c", "700": "#c2410c",
+          "800": "#9a3412", "900": "#7c2d12", "950": "#431407"
+        },
+        "black": "#000", "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Khajuraho Sacred Fluid – Molten Sandstone Carvings",
+    "short_description": "Warm flowing fluid in golden ochre and deep sienna like sun-heated temple stone.",
+    "long_description": "Rich fluid layers in burnished gold, warm ochre, and deep sienna flow and merge like sunlight pooling across the intricate carvings of Khajuraho's Lakshmana temple. Fluted glass distortion creates the shimmer of heat haze rising from sun-baked sandstone. The vintage color map and subtle scanline texture add archaeological depth. Perfect for cultural archives, museum sites, and heritage design collections.",
+    "scene_data": {
+      "backgroundType": "fluid",
+      "gradientConfig": {
+        "colors": ["#e09540", "#c4956a", "#8b4513", "#daa520"],
+        "numColors": 4, "type": "linear",
+        "startPos": { "x": 10, "y": 25 }, "endPos": { "x": 90, "y": 75 },
+        "colorStops": [0, 30, 60, 100], "waveIntensity": 0.22,
+        "mouseInfluence": 0.3, "decaySpeed": 0.96,
+        "wave1Speed": 0.1, "wave1Direction": 1,
+        "wave2Speed": 0.06, "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10, "maxWidth": 30, "minHeight": 200, "maxHeight": 600,
+        "minTTL": 100, "maxTTL": 300, "blurAmount": 13,
+        "hueStart": 30, "hueEnd": 50, "backgroundColor": "#5c3a1e",
+        "lineCount": 0, "decaySpeed": 0.95, "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5, "minRadius": 40, "maxRadius": 120, "speed": 0.5,
+        "orbitRadius": 150, "blurAmount": 12, "threshold": 180,
+        "mouseInfluence": 0.3, "decaySpeed": 0.95, "useGradientColors": true,
+        "colors": ["#40204c", "#a3225c", "#e24926"],
+        "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true, "backgroundColor": "#5c3a1e",
+        "colors": ["#e09540", "#c4956a", "#8b4513", "#daa520"],
+        "speed": 0.7, "intensity": 2.5, "blurAmount": 30
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": ["#e09540", "#c4956a", "#8b4513", "#daa520"],
+        "waveHeight": 0.05, "waveFrequency": 2, "rotation": 0,
+        "speed": 0.5, "blur": 40, "layers": 5, "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true, "backgroundColor": "#5c3a1e",
+        "ribbonCount": 5, "speed": 0.5, "amplitude": 1.0, "spread": 0.5,
+        "rotation": -30, "thickness": 1, "taper": -0.3, "noise": 0.5, "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true, "backgroundColor": "#e8f4fc",
+        "lineCount": 120, "radiusMin": 0.1, "radiusMax": 0.8,
+        "speed": 0.3, "thickness": 1.5, "dotSize": 3, "spread": 0.3, "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true, "backgroundColor": "#fef6f9",
+        "particleCount": 800, "ringRadius": 0.35, "ringWidth": 0.15,
+        "speed": 0.5, "particleSize": 3, "dispersion": 0.3,
+        "rotationSpeed": 0.2, "tiltX": 0, "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true, "backgroundColor": "#f0f0f0",
+        "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1,
+        "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4,
+        "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60,
+        "size": 24, "opacity": 0.15, "rotation": 0, "color": "#daa520",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 12, "texture": "scanlines", "textureSize": 20,
+        "textureOpacity": 0.25, "textureBlendMode": "overlay",
+        "colorMap": "vintage", "vignetteIntensity": 0.35,
+        "saturation": 105, "contrast": 110, "brightness": 98,
+        "flutedGlass": {
+          "enabled": true, "segments": 90, "rotation": 0,
+          "motionSpeed": 0.4, "motionValue": 0, "overlayOpacity": 8,
+          "distortionStrength": 0.015, "waveFrequency": 1.2
+        }
+      },
+      "textSections": [
+        { "id": 1, "text": "Lakshmana", "size": 100, "weight": 400, "spacing": 0.03, "font": "serif", "italic": true },
+        { "id": 2, "text": "A THOUSAND YEARS IN STONE", "size": 12, "weight": 400, "spacing": 0.35, "font": "sans-serif", "italic": false }
+      ],
+      "textGap": 14,
+      "textConfig": { "enabled": true, "color": "#fef3c7", "opacity": 0.9 },
+      "colorPalette": {
+        "amber": {
+          "50": "#fffbeb", "100": "#fef3c7", "200": "#fde68a", "300": "#fcd34d",
+          "400": "#fbbf24", "500": "#f59e0b", "600": "#d97706", "700": "#b45309",
+          "800": "#92400e", "900": "#78350f", "950": "#451a03"
+        },
+        "black": "#000", "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Khajuraho Shikhara Particle Ring – Sacred Geometry Orbit",
+    "short_description": "Warm golden particles orbiting in temple spire geometry against deep sanctum black.",
+    "long_description": "A dense ring of golden and amber particles orbits through the darkness of a temple inner sanctum, echoing the mandala geometry found in Khajuraho's shikhara spires. The tilted orbital plane mimics the ascending layers of a Nagara-style tower. Dot texture suggests the countless carved figures that adorn every surface. Ideal for spiritual technology platforms, meditation apps, and sacred architecture visualization.",
+    "scene_data": {
+      "backgroundType": "particleRing",
+      "gradientConfig": {
+        "colors": ["#daa520", "#e09540", "#c4956a", "#b8860b"],
+        "numColors": 4, "type": "radial",
+        "startPos": { "x": 50, "y": 50 }, "endPos": { "x": 100, "y": 100 },
+        "colorStops": [0, 30, 60, 100], "waveIntensity": 0.2,
+        "mouseInfluence": 0.25, "decaySpeed": 0.96,
+        "wave1Speed": 0.08, "wave1Direction": 1,
+        "wave2Speed": 0.05, "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10, "maxWidth": 30, "minHeight": 200, "maxHeight": 600,
+        "minTTL": 100, "maxTTL": 300, "blurAmount": 13,
+        "hueStart": 35, "hueEnd": 50, "backgroundColor": "#0d0805",
+        "lineCount": 0, "decaySpeed": 0.95, "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5, "minRadius": 40, "maxRadius": 120, "speed": 0.5,
+        "orbitRadius": 150, "blurAmount": 12, "threshold": 180,
+        "mouseInfluence": 0.3, "decaySpeed": 0.95, "useGradientColors": true,
+        "colors": ["#40204c", "#a3225c", "#e24926"],
+        "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true, "backgroundColor": "#0d0805",
+        "colors": ["#daa520", "#e09540", "#c4956a", "#b8860b"],
+        "speed": 1, "intensity": 1, "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": ["#daa520", "#e09540", "#c4956a", "#b8860b"],
+        "waveHeight": 0.05, "waveFrequency": 2, "rotation": 0,
+        "speed": 0.5, "blur": 40, "layers": 5, "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true, "backgroundColor": "#0d0805",
+        "ribbonCount": 5, "speed": 0.5, "amplitude": 1.0, "spread": 0.5,
+        "rotation": -30, "thickness": 1, "taper": -0.3, "noise": 0.5, "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true, "backgroundColor": "#e8f4fc",
+        "lineCount": 120, "radiusMin": 0.1, "radiusMax": 0.8,
+        "speed": 0.3, "thickness": 1.5, "dotSize": 3, "spread": 0.3, "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true, "backgroundColor": "#0d0805",
+        "particleCount": 1000, "ringRadius": 0.35, "ringWidth": 0.18,
+        "speed": 0.3, "particleSize": 2.8, "dispersion": 0.25,
+        "rotationSpeed": 0.12, "tiltX": 35, "tiltZ": -15
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true, "backgroundColor": "#f0f0f0",
+        "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1,
+        "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4,
+        "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60,
+        "size": 24, "opacity": 0.15, "rotation": 0, "color": "#daa520",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 8, "texture": "dots", "textureSize": 30,
+        "textureOpacity": 0.2, "textureBlendMode": "overlay",
+        "colorMap": "none", "vignetteIntensity": 0.3,
+        "saturation": 110, "contrast": 108, "brightness": 95,
+        "flutedGlass": {
+          "enabled": false, "segments": 80, "rotation": 0,
+          "motionValue": 0.5, "motionSpeed": 0.5, "overlayOpacity": 0,
+          "distortionStrength": 0.02, "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        { "id": 1, "text": "Shikhara", "size": 115, "weight": 200, "spacing": 0.1, "font": "serif", "italic": false },
+        { "id": 2, "text": "MANDALA OF STONE", "size": 14, "weight": 400, "spacing": 0.35, "font": "sans-serif", "italic": false }
+      ],
+      "textGap": 14,
+      "textConfig": { "enabled": true, "color": "#fde68a", "opacity": 0.9 },
+      "colorPalette": {
+        "amber": {
+          "50": "#fffbeb", "100": "#fef3c7", "200": "#fde68a", "300": "#fcd34d",
+          "400": "#fbbf24", "500": "#f59e0b", "600": "#d97706", "700": "#b45309",
+          "800": "#92400e", "900": "#78350f", "950": "#451a03"
+        },
+        "black": "#000", "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Khajuraho Terracotta Waves – Layered Temple Horizons",
+    "short_description": "Warm terracotta and ochre waves layered like the ascending platforms of a Chandela temple.",
+    "long_description": "Multiple wave layers in deep terracotta, warm sienna, and sun-bleached ochre ripple with the slow rhythm of centuries. The layered horizontal bands mirror the ascending platforms (jagati, vedibandha, jangha) of Khajuraho's temples built by the Chandela dynasty around 1000 CE. A gentle rotation and grain texture evoke weathered sandstone seen at golden hour. Perfect for archaeological documentation, Indian architecture portfolios, and heritage travel brands.",
+    "scene_data": {
+      "backgroundType": "waves",
+      "gradientConfig": {
+        "colors": ["#a0522d", "#c4956a", "#d4a574", "#8b4513"],
+        "numColors": 4, "type": "linear",
+        "startPos": { "x": 0, "y": 30 }, "endPos": { "x": 100, "y": 70 },
+        "colorStops": [0, 30, 60, 100], "waveIntensity": 0.18,
+        "mouseInfluence": 0.2, "decaySpeed": 0.96,
+        "wave1Speed": 0.08, "wave1Direction": 1,
+        "wave2Speed": 0.05, "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10, "maxWidth": 30, "minHeight": 200, "maxHeight": 600,
+        "minTTL": 100, "maxTTL": 300, "blurAmount": 13,
+        "hueStart": 25, "hueEnd": 40, "backgroundColor": "#a0522d",
+        "lineCount": 0, "decaySpeed": 0.95, "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5, "minRadius": 40, "maxRadius": 120, "speed": 0.5,
+        "orbitRadius": 150, "blurAmount": 12, "threshold": 180,
+        "mouseInfluence": 0.3, "decaySpeed": 0.95, "useGradientColors": true,
+        "colors": ["#40204c", "#a3225c", "#e24926"],
+        "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true, "backgroundColor": "#a0522d",
+        "colors": ["#a0522d", "#c4956a", "#d4a574", "#8b4513"],
+        "speed": 1, "intensity": 1, "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": ["#a0522d", "#c4956a", "#d4a574", "#8b4513"],
+        "waveHeight": 0.05, "waveFrequency": 1.6,
+        "rotation": 3, "speed": 0.3, "blur": 50,
+        "layers": 7, "phaseOffset": 0.15
+      },
+      "ribbonConfig": {
+        "useGradientColors": true, "backgroundColor": "#a0522d",
+        "ribbonCount": 5, "speed": 0.5, "amplitude": 1.0, "spread": 0.5,
+        "rotation": -30, "thickness": 1, "taper": -0.3, "noise": 0.5, "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true, "backgroundColor": "#e8f4fc",
+        "lineCount": 120, "radiusMin": 0.1, "radiusMax": 0.8,
+        "speed": 0.3, "thickness": 1.5, "dotSize": 3, "spread": 0.3, "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true, "backgroundColor": "#fef6f9",
+        "particleCount": 800, "ringRadius": 0.35, "ringWidth": 0.15,
+        "speed": 0.5, "particleSize": 3, "dispersion": 0.3,
+        "rotationSpeed": 0.2, "tiltX": 0, "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true, "backgroundColor": "#f0f0f0",
+        "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1,
+        "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4,
+        "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60,
+        "size": 24, "opacity": 0.15, "rotation": 0, "color": "#a0522d",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 6, "texture": "grain", "textureSize": 25,
+        "textureOpacity": 0.3, "textureBlendMode": "overlay",
+        "colorMap": "vintage", "vignetteIntensity": 0.25,
+        "saturation": 100, "contrast": 105, "brightness": 102,
+        "flutedGlass": {
+          "enabled": false, "segments": 80, "rotation": 0,
+          "motionValue": 0.5, "motionSpeed": 0.5, "overlayOpacity": 0,
+          "distortionStrength": 0.02, "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        { "id": 1, "text": "Chandela", "size": 108, "weight": 300, "spacing": 0.02, "font": "serif", "italic": false },
+        { "id": 2, "text": "TEMPLES OF THE CHANDELA DYNASTY", "size": 12, "weight": 400, "spacing": 0.3, "font": "sans-serif", "italic": false }
+      ],
+      "textGap": 14,
+      "textConfig": { "enabled": true, "color": "#fef3c7", "opacity": 0.9 },
+      "colorPalette": {
+        "orange": {
+          "50": "#fff7ed", "100": "#ffedd5", "200": "#fed7aa", "300": "#fdba74",
+          "400": "#fb923c", "500": "#f97316", "600": "#ea580c", "700": "#c2410c",
+          "800": "#9a3412", "900": "#7c2d12", "950": "#431407"
+        },
+        "black": "#000", "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
   }
 ]
