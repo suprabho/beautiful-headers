@@ -12230,5 +12230,1167 @@
       },
       "selectedProjectIds": []
     }
+  },
+  {
+    "title": "Road Trip Fluid – Desert Highway Heat Mirage",
+    "short_description": "Shimmering amber and burnt orange fluid layers ripple like heat haze off sun-baked asphalt.",
+    "long_description": "Intense amber, burnt sienna, and dusty orange fluid layers shimmer and distort like the heat mirage rising off an endless desert highway at noon. The sunset color map warms every tone while the moderate blur recreates that wavering, liquid-air distortion visible above scorching pavement. Subtle grain adds dusty grit. Perfect for road trip blogs, Route 66 brands, desert adventure tours, and automotive lifestyle platforms.",
+    "scene_data": {
+      "backgroundType": "fluid",
+      "gradientConfig": {
+        "colors": [
+          "#ea580c",
+          "#d97706",
+          "#f59e0b",
+          "#78350f"
+        ],
+        "numColors": 4,
+        "type": "linear",
+        "startPos": {
+          "x": 0,
+          "y": 60
+        },
+        "endPos": {
+          "x": 100,
+          "y": 40
+        },
+        "colorStops": [
+          0,
+          30,
+          60,
+          100
+        ],
+        "waveIntensity": 0.3,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.95,
+        "wave1Speed": 0.14,
+        "wave1Direction": 1,
+        "wave2Speed": 0.08,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10,
+        "maxWidth": 30,
+        "minHeight": 200,
+        "maxHeight": 600,
+        "minTTL": 100,
+        "maxTTL": 300,
+        "blurAmount": 13,
+        "hueStart": 25,
+        "hueEnd": 45,
+        "backgroundColor": "#451a03",
+        "lineCount": 0,
+        "decaySpeed": 0.95,
+        "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5,
+        "minRadius": 40,
+        "maxRadius": 120,
+        "speed": 0.5,
+        "orbitRadius": 150,
+        "blurAmount": 12,
+        "threshold": 180,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.95,
+        "useGradientColors": true,
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926"
+        ],
+        "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#451a03",
+        "colors": [
+          "#ea580c",
+          "#d97706",
+          "#f59e0b",
+          "#78350f"
+        ],
+        "speed": 0.9,
+        "intensity": 2.5,
+        "blurAmount": 32
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": [
+          "#ea580c",
+          "#d97706",
+          "#f59e0b",
+          "#78350f"
+        ],
+        "waveHeight": 0.05,
+        "waveFrequency": 2,
+        "rotation": 0,
+        "speed": 0.5,
+        "blur": 40,
+        "layers": 5,
+        "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#451a03",
+        "ribbonCount": 5,
+        "speed": 0.5,
+        "amplitude": 1,
+        "spread": 0.5,
+        "rotation": -30,
+        "thickness": 1,
+        "taper": -0.3,
+        "noise": 0.5,
+        "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#e8f4fc",
+        "lineCount": 120,
+        "radiusMin": 0.1,
+        "radiusMax": 0.8,
+        "speed": 0.3,
+        "thickness": 1.5,
+        "dotSize": 3,
+        "spread": 0.3,
+        "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fef6f9",
+        "particleCount": 800,
+        "ringRadius": 0.35,
+        "ringWidth": 0.15,
+        "speed": 0.5,
+        "particleSize": 3,
+        "dispersion": 0.3,
+        "rotationSpeed": 0.2,
+        "tiltX": 0,
+        "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#f0f0f0",
+        "shape": "circle",
+        "startScale": 1000,
+        "endScale": 2000,
+        "sizeCycles": 1,
+        "gap": 30,
+        "rotationOffset": 15,
+        "speed": 0.3,
+        "pathComplexity": 4,
+        "opacity": 0.8,
+        "blendMode": "normal",
+        "trailCount": 3,
+        "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false,
+        "icon": "Star",
+        "rowGap": 60,
+        "colGap": 60,
+        "size": 24,
+        "opacity": 0.15,
+        "rotation": 0,
+        "color": "#ea580c",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 12,
+        "texture": "grain",
+        "textureSize": 25,
+        "textureOpacity": 0.4,
+        "textureBlendMode": "overlay",
+        "colorMap": "sunset",
+        "vignetteIntensity": 0.3,
+        "saturation": 115,
+        "contrast": 108,
+        "brightness": 102,
+        "flutedGlass": {
+          "enabled": false,
+          "segments": 80,
+          "rotation": 0,
+          "motionValue": 0.5,
+          "motionSpeed": 0.5,
+          "overlayOpacity": 0,
+          "distortionStrength": 0.02,
+          "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        {
+          "id": 1,
+          "text": "MIRAGE",
+          "size": 125,
+          "weight": 800,
+          "spacing": 0.06,
+          "font": "sans-serif",
+          "italic": false
+        },
+        {
+          "id": 2,
+          "text": "mile marker infinity",
+          "size": 15,
+          "weight": 300,
+          "spacing": 0.3,
+          "font": "sans-serif",
+          "italic": false
+        }
+      ],
+      "textGap": 14,
+      "textConfig": {
+        "enabled": true,
+        "color": "#fef3c7",
+        "opacity": 0.9
+      },
+      "colorPalette": {
+        "orange": {
+          "50": "#fff7ed",
+          "100": "#ffedd5",
+          "200": "#fed7aa",
+          "300": "#fdba74",
+          "400": "#fb923c",
+          "500": "#f97316",
+          "600": "#ea580c",
+          "700": "#c2410c",
+          "800": "#9a3412",
+          "900": "#7c2d12",
+          "950": "#431407"
+        },
+        "black": "#000",
+        "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Road Trip Aurora – Midnight Mountain Pass Glow",
+    "short_description": "Cold teal and emerald aurora bands arc over dark mountain silhouettes.",
+    "long_description": "Luminous teal and deep emerald aurora curtains sweep across a pitch-black sky, evoking the view through a windshield on a remote mountain pass far from city lights. Heavy blur softens the bands into ethereal sheets while a strong vignette mimics the dark frame of a car window. The grain texture adds road-weary analog character. Built for travel photography portfolios, van-life blogs, national park sites, and adventure gear brands.",
+    "scene_data": {
+      "backgroundType": "aurora",
+      "gradientConfig": {
+        "colors": [
+          "#0d9488",
+          "#10b981",
+          "#34d399",
+          "#022c22"
+        ],
+        "numColors": 4,
+        "type": "radial",
+        "startPos": {
+          "x": 50,
+          "y": 25
+        },
+        "endPos": {
+          "x": 100,
+          "y": 100
+        },
+        "colorStops": [
+          0,
+          25,
+          55,
+          100
+        ],
+        "waveIntensity": 0.28,
+        "mouseInfluence": 0.25,
+        "decaySpeed": 0.95,
+        "wave1Speed": 0.07,
+        "wave1Direction": 1,
+        "wave2Speed": 0.04,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "hueStart": 155,
+        "hueEnd": 185,
+        "maxTTL": 55,
+        "minTTL": 200,
+        "maxWidth": 14,
+        "minWidth": 90,
+        "lineCount": 3,
+        "maxHeight": 55,
+        "minHeight": 880,
+        "blurAmount": 20,
+        "decaySpeed": 0.96,
+        "backgroundColor": "#020617",
+        "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5,
+        "minRadius": 40,
+        "maxRadius": 120,
+        "speed": 0.5,
+        "orbitRadius": 150,
+        "blurAmount": 12,
+        "threshold": 180,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.95,
+        "useGradientColors": true,
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926"
+        ],
+        "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#020617",
+        "colors": [
+          "#0d9488",
+          "#10b981",
+          "#34d399",
+          "#022c22"
+        ],
+        "speed": 1,
+        "intensity": 1,
+        "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": [
+          "#0d9488",
+          "#10b981",
+          "#34d399",
+          "#022c22"
+        ],
+        "waveHeight": 0.05,
+        "waveFrequency": 2,
+        "rotation": 0,
+        "speed": 0.5,
+        "blur": 40,
+        "layers": 5,
+        "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#020617",
+        "ribbonCount": 5,
+        "speed": 0.5,
+        "amplitude": 1,
+        "spread": 0.5,
+        "rotation": -30,
+        "thickness": 1,
+        "taper": -0.3,
+        "noise": 0.5,
+        "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#e8f4fc",
+        "lineCount": 120,
+        "radiusMin": 0.1,
+        "radiusMax": 0.8,
+        "speed": 0.3,
+        "thickness": 1.5,
+        "dotSize": 3,
+        "spread": 0.3,
+        "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fef6f9",
+        "particleCount": 800,
+        "ringRadius": 0.35,
+        "ringWidth": 0.15,
+        "speed": 0.5,
+        "particleSize": 3,
+        "dispersion": 0.3,
+        "rotationSpeed": 0.2,
+        "tiltX": 0,
+        "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#f0f0f0",
+        "shape": "circle",
+        "startScale": 1000,
+        "endScale": 2000,
+        "sizeCycles": 1,
+        "gap": 30,
+        "rotationOffset": 15,
+        "speed": 0.3,
+        "pathComplexity": 4,
+        "opacity": 0.8,
+        "blendMode": "normal",
+        "trailCount": 3,
+        "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false,
+        "icon": "Star",
+        "rowGap": 60,
+        "colGap": 60,
+        "size": 24,
+        "opacity": 0.15,
+        "rotation": 0,
+        "color": "#10b981",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 22,
+        "texture": "grain",
+        "textureSize": 22,
+        "textureOpacity": 0.42,
+        "textureBlendMode": "overlay",
+        "colorMap": "none",
+        "vignetteIntensity": 0.45,
+        "saturation": 110,
+        "contrast": 108,
+        "brightness": 88,
+        "flutedGlass": {
+          "enabled": false,
+          "segments": 80,
+          "rotation": 0,
+          "motionValue": 0.5,
+          "motionSpeed": 0.5,
+          "overlayOpacity": 0,
+          "distortionStrength": 0.02,
+          "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        {
+          "id": 1,
+          "text": "SUMMIT",
+          "size": 130,
+          "weight": 200,
+          "spacing": 0.15,
+          "font": "sans-serif",
+          "italic": false
+        },
+        {
+          "id": 2,
+          "text": "the pass at midnight",
+          "size": 15,
+          "weight": 300,
+          "spacing": 0.3,
+          "font": "sans-serif",
+          "italic": false
+        }
+      ],
+      "textGap": 16,
+      "textConfig": {
+        "enabled": true,
+        "color": "#6ee7b7",
+        "opacity": 0.85
+      },
+      "colorPalette": {
+        "emerald": {
+          "50": "#ecfdf5",
+          "100": "#d1fae5",
+          "200": "#a7f3d0",
+          "300": "#6ee7b7",
+          "400": "#34d399",
+          "500": "#10b981",
+          "600": "#059669",
+          "700": "#047857",
+          "800": "#065f46",
+          "900": "#064e3b",
+          "950": "#022c22"
+        },
+        "black": "#000",
+        "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Road Trip Ribbon – Coastal Highway Guardrail Sweep",
+    "short_description": "Sky blue and white ribbons arc across warm sand tones like a winding coastal road.",
+    "long_description": "Smooth ribbons in sky blue and cloud white sweep and curve across a warm sandy canvas, tracing the elegant geometry of a coastal highway hugging cliffsides above the Pacific. The clean palette and gentle motion evoke windows down, salt air, and endless shoreline views. Minimal effects keep it bright and optimistic. Ideal for travel agencies, coastal real estate, surf brands, and convertible car campaigns.",
+    "scene_data": {
+      "backgroundType": "ribbon",
+      "gradientConfig": {
+        "colors": [
+          "#38bdf8",
+          "#e0f2fe",
+          "#fef3c7",
+          "#0ea5e9"
+        ],
+        "numColors": 4,
+        "type": "linear",
+        "startPos": {
+          "x": 0,
+          "y": 20
+        },
+        "endPos": {
+          "x": 100,
+          "y": 80
+        },
+        "colorStops": [
+          0,
+          30,
+          60,
+          100
+        ],
+        "waveIntensity": 0.18,
+        "mouseInfluence": 0.25,
+        "decaySpeed": 0.96,
+        "wave1Speed": 0.08,
+        "wave1Direction": 1,
+        "wave2Speed": 0.05,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10,
+        "maxWidth": 30,
+        "minHeight": 200,
+        "maxHeight": 600,
+        "minTTL": 100,
+        "maxTTL": 300,
+        "blurAmount": 13,
+        "hueStart": 195,
+        "hueEnd": 215,
+        "backgroundColor": "#fef9ee",
+        "lineCount": 0,
+        "decaySpeed": 0.95,
+        "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5,
+        "minRadius": 40,
+        "maxRadius": 120,
+        "speed": 0.5,
+        "orbitRadius": 150,
+        "blurAmount": 12,
+        "threshold": 180,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.95,
+        "useGradientColors": true,
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926"
+        ],
+        "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fef9ee",
+        "colors": [
+          "#38bdf8",
+          "#e0f2fe",
+          "#fef3c7",
+          "#0ea5e9"
+        ],
+        "speed": 1,
+        "intensity": 1,
+        "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": [
+          "#38bdf8",
+          "#e0f2fe",
+          "#fef3c7",
+          "#0ea5e9"
+        ],
+        "waveHeight": 0.05,
+        "waveFrequency": 2,
+        "rotation": 0,
+        "speed": 0.5,
+        "blur": 40,
+        "layers": 5,
+        "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fef9ee",
+        "ribbonCount": 4,
+        "speed": 0.4,
+        "amplitude": 0.85,
+        "spread": 0.55,
+        "rotation": 15,
+        "thickness": 1,
+        "taper": -0.08,
+        "noise": 0.05,
+        "opacity": 0.65,
+        "colorCycleSpeed": 1,
+        "enableHoverEffect": true
+      },
+      "dandelionConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#e8f4fc",
+        "lineCount": 120,
+        "radiusMin": 0.1,
+        "radiusMax": 0.8,
+        "speed": 0.3,
+        "thickness": 1.5,
+        "dotSize": 3,
+        "spread": 0.3,
+        "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fef6f9",
+        "particleCount": 800,
+        "ringRadius": 0.35,
+        "ringWidth": 0.15,
+        "speed": 0.5,
+        "particleSize": 3,
+        "dispersion": 0.3,
+        "rotationSpeed": 0.2,
+        "tiltX": 0,
+        "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#f0f0f0",
+        "shape": "circle",
+        "startScale": 1000,
+        "endScale": 2000,
+        "sizeCycles": 1,
+        "gap": 30,
+        "rotationOffset": 15,
+        "speed": 0.3,
+        "pathComplexity": 4,
+        "opacity": 0.8,
+        "blendMode": "normal",
+        "trailCount": 3,
+        "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false,
+        "icon": "Star",
+        "rowGap": 60,
+        "colGap": 60,
+        "size": 24,
+        "opacity": 0.15,
+        "rotation": 0,
+        "color": "#38bdf8",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 4,
+        "texture": "none",
+        "textureSize": 30,
+        "textureOpacity": 0,
+        "textureBlendMode": "overlay",
+        "colorMap": "none",
+        "vignetteIntensity": 0.15,
+        "saturation": 105,
+        "contrast": 100,
+        "brightness": 105,
+        "flutedGlass": {
+          "enabled": false,
+          "segments": 80,
+          "rotation": 0,
+          "motionValue": 0.5,
+          "motionSpeed": 0.5,
+          "overlayOpacity": 0,
+          "distortionStrength": 0.02,
+          "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        {
+          "id": 1,
+          "text": "DRIFT",
+          "size": 110,
+          "weight": 300,
+          "spacing": 0.08,
+          "font": "sans-serif",
+          "italic": false
+        },
+        {
+          "id": 2,
+          "text": "pacific coast highway",
+          "size": 14,
+          "weight": 400,
+          "spacing": 0.35,
+          "font": "sans-serif",
+          "italic": false
+        }
+      ],
+      "textGap": 14,
+      "textConfig": {
+        "enabled": true,
+        "color": "#0c4a6e",
+        "opacity": 0.88
+      },
+      "colorPalette": {
+        "cyan": {
+          "50": "#ecfeff",
+          "100": "#cffafe",
+          "200": "#a5f3fc",
+          "300": "#67e8f9",
+          "400": "#22d3ee",
+          "500": "#06b6d4",
+          "600": "#0891b2",
+          "700": "#0e7490",
+          "800": "#155e75",
+          "900": "#164e63",
+          "950": "#083344"
+        },
+        "black": "#000",
+        "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Road Trip Waves – Sunset Strip Asphalt Layers",
+    "short_description": "Warm layered waves in sunset orange and deep charcoal pulse like highway lane markings at dusk.",
+    "long_description": "Horizontal wave layers in molten sunset orange, dusty rose, and charcoal undulate slowly like the blurred stripes of a highway rushing past at golden hour. The vintage color map adds faded Polaroid warmth while the moderate blur recreates the dreamy soft focus of a rearview mirror sunset. Scanline texture adds road-worn character. Built for classic car clubs, retro Americana brands, road trip podcasts, and driving playlist platforms.",
+    "scene_data": {
+      "backgroundType": "waves",
+      "gradientConfig": {
+        "colors": [
+          "#f97316",
+          "#e11d48",
+          "#78350f",
+          "#1c1917"
+        ],
+        "numColors": 4,
+        "type": "linear",
+        "startPos": {
+          "x": 0,
+          "y": 30
+        },
+        "endPos": {
+          "x": 100,
+          "y": 70
+        },
+        "colorStops": [
+          0,
+          30,
+          60,
+          100
+        ],
+        "waveIntensity": 0.22,
+        "mouseInfluence": 0.2,
+        "decaySpeed": 0.96,
+        "wave1Speed": 0.08,
+        "wave1Direction": 1,
+        "wave2Speed": 0.05,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10,
+        "maxWidth": 30,
+        "minHeight": 200,
+        "maxHeight": 600,
+        "minTTL": 100,
+        "maxTTL": 300,
+        "blurAmount": 13,
+        "hueStart": 15,
+        "hueEnd": 35,
+        "backgroundColor": "#1c1917",
+        "lineCount": 0,
+        "decaySpeed": 0.95,
+        "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5,
+        "minRadius": 40,
+        "maxRadius": 120,
+        "speed": 0.5,
+        "orbitRadius": 150,
+        "blurAmount": 12,
+        "threshold": 180,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.95,
+        "useGradientColors": true,
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926"
+        ],
+        "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#1c1917",
+        "colors": [
+          "#f97316",
+          "#e11d48",
+          "#78350f",
+          "#1c1917"
+        ],
+        "speed": 1,
+        "intensity": 1,
+        "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": [
+          "#f97316",
+          "#e11d48",
+          "#78350f",
+          "#1c1917"
+        ],
+        "waveHeight": 0.05,
+        "waveFrequency": 1.6,
+        "rotation": 0,
+        "speed": 0.35,
+        "blur": 42,
+        "layers": 6,
+        "phaseOffset": 0.15
+      },
+      "ribbonConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#1c1917",
+        "ribbonCount": 5,
+        "speed": 0.5,
+        "amplitude": 1,
+        "spread": 0.5,
+        "rotation": -30,
+        "thickness": 1,
+        "taper": -0.3,
+        "noise": 0.5,
+        "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#e8f4fc",
+        "lineCount": 120,
+        "radiusMin": 0.1,
+        "radiusMax": 0.8,
+        "speed": 0.3,
+        "thickness": 1.5,
+        "dotSize": 3,
+        "spread": 0.3,
+        "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fef6f9",
+        "particleCount": 800,
+        "ringRadius": 0.35,
+        "ringWidth": 0.15,
+        "speed": 0.5,
+        "particleSize": 3,
+        "dispersion": 0.3,
+        "rotationSpeed": 0.2,
+        "tiltX": 0,
+        "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#f0f0f0",
+        "shape": "circle",
+        "startScale": 1000,
+        "endScale": 2000,
+        "sizeCycles": 1,
+        "gap": 30,
+        "rotationOffset": 15,
+        "speed": 0.3,
+        "pathComplexity": 4,
+        "opacity": 0.8,
+        "blendMode": "normal",
+        "trailCount": 3,
+        "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false,
+        "icon": "Star",
+        "rowGap": 60,
+        "colGap": 60,
+        "size": 24,
+        "opacity": 0.15,
+        "rotation": 0,
+        "color": "#f97316",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 10,
+        "texture": "scanlines",
+        "textureSize": 20,
+        "textureOpacity": 0.32,
+        "textureBlendMode": "overlay",
+        "colorMap": "vintage",
+        "vignetteIntensity": 0.35,
+        "saturation": 105,
+        "contrast": 110,
+        "brightness": 95,
+        "flutedGlass": {
+          "enabled": false,
+          "segments": 80,
+          "rotation": 0,
+          "motionValue": 0.5,
+          "motionSpeed": 0.5,
+          "overlayOpacity": 0,
+          "distortionStrength": 0.02,
+          "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        {
+          "id": 1,
+          "text": "CRUISER",
+          "size": 120,
+          "weight": 700,
+          "spacing": 0.04,
+          "font": "sans-serif",
+          "italic": false
+        },
+        {
+          "id": 2,
+          "text": "sunset strip radio",
+          "size": 15,
+          "weight": 300,
+          "spacing": 0.3,
+          "font": "sans-serif",
+          "italic": false
+        }
+      ],
+      "textGap": 14,
+      "textConfig": {
+        "enabled": true,
+        "color": "#fef3c7",
+        "opacity": 0.9
+      },
+      "colorPalette": {
+        "orange": {
+          "50": "#fff7ed",
+          "100": "#ffedd5",
+          "200": "#fed7aa",
+          "300": "#fdba74",
+          "400": "#fb923c",
+          "500": "#f97316",
+          "600": "#ea580c",
+          "700": "#c2410c",
+          "800": "#9a3412",
+          "900": "#7c2d12",
+          "950": "#431407"
+        },
+        "black": "#000",
+        "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Road Trip Liquid – Rainy Windshield Neon Blur",
+    "short_description": "Blurred neon city lights refract through rain-streaked glass in liquid motion.",
+    "long_description": "Soft liquid blobs in teal, magenta, and warm amber drift and merge like out-of-focus city lights seen through a rain-covered windshield at a red light. High blur and fluted glass refraction recreate the prismatic distortion of water droplets on glass while grain adds the intimate texture of late-night drives through wet city streets. An evocative, cinematic atmosphere for indie music labels, urban photography portfolios, night-drive playlists, and atmospheric storytelling platforms.",
+    "scene_data": {
+      "backgroundType": "liquid",
+      "gradientConfig": {
+        "colors": [
+          "#14b8a6",
+          "#ec4899",
+          "#f59e0b",
+          "#0f172a"
+        ],
+        "numColors": 4,
+        "type": "radial",
+        "startPos": {
+          "x": 50,
+          "y": 50
+        },
+        "endPos": {
+          "x": 100,
+          "y": 100
+        },
+        "colorStops": [
+          0,
+          25,
+          55,
+          100
+        ],
+        "waveIntensity": 0.3,
+        "mouseInfluence": 0.35,
+        "decaySpeed": 0.94,
+        "wave1Speed": 0.07,
+        "wave1Direction": 1,
+        "wave2Speed": 0.05,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10,
+        "maxWidth": 30,
+        "minHeight": 200,
+        "maxHeight": 600,
+        "minTTL": 100,
+        "maxTTL": 300,
+        "blurAmount": 13,
+        "hueStart": 170,
+        "hueEnd": 320,
+        "backgroundColor": "#0f172a",
+        "lineCount": 0,
+        "decaySpeed": 0.95,
+        "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 7,
+        "minRadius": 30,
+        "maxRadius": 110,
+        "speed": 0.35,
+        "orbitRadius": 130,
+        "blurAmount": 18,
+        "threshold": 170,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.93,
+        "useGradientColors": true,
+        "colors": [
+          "#14b8a6",
+          "#ec4899",
+          "#f59e0b"
+        ],
+        "backgroundColor": "#0f172a"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#0f172a",
+        "colors": [
+          "#14b8a6",
+          "#ec4899",
+          "#f59e0b",
+          "#0f172a"
+        ],
+        "speed": 1,
+        "intensity": 1,
+        "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": [
+          "#14b8a6",
+          "#ec4899",
+          "#f59e0b",
+          "#0f172a"
+        ],
+        "waveHeight": 0.05,
+        "waveFrequency": 2,
+        "rotation": 0,
+        "speed": 0.5,
+        "blur": 40,
+        "layers": 5,
+        "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#0f172a",
+        "ribbonCount": 5,
+        "speed": 0.5,
+        "amplitude": 1,
+        "spread": 0.5,
+        "rotation": -30,
+        "thickness": 1,
+        "taper": -0.3,
+        "noise": 0.5,
+        "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#e8f4fc",
+        "lineCount": 120,
+        "radiusMin": 0.1,
+        "radiusMax": 0.8,
+        "speed": 0.3,
+        "thickness": 1.5,
+        "dotSize": 3,
+        "spread": 0.3,
+        "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fef6f9",
+        "particleCount": 800,
+        "ringRadius": 0.35,
+        "ringWidth": 0.15,
+        "speed": 0.5,
+        "particleSize": 3,
+        "dispersion": 0.3,
+        "rotationSpeed": 0.2,
+        "tiltX": 0,
+        "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#f0f0f0",
+        "shape": "circle",
+        "startScale": 1000,
+        "endScale": 2000,
+        "sizeCycles": 1,
+        "gap": 30,
+        "rotationOffset": 15,
+        "speed": 0.3,
+        "pathComplexity": 4,
+        "opacity": 0.8,
+        "blendMode": "normal",
+        "trailCount": 3,
+        "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false,
+        "icon": "Star",
+        "rowGap": 60,
+        "colGap": 60,
+        "size": 24,
+        "opacity": 0.15,
+        "rotation": 0,
+        "color": "#14b8a6",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 16,
+        "texture": "grain",
+        "textureSize": 24,
+        "textureOpacity": 0.45,
+        "textureBlendMode": "overlay",
+        "colorMap": "none",
+        "vignetteIntensity": 0.4,
+        "saturation": 125,
+        "contrast": 105,
+        "brightness": 90,
+        "flutedGlass": {
+          "enabled": true,
+          "segments": 90,
+          "rotation": 80,
+          "motionSpeed": 0.6,
+          "motionValue": 0.3,
+          "overlayOpacity": 12,
+          "distortionStrength": 0.04,
+          "waveFrequency": 1.5
+        }
+      },
+      "textSections": [
+        {
+          "id": 1,
+          "text": "BOKEH",
+          "size": 120,
+          "weight": 600,
+          "spacing": 0.1,
+          "font": "sans-serif",
+          "italic": false
+        },
+        {
+          "id": 2,
+          "text": "city rain frequencies",
+          "size": 15,
+          "weight": 300,
+          "spacing": 0.3,
+          "font": "sans-serif",
+          "italic": false
+        }
+      ],
+      "textGap": 14,
+      "textConfig": {
+        "enabled": true,
+        "color": "#5eead4",
+        "opacity": 0.88
+      },
+      "colorPalette": {
+        "cyan": {
+          "50": "#ecfeff",
+          "100": "#cffafe",
+          "200": "#a5f3fc",
+          "300": "#67e8f9",
+          "400": "#22d3ee",
+          "500": "#06b6d4",
+          "600": "#0891b2",
+          "700": "#0e7490",
+          "800": "#155e75",
+          "900": "#164e63",
+          "950": "#083344"
+        },
+        "black": "#000",
+        "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
   }
 ]
