@@ -27,6 +27,7 @@ export function useRandomize() {
   const setAuroraConfig = useStore((state) => state.setAuroraConfig)
   const fluidConfig = useStore((state) => state.fluidConfig)
   const setFluidConfig = useStore((state) => state.setFluidConfig)
+  const textPairs = useStore((state) => state.textPairs)
 
   const randomize = useCallback(() => {
     const randomHex = () => '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')
@@ -97,11 +98,14 @@ export function useRandomize() {
       opacity: randomInRange(0.7, 1),
     })
 
-    // Randomize text sections
+    // Randomize text sections — apply a random text pair if available
     const fonts = ['sans-serif', 'serif', 'mono']
     const weights = [100, 200, 300, 400, 500, 600, 700, 800, 900]
+    const textPair = textPairs.length > 0 ? pickOne(textPairs) : null
     const randomizedSections = textSections.map(section => ({
       ...section,
+      ...(textPair && section.id === 1 && { text: textPair.title }),
+      ...(textPair && section.id === 2 && { text: textPair.subtitle }),
       size: Math.floor(randomInRange(section.id === 1 ? 60 : 16, section.id === 1 ? 180 : 40)),
       weight: pickOne(weights),
       spacing: randomInRange(-0.1, 0.3),
@@ -209,7 +213,7 @@ export function useRandomize() {
       intensity: Math.round(randomInRange(0.1, 10) * 10) / 10,
       blurAmount: Math.floor(randomInRange(0, 100)),
     })
-  }, [colorPalette, gradientConfig, tessellationConfig, effectsConfig, textConfig, textSections, ribbonConfig, auroraConfig, fluidConfig, dandelionConfig, particleRingConfig, setBackgroundType, setGradientConfig, setTessellationConfig, setEffectsConfig, setTextConfig, setTextSections, setTextGap, setRibbonConfig, setAuroraConfig, setFluidConfig, setDandelionConfig, setParticleRingConfig])
+  }, [colorPalette, gradientConfig, tessellationConfig, effectsConfig, textConfig, textSections, ribbonConfig, auroraConfig, fluidConfig, dandelionConfig, particleRingConfig, textPairs, setBackgroundType, setGradientConfig, setTessellationConfig, setEffectsConfig, setTextConfig, setTextSections, setTextGap, setRibbonConfig, setAuroraConfig, setFluidConfig, setDandelionConfig, setParticleRingConfig])
 
   return { randomize }
 }
