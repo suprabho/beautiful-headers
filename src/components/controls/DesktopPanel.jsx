@@ -55,8 +55,6 @@ export const DesktopPanel = ({
   const setDandelionConfig = useStore((state) => state.setDandelionConfig)
   const particleRingConfig = useStore((state) => state.particleRingConfig)
   const setParticleRingConfig = useStore((state) => state.setParticleRingConfig)
-  const shapeTrailConfig = useStore((state) => state.shapeTrailConfig)
-  const setShapeTrailConfig = useStore((state) => state.setShapeTrailConfig)
   const tessellationConfig = useStore((state) => state.tessellationConfig)
   const setTessellationConfig = useStore((state) => state.setTessellationConfig)
   const effectsConfig = useStore((state) => state.effectsConfig)
@@ -156,8 +154,6 @@ export const DesktopPanel = ({
                   setDandelionConfig={setDandelionConfig}
                   particleRingConfig={particleRingConfig}
                   setParticleRingConfig={setParticleRingConfig}
-                  shapeTrailConfig={shapeTrailConfig}
-                  setShapeTrailConfig={setShapeTrailConfig}
                   parsedPalette={parsedPalette}
                 />
               </TabsContent>

@@ -23,8 +23,6 @@ export function useRandomize() {
   const setDandelionConfig = useStore((state) => state.setDandelionConfig)
   const particleRingConfig = useStore((state) => state.particleRingConfig)
   const setParticleRingConfig = useStore((state) => state.setParticleRingConfig)
-  const shapeTrailConfig = useStore((state) => state.shapeTrailConfig)
-  const setShapeTrailConfig = useStore((state) => state.setShapeTrailConfig)
   const auroraConfig = useStore((state) => state.auroraConfig)
   const setAuroraConfig = useStore((state) => state.setAuroraConfig)
   const fluidConfig = useStore((state) => state.fluidConfig)
@@ -36,7 +34,7 @@ export function useRandomize() {
     const pickOne = (arr) => arr[Math.floor(Math.random() * arr.length)]
 
     // Randomize background type
-    const backgroundTypes = ['simple', 'liquid', 'aurora', 'fluid', 'waves', 'ribbon', 'dandelion', 'particleRing', 'shapeTrail']
+    const backgroundTypes = ['simple', 'liquid', 'aurora', 'fluid', 'waves', 'ribbon', 'dandelion', 'particleRing']
     setBackgroundType(pickOne(backgroundTypes))
 
     let colors
@@ -204,20 +202,6 @@ export function useRandomize() {
       lineCount: Math.floor(randomInRange(0, 500) / 10) * 10,
     })
 
-    // Randomize shapeTrail config
-    setShapeTrailConfig({
-      ...shapeTrailConfig,
-      shape: pickOne(['circle', 'square', 'triangle']),
-      startScale: Math.floor(randomInRange(10, 100)),
-      endScale: Math.floor(randomInRange(1000, 2000)),
-      gap: Math.floor(randomInRange(10, 60)),
-      rotationOffset: Math.floor(randomInRange(0, 90)),
-      speed: Math.round(randomInRange(0.1, 1.5) * 10) / 10,
-      pathComplexity: Math.floor(randomInRange(3, 7)),
-      opacity: Math.round(randomInRange(0.3, 1) * 20) / 20,
-      trailCount: Math.floor(randomInRange(1, 6)),
-    })
-
     // Randomize fluid/mesh config
     setFluidConfig({
       ...fluidConfig,
@@ -225,7 +209,7 @@ export function useRandomize() {
       intensity: Math.round(randomInRange(0.1, 10) * 10) / 10,
       blurAmount: Math.floor(randomInRange(0, 100)),
     })
-  }, [colorPalette, gradientConfig, tessellationConfig, effectsConfig, textConfig, textSections, ribbonConfig, auroraConfig, fluidConfig, dandelionConfig, particleRingConfig, shapeTrailConfig, setBackgroundType, setGradientConfig, setTessellationConfig, setEffectsConfig, setTextConfig, setTextSections, setTextGap, setRibbonConfig, setAuroraConfig, setFluidConfig, setDandelionConfig, setParticleRingConfig, setShapeTrailConfig])
+  }, [colorPalette, gradientConfig, tessellationConfig, effectsConfig, textConfig, textSections, ribbonConfig, auroraConfig, fluidConfig, dandelionConfig, particleRingConfig, setBackgroundType, setGradientConfig, setTessellationConfig, setEffectsConfig, setTextConfig, setTextSections, setTextGap, setRibbonConfig, setAuroraConfig, setFluidConfig, setDandelionConfig, setParticleRingConfig])
 
   return { randomize }
 }

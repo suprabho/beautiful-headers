@@ -48,10 +48,6 @@ export const getDialogTitle = (key, textSections) => {
     'particleRing-particles': 'Particle Settings',
     'particleRing-animation': 'Ring Animation',
     'particleRing-tilt': 'Ring Tilt',
-    'shapeTrail-background': 'Trail Background',
-    'shapeTrail-shape': 'Shape Settings',
-    'shapeTrail-path': 'Path Settings',
-    'shapeTrail-animation': 'Trail Animation',
     'pattern-icon': 'Icon Settings',
     'pattern-spacing': 'Spacing',
     'effects-blur': 'Background Blur',
@@ -88,8 +84,6 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
   const setDandelionConfig = useStore((state) => state.setDandelionConfig)
   const particleRingConfig = useStore((state) => state.particleRingConfig)
   const setParticleRingConfig = useStore((state) => state.setParticleRingConfig)
-  const shapeTrailConfig = useStore((state) => state.shapeTrailConfig)
-  const setShapeTrailConfig = useStore((state) => state.setShapeTrailConfig)
   const tessellationConfig = useStore((state) => state.tessellationConfig)
   const setTessellationConfig = useStore((state) => state.setTessellationConfig)
   const effectsConfig = useStore((state) => state.effectsConfig)
@@ -432,58 +426,6 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
           <ControlGroup label={`Tilt X`}><NumberInput value={[particleRingConfig.tiltX ?? 0]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, tiltX: val })} min={-90} max={90} step={5} showButtons /></ControlGroup>
           <ControlGroup label={`Tilt Z`}><NumberInput value={[particleRingConfig.tiltZ ?? 0]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, tiltZ: val })} min={-90} max={90} step={5} showButtons /></ControlGroup>
         </div>
-      )
-    case 'shapeTrail-background': {
-      const trailColorStops = shapeTrailConfig.trailColorStops && shapeTrailConfig.trailColorStops.length === gradientConfig.colors.length
-        ? shapeTrailConfig.trailColorStops
-        : gradientConfig.colors.map((_, i) => Math.round((i / Math.max(1, gradientConfig.colors.length - 1)) * 100))
-      return (
-        <div className="space-y-2">
-          <LockedGradientSection
-            colors={gradientConfig.colors}
-            colorStops={trailColorStops}
-            onColorStopsChange={(newStops) => setShapeTrailConfig({ ...shapeTrailConfig, trailColorStops: newStops })}
-          />
-          <ControlGroup label="Background Color">
-            <div className="flex items-center gap-2">
-              <PaletteColorPicker value={shapeTrailConfig.backgroundColor} onChange={(newColor) => setShapeTrailConfig({ ...shapeTrailConfig, backgroundColor: newColor })} palette={parsedPalette} className="w-10 h-10" />
-              <Input value={shapeTrailConfig.backgroundColor} onChange={(e) => setShapeTrailConfig({ ...shapeTrailConfig, backgroundColor: e.target.value })} className="h-9 font-mono text-xs flex-1" />
-            </div>
-          </ControlGroup>
-        </div>
-      )
-    }
-    case 'shapeTrail-shape':
-      return (
-        <div className="space-y-2">
-          <ControlGroup label="Shape">
-            <Select value={shapeTrailConfig.shape} onValueChange={(value) => setShapeTrailConfig({ ...shapeTrailConfig, shape: value })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="circle">Circle</SelectItem>
-                <SelectItem value="square">Square</SelectItem>
-                <SelectItem value="triangle">Triangle</SelectItem>
-              </SelectContent>
-            </Select>
-          </ControlGroup>
-          <ControlGroup label="Start Scale"><NumberInput value={[shapeTrailConfig.startScale]} onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, startScale: val })} min={100} max={1000} step={100} showButtons /></ControlGroup>
-          <ControlGroup label="End Scale"><NumberInput value={[shapeTrailConfig.endScale]} onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, endScale: val })} min={100} max={2000} step={100} showButtons /></ControlGroup>
-          <ControlGroup label="Size Cycles"><NumberInput value={[shapeTrailConfig.sizeCycles ?? 1]} onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, sizeCycles: val })} min={1} max={100} step={1} showButtons /></ControlGroup>
-          <ControlGroup label="Gap"><NumberInput value={[shapeTrailConfig.gap]} onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, gap: val })} min={5} max={100} step={5} showButtons /></ControlGroup>
-          <ControlGroup label="Rotation Offset"><NumberInput value={[shapeTrailConfig.rotationOffset]} onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, rotationOffset: val })} min={0} max={180} step={5} showButtons /></ControlGroup>
-          <ControlGroup label="Opacity"><NumberInput value={[shapeTrailConfig.opacity]} onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, opacity: val })} min={0.1} max={1} step={0.05} showButtons /></ControlGroup>
-        </div>
-      )
-    case 'shapeTrail-path':
-      return (
-        <div className="space-y-2">
-          <ControlGroup label="Trail Count"><NumberInput value={[shapeTrailConfig.trailCount]} onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, trailCount: val })} min={1} max={8} step={1} showButtons /></ControlGroup>
-          <ControlGroup label="Path Complexity"><NumberInput value={[shapeTrailConfig.pathComplexity]} onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, pathComplexity: val })} min={3} max={8} step={1} showButtons /></ControlGroup>
-        </div>
-      )
-    case 'shapeTrail-animation':
-      return (
-        <ControlGroup label="Speed"><NumberInput value={[shapeTrailConfig.speed]} onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, speed: val })} min={0} max={2} step={0.1} showButtons /></ControlGroup>
       )
     case 'pattern-icon':
       return (

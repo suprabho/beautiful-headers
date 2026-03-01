@@ -36,8 +36,4 @@ export const AUDIO_MAPPINGS = {
     { param: 'ringRadius', band: 'amplitude', weight: 0.25 },
     { param: 'ringWidth',  band: 'bass',      weight: 0.1  },
   ],
-  shapeTrail: [
-    { param: 'speed',   band: 'amplitude', weight: 1.0  },
-    { param: 'opacity', band: 'bass',      weight: 0.3  },
-  ],
 }
