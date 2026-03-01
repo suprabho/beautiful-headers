@@ -14,6 +14,7 @@ import TextLayer from './components/TextLayer'
 import ControlPanel from './components/ControlPanel'
 import useStore from './store/useStore'
 import { getScenes, getScene } from './lib/scenesApi'
+import { fetchTextPairs } from './lib/gemini'
 import './App.css'
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
   const currentSceneId = useStore((state) => state.currentSceneId)
   const audioEnabled = useStore((state) => state.audioConfig.enabled)
   const inputEnabled = useStore((state) => state.inputEnabled)
+  const setTextPairs = useStore((state) => state.setTextPairs)
 
   const layersContainerRef = useRef(null)
 
@@ -66,6 +68,21 @@ function App() {
     }
     loadRandomScene()
   }, [loadSceneData, currentSceneId])
+
+  // Fetch AI-generated text pairs on initial mount
+  useEffect(() => {
+    const loadTextPairs = async () => {
+      try {
+        const pairs = await fetchTextPairs()
+        if (pairs && pairs.length > 0) {
+          setTextPairs(pairs)
+        }
+      } catch (err) {
+        console.warn('Failed to fetch text pairs:', err)
+      }
+    }
+    loadTextPairs()
+  }, [setTextPairs])
 
   // Ref to track if RAF is pending for mouse throttling (PERFORMANCE OPTIMIZATION)
   const rafPendingRef = useRef(false)
