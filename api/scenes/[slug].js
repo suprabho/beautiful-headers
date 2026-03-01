@@ -48,6 +48,51 @@ function escapeHtml(str) {
     .replace(/>/g, '&gt;');
 }
 
+function buildJsonLd(scene, slug) {
+  const sceneUrl = `${BASE_URL}/scenes/${slug}`;
+  const imageUrl = getOgImageUrl(scene.thumbnail);
+  const description = scene.short_description || scene.long_description ||
+    'Create stunning, interactive web backgrounds with Aura.';
+
+  return JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    'name': scene.title || 'Aura Scene',
+    'description': description,
+    'url': sceneUrl,
+    'image': imageUrl,
+    'creator': {
+      '@type': 'Organization',
+      'name': 'Visual Layers Studio',
+      'url': BASE_URL,
+    },
+    'isPartOf': {
+      '@type': 'WebSite',
+      'name': 'Visual Layers Studio',
+      'url': BASE_URL,
+    },
+  });
+}
+
+function buildNoscriptContent(scene, slug) {
+  const sceneUrl = `${BASE_URL}/scenes/${slug}`;
+  const title = escapeHtml(scene.title || 'Aura Scene');
+  const description = escapeHtml(
+    scene.short_description || scene.long_description ||
+    'Create stunning, interactive web backgrounds with Aura.'
+  );
+  const imageUrl = getOgImageUrl(scene.thumbnail);
+
+  return `<noscript>
+  <div style="max-width:800px;margin:0 auto;padding:40px 20px;font-family:system-ui,sans-serif;color:#fff;background:#000">
+    <h1>${title}</h1>
+    <p>${description}</p>
+    <img src="${imageUrl}" alt="${title}" style="max-width:100%;height:auto" />
+    <p><a href="${BASE_URL}/scenes" style="color:#8af">Browse all scenes</a></p>
+  </div>
+</noscript>`;
+}
+
 function injectMetaTags(html, scene, slug) {
   const sceneUrl = `${BASE_URL}/scenes/${slug}`;
   const title = escapeHtml(
@@ -59,7 +104,7 @@ function injectMetaTags(html, scene, slug) {
   );
   const imageUrl = getOgImageUrl(scene.thumbnail);
 
-  return html
+  let modified = html
     // <title>
     .replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`)
     // meta name="description" (multi-line: attribute and content on separate lines)
@@ -91,7 +136,28 @@ function injectMetaTags(html, scene, slug) {
     .replace(
       /(<meta\s+property="(?:og|twitter):url"\s+content=")[^"]*(")/g,
       `$1${sceneUrl}$2`
+    )
+    // canonical link
+    .replace(
+      /(<link\s+rel="canonical"\s+href=")[^"]*(")/,
+      `$1${sceneUrl}$2`
     );
+
+  // Inject JSON-LD structured data before </head>
+  const jsonLd = buildJsonLd(scene, slug);
+  modified = modified.replace(
+    '</head>',
+    `  <script type="application/ld+json">${jsonLd}</script>\n</head>`
+  );
+
+  // Inject noscript content after <div id="root"></div>
+  const noscript = buildNoscriptContent(scene, slug);
+  modified = modified.replace(
+    '<div id="root"></div>',
+    `<div id="root"></div>\n  ${noscript}`
+  );
+
+  return modified;
 }
 
 // --- Scene lookup (mirrors src/lib/scenesApi.js getSceneBySlug) ---
