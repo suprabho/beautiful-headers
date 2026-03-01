@@ -146,7 +146,6 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
                       <SelectItem value="ribbon">Ribbon</SelectItem>
                       <SelectItem value="dandelion">Dandelion</SelectItem>
                       <SelectItem value="particleRing">Particle Ring</SelectItem>
-                      <SelectItem value="shapeTrail">Shape Trail</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -211,14 +210,6 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
                       <SubsectionButton title="Particles" onClick={() => openDialog('particleRing-particles')} />
                       <SubsectionButton title="Animation" onClick={() => openDialog('particleRing-animation')} />
                       <SubsectionButton title="Tilt" onClick={() => openDialog('particleRing-tilt')} />
-                    </>
-                  )}
-                  {backgroundType === 'shapeTrail' && (
-                    <>
-                      <SubsectionButton title="Background" onClick={() => openDialog('shapeTrail-background')} />
-                      <SubsectionButton title="Shape" onClick={() => openDialog('shapeTrail-shape')} />
-                      <SubsectionButton title="Path" onClick={() => openDialog('shapeTrail-path')} />
-                      <SubsectionButton title="Animation" onClick={() => openDialog('shapeTrail-animation')} />
                     </>
                   )}
                 </div>

@@ -8,7 +8,6 @@ import WavesLayer from './components/WavesLayer'
 import RibbonLayer from './components/RibbonLayer'
 import DandelionLayer from './components/DandelionLayer'
 import ParticleRingLayer from './components/ParticleRingLayer'
-import ShapeTrailLayer from './components/ShapeTrailLayer'
 import TessellationLayer from './components/TessellationLayer'
 import EffectsLayer from './components/EffectsLayer'
 import TextLayer from './components/TextLayer'
@@ -30,7 +29,6 @@ function App() {
   const ribbonConfig = useStore((state) => state.ribbonConfig)
   const dandelionConfig = useStore((state) => state.dandelionConfig)
   const particleRingConfig = useStore((state) => state.particleRingConfig)
-  const shapeTrailConfig = useStore((state) => state.shapeTrailConfig)
   const tessellationConfig = useStore((state) => state.tessellationConfig)
   const effectsConfig = useStore((state) => state.effectsConfig)
   const textSections = useStore((state) => state.textSections)
@@ -177,9 +175,6 @@ function App() {
           )}
           {backgroundType === 'particleRing' && (
             <ParticleRingLayer config={particleRingConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
-          )}
-          {backgroundType === 'shapeTrail' && (
-            <ShapeTrailLayer config={shapeTrailConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
           )}
         </div>
 
