@@ -4,6 +4,7 @@ import {
   Palette, GridFour, Sparkle, TextT, Waveform,
   Shuffle, DotsSixVertical, Camera,
   Pause, Play, FloppyDisk, Images, PaintBrushBroad, ArrowsInSimple, ArrowsOutSimple,
+  Moon, Sun,
 } from '@phosphor-icons/react'
 import { InputPanel } from './InputControls'
 import { cn } from '@/lib/utils'
@@ -12,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import useStore from '../../store/useStore'
+import { useThemedConfig } from '../../hooks/useThemedConfig'
 import {
   GradientPanel,
   PatternPanel,
@@ -39,8 +41,7 @@ export const DesktopPanel = ({
   const setActivePanel = useStore((state) => state.setActivePanel)
   const backgroundType = useStore((state) => state.backgroundType)
   const setBackgroundType = useStore((state) => state.setBackgroundType)
-  const gradientConfig = useStore((state) => state.gradientConfig)
-  const setGradientConfig = useStore((state) => state.setGradientConfig)
+  const [gradientConfig, setGradientConfig] = useThemedConfig('gradientConfig')
   const auroraConfig = useStore((state) => state.auroraConfig)
   const setAuroraConfig = useStore((state) => state.setAuroraConfig)
   const blobConfig = useStore((state) => state.blobConfig)
@@ -49,8 +50,9 @@ export const DesktopPanel = ({
   const setFluidConfig = useStore((state) => state.setFluidConfig)
   const wavesConfig = useStore((state) => state.wavesConfig)
   const setWavesConfig = useStore((state) => state.setWavesConfig)
-  const ribbonConfig = useStore((state) => state.ribbonConfig)
-  const setRibbonConfig = useStore((state) => state.setRibbonConfig)
+  const [ribbonConfig, setRibbonConfig] = useThemedConfig('ribbonConfig')
+  const editorThemeMode = useStore((state) => state.editorThemeMode)
+  const setEditorThemeMode = useStore((state) => state.setEditorThemeMode)
   const dandelionConfig = useStore((state) => state.dandelionConfig)
   const setDandelionConfig = useStore((state) => state.setDandelionConfig)
   const particleRingConfig = useStore((state) => state.particleRingConfig)
@@ -65,8 +67,7 @@ export const DesktopPanel = ({
   const setTextSections = useStore((state) => state.setTextSections)
   const textGap = useStore((state) => state.textGap)
   const setTextGap = useStore((state) => state.setTextGap)
-  const textConfig = useStore((state) => state.textConfig)
-  const setTextConfig = useStore((state) => state.setTextConfig)
+  const [textConfig, setTextConfig] = useThemedConfig('textConfig')
   const colorPalette = useStore((state) => state.colorPalette)
   const isPaused = useStore((state) => state.isPaused)
   const setIsPaused = useStore((state) => state.setIsPaused)
@@ -118,6 +119,15 @@ export const DesktopPanel = ({
           </Button>
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onShowCapture} disabled={isCapturing}>
             <Camera size={16} weight={isCapturing ? 'fill' : 'regular'} />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => setEditorThemeMode(editorThemeMode === 'dark' ? 'light' : 'dark')}
+            title={editorThemeMode === 'dark' ? 'Preview Light Mode' : 'Preview Dark Mode'}
+          >
+            {editorThemeMode === 'dark' ? <Moon size={16} /> : <Sun size={16} weight="fill" />}
           </Button>
         </div>
         <div className="text-muted-foreground"><DotsSixVertical size={16} weight="bold" /></div>

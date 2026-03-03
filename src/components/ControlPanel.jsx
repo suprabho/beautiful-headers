@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import useStore from '../store/useStore'
+import { useThemedConfig } from '../hooks/useThemedConfig'
 import { useRandomize } from '../hooks/useRandomize'
 import { usePanelDrag } from '../hooks/usePanelDrag'
 import { useSceneSave } from '../hooks/useSceneSave'
@@ -14,8 +15,7 @@ const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
   // Minimal store subscriptions — only what the orchestrator needs
   const colorPalette = useStore((state) => state.colorPalette)
   const setColorPalette = useStore((state) => state.setColorPalette)
-  const gradientConfig = useStore((state) => state.gradientConfig)
-  const setGradientConfig = useStore((state) => state.setGradientConfig)
+  const [gradientConfig, setGradientConfig] = useThemedConfig('gradientConfig')
 
   // Mobile detection
   const [isMobile, setIsMobile] = useState(false)

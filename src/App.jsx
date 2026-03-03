@@ -14,6 +14,7 @@ import EffectsLayer from './components/EffectsLayer'
 import TextLayer from './components/TextLayer'
 import ControlPanel from './components/ControlPanel'
 import useStore from './store/useStore'
+import { useThemedConfig } from './hooks/useThemedConfig'
 import { getScenes, getScene } from './lib/scenesApi'
 import './App.css'
 
@@ -23,11 +24,11 @@ function App() {
   const setMousePos = useStore((state) => state.setMousePos)
   const mouseConfig = useStore((state) => state.mouseConfig)
   const backgroundType = useStore((state) => state.backgroundType)
-  const gradientConfig = useStore((state) => state.gradientConfig)
+  const [gradientConfig] = useThemedConfig('gradientConfig')
   const auroraConfig = useStore((state) => state.auroraConfig)
   const fluidConfig = useStore((state) => state.fluidConfig)
   const wavesConfig = useStore((state) => state.wavesConfig)
-  const ribbonConfig = useStore((state) => state.ribbonConfig)
+  const [ribbonConfig] = useThemedConfig('ribbonConfig')
   const dandelionConfig = useStore((state) => state.dandelionConfig)
   const particleRingConfig = useStore((state) => state.particleRingConfig)
   const shapeTrailConfig = useStore((state) => state.shapeTrailConfig)
@@ -35,7 +36,7 @@ function App() {
   const effectsConfig = useStore((state) => state.effectsConfig)
   const textSections = useStore((state) => state.textSections)
   const textGap = useStore((state) => state.textGap)
-  const textConfig = useStore((state) => state.textConfig)
+  const [textConfig] = useThemedConfig('textConfig')
   const isPaused = useStore((state) => state.isPaused)
   const loadSceneData = useStore((state) => state.loadSceneData)
   const currentSceneId = useStore((state) => state.currentSceneId)

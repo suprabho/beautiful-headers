@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { parsePaletteJson } from '@/lib/colorConversion'
 import useStore from '../../store/useStore'
+import { useThemedConfig } from '../../hooks/useThemedConfig'
 import {
   ControlGroup,
   NumberInput,
@@ -72,8 +73,7 @@ export const getDialogTitle = (key, textSections) => {
 }
 
 export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
-  const gradientConfig = useStore((state) => state.gradientConfig)
-  const setGradientConfig = useStore((state) => state.setGradientConfig)
+  const [gradientConfig, setGradientConfig] = useThemedConfig('gradientConfig')
   const auroraConfig = useStore((state) => state.auroraConfig)
   const setAuroraConfig = useStore((state) => state.setAuroraConfig)
   const blobConfig = useStore((state) => state.blobConfig)
@@ -98,8 +98,7 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
   const setTextSections = useStore((state) => state.setTextSections)
   const textGap = useStore((state) => state.textGap)
   const setTextGap = useStore((state) => state.setTextGap)
-  const textConfig = useStore((state) => state.textConfig)
-  const setTextConfig = useStore((state) => state.setTextConfig)
+  const [textConfig, setTextConfig] = useThemedConfig('textConfig')
   const colorPalette = useStore((state) => state.colorPalette)
 
   const parsedPalette = colorPalette ? parsePaletteJson(colorPalette) : null

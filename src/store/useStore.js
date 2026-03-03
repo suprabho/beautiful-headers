@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { deepMerge } from '../lib/themeUtils'
 
 // localStorage key for color palette
 const COLOR_PALETTE_STORAGE_KEY = 'aura-color-palette'
@@ -605,6 +606,28 @@ const useStore = create((set, get) => ({
     set({ colorPalette: null })
   },
 
+  // Theme overrides (dark is the base config, light stores only differences)
+  themeOverrides: { light: {} },
+  editorThemeMode: 'dark', // 'dark' | 'light' — which mode the editor previews
+  setEditorThemeMode: (mode) => set({ editorThemeMode: mode }),
+  setThemeOverrides: (overrides) => set({ themeOverrides: overrides }),
+  setLightOverride: (configKey, partialOverride) => set((state) => ({
+    themeOverrides: {
+      ...state.themeOverrides,
+      light: {
+        ...state.themeOverrides.light,
+        [configKey]: deepMerge(
+          state.themeOverrides.light[configKey] || {},
+          partialOverride
+        ),
+      },
+    },
+  })),
+  clearLightOverride: (configKey) => set((state) => {
+    const { [configKey]: _, ...rest } = state.themeOverrides.light
+    return { themeOverrides: { ...state.themeOverrides, light: rest } }
+  }),
+
   // Audio reactivity config
   audioConfig: {
     enabled: false,
@@ -648,6 +671,7 @@ const useStore = create((set, get) => ({
       selectedProjectIds: state.selectedProjectIds,
       audioConfig: { ...state.audioConfig, enabled: false, fileName: null },
       inputEnabled: state.inputEnabled,
+      themeOverrides: state.themeOverrides,
     }
   },
 
@@ -691,6 +715,7 @@ const useStore = create((set, get) => ({
       ...(sceneData.audioConfig && { audioConfig: { ...sceneData.audioConfig, enabled: false, fileName: null } }),
       ...(sceneData.mouseConfig && { mouseConfig: sceneData.mouseConfig }),
       ...(sceneData.inputEnabled !== undefined && { inputEnabled: sceneData.inputEnabled }),
+      ...(sceneData.themeOverrides && { themeOverrides: sceneData.themeOverrides }),
     })
   },
 }))

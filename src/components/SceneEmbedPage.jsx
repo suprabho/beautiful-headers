@@ -3,6 +3,8 @@ import { useParams, useSearchParams } from 'react-router-dom'
 import { CircleNotch } from '@phosphor-icons/react'
 import { getSceneBySlug } from '@/lib/scenesApi'
 import { useDocumentMeta } from '@/hooks/useDocumentMeta'
+import { useColorMode } from '@/hooks/useColorMode'
+import { resolveThemedConfigs } from '@/lib/themeUtils'
 import { audioData } from '@/audio/audioData'
 import '../App.css'
 import GradientLayer from './GradientLayer'
@@ -157,11 +159,11 @@ function SceneEmbedPage() {
     }
   }, [slug])
 
-  // Build the gradient filter string
-  const getGradientFilter = () => {
+  // Build the gradient filter string (uses resolved sceneData below)
+  const getGradientFilter = (resolvedEffects, resolvedBgType) => {
     if (!scene?.scene_data) return 'none'
-    const effectsConfig = scene.scene_data.effectsConfig || {}
-    const backgroundType = scene.scene_data.backgroundType || 'liquid'
+    const effectsConfig = resolvedEffects
+    const backgroundType = resolvedBgType
 
     if (backgroundType === 'liquid') {
       return effectsConfig.blur > 0 ? `blur(${effectsConfig.blur}px)` : 'none'
@@ -202,7 +204,8 @@ function SceneEmbedPage() {
     )
   }
 
-  const sceneData = scene.scene_data || {}
+  const colorMode = useColorMode(searchParams)
+  const sceneData = resolveThemedConfigs(scene.scene_data || {}, colorMode)
   const backgroundType = sceneData.backgroundType || 'liquid'
   const gradientConfig = sceneData.gradientConfig || {}
   const tessellationConfig = sceneData.tessellationConfig || {}
@@ -235,7 +238,7 @@ function SceneEmbedPage() {
               position: 'absolute',
               inset: 0,
               zIndex: 1,
-              filter: getGradientFilter(),
+              filter: getGradientFilter(effectsConfig, backgroundType),
             }}
           >
             {backgroundType === 'simple' && (
