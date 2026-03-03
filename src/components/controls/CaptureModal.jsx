@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 
 export const CaptureModal = ({ open, onOpenChange, isCapturing, onCapture }) => (
   <Dialog open={open} onOpenChange={onOpenChange}>
-    <DialogContent>
+    <DialogContent className="sm:max-w-md">
       <DialogHeader>
         <DialogTitle>{isCapturing ? 'Exporting...' : 'Export Image'}</DialogTitle>
         <DialogDescription>
