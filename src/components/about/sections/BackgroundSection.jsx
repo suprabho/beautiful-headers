@@ -29,9 +29,11 @@ const BACKGROUND_TYPES = [
 
 export function BackgroundSection({ dbScene }) {
   const sd = dbScene?.scene_data
+  // Detect the mapped scene's background type first
+  const detectedType = sd?.backgroundType || fallback.backgroundType
   const [userBgType, setUserBgType] = useState(null)
-  const backgroundType = userBgType ?? sd?.backgroundType ?? fallback.backgroundType
-  const gradientConfig = sd?.gradientConfig || makeGradientConfig(fallback.colors)
+  const backgroundType = userBgType ?? detectedType
+  const gradientConfig = sd?.gradientConfig || makeGradientConfig(sd?.gradientConfig?.colors || fallback.colors)
 
   return (
     <FeatureCard

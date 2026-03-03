@@ -10,16 +10,16 @@ import { SECTION_SCENES } from './sectionScenes'
 // backgroundType matches the section's backgroundType.
 // ──────────────────────────────────────────────────────────
 export const SECTION_SLUG_OVERRIDES = {
-  hero:        null, // auto-match: liquid
-  background:  null, // auto-match: waves
-  icons:       null, // auto-match: aurora
-  effects:     null, // auto-match: fluid
-  flutedGlass: null, // auto-match: ribbon
-  text:        null, // auto-match: liquid
-  input:       null, // auto-match: dandelion
-  theme:       null, // auto-match: liquid
-  palettes:    null, // auto-match: liquid
-  embed:       null, // auto-match: particleRing
+  hero:        'magenta-wavy-gradient-header-dynamic-website-design',
+  background:  'bright-morning-ribbon-header-energetic-sunrise-flow', // auto-match: waves
+  icons:       'late-night-waves-moonlit-harbour-swell', // auto-match: aurora
+  effects:     'aura-blue-gradient-stunning-website-header-design', // auto-match: fluid
+  flutedGlass: 'dynamic-blue-green-gradient-modern-abstract-visuals', // auto-match: ribbon
+  text:        'mediterranean-coast-simple-azure-serenity', // auto-match: liquid
+  input:       'sakura-garden-dandelion-cherry-blossom-drift', // auto-match: dandelion
+  theme:       'late-night-ribbon-jazz-club-velvet-curtain', // auto-match: liquid
+  palettes:    'coral-turquoise-ribbon-bold-tropical-wave-header', // auto-match: liquid
+  embed:       'teal-gradient-background-modern-wavy-website-header', // auto-match: particleRing
 }
 
 /**
@@ -60,9 +60,14 @@ export function useSectionScenes() {
           if (match) {
             map[section.id] = match
             usedIds.add(match.id)
+          } else if (slug) {
+            console.warn(`[sectionSceneMap] No match for "${section.id}" (slug: "${slug}"). Available slugs:`, docs.map(d => d.slug || titleToSlug(d.title)))
           }
         }
 
+        console.log('[sectionSceneMap] Resolved map:', Object.fromEntries(
+          Object.entries(map).map(([k, v]) => [k, { title: v.title, type: v.scene_data?.backgroundType }])
+        ))
         setSceneMap(map)
       })
       .catch(() => {})

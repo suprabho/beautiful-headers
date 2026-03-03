@@ -1,43 +1,44 @@
 import { MiniSceneRenderer } from './MiniSceneRenderer'
+import {
+  DEFAULT_EFFECTS_CONFIG,
+  DEFAULT_AURORA_CONFIG,
+  DEFAULT_FLUID_CONFIG,
+  DEFAULT_WAVES_CONFIG,
+  DEFAULT_RIBBON_CONFIG,
+  DEFAULT_DANDELION_CONFIG,
+  DEFAULT_PARTICLE_RING_CONFIG,
+  makeGradientConfig,
+  getScene,
+} from './sectionScenes'
 
-const HERO_GRADIENT_CONFIG = {
-  colors: ['#b80038', '#fdf7f2', '#004d9c', '#00999a'],
-  numColors: 4,
-  type: 'radial',
-  startPos: { x: 0, y: 0 },
-  endPos: { x: 100, y: 100 },
-  colorStops: [0, 33, 66, 100],
-  waveIntensity: 0.3,
-  mouseInfluence: 0.5,
-  decaySpeed: 0.95,
-  wave1Speed: 0.2,
-  wave1Direction: 1,
-  wave2Speed: 0.15,
-  wave2Direction: -1,
-}
+const fallback = getScene('hero')
+
+const HERO_GRADIENT_CONFIG = makeGradientConfig(fallback.colors)
 
 const HERO_EFFECTS_CONFIG = {
-  blur: 0,
-  texture: 'none',
-  textureSize: 20,
-  textureOpacity: 0.5,
-  textureBlendMode: 'overlay',
-  colorMap: 'none',
-  vignetteIntensity: 0.3,
-  saturation: 100,
-  contrast: 100,
-  brightness: 100,
+  ...DEFAULT_EFFECTS_CONFIG,
   flutedGlass: { enabled: false },
 }
 
-export function AboutHeroSection() {
+export function AboutHeroSection({ dbScene }) {
+  const sd = dbScene?.scene_data
+  const backgroundType = sd?.backgroundType ?? fallback.backgroundType
+  const gradientConfig = sd?.gradientConfig || HERO_GRADIENT_CONFIG
+  const effectsConfig = sd?.effectsConfig || HERO_EFFECTS_CONFIG
+
   return (
     <div className="relative w-full h-[300px] md:h-[360px] overflow-hidden">
       {/* Live background */}
       <MiniSceneRenderer
-        backgroundType="liquid"
-        gradientConfig={HERO_GRADIENT_CONFIG}
-        effectsConfig={HERO_EFFECTS_CONFIG}
+        backgroundType={backgroundType}
+        gradientConfig={gradientConfig}
+        effectsConfig={effectsConfig}
+        auroraConfig={sd?.auroraConfig || DEFAULT_AURORA_CONFIG}
+        fluidConfig={sd?.fluidConfig || DEFAULT_FLUID_CONFIG}
+        wavesConfig={sd?.wavesConfig || DEFAULT_WAVES_CONFIG}
+        ribbonConfig={sd?.ribbonConfig || DEFAULT_RIBBON_CONFIG}
+        dandelionConfig={sd?.dandelionConfig || DEFAULT_DANDELION_CONFIG}
+        particleRingConfig={sd?.particleRingConfig || DEFAULT_PARTICLE_RING_CONFIG}
       />
 
       {/* Overlay content */}

@@ -6,7 +6,12 @@ import {
   getScene,
   makeGradientConfig,
   DEFAULT_EFFECTS_CONFIG,
+  DEFAULT_AURORA_CONFIG,
   DEFAULT_FLUID_CONFIG,
+  DEFAULT_WAVES_CONFIG,
+  DEFAULT_RIBBON_CONFIG,
+  DEFAULT_DANDELION_CONFIG,
+  DEFAULT_PARTICLE_RING_CONFIG,
 } from '../sectionScenes'
 
 const fallback = getScene('effects')
@@ -41,7 +46,12 @@ export function EffectsSection({ dbScene }) {
           backgroundType={sd?.backgroundType || fallback.backgroundType}
           gradientConfig={gradientConfig}
           effectsConfig={effectsConfig}
+          auroraConfig={sd?.auroraConfig || DEFAULT_AURORA_CONFIG}
           fluidConfig={sd?.fluidConfig || DEFAULT_FLUID_CONFIG}
+          wavesConfig={sd?.wavesConfig || DEFAULT_WAVES_CONFIG}
+          ribbonConfig={sd?.ribbonConfig || DEFAULT_RIBBON_CONFIG}
+          dandelionConfig={sd?.dandelionConfig || DEFAULT_DANDELION_CONFIG}
+          particleRingConfig={sd?.particleRingConfig || DEFAULT_PARTICLE_RING_CONFIG}
           showEffects={true}
         />
       )}

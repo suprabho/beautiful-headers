@@ -41,7 +41,7 @@ export function AboutAuraModal({ open, onOpenChange }) {
         <ScrollRootContext.Provider value={scrollElement}>
           <div ref={setScrollElement} className="overflow-y-auto flex-1 rounded-2xl">
             {/* Hero */}
-            <AboutHeroSection />
+            <AboutHeroSection dbScene={sceneMap.hero} />
 
             {/* Feature cards grid */}
             <div className="p-4 md:p-8">
