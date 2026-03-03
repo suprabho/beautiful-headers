@@ -1,5 +1,4 @@
 import html2canvas from 'html2canvas'
-import { prepareForCapture } from '@/lib/colorConversion'
 
 const TEXT_FONT_FAMILIES = {
   'sans-serif': "'Manrope', sans-serif",
@@ -87,11 +86,25 @@ export const drawTextToCanvas = (ctx, canvasWidth, canvasHeight, textData, scale
     currentY += lineHeight + scaledGap
   })
 
-  // Composite with mix-blend-mode: difference (matches TextLayer)
-  ctx.save()
-  ctx.globalCompositeOperation = 'difference'
-  ctx.drawImage(offscreen, 0, 0)
-  ctx.restore()
+  // Manual difference blend — canvas globalCompositeOperation='difference'
+  // does not match CSS mix-blend-mode:difference in all browsers, so we
+  // compute the blend per-pixel.  Opacity is already baked into the
+  // offscreen pixel alpha via offCtx.globalAlpha, so we use it directly.
+  const backdrop = ctx.getImageData(0, 0, canvasWidth, canvasHeight)
+  const bd = backdrop.data
+  const textImg = offCtx.getImageData(0, 0, canvasWidth, canvasHeight)
+  const tp = textImg.data
+
+  for (let i = 0; i < bd.length; i += 4) {
+    const srcA = tp[i + 3]
+    if (srcA === 0) continue
+    const a = srcA / 255 // opacity already included
+    bd[i]     = Math.round(a * Math.abs(bd[i]     - tp[i])     + (1 - a) * bd[i])
+    bd[i + 1] = Math.round(a * Math.abs(bd[i + 1] - tp[i + 1]) + (1 - a) * bd[i + 1])
+    bd[i + 2] = Math.round(a * Math.abs(bd[i + 2] - tp[i + 2]) + (1 - a) * bd[i + 2])
+  }
+
+  ctx.putImageData(backdrop, 0, 0)
 }
 
 /**
@@ -290,11 +303,122 @@ export const captureLayersToCanvas = async (container, effectsConfig, { scale = 
       }
     }
 
-    // Draw text at absolute positions computed from row sizes + gap.
-    // This avoids the fragile animation-pause approach and produces
-    // deterministic spacing regardless of the float-animation cycle.
+    // Capture text layer via html2canvas to preserve CSS mix-blend-mode:difference.
+    // We set absolute positions and dimensions on each text section so html2canvas
+    // sees simple absolutely-positioned elements instead of flexbox layout (which
+    // html2canvas doesn't handle reliably).
     if (!hideText && textData?.sections?.length) {
-      drawTextToCanvas(ctx, outputCanvas.width, outputCanvas.height, textData, scale)
+      const textLayer = container.querySelector('.text-layer')
+      if (textLayer) {
+        // Pause text-float animation and reset transform
+        const pauseStyle = document.createElement('style')
+        pauseStyle.textContent = '.text-layer .text-section { animation: none !important; transform: translateY(0px) !important; }'
+        document.head.appendChild(pauseStyle)
+
+        const containerW = textLayer.offsetWidth
+        const containerH = textLayer.offsetHeight
+
+        const textSectionEls = textLayer.querySelectorAll('.text-section')
+        const savedStyles = []
+
+        // Step 1: Override to desktop font sizes while still in flexbox layout
+        // so we can measure the actual rendered heights.
+        textSectionEls.forEach((el, i) => {
+          savedStyles.push({
+            position: el.style.position,
+            top: el.style.top,
+            left: el.style.left,
+            width: el.style.width,
+            height: el.style.height,
+            fontSize: el.style.fontSize,
+            marginBottom: el.style.marginBottom,
+          })
+          if (textData.sections[i]) {
+            el.style.fontSize = `${textData.sections[i].size}px`
+          }
+        })
+
+        // Force reflow so font sizes take effect
+        void textLayer.offsetHeight
+
+        // Step 2: Measure actual rendered heights from the DOM
+        const rowHeights = Array.from(textSectionEls).map((el) => el.offsetHeight)
+        const totalTextHeight =
+          rowHeights.reduce((sum, h) => sum + h, 0) +
+          (rowHeights.length - 1) * textData.gap
+
+        // Vertically center the text block
+        let currentY = (containerH - totalTextHeight) / 2
+
+        // Step 3: Switch to absolute positioning with measured heights
+        const savedLayerStyles = {
+          display: textLayer.style.display,
+          flexDirection: textLayer.style.flexDirection,
+          alignItems: textLayer.style.alignItems,
+          justifyContent: textLayer.style.justifyContent,
+          gap: textLayer.style.gap,
+          position: textLayer.style.position,
+        }
+
+        textLayer.style.display = 'block'
+        textLayer.style.position = 'relative'
+        textLayer.style.gap = '0px'
+
+        textSectionEls.forEach((el, i) => {
+          const sectionHeight = rowHeights[i] || 0
+
+          el.style.position = 'absolute'
+          el.style.top = `${currentY}px`
+          el.style.left = '0px'
+          el.style.width = `${containerW}px`
+          el.style.height = `${sectionHeight}px`
+          el.style.marginBottom = '0px'
+
+          currentY += sectionHeight + textData.gap
+        })
+
+        // Force reflow so style overrides take effect before capture
+        void textLayer.offsetHeight
+
+        try {
+          const textCanvas = await html2canvas(textLayer, {
+            useCORS: true,
+            allowTaint: true,
+            scale,
+            backgroundColor: null,
+            logging: false,
+          })
+
+          ctx.drawImage(textCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
+        } catch (err) {
+          // Fallback to programmatic drawing if html2canvas fails
+          console.warn('html2canvas text capture failed, falling back to canvas drawing:', err)
+          drawTextToCanvas(ctx, outputCanvas.width, outputCanvas.height, textData, scale)
+        }
+
+        // Restore original styles
+        textSectionEls.forEach((el, i) => {
+          if (savedStyles[i]) {
+            el.style.position = savedStyles[i].position
+            el.style.top = savedStyles[i].top
+            el.style.left = savedStyles[i].left
+            el.style.width = savedStyles[i].width
+            el.style.height = savedStyles[i].height
+            el.style.fontSize = savedStyles[i].fontSize
+            el.style.marginBottom = savedStyles[i].marginBottom
+          }
+        })
+        textLayer.style.display = savedLayerStyles.display
+        textLayer.style.flexDirection = savedLayerStyles.flexDirection
+        textLayer.style.alignItems = savedLayerStyles.alignItems
+        textLayer.style.justifyContent = savedLayerStyles.justifyContent
+        textLayer.style.gap = savedLayerStyles.gap
+        textLayer.style.position = savedLayerStyles.position
+        document.head.removeChild(pauseStyle)
+      } else {
+        // Text layer not in DOM — fall back to programmatic drawing
+        drawTextToCanvas(ctx, outputCanvas.width, outputCanvas.height, textData, scale)
+      }
     }
   }
 

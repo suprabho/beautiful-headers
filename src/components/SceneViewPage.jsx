@@ -261,6 +261,7 @@ function SceneViewPage() {
         {
           scale: 2,
           mode: 'all',
+          targetAspectRatio: 16 / 9,
           textData: sceneTextConfig.enabled ? {
             sections: scene?.scene_data?.textSections || [],
             gap: scene?.scene_data?.textGap || 0,
@@ -308,6 +309,7 @@ function SceneViewPage() {
         {
           scale: 2,
           mode: 'all',
+          targetAspectRatio: 16 / 9,
           textData: reviewTextConfig.enabled ? {
             sections: scene?.scene_data?.textSections || [],
             gap: scene?.scene_data?.textGap || 0,
