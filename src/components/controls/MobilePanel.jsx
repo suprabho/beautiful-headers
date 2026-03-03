@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Palette, GridFour, Sparkle, TextT, Waveform,
-  Shuffle, Plus, Camera, Check, ArrowCounterClockwise,
+  Shuffle, Plus, Camera, Check, ArrowCounterClockwise, Info,
   CaretCircleUp, CaretCircleDown,
   Pause, Play, FloppyDisk, Images, PaintBrushBroad,
 } from '@phosphor-icons/react'
@@ -34,7 +34,7 @@ const tabs = [
   { id: 'audio', label: 'Input', icon: Waveform },
 ]
 
-export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapture, audioAnalyser }) => {
+export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapture, onShowAbout, audioAnalyser }) => {
   const navigate = useNavigate()
   const [isMobileCollapsed, setIsMobileCollapsed] = useState(true)
 
@@ -90,6 +90,9 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
           </Button>
           <Button variant="outline" size="sm" className="bg-background/30 backdrop-blur-md flex items-center gap-2 h-10 px-3 border-primary/50" onClick={onShowCapture}>
             <Camera size={18} />
+          </Button>
+          <Button variant="outline" size="sm" className="bg-background/30 backdrop-blur-md flex items-center gap-2 h-10 px-3 border-primary/50" onClick={onShowAbout} title="About Aura">
+            <Info size={18} />
           </Button>
         </div>
       </div>

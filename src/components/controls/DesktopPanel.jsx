@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Palette, GridFour, Sparkle, TextT, Waveform,
-  Shuffle, DotsSixVertical, Camera,
+  Shuffle, DotsSixVertical, Camera, Info,
   Pause, Play, FloppyDisk, Images, PaintBrushBroad, ArrowsInSimple, ArrowsOutSimple,
   Moon, Sun,
 } from '@phosphor-icons/react'
@@ -31,7 +31,7 @@ const tabs = [
 
 export const DesktopPanel = ({
   panelRef, position, isDragging, handleMouseDown,
-  isCapturing, onRandomize, onShowPalette, onShowSave, onShowCapture,
+  isCapturing, onRandomize, onShowPalette, onShowSave, onShowCapture, onShowAbout,
   audioAnalyser,
 }) => {
   const navigate = useNavigate()
@@ -109,6 +109,9 @@ export const DesktopPanel = ({
           </Button>
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onShowCapture} disabled={isCapturing}>
             <Camera size={16} weight={isCapturing ? 'fill' : 'regular'} />
+          </Button>
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onShowAbout} title="About Aura">
+            <Info size={16} />
           </Button>
           <Button
             variant="ghost"
