@@ -1,6 +1,99 @@
 import html2canvas from 'html2canvas'
 import { prepareForCapture } from '@/lib/colorConversion'
 
+const TEXT_FONT_FAMILIES = {
+  'sans-serif': "'Manrope', sans-serif",
+  'serif': "'Playfair Display', serif",
+  'mono': "'Space Grotesk', monospace",
+  'scribble': "'Pacifico', cursive",
+}
+
+/**
+ * Draw text sections directly onto the canvas at absolute positions
+ * computed from font sizes and the configured gap — no animation pausing needed.
+ */
+const drawTextToCanvas = (ctx, canvasWidth, canvasHeight, textData, scale) => {
+  const { sections, gap, color = '#ffffff', opacity = 1 } = textData
+  if (!sections?.length) return
+
+  // Match TextLayer.jsx responsive breakpoints
+  const viewportWidth = canvasWidth / scale
+  let responsiveScale = 1
+  if (viewportWidth <= 480) responsiveScale = 0.35
+  else if (viewportWidth <= 768) responsiveScale = 0.65
+  else if (viewportWidth <= 1024) responsiveScale = 0.85
+
+  const getResponsiveFontSize = (baseSize) =>
+    responsiveScale < 1 ? Math.max(14, Math.round(baseSize * responsiveScale)) : baseSize
+
+  const scaledGap = Math.round(gap * responsiveScale) * scale
+
+  // Parse hex colour for shadow rgba values
+  const cleaned = (color || '#ffffff').replace('#', '').trim()
+  const rgb = {
+    r: parseInt(cleaned.slice(0, 2), 16),
+    g: parseInt(cleaned.slice(2, 4), 16),
+    b: parseInt(cleaned.slice(4, 6), 16),
+  }
+
+  // Measure each section so we know the total block height
+  const sectionMetrics = sections.map((section) => {
+    const fontSize = getResponsiveFontSize(section.size) * scale
+    const fontFamily = TEXT_FONT_FAMILIES[section.font] || TEXT_FONT_FAMILIES['sans-serif']
+    const fontStyle = section.italic ? 'italic' : 'normal'
+    const letterSpacingPx = section.spacing * fontSize // em → px
+    const lineHeight = fontSize * 1.2 // approximate default line-height
+
+    return { section, fontSize, fontFamily, fontStyle, letterSpacingPx, lineHeight }
+  })
+
+  const totalHeight =
+    sectionMetrics.reduce((sum, m) => sum + m.lineHeight, 0) +
+    (sectionMetrics.length - 1) * scaledGap
+
+  // Draw text + shadows onto an offscreen canvas, then composite with 'difference'
+  const offscreen = document.createElement('canvas')
+  offscreen.width = canvasWidth
+  offscreen.height = canvasHeight
+  const offCtx = offscreen.getContext('2d')
+
+  offCtx.globalAlpha = opacity
+  offCtx.textAlign = 'center'
+  offCtx.textBaseline = 'top'
+
+  let currentY = (canvasHeight - totalHeight) / 2
+
+  sectionMetrics.forEach(({ section, fontSize, fontFamily, fontStyle, letterSpacingPx, lineHeight }) => {
+    offCtx.font = `${fontStyle} ${section.weight} ${fontSize}px ${fontFamily}`
+    if ('letterSpacing' in offCtx) {
+      offCtx.letterSpacing = `${letterSpacingPx}px`
+    }
+    offCtx.fillStyle = color
+
+    const x = canvasWidth / 2
+    const textY = currentY + (lineHeight - fontSize) / 2
+
+    // Combined shadow approximating the CSS text-shadow stack
+    offCtx.shadowColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.3)`
+    offCtx.shadowBlur = 40 * scale
+    offCtx.shadowOffsetX = 0
+    offCtx.shadowOffsetY = 2 * scale
+    offCtx.fillText(section.text, x, textY)
+
+    offCtx.shadowColor = 'transparent'
+    offCtx.shadowBlur = 0
+    offCtx.shadowOffsetY = 0
+
+    currentY += lineHeight + scaledGap
+  })
+
+  // Composite with mix-blend-mode: difference (matches TextLayer)
+  ctx.save()
+  ctx.globalCompositeOperation = 'difference'
+  ctx.drawImage(offscreen, 0, 0)
+  ctx.restore()
+}
+
 /**
  * Draw texture patterns directly to a canvas context.
  */
@@ -128,8 +221,10 @@ export const resizeThumbnailForAI = (base64Data, maxWidth = 800) => {
  * @param {object} options - { scale, mode }
  *   - scale: Resolution multiplier (default 2)
  *   - mode: 'all' captures tessellation + text layers, 'background' skips them
+ *   - textData: { sections, gap, color, opacity } — when provided, text is drawn
+ *     at absolute positions computed from row sizes + gap instead of capturing the DOM
  */
-export const captureLayersToCanvas = async (container, effectsConfig, { scale = 2, mode = 'all', targetAspectRatio = null } = {}) => {
+export const captureLayersToCanvas = async (container, effectsConfig, { scale = 2, mode = 'all', targetAspectRatio = null, textData = null } = {}) => {
   const width = container.offsetWidth
   const height = container.offsetHeight
 
@@ -193,47 +288,11 @@ export const captureLayersToCanvas = async (container, effectsConfig, { scale = 
       ctx.drawImage(tessCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
     }
 
-    const textLayer = container.querySelector('.text-layer')
-    if (textLayer) {
-      const textSections = textLayer.querySelectorAll('.text-section')
-
-      // html2canvas doesn't reliably support the CSS `gap` property on flex
-      // containers, so read the computed gap and convert it to margin-top on
-      // each section (except the first). Also freeze the float animation so
-      // every row sits at its natural position.
-      const computedGap = parseFloat(getComputedStyle(textLayer).gap) || 0
-      const savedGap = textLayer.style.gap
-      textLayer.style.gap = '0px'
-
-      const savedStyles = Array.from(textSections).map((el) => ({
-        animation: el.style.animation,
-        transform: el.style.transform,
-        marginTop: el.style.marginTop,
-      }))
-      textSections.forEach((el, i) => {
-        el.style.animation = 'none'
-        el.style.transform = 'translateY(0px)'
-        if (i > 0) {
-          el.style.marginTop = `${computedGap}px`
-        }
-      })
-
-      const textCanvas = await html2canvas(textLayer, {
-        useCORS: true,
-        allowTaint: true,
-        scale: scale,
-        backgroundColor: null,
-        logging: false,
-      })
-      ctx.drawImage(textCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
-
-      // Restore original styles
-      textLayer.style.gap = savedGap
-      textSections.forEach((el, i) => {
-        el.style.animation = savedStyles[i].animation
-        el.style.transform = savedStyles[i].transform
-        el.style.marginTop = savedStyles[i].marginTop
-      })
+    // Draw text at absolute positions computed from row sizes + gap.
+    // This avoids the fragile animation-pause approach and produces
+    // deterministic spacing regardless of the float-animation cycle.
+    if (textData?.sections?.length) {
+      drawTextToCanvas(ctx, outputCanvas.width, outputCanvas.height, textData, scale)
     }
   }
 
