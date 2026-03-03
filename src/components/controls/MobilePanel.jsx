@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import useStore from '../../store/useStore'
+import { useThemedConfig } from '../../hooks/useThemedConfig'
 import { useMobileDialogs } from '../../hooks/useMobileDialogs'
 import {
   SubsectionButton,
@@ -41,16 +42,14 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
   const setActivePanel = useStore((state) => state.setActivePanel)
   const backgroundType = useStore((state) => state.backgroundType)
   const setBackgroundType = useStore((state) => state.setBackgroundType)
-  const gradientConfig = useStore((state) => state.gradientConfig)
-  const setGradientConfig = useStore((state) => state.setGradientConfig)
+  const [gradientConfig, setGradientConfig] = useThemedConfig('gradientConfig')
   const tessellationConfig = useStore((state) => state.tessellationConfig)
   const setTessellationConfig = useStore((state) => state.setTessellationConfig)
   const effectsConfig = useStore((state) => state.effectsConfig)
   const setEffectsConfig = useStore((state) => state.setEffectsConfig)
   const textSections = useStore((state) => state.textSections)
   const setTextSections = useStore((state) => state.setTextSections)
-  const textConfig = useStore((state) => state.textConfig)
-  const setTextConfig = useStore((state) => state.setTextConfig)
+  const [textConfig, setTextConfig] = useThemedConfig('textConfig')
   const colorPalette = useStore((state) => state.colorPalette)
   const isPaused = useStore((state) => state.isPaused)
   const setIsPaused = useStore((state) => state.setIsPaused)
@@ -146,7 +145,6 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
                       <SelectItem value="ribbon">Ribbon</SelectItem>
                       <SelectItem value="dandelion">Dandelion</SelectItem>
                       <SelectItem value="particleRing">Particle Ring</SelectItem>
-                      <SelectItem value="shapeTrail">Shape Trail</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -211,14 +209,6 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
                       <SubsectionButton title="Particles" onClick={() => openDialog('particleRing-particles')} />
                       <SubsectionButton title="Animation" onClick={() => openDialog('particleRing-animation')} />
                       <SubsectionButton title="Tilt" onClick={() => openDialog('particleRing-tilt')} />
-                    </>
-                  )}
-                  {backgroundType === 'shapeTrail' && (
-                    <>
-                      <SubsectionButton title="Background" onClick={() => openDialog('shapeTrail-background')} />
-                      <SubsectionButton title="Shape" onClick={() => openDialog('shapeTrail-shape')} />
-                      <SubsectionButton title="Path" onClick={() => openDialog('shapeTrail-path')} />
-                      <SubsectionButton title="Animation" onClick={() => openDialog('shapeTrail-animation')} />
                     </>
                   )}
                 </div>

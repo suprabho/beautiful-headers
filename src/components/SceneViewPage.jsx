@@ -8,6 +8,8 @@ import { prepareForCapture } from '@/lib/colorConversion'
 import { drawTextToCanvas } from '@/lib/canvasCapture'
 import { Button } from '@/components/ui/button'
 import { useDocumentMeta } from '@/hooks/useDocumentMeta'
+import { useAudioAnalyser } from '@/audio/useAudioAnalyser'
+import { InputPanel } from './controls/InputControls'
 import '../App.css'
 import GradientLayer from './GradientLayer'
 import SimpleGradientLayer from './SimpleGradientLayer'
@@ -17,7 +19,6 @@ import WavesLayer from './WavesLayer'
 import RibbonLayer from './RibbonLayer'
 import DandelionLayer from './DandelionLayer'
 import ParticleRingLayer from './ParticleRingLayer'
-import ShapeTrailLayer from './ShapeTrailLayer'
 import TessellationLayer, { ICON_PATHS } from './TessellationLayer'
 import EffectsLayer from './EffectsLayer'
 import TextLayer from './TextLayer'
@@ -36,6 +37,12 @@ function SceneViewPage() {
   const loadSceneData = useStore((state) => state.loadSceneData)
   const setCurrentSceneId = useStore((state) => state.setCurrentSceneId)
   const setCurrentPage = useStore((state) => state.setCurrentPage)
+  const inputEnabled = useStore((state) => state.inputEnabled)
+  const audioEnabled = useStore((state) => state.audioConfig.enabled)
+  const mouseConfig = useStore((state) => state.mouseConfig)
+  const setMouseConfig = useStore((state) => state.setMouseConfig)
+
+  const audioAnalyser = useAudioAnalyser()
 
   const [scene, setScene] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -74,6 +81,8 @@ function SceneViewPage() {
 
   // Throttled mouse move handler
   const handleMouseMove = useCallback((e) => {
+    if (!inputEnabled || audioEnabled || !mouseConfig.enabled) return
+
     pendingMouseRef.current.x = e.clientX / window.innerWidth
     pendingMouseRef.current.y = e.clientY / window.innerHeight
 
@@ -87,7 +96,21 @@ function SceneViewPage() {
       })
       rafPendingRef.current = false
     })
-  }, [])
+  }, [inputEnabled, audioEnabled, mouseConfig.enabled])
+
+  // Reset mouse to center when audio becomes active or input disabled
+  useEffect(() => {
+    if (audioEnabled || !inputEnabled) {
+      setMousePos({ x: 0.5, y: 0.5 })
+    }
+  }, [audioEnabled, inputEnabled])
+
+  // Initialize store mouse config from scene data when scene loads
+  useEffect(() => {
+    if (scene?.scene_data?.mouseConfig) {
+      setMouseConfig(scene.scene_data.mouseConfig)
+    }
+  }, [scene, setMouseConfig])
 
   useEffect(() => {
     const fetchScene = async () => {
@@ -117,10 +140,19 @@ function SceneViewPage() {
     }
   }, [slug])
 
-  const handleApplyScene = () => {
+  const handleEditScene = () => {
     if (scene?.scene_data) {
       loadSceneData(scene.scene_data)
       setCurrentSceneId(scene.id)
+      setCurrentPage('editor')
+      navigate('/')
+    }
+  }
+
+  const handleRemixScene = () => {
+    if (scene?.scene_data) {
+      loadSceneData(scene.scene_data)
+      setCurrentSceneId(null)
       setCurrentPage('editor')
       navigate('/')
     }
@@ -687,19 +719,16 @@ function SceneViewPage() {
   const ribbonConfig = sceneData.ribbonConfig || {}
   const dandelionConfig = sceneData.dandelionConfig || {}
   const particleRingConfig = sceneData.particleRingConfig || {}
-  const shapeTrailConfig = sceneData.shapeTrailConfig || {}
   const tessellationConfig = sceneData.tessellationConfig || {}
   const effectsConfig = sceneData.effectsConfig || {}
   const textSections = sceneData.textSections || []
   const textGap = sceneData.textGap || 0
   const textConfig = sceneData.textConfig || {}
-  const mouseConfig = sceneData.mouseConfig || { enabled: true, intensity: 0.5 }
-  const inputEnabled = sceneData.inputEnabled !== undefined ? sceneData.inputEnabled : true
-  const effectiveMouseIntensity = inputEnabled ? mouseConfig.intensity : 0
-  const effectiveMouseEnabled = inputEnabled && mouseConfig.enabled
+  const effectiveMouseIntensity = inputEnabled && !audioEnabled ? mouseConfig.intensity : 0
+  const effectiveMouseEnabled = inputEnabled && !audioEnabled && mouseConfig.enabled
 
   return (
-    <div className="min-h-screen bg-background" onMouseMove={effectiveMouseEnabled ? handleMouseMove : undefined}>
+    <div className="min-h-screen bg-background" onMouseMove={handleMouseMove}>
       {/* Full-screen scene preview */}
       <div className="fixed inset-0 z-0">
         <div ref={layersContainerRef} className="layers-container" style={{ position: 'absolute', inset: 0 }}>
@@ -737,9 +766,6 @@ function SceneViewPage() {
             {backgroundType === 'particleRing' && (
               <ParticleRingLayer config={particleRingConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
             )}
-            {backgroundType === 'shapeTrail' && (
-              <ShapeTrailLayer config={shapeTrailConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
-            )}
           </div>
 
           {/* Tessellation layer */}
@@ -775,9 +801,13 @@ function SceneViewPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button onClick={handleApplyScene}>
+            <Button variant="outline" onClick={handleRemixScene}>
+              <Copy size={16} weight="bold" className="mr-2" />
+              Remix
+            </Button>
+            <Button onClick={handleEditScene}>
               <Play size={16} weight="fill" className="mr-2" />
-              Open in Editor
+              Edit Scene
             </Button>
           </div>
         </div>
@@ -861,6 +891,14 @@ function SceneViewPage() {
                 </span>
               </div>
           </div>  
+          {/* Input controls */}
+          <InputPanel
+            loadAudioFile={audioAnalyser?.loadAudioFile}
+            playAudio={audioAnalyser?.playAudio}
+            pauseAudio={audioAnalyser?.pauseAudio}
+            audioElement={audioAnalyser?.audioElement}
+          />
+
           {/* Effects */}
           {(() => {
             const effects = []

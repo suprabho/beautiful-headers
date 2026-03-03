@@ -32,6 +32,28 @@ export async function generateSceneDescriptions(thumbnailImage) {
 }
 
 /**
+ * Fetch 10 AI-generated title + subtitle pairs for the text layer.
+ * @returns {Promise<Array<{title: string, subtitle: string}> | null>}
+ */
+export async function fetchTextPairs() {
+  try {
+    const response = await fetch('/api/generate-text-pairs')
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
+      console.error('Text pairs API error:', errorData.error || response.statusText)
+      return null
+    }
+
+    const data = await response.json()
+    return data.pairs || null
+  } catch (error) {
+    console.error('Failed to fetch text pairs:', error)
+    return null
+  }
+}
+
+/**
  * Check if Gemini is available
  * Since logic is moved to server, we assume it is available or let the server error out.
  */
