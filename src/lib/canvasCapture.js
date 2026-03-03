@@ -195,17 +195,27 @@ export const captureLayersToCanvas = async (container, effectsConfig, { scale = 
 
     const textLayer = container.querySelector('.text-layer')
     if (textLayer) {
-      // Pause text-float animations during capture so every row is at its
-      // natural position — otherwise each section may be at a different
-      // point in its float cycle, producing uneven spacing in the thumbnail.
       const textSections = textLayer.querySelectorAll('.text-section')
+
+      // html2canvas doesn't reliably support the CSS `gap` property on flex
+      // containers, so read the computed gap and convert it to margin-top on
+      // each section (except the first). Also freeze the float animation so
+      // every row sits at its natural position.
+      const computedGap = parseFloat(getComputedStyle(textLayer).gap) || 0
+      const savedGap = textLayer.style.gap
+      textLayer.style.gap = '0px'
+
       const savedStyles = Array.from(textSections).map((el) => ({
         animation: el.style.animation,
         transform: el.style.transform,
+        marginTop: el.style.marginTop,
       }))
-      textSections.forEach((el) => {
+      textSections.forEach((el, i) => {
         el.style.animation = 'none'
         el.style.transform = 'translateY(0px)'
+        if (i > 0) {
+          el.style.marginTop = `${computedGap}px`
+        }
       })
 
       const textCanvas = await html2canvas(textLayer, {
@@ -217,10 +227,12 @@ export const captureLayersToCanvas = async (container, effectsConfig, { scale = 
       })
       ctx.drawImage(textCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
 
-      // Restore animations
+      // Restore original styles
+      textLayer.style.gap = savedGap
       textSections.forEach((el, i) => {
         el.style.animation = savedStyles[i].animation
         el.style.transform = savedStyles[i].transform
+        el.style.marginTop = savedStyles[i].marginTop
       })
     }
   }
