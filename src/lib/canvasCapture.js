@@ -224,7 +224,7 @@ export const resizeThumbnailForAI = (base64Data, maxWidth = 800) => {
  *   - textData: { sections, gap, color, opacity } — when provided, text is drawn
  *     at absolute positions computed from row sizes + gap instead of capturing the DOM
  */
-export const captureLayersToCanvas = async (container, effectsConfig, { scale = 2, mode = 'all', targetAspectRatio = null, textData = null } = {}) => {
+export const captureLayersToCanvas = async (container, effectsConfig, { scale = 2, mode = 'all', targetAspectRatio = null, textData = null, hideIcons = false, hideText = false } = {}) => {
   const width = container.offsetWidth
   const height = container.offsetHeight
 
@@ -267,31 +267,33 @@ export const captureLayersToCanvas = async (container, effectsConfig, { scale = 
     ctx,
     outputCanvas.width,
     outputCanvas.height,
-    effectsConfig.texture,
-    effectsConfig.textureSize * scale,
-    effectsConfig.textureOpacity,
-    effectsConfig.textureBlendMode
+    effectsConfig.texture || 'none',
+    (effectsConfig.textureSize || 20) * scale,
+    effectsConfig.textureOpacity ?? 0.5,
+    effectsConfig.textureBlendMode || 'overlay'
   )
 
-  drawVignetteToCanvas(ctx, outputCanvas.width, outputCanvas.height, effectsConfig.vignetteIntensity)
+  drawVignetteToCanvas(ctx, outputCanvas.width, outputCanvas.height, effectsConfig.vignetteIntensity ?? 0)
 
   if (mode === 'all') {
-    const tessellationLayer = container.querySelector('.tessellation-layer')
-    if (tessellationLayer) {
-      const tessCanvas = await html2canvas(tessellationLayer, {
-        useCORS: true,
-        allowTaint: true,
-        scale: scale,
-        backgroundColor: null,
-        logging: false,
-      })
-      ctx.drawImage(tessCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
+    if (!hideIcons) {
+      const tessellationLayer = container.querySelector('.tessellation-layer')
+      if (tessellationLayer) {
+        const tessCanvas = await html2canvas(tessellationLayer, {
+          useCORS: true,
+          allowTaint: true,
+          scale: scale,
+          backgroundColor: null,
+          logging: false,
+        })
+        ctx.drawImage(tessCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
+      }
     }
 
     // Draw text at absolute positions computed from row sizes + gap.
     // This avoids the fragile animation-pause approach and produces
     // deterministic spacing regardless of the float-animation cycle.
-    if (textData?.sections?.length) {
+    if (!hideText && textData?.sections?.length) {
       drawTextToCanvas(ctx, outputCanvas.width, outputCanvas.height, textData, scale)
     }
   }
