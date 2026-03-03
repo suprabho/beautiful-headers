@@ -7,6 +7,9 @@ import useStore from '../store/useStore'
 
 export function useSceneSave(layersContainerRef) {
   const effectsConfig = useStore((state) => state.effectsConfig)
+  const textSections = useStore((state) => state.textSections)
+  const textGap = useStore((state) => state.textGap)
+  const textConfig = useStore((state) => state.textConfig)
   const getSceneData = useStore((state) => state.getSceneData)
   const currentSceneId = useStore((state) => state.currentSceneId)
 
@@ -36,7 +39,17 @@ export function useSceneSave(layersContainerRef) {
       const outputCanvas = await captureLayersToCanvas(
         layersContainerRef.current,
         effectsConfig,
-        { scale: 2, mode: 'all', targetAspectRatio: 16 / 9 }
+        {
+          scale: 2,
+          mode: 'all',
+          targetAspectRatio: 16 / 9,
+          textData: textConfig.enabled ? {
+            sections: textSections,
+            gap: textGap,
+            color: textConfig.color,
+            opacity: textConfig.opacity,
+          } : null,
+        }
       )
 
       restoreColors()
