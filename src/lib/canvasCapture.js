@@ -12,7 +12,7 @@ const TEXT_FONT_FAMILIES = {
  * Draw text sections directly onto the canvas at absolute positions
  * computed from font sizes and the configured gap — no animation pausing needed.
  */
-const drawTextToCanvas = (ctx, canvasWidth, canvasHeight, textData, scale) => {
+export const drawTextToCanvas = (ctx, canvasWidth, canvasHeight, textData, scale) => {
   const { sections, gap, color = '#ffffff', opacity = 1 } = textData
   if (!sections?.length) return
 

@@ -5,6 +5,7 @@ import { ArrowLeft, CircleNotch, Warning, Play, Code, Check, Copy, Download, Arr
 import { getSceneBySlug, getProjects, updateScene, verifyDeletePassword, titleToSlug, recaptureThumbnail, deleteScene } from '@/lib/scenesApi'
 import { generateSceneDescriptions } from '@/lib/gemini'
 import { prepareForCapture } from '@/lib/colorConversion'
+import { drawTextToCanvas } from '@/lib/canvasCapture'
 import { Button } from '@/components/ui/button'
 import { useDocumentMeta } from '@/hooks/useDocumentMeta'
 import '../App.css'
@@ -281,16 +282,14 @@ function SceneViewPage() {
         ctx.drawImage(tessCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
       }
 
-      const textLayer = container.querySelector('.text-layer')
-      if (textLayer) {
-        const textCanvas = await html2canvas(textLayer, {
-          useCORS: true,
-          allowTaint: true,
-          scale: scale,
-          backgroundColor: null,
-          logging: false,
-        })
-        ctx.drawImage(textCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
+      const sceneTextConfig = scene?.scene_data?.textConfig || {}
+      if (sceneTextConfig.enabled) {
+        drawTextToCanvas(ctx, outputCanvas.width, outputCanvas.height, {
+          sections: scene?.scene_data?.textSections || [],
+          gap: scene?.scene_data?.textGap || 0,
+          color: sceneTextConfig.color,
+          opacity: sceneTextConfig.opacity,
+        }, scale)
       }
 
       const base64Data = outputCanvas.toDataURL('image/jpeg', 0.9)
@@ -383,16 +382,14 @@ function SceneViewPage() {
         ctx.drawImage(tessCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
       }
 
-      const textLayer = container.querySelector('.text-layer')
-      if (textLayer) {
-        const textCanvas = await html2canvas(textLayer, {
-          useCORS: true,
-          allowTaint: true,
-          scale: scale,
-          backgroundColor: null,
-          logging: false,
-        })
-        ctx.drawImage(textCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
+      const reviewTextConfig = scene?.scene_data?.textConfig || {}
+      if (reviewTextConfig.enabled) {
+        drawTextToCanvas(ctx, outputCanvas.width, outputCanvas.height, {
+          sections: scene?.scene_data?.textSections || [],
+          gap: scene?.scene_data?.textGap || 0,
+          color: reviewTextConfig.color,
+          opacity: reviewTextConfig.opacity,
+        }, scale)
       }
 
       const base64Data = outputCanvas.toDataURL('image/jpeg', 0.9)
@@ -586,16 +583,14 @@ function SceneViewPage() {
       }
 
       if (!downloadOptions.hideText) {
-        const textLayer = container.querySelector('.text-layer')
-        if (textLayer) {
-          const textCanvas = await html2canvas(textLayer, {
-            useCORS: true,
-            allowTaint: true,
-            scale: scale,
-            backgroundColor: null,
-            logging: false,
-          })
-          ctx.drawImage(textCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
+        const dlTextConfig = scene?.scene_data?.textConfig || {}
+        if (dlTextConfig.enabled) {
+          drawTextToCanvas(ctx, outputCanvas.width, outputCanvas.height, {
+            sections: scene?.scene_data?.textSections || [],
+            gap: scene?.scene_data?.textGap || 0,
+            color: dlTextConfig.color,
+            opacity: dlTextConfig.opacity,
+          }, scale)
         }
       }
 
