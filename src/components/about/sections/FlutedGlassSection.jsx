@@ -10,29 +10,31 @@ import {
   DEFAULT_RIBBON_CONFIG,
 } from '../sectionScenes'
 
-const scene = getScene('flutedGlass')
+const fallback = getScene('flutedGlass')
 
-export function FlutedGlassSection() {
-  const [flutedEnabled, setFlutedEnabled] = useState(false)
-  const gradientConfig = makeGradientConfig(scene.colors)
+export function FlutedGlassSection({ dbScene }) {
+  const sd = dbScene?.scene_data
+  const [flutedEnabled, setFlutedEnabled] = useState(true)
+  const gradientConfig = sd?.gradientConfig || makeGradientConfig(fallback.colors)
+  const baseEffects = sd?.effectsConfig || DEFAULT_EFFECTS_CONFIG
   const effectsConfig = {
-    ...DEFAULT_EFFECTS_CONFIG,
+    ...baseEffects,
     flutedGlass: {
-      ...DEFAULT_EFFECTS_CONFIG.flutedGlass,
+      ...(baseEffects.flutedGlass || DEFAULT_EFFECTS_CONFIG.flutedGlass),
       enabled: flutedEnabled,
     },
   }
 
   return (
     <FeatureCard
-      title={scene.title}
-      description={scene.description}
+      title={fallback.title}
+      description={fallback.description}
       renderPreview={() => (
         <MiniSceneRenderer
-          backgroundType={scene.backgroundType}
+          backgroundType={sd?.backgroundType || fallback.backgroundType}
           gradientConfig={gradientConfig}
           effectsConfig={effectsConfig}
-          ribbonConfig={DEFAULT_RIBBON_CONFIG}
+          ribbonConfig={sd?.ribbonConfig || DEFAULT_RIBBON_CONFIG}
         />
       )}
     >

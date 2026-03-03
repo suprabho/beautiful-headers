@@ -14,7 +14,7 @@ import {
   DEFAULT_PARTICLE_RING_CONFIG,
 } from '../sectionScenes'
 
-const scene = getScene('background')
+const fallback = getScene('background')
 
 const BACKGROUND_TYPES = [
   { value: 'liquid', label: 'Liquid' },
@@ -27,30 +27,32 @@ const BACKGROUND_TYPES = [
   { value: 'simple', label: 'Simple' },
 ]
 
-export function BackgroundSection() {
-  const [backgroundType, setBackgroundType] = useState(scene.backgroundType)
-  const gradientConfig = makeGradientConfig(scene.colors)
+export function BackgroundSection({ dbScene }) {
+  const sd = dbScene?.scene_data
+  const [userBgType, setUserBgType] = useState(null)
+  const backgroundType = userBgType ?? sd?.backgroundType ?? fallback.backgroundType
+  const gradientConfig = sd?.gradientConfig || makeGradientConfig(fallback.colors)
 
   return (
     <FeatureCard
-      title={scene.title}
-      description={scene.description}
+      title={fallback.title}
+      description={fallback.description}
       renderPreview={() => (
         <MiniSceneRenderer
           backgroundType={backgroundType}
           gradientConfig={gradientConfig}
-          effectsConfig={DEFAULT_EFFECTS_CONFIG}
-          auroraConfig={DEFAULT_AURORA_CONFIG}
-          fluidConfig={DEFAULT_FLUID_CONFIG}
-          wavesConfig={DEFAULT_WAVES_CONFIG}
-          ribbonConfig={DEFAULT_RIBBON_CONFIG}
-          dandelionConfig={DEFAULT_DANDELION_CONFIG}
-          particleRingConfig={DEFAULT_PARTICLE_RING_CONFIG}
+          effectsConfig={sd?.effectsConfig || DEFAULT_EFFECTS_CONFIG}
+          auroraConfig={sd?.auroraConfig || DEFAULT_AURORA_CONFIG}
+          fluidConfig={sd?.fluidConfig || DEFAULT_FLUID_CONFIG}
+          wavesConfig={sd?.wavesConfig || DEFAULT_WAVES_CONFIG}
+          ribbonConfig={sd?.ribbonConfig || DEFAULT_RIBBON_CONFIG}
+          dandelionConfig={sd?.dandelionConfig || DEFAULT_DANDELION_CONFIG}
+          particleRingConfig={sd?.particleRingConfig || DEFAULT_PARTICLE_RING_CONFIG}
         />
       )}
     >
-      <Select value={backgroundType} onValueChange={setBackgroundType}>
-        <SelectTrigger className="w-[140px] h-8 bg-white/15 border-white/20 text-white text-xs">
+      <Select value={backgroundType} onValueChange={setUserBgType}>
+        <SelectTrigger className="w-[140px] h-8 bg-black/30 border-white/20 text-white text-xs">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

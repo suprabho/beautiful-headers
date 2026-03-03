@@ -10,7 +10,7 @@ import {
   DEFAULT_DANDELION_CONFIG,
 } from '../sectionScenes'
 
-const scene = getScene('input')
+const fallback = getScene('input')
 
 const INPUT_MODES = [
   { value: 'mouse', label: 'Mouse', icon: Mouse },
@@ -18,20 +18,21 @@ const INPUT_MODES = [
   { value: 'off', label: 'Off', icon: Prohibit },
 ]
 
-export function InputSection() {
+export function InputSection({ dbScene }) {
+  const sd = dbScene?.scene_data
   const [inputMode, setInputMode] = useState('mouse')
-  const gradientConfig = makeGradientConfig(scene.colors)
+  const gradientConfig = sd?.gradientConfig || makeGradientConfig(fallback.colors)
 
   return (
     <FeatureCard
-      title={scene.title}
-      description={scene.description}
+      title={fallback.title}
+      description={fallback.description}
       renderPreview={() => (
         <MiniSceneRenderer
-          backgroundType={scene.backgroundType}
+          backgroundType={sd?.backgroundType || fallback.backgroundType}
           gradientConfig={gradientConfig}
-          effectsConfig={DEFAULT_EFFECTS_CONFIG}
-          dandelionConfig={DEFAULT_DANDELION_CONFIG}
+          effectsConfig={sd?.effectsConfig || DEFAULT_EFFECTS_CONFIG}
+          dandelionConfig={sd?.dandelionConfig || DEFAULT_DANDELION_CONFIG}
           mouseConfig={{
             enabled: inputMode === 'mouse',
             intensity: inputMode === 'mouse' ? 0.5 : 0,
@@ -46,8 +47,8 @@ export function InputSection() {
           className={cn(
             "flex items-center gap-1.5 py-2 px-3 rounded-lg text-xs transition-colors",
             inputMode === mode.value
-              ? "bg-white text-black"
-              : "bg-white/15 text-white/80 hover:bg-white/25"
+              ? "bg-primary text-black"
+              : "bg-black/50 text-white/80 hover:bg-primary/50"
           )}
         >
           <mode.icon size={14} />

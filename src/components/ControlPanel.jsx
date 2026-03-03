@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import useStore from '../store/useStore'
 import { useThemedConfig } from '../hooks/useThemedConfig'
 import { useRandomize } from '../hooks/useRandomize'
@@ -16,6 +16,10 @@ const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
   // Minimal store subscriptions — only what the orchestrator needs
   const colorPalette = useStore((state) => state.colorPalette)
   const setColorPalette = useStore((state) => state.setColorPalette)
+  const isPaused = useStore((state) => state.isPaused)
+  const setIsPaused = useStore((state) => state.setIsPaused)
+  const inputEnabled = useStore((state) => state.inputEnabled)
+  const setInputEnabled = useStore((state) => state.setInputEnabled)
   const [gradientConfig, setGradientConfig] = useThemedConfig('gradientConfig')
 
   // Mobile detection
@@ -43,6 +47,20 @@ const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
   const {
     isCapturing, showCaptureModal, setShowCaptureModal, captureSnapshot,
   } = useCanvasCapture(layersContainerRef)
+
+  // Pause scene and disable input when any modal is open, restore previous state when all close
+  const prevStateRef = useRef({ isPaused: false, inputEnabled: true })
+  const anyModalOpen = showPaletteDialog || showAboutModal || showSaveDialog || showCaptureModal
+  useEffect(() => {
+    if (anyModalOpen) {
+      prevStateRef.current = { isPaused, inputEnabled }
+      setIsPaused(true)
+      setInputEnabled(false)
+    } else {
+      setIsPaused(prevStateRef.current.isPaused)
+      setInputEnabled(prevStateRef.current.inputEnabled)
+    }
+  }, [anyModalOpen])
 
   return (
     <>

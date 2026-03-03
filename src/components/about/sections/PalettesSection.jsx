@@ -8,7 +8,7 @@ import {
   DEFAULT_EFFECTS_CONFIG,
 } from '../sectionScenes'
 
-const scene = getScene('palettes')
+const fallback = getScene('palettes')
 
 const PRESET_PALETTES = [
   { name: 'Crimson', colors: ['#b80038', '#fdf7f2', '#004d9c', '#00999a'] },
@@ -21,35 +21,39 @@ const PRESET_PALETTES = [
   { name: 'Cool', colors: ['#4cc9f0', '#4895ef', '#4361ee', '#3f37c9'] },
 ]
 
-export function PalettesSection() {
-  const [paletteColors, setPaletteColors] = useState(scene.colors)
-  const gradientConfig = makeGradientConfig(paletteColors)
+export function PalettesSection({ dbScene }) {
+  const sd = dbScene?.scene_data
+  const [userColors, setUserColors] = useState(null)
+  const activeColors = userColors ?? sd?.gradientConfig?.colors ?? fallback.colors
+  const gradientConfig = sd?.gradientConfig
+    ? { ...sd.gradientConfig, colors: activeColors }
+    : makeGradientConfig(activeColors)
 
   const activePalette = PRESET_PALETTES.find(
-    p => JSON.stringify(p.colors) === JSON.stringify(paletteColors)
+    p => JSON.stringify(p.colors) === JSON.stringify(activeColors)
   )?.name || null
 
   return (
     <FeatureCard
-      title={scene.title}
-      description={scene.description}
+      title={fallback.title}
+      description={fallback.description}
       renderPreview={() => (
         <MiniSceneRenderer
-          backgroundType={scene.backgroundType}
+          backgroundType={sd?.backgroundType || fallback.backgroundType}
           gradientConfig={gradientConfig}
-          effectsConfig={DEFAULT_EFFECTS_CONFIG}
+          effectsConfig={sd?.effectsConfig || DEFAULT_EFFECTS_CONFIG}
         />
       )}
     >
       {PRESET_PALETTES.map(palette => (
         <button
           key={palette.name}
-          onClick={() => setPaletteColors(palette.colors)}
+          onClick={() => setUserColors(palette.colors)}
           className={cn(
             "flex flex-col items-center gap-1 p-1.5 rounded-lg transition-colors",
             activePalette === palette.name
-              ? "bg-white/20 ring-1 ring-white/50"
-              : "hover:bg-white/10"
+              ? "bg-primary ring-1 ring-primary/50"
+              : "bg-black/50 hover:bg-primary/50"
           )}
         >
           <div className="flex gap-0.5">
@@ -61,7 +65,7 @@ export function PalettesSection() {
               />
             ))}
           </div>
-          <span className="text-[10px] text-white/60">{palette.name}</span>
+          <span className={cn("text-[10px]", activePalette === palette.name ? "text-black" : "text-white")}>{palette.name}</span>
         </button>
       ))}
     </FeatureCard>

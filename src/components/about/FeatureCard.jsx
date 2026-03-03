@@ -23,21 +23,20 @@ export function FeatureCard({ title, description, children, renderPreview, class
   return (
     <div
       ref={ref}
-      className={`relative overflow-hidden rounded-2xl border border-white/10 ${className}`}
+      className={`relative rounded-2xl border border-white/10 ${className}`}
+      style={{ clipPath: 'inset(0 round 16px)' }}
     >
       {/* Full-bleed preview background */}
-      <div className="absolute inset-0">
+      <div className="absolute z-0 inset-0 overflow-hidden rounded-2xl">
         {isVisible && renderPreview ? renderPreview() : (
           <div className="w-full h-full bg-muted/10 animate-pulse" />
         )}
       </div>
 
       {/* Content: controls + text overlay at bottom */}
-      <div className="relative z-10 flex flex-col justify-end min-h-[320px] md:min-h-[360px]">
+      <div className="relative z-10 flex flex-1 flex-col h-full justify-between min-h-[320px] md:min-h-[360px] rounded-b-2xl overflow-hidden">
+        {children && <div className="flex flex-wrap justify-center gap-1.5 p-4 md:p-5">{children}</div>}
         <div className="bg-black/40 backdrop-blur-xl p-4 md:p-5 space-y-3">
-          {/* Controls above the text */}
-          {children && <div className="flex flex-wrap justify-center gap-1.5">{children}</div>}
-
           {/* Title — centered */}
           <h3 className="text-lg md:text-xl font-semibold text-white text-center">{title}</h3>
 

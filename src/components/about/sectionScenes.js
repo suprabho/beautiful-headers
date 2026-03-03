@@ -156,6 +156,13 @@ export const makeGradientConfig = (colors) => ({
 // Per-section scene definitions — each section gets a unique visual
 export const SECTION_SCENES = [
   {
+    id: 'hero',
+    title: 'Hero Banner',
+    description: 'The main hero section at the top of the about page.',
+    backgroundType: 'liquid',
+    colors: ['#b80038', '#fdf7f2', '#004d9c', '#00999a'],
+  },
+  {
     id: 'background',
     title: '8 Background Types',
     description: 'Choose from liquid mesh gradients, aurora borealis, fluid simulations, wave patterns, ribbon trails, dandelion particles, particle rings, and simple gradients.',

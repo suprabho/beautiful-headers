@@ -9,7 +9,7 @@ import {
   DEFAULT_FLUID_CONFIG,
 } from '../sectionScenes'
 
-const scene = getScene('effects')
+const fallback = getScene('effects')
 
 const TEXTURE_TYPES = [
   { value: 'none', label: 'None' },
@@ -20,11 +20,13 @@ const TEXTURE_TYPES = [
   { value: 'diagonal', label: 'Diagonal' },
 ]
 
-export function EffectsSection() {
+export function EffectsSection({ dbScene }) {
+  const sd = dbScene?.scene_data
   const [texture, setTexture] = useState('none')
-  const gradientConfig = makeGradientConfig(scene.colors)
+  const gradientConfig = sd?.gradientConfig || makeGradientConfig(fallback.colors)
+  const baseEffects = sd?.effectsConfig || DEFAULT_EFFECTS_CONFIG
   const effectsConfig = {
-    ...DEFAULT_EFFECTS_CONFIG,
+    ...baseEffects,
     texture,
     textureOpacity: texture !== 'none' ? 0.5 : 0,
     vignetteIntensity: texture !== 'none' ? 0.5 : 0.3,
@@ -32,14 +34,14 @@ export function EffectsSection() {
 
   return (
     <FeatureCard
-      title={scene.title}
-      description={scene.description}
+      title={fallback.title}
+      description={fallback.description}
       renderPreview={() => (
         <MiniSceneRenderer
-          backgroundType={scene.backgroundType}
+          backgroundType={sd?.backgroundType || fallback.backgroundType}
           gradientConfig={gradientConfig}
           effectsConfig={effectsConfig}
-          fluidConfig={DEFAULT_FLUID_CONFIG}
+          fluidConfig={sd?.fluidConfig || DEFAULT_FLUID_CONFIG}
           showEffects={true}
         />
       )}
@@ -51,8 +53,8 @@ export function EffectsSection() {
           className={cn(
             "px-2.5 py-1 rounded-md text-xs transition-colors",
             texture === tex.value
-              ? "bg-white text-black"
-              : "bg-white/15 text-white/80 hover:bg-white/25"
+              ? "bg-primary text-black"
+              : "bg-black/50 text-white/80 hover:bg-primary/50"
           )}
         >
           {tex.label}
