@@ -139,10 +139,19 @@ function SceneViewPage() {
     }
   }, [slug])
 
-  const handleApplyScene = () => {
+  const handleEditScene = () => {
     if (scene?.scene_data) {
       loadSceneData(scene.scene_data)
       setCurrentSceneId(scene.id)
+      setCurrentPage('editor')
+      navigate('/')
+    }
+  }
+
+  const handleRemixScene = () => {
+    if (scene?.scene_data) {
+      loadSceneData(scene.scene_data)
+      setCurrentSceneId(null)
       setCurrentPage('editor')
       navigate('/')
     }
@@ -797,9 +806,13 @@ function SceneViewPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button onClick={handleApplyScene}>
+            <Button variant="outline" onClick={handleRemixScene}>
+              <Copy size={16} weight="bold" className="mr-2" />
+              Remix
+            </Button>
+            <Button onClick={handleEditScene}>
               <Play size={16} weight="fill" className="mr-2" />
-              Open in Editor
+              Edit Scene
             </Button>
           </div>
         </div>

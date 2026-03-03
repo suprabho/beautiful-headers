@@ -8,6 +8,7 @@ import useStore from '../store/useStore'
 export function useSceneSave(layersContainerRef) {
   const effectsConfig = useStore((state) => state.effectsConfig)
   const getSceneData = useStore((state) => state.getSceneData)
+  const currentSceneId = useStore((state) => state.currentSceneId)
 
   const [showSaveDialog, setShowSaveDialog] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
@@ -61,33 +62,45 @@ export function useSceneSave(layersContainerRef) {
       setSaveThumbnail(thumbnail)
       const sceneData = getSceneData()
 
-      // Step 2: Create scene with placeholder title
-      const placeholderTitle = 'Untitled Scene'
-      const scene = await createScene(placeholderTitle, sceneData, thumbnail, null)
+      if (currentSceneId) {
+        // Editing existing scene: update scene data and thumbnail
+        await updateScene(currentSceneId, { sceneData, thumbnail })
 
-      // Step 3: Generate AI descriptions from resized thumbnail (smaller for API)
-      setIsGenerating(true)
-      const smallThumbnail = await resizeThumbnailForAI(thumbnail)
-      const content = await generateSceneDescriptions(smallThumbnail)
-      setIsGenerating(false)
+        setSaveSuccess(true)
+        setTimeout(() => {
+          setShowSaveDialog(false)
+          setSaveSuccess(false)
+          setSaveThumbnail(null)
+          setGeneratedContent(null)
+        }, 2000)
+      } else {
+        // Creating new scene (remix or fresh)
+        const placeholderTitle = 'Untitled Scene'
+        const scene = await createScene(placeholderTitle, sceneData, thumbnail, null)
 
-      if (content) {
-        // Step 4: Update scene with generated title and descriptions
-        await updateScene(scene.id, {
-          title: content.title,
-          short_description: content.shortDescription,
-          long_description: content.longDescription
-        })
-        setGeneratedContent(content)
+        // Generate AI descriptions from resized thumbnail (smaller for API)
+        setIsGenerating(true)
+        const smallThumbnail = await resizeThumbnailForAI(thumbnail)
+        const content = await generateSceneDescriptions(smallThumbnail)
+        setIsGenerating(false)
+
+        if (content) {
+          await updateScene(scene.id, {
+            title: content.title,
+            short_description: content.shortDescription,
+            long_description: content.longDescription
+          })
+          setGeneratedContent(content)
+        }
+
+        setSaveSuccess(true)
+        setTimeout(() => {
+          setShowSaveDialog(false)
+          setSaveSuccess(false)
+          setSaveThumbnail(null)
+          setGeneratedContent(null)
+        }, 2000)
       }
-
-      setSaveSuccess(true)
-      setTimeout(() => {
-        setShowSaveDialog(false)
-        setSaveSuccess(false)
-        setSaveThumbnail(null)
-        setGeneratedContent(null)
-      }, 2000)
     } catch (error) {
       console.error('Failed to save scene:', error)
       setSaveError('Failed to save scene. Check your internet connection.')
