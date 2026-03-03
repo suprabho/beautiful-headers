@@ -10,6 +10,7 @@ import { DesktopPanel } from './controls/DesktopPanel'
 import { CaptureModal } from './controls/CaptureModal'
 import { SaveSceneDialog } from './controls/SaveSceneDialog'
 import { ColorPaletteDialog } from './controls'
+import { AboutAuraModal } from './about/AboutAuraModal'
 
 const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
   // Minimal store subscriptions — only what the orchestrator needs
@@ -28,6 +29,7 @@ const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
 
   // Palette dialog state (shared between mobile and desktop)
   const [showPaletteDialog, setShowPaletteDialog] = useState(false)
+  const [showAboutModal, setShowAboutModal] = useState(false)
 
   // Compose hooks
   const { randomize } = useRandomize()
@@ -50,6 +52,7 @@ const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
           onShowPalette={() => setShowPaletteDialog(true)}
           onShowSave={() => setShowSaveDialog(true)}
           onShowCapture={() => setShowCaptureModal(true)}
+          onShowAbout={() => setShowAboutModal(true)}
           audioAnalyser={audioAnalyser}
         />
       ) : (
@@ -63,6 +66,7 @@ const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
           onShowPalette={() => setShowPaletteDialog(true)}
           onShowSave={() => setShowSaveDialog(true)}
           onShowCapture={() => setShowCaptureModal(true)}
+          onShowAbout={() => setShowAboutModal(true)}
           audioAnalyser={audioAnalyser}
         />
       )}
@@ -97,6 +101,10 @@ const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
         gradientConfig={gradientConfig}
         setGradientConfig={setGradientConfig}
         cmsAvailable={cmsAvailable}
+      />
+      <AboutAuraModal
+        open={showAboutModal}
+        onOpenChange={setShowAboutModal}
       />
     </>
   )
