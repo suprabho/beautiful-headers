@@ -15,13 +15,14 @@ import { Input } from '@/components/ui/input'
 
 function EmbedDialog({ open, onOpenChange, slug, sceneTitle }) {
   const [copied, setCopied] = useState(false)
-  const [embedOptions, setEmbedOptions] = useState({ hideText: false, hideIcons: false, input: 'mouse', height: 600 })
+  const [embedOptions, setEmbedOptions] = useState({ hideText: false, hideIcons: false, input: 'mouse', theme: 'auto', height: 600 })
 
   const getEmbedCode = () => {
     const params = new URLSearchParams()
     if (embedOptions.hideText) params.set('hideText', 'true')
     if (embedOptions.hideIcons) params.set('hideIcons', 'true')
     if (embedOptions.input !== 'mouse') params.set('input', embedOptions.input)
+    if (embedOptions.theme !== 'auto') params.set('theme', embedOptions.theme)
     const queryString = params.toString()
     const embedUrl = `${window.location.origin}/embed/${slug}${queryString ? `?${queryString}` : ''}`
     return `<iframe src="${embedUrl}" width="100%" height="${embedOptions.height}" frameborder="0" style="border:0;border-radius:8px;" allowfullscreen></iframe>`
@@ -33,6 +34,7 @@ function EmbedDialog({ open, onOpenChange, slug, sceneTitle }) {
     if (embedOptions.hideText) params.set('hideText', 'true')
     if (embedOptions.hideIcons) params.set('hideIcons', 'true')
     if (embedOptions.input !== 'mouse') params.set('input', embedOptions.input)
+    if (embedOptions.theme !== 'auto') params.set('theme', embedOptions.theme)
     const queryString = params.toString()
     return `<iframe title="${title}" src="https://aura.promad.design/embed/${slug}${queryString ? `?${queryString}` : ''}" style={{width:"100%", height:"${embedOptions.height}px"}} allowFullScreen></iframe>`
   }
@@ -104,6 +106,22 @@ function EmbedDialog({ open, onOpenChange, slug, sceneTitle }) {
                   variant={embedOptions.input === mode ? 'default' : 'outline'}
                   className="h-7 text-xs capitalize px-3"
                   onClick={() => setEmbedOptions(prev => ({ ...prev, input: mode }))}
+                >
+                  {mode}
+                </Button>
+              ))}
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <Label className="text-sm">Theme</Label>
+            <div className="flex gap-1">
+              {['auto', 'dark', 'light', 'default'].map((mode) => (
+                <Button
+                  key={mode}
+                  size="sm"
+                  variant={embedOptions.theme === mode ? 'default' : 'outline'}
+                  className="h-7 text-xs capitalize px-3"
+                  onClick={() => setEmbedOptions(prev => ({ ...prev, theme: mode }))}
                 >
                   {mode}
                 </Button>

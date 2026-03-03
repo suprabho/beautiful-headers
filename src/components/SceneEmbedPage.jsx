@@ -27,6 +27,7 @@ function SceneEmbedPage() {
   const hideText = searchParams.get('hideText') === 'true'
   const hideIcons = searchParams.get('hideIcons') === 'true'
   const inputMode = searchParams.get('input') || 'mouse' // 'off' | 'mouse' | 'mic'
+  const colorMode = useColorMode(searchParams)
 
   const [scene, setScene] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -203,7 +204,6 @@ function SceneEmbedPage() {
     )
   }
 
-  const colorMode = useColorMode(searchParams)
   const sceneData = resolveThemedConfigs(scene.scene_data || {}, colorMode)
   const backgroundType = sceneData.backgroundType || 'liquid'
   const gradientConfig = sceneData.gradientConfig || {}
