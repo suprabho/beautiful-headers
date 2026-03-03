@@ -23,12 +23,11 @@ export function useRandomize() {
   const setDandelionConfig = useStore((state) => state.setDandelionConfig)
   const particleRingConfig = useStore((state) => state.particleRingConfig)
   const setParticleRingConfig = useStore((state) => state.setParticleRingConfig)
-  const shapeTrailConfig = useStore((state) => state.shapeTrailConfig)
-  const setShapeTrailConfig = useStore((state) => state.setShapeTrailConfig)
   const auroraConfig = useStore((state) => state.auroraConfig)
   const setAuroraConfig = useStore((state) => state.setAuroraConfig)
   const fluidConfig = useStore((state) => state.fluidConfig)
   const setFluidConfig = useStore((state) => state.setFluidConfig)
+  const textPairs = useStore((state) => state.textPairs)
 
   const randomize = useCallback(() => {
     const randomHex = () => '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')
@@ -36,7 +35,7 @@ export function useRandomize() {
     const pickOne = (arr) => arr[Math.floor(Math.random() * arr.length)]
 
     // Randomize background type
-    const backgroundTypes = ['simple', 'liquid', 'aurora', 'fluid', 'waves', 'ribbon', 'dandelion', 'particleRing', 'shapeTrail']
+    const backgroundTypes = ['simple', 'liquid', 'aurora', 'fluid', 'waves', 'ribbon', 'dandelion', 'particleRing']
     setBackgroundType(pickOne(backgroundTypes))
 
     let colors
@@ -99,11 +98,14 @@ export function useRandomize() {
       opacity: randomInRange(0.7, 1),
     })
 
-    // Randomize text sections
+    // Randomize text sections — apply a random text pair if available
     const fonts = ['sans-serif', 'serif', 'mono']
     const weights = [100, 200, 300, 400, 500, 600, 700, 800, 900]
+    const textPair = textPairs.length > 0 ? pickOne(textPairs) : null
     const randomizedSections = textSections.map(section => ({
       ...section,
+      ...(textPair && section.id === 1 && { text: textPair.title }),
+      ...(textPair && section.id === 2 && { text: textPair.subtitle }),
       size: Math.floor(randomInRange(section.id === 1 ? 60 : 16, section.id === 1 ? 180 : 40)),
       weight: pickOne(weights),
       spacing: randomInRange(-0.1, 0.3),
@@ -204,20 +206,6 @@ export function useRandomize() {
       lineCount: Math.floor(randomInRange(0, 500) / 10) * 10,
     })
 
-    // Randomize shapeTrail config
-    setShapeTrailConfig({
-      ...shapeTrailConfig,
-      shape: pickOne(['circle', 'square', 'triangle']),
-      startScale: Math.floor(randomInRange(10, 100)),
-      endScale: Math.floor(randomInRange(1000, 2000)),
-      gap: Math.floor(randomInRange(10, 60)),
-      rotationOffset: Math.floor(randomInRange(0, 90)),
-      speed: Math.round(randomInRange(0.1, 1.5) * 10) / 10,
-      pathComplexity: Math.floor(randomInRange(3, 7)),
-      opacity: Math.round(randomInRange(0.3, 1) * 20) / 20,
-      trailCount: Math.floor(randomInRange(1, 6)),
-    })
-
     // Randomize fluid/mesh config
     setFluidConfig({
       ...fluidConfig,
@@ -225,7 +213,7 @@ export function useRandomize() {
       intensity: Math.round(randomInRange(0.1, 10) * 10) / 10,
       blurAmount: Math.floor(randomInRange(0, 100)),
     })
-  }, [colorPalette, gradientConfig, tessellationConfig, effectsConfig, textConfig, textSections, ribbonConfig, auroraConfig, fluidConfig, dandelionConfig, particleRingConfig, shapeTrailConfig, setBackgroundType, setGradientConfig, setTessellationConfig, setEffectsConfig, setTextConfig, setTextSections, setTextGap, setRibbonConfig, setAuroraConfig, setFluidConfig, setDandelionConfig, setParticleRingConfig, setShapeTrailConfig])
+  }, [colorPalette, gradientConfig, tessellationConfig, effectsConfig, textConfig, textSections, ribbonConfig, auroraConfig, fluidConfig, dandelionConfig, particleRingConfig, textPairs, setBackgroundType, setGradientConfig, setTessellationConfig, setEffectsConfig, setTextConfig, setTextSections, setTextGap, setRibbonConfig, setAuroraConfig, setFluidConfig, setDandelionConfig, setParticleRingConfig])
 
   return { randomize }
 }

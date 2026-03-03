@@ -8,7 +8,6 @@ import WavesLayer from './components/WavesLayer'
 import RibbonLayer from './components/RibbonLayer'
 import DandelionLayer from './components/DandelionLayer'
 import ParticleRingLayer from './components/ParticleRingLayer'
-import ShapeTrailLayer from './components/ShapeTrailLayer'
 import TessellationLayer from './components/TessellationLayer'
 import EffectsLayer from './components/EffectsLayer'
 import TextLayer from './components/TextLayer'
@@ -16,6 +15,7 @@ import ControlPanel from './components/ControlPanel'
 import useStore from './store/useStore'
 import { useThemedConfig } from './hooks/useThemedConfig'
 import { getScenes, getScene } from './lib/scenesApi'
+import { fetchTextPairs } from './lib/gemini'
 import './App.css'
 
 function App() {
@@ -31,7 +31,6 @@ function App() {
   const [ribbonConfig] = useThemedConfig('ribbonConfig')
   const dandelionConfig = useStore((state) => state.dandelionConfig)
   const particleRingConfig = useStore((state) => state.particleRingConfig)
-  const shapeTrailConfig = useStore((state) => state.shapeTrailConfig)
   const tessellationConfig = useStore((state) => state.tessellationConfig)
   const effectsConfig = useStore((state) => state.effectsConfig)
   const textSections = useStore((state) => state.textSections)
@@ -42,6 +41,7 @@ function App() {
   const currentSceneId = useStore((state) => state.currentSceneId)
   const audioEnabled = useStore((state) => state.audioConfig.enabled)
   const inputEnabled = useStore((state) => state.inputEnabled)
+  const setTextPairs = useStore((state) => state.setTextPairs)
 
   const layersContainerRef = useRef(null)
 
@@ -69,6 +69,21 @@ function App() {
     }
     loadRandomScene()
   }, [loadSceneData, currentSceneId])
+
+  // Fetch AI-generated text pairs on initial mount
+  useEffect(() => {
+    const loadTextPairs = async () => {
+      try {
+        const pairs = await fetchTextPairs()
+        if (pairs && pairs.length > 0) {
+          setTextPairs(pairs)
+        }
+      } catch (err) {
+        console.warn('Failed to fetch text pairs:', err)
+      }
+    }
+    loadTextPairs()
+  }, [setTextPairs])
 
   // Ref to track if RAF is pending for mouse throttling (PERFORMANCE OPTIMIZATION)
   const rafPendingRef = useRef(false)
@@ -178,9 +193,6 @@ function App() {
           )}
           {backgroundType === 'particleRing' && (
             <ParticleRingLayer config={particleRingConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
-          )}
-          {backgroundType === 'shapeTrail' && (
-            <ShapeTrailLayer config={shapeTrailConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
           )}
         </div>
 

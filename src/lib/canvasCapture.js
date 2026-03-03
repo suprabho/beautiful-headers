@@ -195,6 +195,19 @@ export const captureLayersToCanvas = async (container, effectsConfig, { scale = 
 
     const textLayer = container.querySelector('.text-layer')
     if (textLayer) {
+      // Pause text-float animations during capture so every row is at its
+      // natural position — otherwise each section may be at a different
+      // point in its float cycle, producing uneven spacing in the thumbnail.
+      const textSections = textLayer.querySelectorAll('.text-section')
+      const savedStyles = Array.from(textSections).map((el) => ({
+        animation: el.style.animation,
+        transform: el.style.transform,
+      }))
+      textSections.forEach((el) => {
+        el.style.animation = 'none'
+        el.style.transform = 'translateY(0px)'
+      })
+
       const textCanvas = await html2canvas(textLayer, {
         useCORS: true,
         allowTaint: true,
@@ -203,6 +216,12 @@ export const captureLayersToCanvas = async (container, effectsConfig, { scale = 
         logging: false,
       })
       ctx.drawImage(textCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
+
+      // Restore animations
+      textSections.forEach((el, i) => {
+        el.style.animation = savedStyles[i].animation
+        el.style.transform = savedStyles[i].transform
+      })
     }
   }
 

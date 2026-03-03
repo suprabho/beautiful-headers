@@ -1823,8 +1823,6 @@ export const GradientPanel = ({
   setDandelionConfig,
   particleRingConfig,
   setParticleRingConfig,
-  shapeTrailConfig,
-  setShapeTrailConfig,
   parsedPalette,
 }) => {
   return (
@@ -1856,7 +1854,6 @@ export const GradientPanel = ({
             <SelectItem value="ribbon">Ribbon</SelectItem>
             <SelectItem value="dandelion">Dandelion</SelectItem>
             <SelectItem value="particleRing">Particle Ring</SelectItem>
-            <SelectItem value="shapeTrail">Shape Trail</SelectItem>
           </SelectContent>
         </Select>
       </ControlGroup>
@@ -1913,14 +1910,6 @@ export const GradientPanel = ({
           particleRingConfig={particleRingConfig}
           setParticleRingConfig={setParticleRingConfig}
           parsedPalette={parsedPalette}
-        />
-      )}
-      {backgroundType === 'shapeTrail' && (
-        <ShapeTrailControls
-          shapeTrailConfig={shapeTrailConfig}
-          setShapeTrailConfig={setShapeTrailConfig}
-          parsedPalette={parsedPalette}
-          gradientColors={gradientConfig.colors}
         />
       )}
     </div>

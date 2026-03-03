@@ -35,13 +35,6 @@ export const MOUSE_MAPPINGS = {
       { param: 'tiltZ', type: 'tilt', axis: 'x', strength: 0.4 },
     ],
   },
-  shapeTrail: {
-    lerpFactor: 0.08,
-    effects: [
-      { param: 'center', type: 'positionOffset', axis: 'both', strength: 0.15 },
-    ],
-  },
-
   aurora: {
     lerpFactor: 0.05, // uses 1 - decaySpeed internally
     effects: [

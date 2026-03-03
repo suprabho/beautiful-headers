@@ -640,6 +640,10 @@ const useStore = create((set, get) => ({
     audioConfig: { ...state.audioConfig, ...updates }
   })),
 
+  // Pre-fetched text pairs for shuffle
+  textPairs: [],
+  setTextPairs: (pairs) => set({ textPairs: pairs }),
+
   // Scene management
   currentSceneId: null,
   setCurrentSceneId: (id) => set({ currentSceneId: id }),
