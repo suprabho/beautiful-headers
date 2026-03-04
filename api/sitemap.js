@@ -40,6 +40,7 @@ export default async function handler(req, res) {
         // Static pages
         const staticPages = [
             { url: '/', priority: '1.0', changefreq: 'weekly', lastmod: now },
+            { url: '/about', priority: '0.8', changefreq: 'monthly', lastmod: now },
             { url: '/scenes', priority: '0.8', changefreq: 'daily', lastmod: latestSceneDate },
         ];
 

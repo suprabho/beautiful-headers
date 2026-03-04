@@ -30,8 +30,8 @@ export default async function handler(req, res) {
         const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
         const prompt = `Generate 10 creative pairs of text for a visual header/hero section design tool. Each pair should have:
-- A "title": a bold, short headline (1-3 words, evocative and artistic)
-- A "subtitle": a smaller tagline or descriptor (2-5 words, complementary to the title)
+- A "title": a bold, short headline (1 word, trendy, evocative or artistic)
+- A "subtitle": a smaller tagline or descriptor (2-3 words, complementary to the title)
 
 The pairs should be diverse in theme — spanning creative, tech, nature, abstract, editorial, and artistic vibes. They should look great as large display text on colorful gradient backgrounds.
 
