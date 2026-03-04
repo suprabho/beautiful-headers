@@ -5,6 +5,7 @@ import {
   Shuffle, Plus, Camera, Check, ArrowCounterClockwise, Info,
   CaretCircleUp, CaretCircleDown,
   Pause, Play, FloppyDisk, Images, PaintBrushBroad,
+  Moon, Sun,
 } from '@phosphor-icons/react'
 import { parsePaletteJson } from '@/lib/colorConversion'
 import { cn } from '@/lib/utils'
@@ -53,6 +54,8 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
   const colorPalette = useStore((state) => state.colorPalette)
   const isPaused = useStore((state) => state.isPaused)
   const setIsPaused = useStore((state) => state.setIsPaused)
+  const editorThemeMode = useStore((state) => state.editorThemeMode)
+  const setEditorThemeMode = useStore((state) => state.setEditorThemeMode)
 
   const parsedPalette = colorPalette ? parsePaletteJson(colorPalette) : null
 
@@ -72,7 +75,10 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
       {/* Mobile Top Bar */}
       <div className="fixed left-0 right-0 top-0 z-50 bg-card/5 backdrop-blur-4xl">
         <div className="flex items-center justify-between gap-2 p-2 safe-area-top">
-          <img src="/apple-touch-icon.png" alt="Logo" className="w-10 h-10 rounded-[12px]" />
+          <Button variant="outline" size="sm" className="overflow-hidden bg-background/30 backdrop-blur-md h-10 w-10 p-0 border-primary/50" onClick={onShowAbout} title="About Aura">
+            <img src="/apple-touch-icon.png" alt="Logo" className="w-10 h-10" />
+          </Button>
+          
           <Button variant="outline" size="sm" className="bg-background/30 backdrop-blur-md flex items-center gap-2 h-10 px-3 border-primary/50" onClick={() => navigate('/scenes')} title="Saved Scenes">
             <Images size={18} />
           </Button>
@@ -91,8 +97,19 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
           <Button variant="outline" size="sm" className="bg-background/30 backdrop-blur-md flex items-center gap-2 h-10 px-3 border-primary/50" onClick={onShowCapture}>
             <Camera size={18} />
           </Button>
-          <Button variant="outline" size="sm" className="bg-background/30 backdrop-blur-md flex items-center gap-2 h-10 px-3 border-primary/50" onClick={onShowAbout} title="About Aura">
-            <Info size={18} />
+          <Button
+            variant="outline"
+            size="sm"
+            className={cn(
+              "backdrop-blur-md flex items-center gap-2 h-10 px-3",
+              editorThemeMode === 'dark'
+                ? "bg-white-50 border-primary/50 text-white"
+                : "bg-primary/30 border-primary text-white"
+            )}
+            onClick={() => setEditorThemeMode(editorThemeMode === 'dark' ? 'light' : 'dark')}
+            title={editorThemeMode === 'dark' ? 'Preview Light Mode' : 'Preview Dark Mode'}
+          >
+            {editorThemeMode === 'dark' ? <Moon size={18} weight="fill" /> : <Sun size={18} weight="fill" />}
           </Button>
         </div>
       </div>

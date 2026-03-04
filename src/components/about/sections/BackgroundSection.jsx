@@ -54,7 +54,7 @@ export function BackgroundSection({ dbScene }) {
       )}
     >
       <Select value={backgroundType} onValueChange={setUserBgType}>
-        <SelectTrigger className="w-[140px] h-8 bg-black/30 border-white/20 text-white text-xs">
+        <SelectTrigger className="w-[140px] h-8 bg-black/60 border-white/20 text-white text-sm font-semibold">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
