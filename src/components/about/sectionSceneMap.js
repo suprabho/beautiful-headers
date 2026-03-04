@@ -13,7 +13,7 @@ export const SECTION_SLUG_OVERRIDES = {
   hero:        'magenta-wavy-gradient-header-dynamic-website-design',
   background:  'bright-morning-ribbon-header-energetic-sunrise-flow', // auto-match: waves
   icons:       'late-night-waves-moonlit-harbour-swell', // auto-match: aurora
-  effects:     'aura-blue-gradient-stunning-website-header-design', // auto-match: fluid
+  effects:     'serene-blue-gradient-background-ethereal-cloud-design', // auto-match: fluid
   flutedGlass: 'dynamic-blue-green-gradient-modern-abstract-visuals', // auto-match: ribbon
   text:        'mediterranean-coast-simple-azure-serenity', // auto-match: liquid
   input:       'sakura-garden-dandelion-cherry-blossom-drift', // auto-match: dandelion

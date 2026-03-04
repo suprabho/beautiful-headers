@@ -74,7 +74,7 @@ export function EmbedSection({ dbScene }) {
         </div>
         {/* Hover: actual EmbedDialog content overlay */}
         <div
-          className={`absolute inset-0 z-20 bg-popover/95 backdrop-blur-xl rounded-2xl p-3 shadow-2xl transition-all duration-200 overflow-y-auto ${
+          className={`absolute m-4 h-full md:h-fit inset-0 z-20 bg-popover/95 backdrop-blur-xl rounded-2xl p-3 shadow-2xl transition-all duration-200 overflow-y-auto ${
             hovered ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
           }`}
         >

@@ -25,16 +25,29 @@ const TEXTURE_TYPES = [
   { value: 'diagonal', label: 'Diagonal' },
 ]
 
+const COLOR_MAP_TYPES = [
+  { value: 'none', label: 'None' },
+  { value: 'sepia', label: 'Sepia' },
+  { value: 'cyberpunk', label: 'Cyberpunk' },
+  { value: 'sunset', label: 'Sunset' },
+  { value: 'matrix', label: 'Matrix' },
+  { value: 'noir', label: 'Noir' },
+  { value: 'vintage', label: 'Vintage' },
+]
+
 export function EffectsSection({ dbScene }) {
   const sd = dbScene?.scene_data
-  const [texture, setTexture] = useState('none')
+  const [texture, setTexture] = useState('grid')
+  const [colorMap, setColorMap] = useState('none')
   const gradientConfig = sd?.gradientConfig || makeGradientConfig(fallback.colors)
   const baseEffects = sd?.effectsConfig || DEFAULT_EFFECTS_CONFIG
   const effectsConfig = {
     ...baseEffects,
     texture,
+    textureSize: 20,
     textureOpacity: texture !== 'none' ? 0.5 : 0,
     vignetteIntensity: texture !== 'none' ? 0.5 : 0.3,
+    colorMap,
   }
 
   return (
@@ -68,6 +81,21 @@ export function EffectsSection({ dbScene }) {
           )}
         >
           {tex.label}
+        </button>
+      ))}
+      <div className="w-full h-px" />
+      {COLOR_MAP_TYPES.map(cm => (
+        <button
+          key={cm.value}
+          onClick={() => setColorMap(cm.value)}
+          className={cn(
+            "px-2.5 py-1 rounded-md text-xs transition-colors",
+            colorMap === cm.value
+              ? "bg-primary text-black"
+              : "bg-black/50 text-white/80 hover:bg-primary/50"
+          )}
+        >
+          {cm.label}
         </button>
       ))}
     </FeatureCard>

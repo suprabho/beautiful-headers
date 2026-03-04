@@ -3,6 +3,7 @@ import { FeatureCard } from '../FeatureCard'
 import { MiniSceneRenderer } from '../MiniSceneRenderer'
 import { cn } from '@/lib/utils'
 import { Mouse, Microphone, Prohibit } from '@phosphor-icons/react'
+import { useMiniMic } from '@/audio/useMiniMic'
 import {
   getScene,
   makeGradientConfig,
@@ -27,6 +28,8 @@ export function InputSection({ dbScene }) {
   const sd = dbScene?.scene_data
   const [inputMode, setInputMode] = useState('mouse')
   const gradientConfig = sd?.gradientConfig || makeGradientConfig(fallback.colors)
+
+  useMiniMic(inputMode === 'mic')
 
   return (
     <FeatureCard

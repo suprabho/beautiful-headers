@@ -18,7 +18,7 @@ export const DEFAULT_GRADIENT_CONFIG = {
 export const DEFAULT_EFFECTS_CONFIG = {
   blur: 0,
   texture: 'none',
-  textureSize: 20,
+  textureSize: 0.01,
   textureOpacity: 0.5,
   textureBlendMode: 'overlay',
   colorMap: 'none',
@@ -41,10 +41,10 @@ export const DEFAULT_EFFECTS_CONFIG = {
 export const DEFAULT_TESSELLATION_CONFIG = {
   enabled: true,
   icon: 'Star',
-  rowGap: 60,
-  colGap: 60,
-  size: 24,
-  opacity: 0.15,
+  rowGap: 200,
+  colGap: 200,
+  size: 10,
+  opacity: 0.20,
   rotation: 0,
   color: '#ffffff',
   mouseRotationInfluence: 0.5,
