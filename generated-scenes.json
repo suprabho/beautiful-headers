@@ -13392,5 +13392,1409 @@
       },
       "selectedProjectIds": []
     }
+  },
+  {
+    "title": "Austin Liquid – Sixth Street Neon Melt",
+    "short_description": "Hot neon pink and electric violet liquid blobs pulse like Sixth Street bar signs at midnight.",
+    "long_description": "Vivid neon pink, electric violet, and lime green liquid blobs morph and bleed into deep black like the glowing bar signs and honky-tonk neon of Austin's famous Sixth Street after dark. Film grain recreates the hazy warmth of a packed live music venue while strong vignette focuses the eye like a spotlight on stage. Cyberpunk color mapping pushes the palette into electric overdrive. Perfect for live music venues, SXSW event pages, Austin nightlife brands, and indie band portfolios.",
+    "scene_data": {
+      "backgroundType": "liquid",
+      "gradientConfig": {
+        "colors": [
+          "#ec4899",
+          "#8b5cf6",
+          "#84cc16",
+          "#0a0a0a"
+        ],
+        "numColors": 4,
+        "type": "radial",
+        "startPos": {
+          "x": 50,
+          "y": 50
+        },
+        "endPos": {
+          "x": 100,
+          "y": 100
+        },
+        "colorStops": [
+          0,
+          25,
+          55,
+          100
+        ],
+        "waveIntensity": 0.32,
+        "mouseInfluence": 0.35,
+        "decaySpeed": 0.94,
+        "wave1Speed": 0.1,
+        "wave1Direction": 1,
+        "wave2Speed": 0.06,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10,
+        "maxWidth": 30,
+        "minHeight": 200,
+        "maxHeight": 600,
+        "minTTL": 100,
+        "maxTTL": 300,
+        "blurAmount": 13,
+        "hueStart": 290,
+        "hueEnd": 340,
+        "backgroundColor": "#0a0a0a",
+        "lineCount": 0,
+        "decaySpeed": 0.95,
+        "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 6,
+        "minRadius": 35,
+        "maxRadius": 125,
+        "speed": 0.55,
+        "orbitRadius": 145,
+        "blurAmount": 14,
+        "threshold": 175,
+        "mouseInfluence": 0.35,
+        "decaySpeed": 0.94,
+        "useGradientColors": true,
+        "colors": [
+          "#ec4899",
+          "#8b5cf6",
+          "#84cc16"
+        ],
+        "backgroundColor": "#0a0a0a"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#0a0a0a",
+        "colors": [
+          "#ec4899",
+          "#8b5cf6",
+          "#84cc16",
+          "#0a0a0a"
+        ],
+        "speed": 1,
+        "intensity": 1,
+        "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": [
+          "#ec4899",
+          "#8b5cf6",
+          "#84cc16",
+          "#0a0a0a"
+        ],
+        "waveHeight": 0.05,
+        "waveFrequency": 2,
+        "rotation": 0,
+        "speed": 0.5,
+        "blur": 40,
+        "layers": 5,
+        "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#0a0a0a",
+        "ribbonCount": 5,
+        "speed": 0.5,
+        "amplitude": 1,
+        "spread": 0.5,
+        "rotation": -30,
+        "thickness": 1,
+        "taper": -0.3,
+        "noise": 0.5,
+        "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#e8f4fc",
+        "lineCount": 120,
+        "radiusMin": 0.1,
+        "radiusMax": 0.8,
+        "speed": 0.3,
+        "thickness": 1.5,
+        "dotSize": 3,
+        "spread": 0.3,
+        "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fef6f9",
+        "particleCount": 800,
+        "ringRadius": 0.35,
+        "ringWidth": 0.15,
+        "speed": 0.5,
+        "particleSize": 3,
+        "dispersion": 0.3,
+        "rotationSpeed": 0.2,
+        "tiltX": 0,
+        "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#f0f0f0",
+        "shape": "circle",
+        "startScale": 1000,
+        "endScale": 2000,
+        "sizeCycles": 1,
+        "gap": 30,
+        "rotationOffset": 15,
+        "speed": 0.3,
+        "pathComplexity": 4,
+        "opacity": 0.8,
+        "blendMode": "normal",
+        "trailCount": 3,
+        "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false,
+        "icon": "Star",
+        "rowGap": 60,
+        "colGap": 60,
+        "size": 24,
+        "opacity": 0.15,
+        "rotation": 0,
+        "color": "#ec4899",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 13,
+        "texture": "grain",
+        "textureSize": 24,
+        "textureOpacity": 0.48,
+        "textureBlendMode": "overlay",
+        "colorMap": "cyberpunk",
+        "vignetteIntensity": 0.42,
+        "saturation": 125,
+        "contrast": 112,
+        "brightness": 95,
+        "flutedGlass": {
+          "enabled": false,
+          "segments": 80,
+          "rotation": 0,
+          "motionValue": 0.5,
+          "motionSpeed": 0.5,
+          "overlayOpacity": 0,
+          "distortionStrength": 0.02,
+          "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        {
+          "id": 1,
+          "text": "SIXTH",
+          "size": 130,
+          "weight": 900,
+          "spacing": 0.04,
+          "font": "sans-serif",
+          "italic": false
+        },
+        {
+          "id": 2,
+          "text": "keep austin loud",
+          "size": 15,
+          "weight": 300,
+          "spacing": 0.3,
+          "font": "sans-serif",
+          "italic": false
+        }
+      ],
+      "textGap": 14,
+      "textConfig": {
+        "enabled": true,
+        "color": "#84cc16",
+        "opacity": 0.9
+      },
+      "colorPalette": {
+        "rose": {
+          "50": "#fff1f2",
+          "100": "#ffe4e6",
+          "200": "#fecdd3",
+          "300": "#fda4af",
+          "400": "#fb7185",
+          "500": "#f43f5e",
+          "600": "#e11d48",
+          "700": "#be123c",
+          "800": "#9f1239",
+          "900": "#881337",
+          "950": "#4c0519"
+        },
+        "black": "#000",
+        "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Austin Aurora – Hill Country Firefly Dusk",
+    "short_description": "Warm amber and sage green aurora bands drift like fireflies over Texas hill country at twilight.",
+    "long_description": "Soft amber and muted sage green aurora curtains undulate across a deep twilight sky, evoking the magical glow of fireflies blinking over rolling Texas hill country at dusk. The warm color palette and gentle motion capture the laid-back, earthy spirit of Austin's outdoor culture. Grain adds rustic analog texture while moderate vignette frames the scene like a porch-view sunset. Built for Texas ranch brands, Austin food trucks, craft brewery sites, and outdoor festival landing pages.",
+    "scene_data": {
+      "backgroundType": "aurora",
+      "gradientConfig": {
+        "colors": [
+          "#d97706",
+          "#65a30d",
+          "#facc15",
+          "#1c1917"
+        ],
+        "numColors": 4,
+        "type": "radial",
+        "startPos": {
+          "x": 50,
+          "y": 35
+        },
+        "endPos": {
+          "x": 100,
+          "y": 100
+        },
+        "colorStops": [
+          0,
+          25,
+          55,
+          100
+        ],
+        "waveIntensity": 0.25,
+        "mouseInfluence": 0.25,
+        "decaySpeed": 0.95,
+        "wave1Speed": 0.06,
+        "wave1Direction": 1,
+        "wave2Speed": 0.04,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "hueStart": 45,
+        "hueEnd": 95,
+        "maxTTL": 55,
+        "minTTL": 210,
+        "maxWidth": 12,
+        "minWidth": 80,
+        "lineCount": 3,
+        "maxHeight": 55,
+        "minHeight": 870,
+        "blurAmount": 18,
+        "decaySpeed": 0.96,
+        "backgroundColor": "#1c1917",
+        "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5,
+        "minRadius": 40,
+        "maxRadius": 120,
+        "speed": 0.5,
+        "orbitRadius": 150,
+        "blurAmount": 12,
+        "threshold": 180,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.95,
+        "useGradientColors": true,
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926"
+        ],
+        "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#1c1917",
+        "colors": [
+          "#d97706",
+          "#65a30d",
+          "#facc15",
+          "#1c1917"
+        ],
+        "speed": 1,
+        "intensity": 1,
+        "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": [
+          "#d97706",
+          "#65a30d",
+          "#facc15",
+          "#1c1917"
+        ],
+        "waveHeight": 0.05,
+        "waveFrequency": 2,
+        "rotation": 0,
+        "speed": 0.5,
+        "blur": 40,
+        "layers": 5,
+        "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#1c1917",
+        "ribbonCount": 5,
+        "speed": 0.5,
+        "amplitude": 1,
+        "spread": 0.5,
+        "rotation": -30,
+        "thickness": 1,
+        "taper": -0.3,
+        "noise": 0.5,
+        "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#e8f4fc",
+        "lineCount": 120,
+        "radiusMin": 0.1,
+        "radiusMax": 0.8,
+        "speed": 0.3,
+        "thickness": 1.5,
+        "dotSize": 3,
+        "spread": 0.3,
+        "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fef6f9",
+        "particleCount": 800,
+        "ringRadius": 0.35,
+        "ringWidth": 0.15,
+        "speed": 0.5,
+        "particleSize": 3,
+        "dispersion": 0.3,
+        "rotationSpeed": 0.2,
+        "tiltX": 0,
+        "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#f0f0f0",
+        "shape": "circle",
+        "startScale": 1000,
+        "endScale": 2000,
+        "sizeCycles": 1,
+        "gap": 30,
+        "rotationOffset": 15,
+        "speed": 0.3,
+        "pathComplexity": 4,
+        "opacity": 0.8,
+        "blendMode": "normal",
+        "trailCount": 3,
+        "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false,
+        "icon": "Star",
+        "rowGap": 60,
+        "colGap": 60,
+        "size": 24,
+        "opacity": 0.15,
+        "rotation": 0,
+        "color": "#d97706",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 18,
+        "texture": "grain",
+        "textureSize": 26,
+        "textureOpacity": 0.42,
+        "textureBlendMode": "overlay",
+        "colorMap": "none",
+        "vignetteIntensity": 0.35,
+        "saturation": 105,
+        "contrast": 105,
+        "brightness": 92,
+        "flutedGlass": {
+          "enabled": false,
+          "segments": 80,
+          "rotation": 0,
+          "motionValue": 0.5,
+          "motionSpeed": 0.5,
+          "overlayOpacity": 0,
+          "distortionStrength": 0.02,
+          "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        {
+          "id": 1,
+          "text": "BARTON",
+          "size": 120,
+          "weight": 300,
+          "spacing": 0.12,
+          "font": "serif",
+          "italic": false
+        },
+        {
+          "id": 2,
+          "text": "hill country evenings",
+          "size": 15,
+          "weight": 300,
+          "spacing": 0.3,
+          "font": "sans-serif",
+          "italic": false
+        }
+      ],
+      "textGap": 16,
+      "textConfig": {
+        "enabled": true,
+        "color": "#fde68a",
+        "opacity": 0.88
+      },
+      "colorPalette": {
+        "amber": {
+          "50": "#fffbeb",
+          "100": "#fef3c7",
+          "200": "#fde68a",
+          "300": "#fcd34d",
+          "400": "#fbbf24",
+          "500": "#f59e0b",
+          "600": "#d97706",
+          "700": "#b45309",
+          "800": "#92400e",
+          "900": "#78350f",
+          "950": "#451a03"
+        },
+        "black": "#000",
+        "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Austin Waves – Lady Bird Lake Sunset Ripple",
+    "short_description": "Warm coral and golden wave layers ripple like Lady Bird Lake reflecting a Texas sunset.",
+    "long_description": "Layered waves in coral pink, burnt gold, and deep teal undulate with the gentle rhythm of Lady Bird Lake at golden hour. The sunset color map bathes every tone in warm light while the soft blur recreates the dreamy shimmer of water reflecting the Austin skyline and Congress Avenue Bridge at dusk. Dot texture adds the playful sparkle of light on moving water. Ideal for Austin tourism, paddleboard brands, lakeside event spaces, and Texas lifestyle publications.",
+    "scene_data": {
+      "backgroundType": "waves",
+      "gradientConfig": {
+        "colors": [
+          "#f43f5e",
+          "#f59e0b",
+          "#0d9488",
+          "#7c2d12"
+        ],
+        "numColors": 4,
+        "type": "linear",
+        "startPos": {
+          "x": 0,
+          "y": 35
+        },
+        "endPos": {
+          "x": 100,
+          "y": 65
+        },
+        "colorStops": [
+          0,
+          30,
+          60,
+          100
+        ],
+        "waveIntensity": 0.22,
+        "mouseInfluence": 0.2,
+        "decaySpeed": 0.96,
+        "wave1Speed": 0.08,
+        "wave1Direction": 1,
+        "wave2Speed": 0.05,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10,
+        "maxWidth": 30,
+        "minHeight": 200,
+        "maxHeight": 600,
+        "minTTL": 100,
+        "maxTTL": 300,
+        "blurAmount": 13,
+        "hueStart": 15,
+        "hueEnd": 40,
+        "backgroundColor": "#7c2d12",
+        "lineCount": 0,
+        "decaySpeed": 0.95,
+        "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5,
+        "minRadius": 40,
+        "maxRadius": 120,
+        "speed": 0.5,
+        "orbitRadius": 150,
+        "blurAmount": 12,
+        "threshold": 180,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.95,
+        "useGradientColors": true,
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926"
+        ],
+        "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#7c2d12",
+        "colors": [
+          "#f43f5e",
+          "#f59e0b",
+          "#0d9488",
+          "#7c2d12"
+        ],
+        "speed": 1,
+        "intensity": 1,
+        "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": [
+          "#f43f5e",
+          "#f59e0b",
+          "#0d9488",
+          "#7c2d12"
+        ],
+        "waveHeight": 0.05,
+        "waveFrequency": 1.8,
+        "rotation": 5,
+        "speed": 0.3,
+        "blur": 44,
+        "layers": 6,
+        "phaseOffset": 0.2
+      },
+      "ribbonConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#7c2d12",
+        "ribbonCount": 5,
+        "speed": 0.5,
+        "amplitude": 1,
+        "spread": 0.5,
+        "rotation": -30,
+        "thickness": 1,
+        "taper": -0.3,
+        "noise": 0.5,
+        "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#e8f4fc",
+        "lineCount": 120,
+        "radiusMin": 0.1,
+        "radiusMax": 0.8,
+        "speed": 0.3,
+        "thickness": 1.5,
+        "dotSize": 3,
+        "spread": 0.3,
+        "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fef6f9",
+        "particleCount": 800,
+        "ringRadius": 0.35,
+        "ringWidth": 0.15,
+        "speed": 0.5,
+        "particleSize": 3,
+        "dispersion": 0.3,
+        "rotationSpeed": 0.2,
+        "tiltX": 0,
+        "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#f0f0f0",
+        "shape": "circle",
+        "startScale": 1000,
+        "endScale": 2000,
+        "sizeCycles": 1,
+        "gap": 30,
+        "rotationOffset": 15,
+        "speed": 0.3,
+        "pathComplexity": 4,
+        "opacity": 0.8,
+        "blendMode": "normal",
+        "trailCount": 3,
+        "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false,
+        "icon": "Star",
+        "rowGap": 60,
+        "colGap": 60,
+        "size": 24,
+        "opacity": 0.15,
+        "rotation": 0,
+        "color": "#f43f5e",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 8,
+        "texture": "dots",
+        "textureSize": 25,
+        "textureOpacity": 0.28,
+        "textureBlendMode": "overlay",
+        "colorMap": "sunset",
+        "vignetteIntensity": 0.3,
+        "saturation": 112,
+        "contrast": 105,
+        "brightness": 100,
+        "flutedGlass": {
+          "enabled": false,
+          "segments": 80,
+          "rotation": 0,
+          "motionValue": 0.5,
+          "motionSpeed": 0.5,
+          "overlayOpacity": 0,
+          "distortionStrength": 0.02,
+          "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        {
+          "id": 1,
+          "text": "LADY BIRD",
+          "size": 105,
+          "weight": 400,
+          "spacing": 0.06,
+          "font": "serif",
+          "italic": true
+        },
+        {
+          "id": 2,
+          "text": "golden hour on the lake",
+          "size": 14,
+          "weight": 300,
+          "spacing": 0.3,
+          "font": "sans-serif",
+          "italic": false
+        }
+      ],
+      "textGap": 14,
+      "textConfig": {
+        "enabled": true,
+        "color": "#fef3c7",
+        "opacity": 0.9
+      },
+      "colorPalette": {
+        "rose": {
+          "50": "#fff1f2",
+          "100": "#ffe4e6",
+          "200": "#fecdd3",
+          "300": "#fda4af",
+          "400": "#fb7185",
+          "500": "#f43f5e",
+          "600": "#e11d48",
+          "700": "#be123c",
+          "800": "#9f1239",
+          "900": "#881337",
+          "950": "#4c0519"
+        },
+        "black": "#000",
+        "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "New York Fluid – Times Square Pixel Flood",
+    "short_description": "Blazing RGB fluid streams cascade like the digital billboards of Times Square at midnight.",
+    "long_description": "Intense electric blue, hot magenta, and bright white fluid layers surge and collide with high intensity, recreating the overwhelming digital light flood of Times Square's massive LED screens. The cyberpunk color map amplifies the synthetic palette while grid texture adds the pixel-grid structure of giant displays. Fast speed and strong contrast capture the relentless energy of Midtown Manhattan. Perfect for NYC event brands, advertising agencies, Broadway marketing, and media company landing pages.",
+    "scene_data": {
+      "backgroundType": "fluid",
+      "gradientConfig": {
+        "colors": [
+          "#2563eb",
+          "#ec4899",
+          "#f8fafc",
+          "#0f172a"
+        ],
+        "numColors": 4,
+        "type": "linear",
+        "startPos": {
+          "x": 0,
+          "y": 0
+        },
+        "endPos": {
+          "x": 100,
+          "y": 100
+        },
+        "colorStops": [
+          0,
+          30,
+          60,
+          100
+        ],
+        "waveIntensity": 0.3,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.95,
+        "wave1Speed": 0.15,
+        "wave1Direction": 1,
+        "wave2Speed": 0.1,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10,
+        "maxWidth": 30,
+        "minHeight": 200,
+        "maxHeight": 600,
+        "minTTL": 100,
+        "maxTTL": 300,
+        "blurAmount": 13,
+        "hueStart": 230,
+        "hueEnd": 320,
+        "backgroundColor": "#0f172a",
+        "lineCount": 0,
+        "decaySpeed": 0.95,
+        "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5,
+        "minRadius": 40,
+        "maxRadius": 120,
+        "speed": 0.5,
+        "orbitRadius": 150,
+        "blurAmount": 12,
+        "threshold": 180,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.95,
+        "useGradientColors": true,
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926"
+        ],
+        "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#0f172a",
+        "colors": [
+          "#2563eb",
+          "#ec4899",
+          "#f8fafc",
+          "#0f172a"
+        ],
+        "speed": 1,
+        "intensity": 2.6,
+        "blurAmount": 30
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": [
+          "#2563eb",
+          "#ec4899",
+          "#f8fafc",
+          "#0f172a"
+        ],
+        "waveHeight": 0.05,
+        "waveFrequency": 2,
+        "rotation": 0,
+        "speed": 0.5,
+        "blur": 40,
+        "layers": 5,
+        "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#0f172a",
+        "ribbonCount": 5,
+        "speed": 0.5,
+        "amplitude": 1,
+        "spread": 0.5,
+        "rotation": -30,
+        "thickness": 1,
+        "taper": -0.3,
+        "noise": 0.5,
+        "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#e8f4fc",
+        "lineCount": 120,
+        "radiusMin": 0.1,
+        "radiusMax": 0.8,
+        "speed": 0.3,
+        "thickness": 1.5,
+        "dotSize": 3,
+        "spread": 0.3,
+        "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fef6f9",
+        "particleCount": 800,
+        "ringRadius": 0.35,
+        "ringWidth": 0.15,
+        "speed": 0.5,
+        "particleSize": 3,
+        "dispersion": 0.3,
+        "rotationSpeed": 0.2,
+        "tiltX": 0,
+        "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#f0f0f0",
+        "shape": "circle",
+        "startScale": 1000,
+        "endScale": 2000,
+        "sizeCycles": 1,
+        "gap": 30,
+        "rotationOffset": 15,
+        "speed": 0.3,
+        "pathComplexity": 4,
+        "opacity": 0.8,
+        "blendMode": "normal",
+        "trailCount": 3,
+        "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false,
+        "icon": "Star",
+        "rowGap": 60,
+        "colGap": 60,
+        "size": 24,
+        "opacity": 0.15,
+        "rotation": 0,
+        "color": "#2563eb",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 8,
+        "texture": "grid",
+        "textureSize": 20,
+        "textureOpacity": 0.35,
+        "textureBlendMode": "overlay",
+        "colorMap": "cyberpunk",
+        "vignetteIntensity": 0.25,
+        "saturation": 130,
+        "contrast": 115,
+        "brightness": 100,
+        "flutedGlass": {
+          "enabled": false,
+          "segments": 80,
+          "rotation": 0,
+          "motionValue": 0.5,
+          "motionSpeed": 0.5,
+          "overlayOpacity": 0,
+          "distortionStrength": 0.02,
+          "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        {
+          "id": 1,
+          "text": "TIMES",
+          "size": 135,
+          "weight": 900,
+          "spacing": 0.03,
+          "font": "sans-serif",
+          "italic": false
+        },
+        {
+          "id": 2,
+          "text": "the city never sleeps",
+          "size": 15,
+          "weight": 300,
+          "spacing": 0.3,
+          "font": "sans-serif",
+          "italic": false
+        }
+      ],
+      "textGap": 14,
+      "textConfig": {
+        "enabled": true,
+        "color": "#ffffff",
+        "opacity": 0.92
+      },
+      "colorPalette": {
+        "blue": {
+          "50": "#eff6ff",
+          "100": "#dbeafe",
+          "200": "#bfdbfe",
+          "300": "#93c5fd",
+          "400": "#60a5fa",
+          "500": "#3b82f6",
+          "600": "#2563eb",
+          "700": "#1d4ed8",
+          "800": "#1e40af",
+          "900": "#1e3a8a",
+          "950": "#172554"
+        },
+        "black": "#000",
+        "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "New York Ribbon – Brooklyn Bridge Cable Threads",
+    "short_description": "Steel gray and warm amber ribbons arc like suspension cables against a twilight skyline.",
+    "long_description": "Elegant ribbons in steel gray, warm amber, and soft ivory sweep and intersect across deep charcoal, tracing the graceful geometry of the Brooklyn Bridge's suspension cables at twilight. The slow speed and subtle taper create architectural precision while fluted glass refraction adds the shimmer of city lights reflected off the East River below. Vintage color mapping lends the warmth of golden-hour photography. Perfect for NYC architecture firms, Brooklyn real estate, bridge-themed events, and urban design portfolios.",
+    "scene_data": {
+      "backgroundType": "ribbon",
+      "gradientConfig": {
+        "colors": [
+          "#94a3b8",
+          "#d97706",
+          "#fef3c7",
+          "#1e293b"
+        ],
+        "numColors": 4,
+        "type": "linear",
+        "startPos": {
+          "x": 30,
+          "y": 0
+        },
+        "endPos": {
+          "x": 70,
+          "y": 100
+        },
+        "colorStops": [
+          0,
+          30,
+          60,
+          100
+        ],
+        "waveIntensity": 0.18,
+        "mouseInfluence": 0.25,
+        "decaySpeed": 0.96,
+        "wave1Speed": 0.06,
+        "wave1Direction": 1,
+        "wave2Speed": 0.04,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10,
+        "maxWidth": 30,
+        "minHeight": 200,
+        "maxHeight": 600,
+        "minTTL": 100,
+        "maxTTL": 300,
+        "blurAmount": 13,
+        "hueStart": 35,
+        "hueEnd": 55,
+        "backgroundColor": "#1e293b",
+        "lineCount": 0,
+        "decaySpeed": 0.95,
+        "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5,
+        "minRadius": 40,
+        "maxRadius": 120,
+        "speed": 0.5,
+        "orbitRadius": 150,
+        "blurAmount": 12,
+        "threshold": 180,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.95,
+        "useGradientColors": true,
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926"
+        ],
+        "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#1e293b",
+        "colors": [
+          "#94a3b8",
+          "#d97706",
+          "#fef3c7",
+          "#1e293b"
+        ],
+        "speed": 1,
+        "intensity": 1,
+        "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": [
+          "#94a3b8",
+          "#d97706",
+          "#fef3c7",
+          "#1e293b"
+        ],
+        "waveHeight": 0.05,
+        "waveFrequency": 2,
+        "rotation": 0,
+        "speed": 0.5,
+        "blur": 40,
+        "layers": 5,
+        "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#1e293b",
+        "ribbonCount": 5,
+        "speed": 0.28,
+        "amplitude": 0.75,
+        "spread": 0.4,
+        "rotation": 55,
+        "thickness": 1,
+        "taper": -0.2,
+        "noise": 0.02,
+        "opacity": 0.6,
+        "colorCycleSpeed": 0.7,
+        "enableHoverEffect": true
+      },
+      "dandelionConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#e8f4fc",
+        "lineCount": 120,
+        "radiusMin": 0.1,
+        "radiusMax": 0.8,
+        "speed": 0.3,
+        "thickness": 1.5,
+        "dotSize": 3,
+        "spread": 0.3,
+        "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#fef6f9",
+        "particleCount": 800,
+        "ringRadius": 0.35,
+        "ringWidth": 0.15,
+        "speed": 0.5,
+        "particleSize": 3,
+        "dispersion": 0.3,
+        "rotationSpeed": 0.2,
+        "tiltX": 0,
+        "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#f0f0f0",
+        "shape": "circle",
+        "startScale": 1000,
+        "endScale": 2000,
+        "sizeCycles": 1,
+        "gap": 30,
+        "rotationOffset": 15,
+        "speed": 0.3,
+        "pathComplexity": 4,
+        "opacity": 0.8,
+        "blendMode": "normal",
+        "trailCount": 3,
+        "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false,
+        "icon": "Star",
+        "rowGap": 60,
+        "colGap": 60,
+        "size": 24,
+        "opacity": 0.15,
+        "rotation": 0,
+        "color": "#94a3b8",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 6,
+        "texture": "diagonal",
+        "textureSize": 30,
+        "textureOpacity": 0.25,
+        "textureBlendMode": "overlay",
+        "colorMap": "vintage",
+        "vignetteIntensity": 0.32,
+        "saturation": 90,
+        "contrast": 108,
+        "brightness": 95,
+        "flutedGlass": {
+          "enabled": true,
+          "segments": 75,
+          "rotation": 65,
+          "motionSpeed": 0.7,
+          "motionValue": 0.4,
+          "overlayOpacity": 8,
+          "distortionStrength": 0.02,
+          "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        {
+          "id": 1,
+          "text": "BROOKLYN",
+          "size": 110,
+          "weight": 600,
+          "spacing": 0.06,
+          "font": "sans-serif",
+          "italic": false
+        },
+        {
+          "id": 2,
+          "text": "east river twilight",
+          "size": 14,
+          "weight": 300,
+          "spacing": 0.35,
+          "font": "sans-serif",
+          "italic": false
+        }
+      ],
+      "textGap": 14,
+      "textConfig": {
+        "enabled": true,
+        "color": "#fbbf24",
+        "opacity": 0.88
+      },
+      "colorPalette": {
+        "slate": {
+          "50": "#f8fafc",
+          "100": "#f1f5f9",
+          "200": "#e2e8f0",
+          "300": "#cbd5e1",
+          "400": "#94a3b8",
+          "500": "#64748b",
+          "600": "#475569",
+          "700": "#334155",
+          "800": "#1e293b",
+          "900": "#0f172a",
+          "950": "#020617"
+        },
+        "black": "#000",
+        "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "New York Particle Ring – Manhattan Skyline Star Orbit",
+    "short_description": "Cool white and icy blue particles orbit through deep midnight like city lights seen from the Hudson.",
+    "long_description": "Thousands of cool white and icy blue particles drift in a wide orbital ring against deep midnight black, evoking the scattered lights of the Manhattan skyline reflected across the dark Hudson River. The slow rotation and moderate dispersion give it the contemplative quality of standing at a waterfront railing at 1 AM watching the city glow from across the water. Scanline texture adds urban edge while the noir color map strips everything to essential light and shadow. Built for NYC photography galleries, late-night podcast brands, Manhattan real estate, and urban contemplation platforms.",
+    "scene_data": {
+      "backgroundType": "particleRing",
+      "gradientConfig": {
+        "colors": [
+          "#e2e8f0",
+          "#60a5fa",
+          "#1e3a8a",
+          "#020617"
+        ],
+        "numColors": 4,
+        "type": "radial",
+        "startPos": {
+          "x": 50,
+          "y": 50
+        },
+        "endPos": {
+          "x": 100,
+          "y": 100
+        },
+        "colorStops": [
+          0,
+          25,
+          55,
+          100
+        ],
+        "waveIntensity": 0.15,
+        "mouseInfluence": 0.2,
+        "decaySpeed": 0.96,
+        "wave1Speed": 0.05,
+        "wave1Direction": 1,
+        "wave2Speed": 0.03,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10,
+        "maxWidth": 30,
+        "minHeight": 200,
+        "maxHeight": 600,
+        "minTTL": 100,
+        "maxTTL": 300,
+        "blurAmount": 13,
+        "hueStart": 215,
+        "hueEnd": 235,
+        "backgroundColor": "#020617",
+        "lineCount": 0,
+        "decaySpeed": 0.95,
+        "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5,
+        "minRadius": 40,
+        "maxRadius": 120,
+        "speed": 0.5,
+        "orbitRadius": 150,
+        "blurAmount": 12,
+        "threshold": 180,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.95,
+        "useGradientColors": true,
+        "colors": [
+          "#40204c",
+          "#a3225c",
+          "#e24926"
+        ],
+        "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#020617",
+        "colors": [
+          "#e2e8f0",
+          "#60a5fa",
+          "#1e3a8a",
+          "#020617"
+        ],
+        "speed": 1,
+        "intensity": 1,
+        "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": [
+          "#e2e8f0",
+          "#60a5fa",
+          "#1e3a8a",
+          "#020617"
+        ],
+        "waveHeight": 0.05,
+        "waveFrequency": 2,
+        "rotation": 0,
+        "speed": 0.5,
+        "blur": 40,
+        "layers": 5,
+        "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#020617",
+        "ribbonCount": 5,
+        "speed": 0.5,
+        "amplitude": 1,
+        "spread": 0.5,
+        "rotation": -30,
+        "thickness": 1,
+        "taper": -0.3,
+        "noise": 0.5,
+        "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#e8f4fc",
+        "lineCount": 120,
+        "radiusMin": 0.1,
+        "radiusMax": 0.8,
+        "speed": 0.3,
+        "thickness": 1.5,
+        "dotSize": 3,
+        "spread": 0.3,
+        "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#020617",
+        "radialGradientColors": [
+          "#0f172a",
+          "#020617"
+        ],
+        "radialGradientStops": [
+          0,
+          100
+        ],
+        "gradientEndX": 100,
+        "gradientEndY": 100,
+        "particleCount": 1400,
+        "ringRadius": 0.42,
+        "ringWidth": 0.2,
+        "speed": 0.25,
+        "particleSize": 2.2,
+        "dispersion": 0.35,
+        "rotationSpeed": 0.1,
+        "tiltX": 20,
+        "tiltZ": -8
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#f0f0f0",
+        "shape": "circle",
+        "startScale": 1000,
+        "endScale": 2000,
+        "sizeCycles": 1,
+        "gap": 30,
+        "rotationOffset": 15,
+        "speed": 0.3,
+        "pathComplexity": 4,
+        "opacity": 0.8,
+        "blendMode": "normal",
+        "trailCount": 3,
+        "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false,
+        "icon": "Star",
+        "rowGap": 60,
+        "colGap": 60,
+        "size": 24,
+        "opacity": 0.15,
+        "rotation": 0,
+        "color": "#60a5fa",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 5,
+        "texture": "scanlines",
+        "textureSize": 18,
+        "textureOpacity": 0.3,
+        "textureBlendMode": "overlay",
+        "colorMap": "noir",
+        "vignetteIntensity": 0.38,
+        "saturation": 75,
+        "contrast": 112,
+        "brightness": 92,
+        "flutedGlass": {
+          "enabled": false,
+          "segments": 80,
+          "rotation": 0,
+          "motionValue": 0.5,
+          "motionSpeed": 0.5,
+          "overlayOpacity": 0,
+          "distortionStrength": 0.02,
+          "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        {
+          "id": 1,
+          "text": "HUDSON",
+          "size": 125,
+          "weight": 200,
+          "spacing": 0.15,
+          "font": "sans-serif",
+          "italic": false
+        },
+        {
+          "id": 2,
+          "text": "manhattan after midnight",
+          "size": 14,
+          "weight": 300,
+          "spacing": 0.3,
+          "font": "sans-serif",
+          "italic": false
+        }
+      ],
+      "textGap": 14,
+      "textConfig": {
+        "enabled": true,
+        "color": "#e2e8f0",
+        "opacity": 0.88
+      },
+      "colorPalette": {
+        "blue": {
+          "50": "#eff6ff",
+          "100": "#dbeafe",
+          "200": "#bfdbfe",
+          "300": "#93c5fd",
+          "400": "#60a5fa",
+          "500": "#3b82f6",
+          "600": "#2563eb",
+          "700": "#1d4ed8",
+          "800": "#1e40af",
+          "900": "#1e3a8a",
+          "950": "#172554"
+        },
+        "black": "#000",
+        "white": "#fff"
+      },
+      "selectedProjectIds": []
+    }
   }
 ]
