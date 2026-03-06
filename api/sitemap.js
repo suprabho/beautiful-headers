@@ -14,7 +14,7 @@ export default async function handler(req, res) {
         // Fetch all scenes from Supabase
         const { data: scenes, error } = await supabase
             .from('scenes')
-            .select('id, title, updated_at')
+            .select('id, title, slug, updated_at')
             .order('updated_at', { ascending: false });
 
         if (error) throw error;
@@ -30,11 +30,18 @@ export default async function handler(req, res) {
         };
 
         const baseUrl = 'https://aura.promad.design';
+        const now = new Date().toISOString();
+
+        // Use the most recent scene update as lastmod for the gallery page
+        const latestSceneDate = scenes.length > 0
+            ? new Date(scenes[0].updated_at).toISOString()
+            : now;
 
         // Static pages
         const staticPages = [
-            { url: '/', priority: '1.0', changefreq: 'weekly' },
-            { url: '/scenes', priority: '0.8', changefreq: 'weekly' },
+            { url: '/', priority: '1.0', changefreq: 'weekly', lastmod: now },
+            { url: '/about', priority: '0.8', changefreq: 'monthly', lastmod: now },
+            { url: '/scenes', priority: '0.8', changefreq: 'daily', lastmod: latestSceneDate },
         ];
 
         // Generate XML
@@ -45,6 +52,7 @@ export default async function handler(req, res) {
                     return `
   <url>
     <loc>${baseUrl}${page.url}</loc>
+    <lastmod>${page.lastmod}</lastmod>
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>
   </url>`;
@@ -52,7 +60,7 @@ export default async function handler(req, res) {
                 .join('')}
   ${scenes
                 .map((scene) => {
-                    const slug = titleToSlug(scene.title);
+                    const slug = scene.slug || titleToSlug(scene.title);
                     return `
   <url>
     <loc>${baseUrl}/scenes/${slug}</loc>

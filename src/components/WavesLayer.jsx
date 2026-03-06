@@ -89,8 +89,8 @@ const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, 
     const dpr = Math.min(window.devicePixelRatio || 1, 2)
 
     const handleResize = () => {
-      const width = window.innerWidth
-      const height = window.innerHeight
+      const width = container.clientWidth || window.innerWidth
+      const height = container.clientHeight || window.innerHeight
       // Use DPR-scaled canvas for crisp rendering on Retina/4K displays
       canvas.width = width * dpr
       canvas.height = height * dpr
@@ -111,7 +111,10 @@ const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, 
 
     handleResize()
     setCanvasReady(true)
-    window.addEventListener('resize', handleResize)
+
+    // Use ResizeObserver to track container size changes (e.g. in MiniSceneRenderer)
+    const resizeObserver = new ResizeObserver(handleResize)
+    resizeObserver.observe(container)
     document.addEventListener('visibilitychange', handleVisibilityChange)
 
     const animate = () => {
@@ -266,7 +269,7 @@ const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, 
     animate()
 
     return () => {
-      window.removeEventListener('resize', handleResize)
+      resizeObserver.disconnect()
       document.removeEventListener('visibilitychange', handleVisibilityChange)
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current)

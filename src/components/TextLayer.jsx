@@ -16,7 +16,7 @@ const FONT_FAMILIES = {
   'sans-serif': "'Manrope', sans-serif",
   'serif': "'Playfair Display', serif",
   'mono': "'Space Grotesk', monospace",
-  'scribble': "'Pacifico', cursive",
+  'scribble': "'Petit Formal Script', cursive",
 }
 
 // Memoized text section component
@@ -80,27 +80,31 @@ const TextLayer = memo(({ sections, gap, color = '#ffffff', opacity = 1 }) => {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  // Responsive scale factor shared by font sizes and gap
+  const responsiveScale = useMemo(() => {
+    if (windowWidth <= 480) return 0.35
+    if (windowWidth <= 768) return 0.65
+    if (windowWidth <= 1024) return 0.85
+    return 1
+  }, [windowWidth])
+
   // Memoize responsive font size calculator
   const getResponsiveFontSize = useCallback((baseSize) => {
     // Scale down proportionally on smaller screens
     // Mobile (320px): ~35% of base size
     // Tablet (768px): ~65% of base size
     // Desktop (1920px+): full size
-    if (windowWidth <= 480) {
-      // Mobile phones
-      return Math.max(14, Math.round(baseSize * 0.35))
-    } else if (windowWidth <= 768) {
-      // Tablets
-      return Math.round(baseSize * 0.65)
-    } else if (windowWidth <= 1024) {
-      // Small desktops
-      return Math.round(baseSize * 0.85)
-    } else {
-      // Large desktops - full size
-      return baseSize
-    }
-  }, [windowWidth])
-  
+    return responsiveScale < 1
+      ? Math.max(14, Math.round(baseSize * responsiveScale))
+      : baseSize
+  }, [responsiveScale])
+
+  // Scale gap proportionally so spacing stays consistent with font sizes
+  const responsiveGap = useMemo(
+    () => Math.round(gap * responsiveScale),
+    [gap, responsiveScale]
+  )
+
   return (
     <div
       className="text-layer"
@@ -115,7 +119,7 @@ const TextLayer = memo(({ sections, gap, color = '#ffffff', opacity = 1 }) => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        gap: `${gap}px`,
+        gap: `${responsiveGap}px`,
         pointerEvents: 'none',
       }}
     >

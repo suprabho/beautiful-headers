@@ -5,6 +5,9 @@ import useStore from '../store/useStore'
 
 export function useCanvasCapture(layersContainerRef) {
   const effectsConfig = useStore((state) => state.effectsConfig)
+  const textSections = useStore((state) => state.textSections)
+  const textGap = useStore((state) => state.textGap)
+  const textConfig = useStore((state) => state.textConfig)
   const [isCapturing, setIsCapturing] = useState(false)
   const [showCaptureModal, setShowCaptureModal] = useState(false)
 
@@ -21,7 +24,16 @@ export function useCanvasCapture(layersContainerRef) {
       const outputCanvas = await captureLayersToCanvas(
         layersContainerRef.current,
         effectsConfig,
-        { scale: 2, mode }
+        {
+          scale: 2,
+          mode,
+          textData: mode === 'all' && textConfig.enabled ? {
+            sections: textSections,
+            gap: textGap,
+            color: textConfig.color,
+            opacity: textConfig.opacity,
+          } : null,
+        }
       )
 
       const filename = mode === 'background'

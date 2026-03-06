@@ -2,8 +2,9 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Palette, GridFour, Sparkle, TextT, Waveform,
-  Shuffle, DotsSixVertical, Camera,
+  Shuffle, DotsSixVertical, Camera, Info,
   Pause, Play, FloppyDisk, Images, PaintBrushBroad, ArrowsInSimple, ArrowsOutSimple,
+  Moon, Sun,
 } from '@phosphor-icons/react'
 import { InputPanel } from './InputControls'
 import { cn } from '@/lib/utils'
@@ -12,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import useStore from '../../store/useStore'
+import { useThemedConfig } from '../../hooks/useThemedConfig'
 import {
   GradientPanel,
   PatternPanel,
@@ -29,7 +31,7 @@ const tabs = [
 
 export const DesktopPanel = ({
   panelRef, position, isDragging, handleMouseDown,
-  isCapturing, onRandomize, onShowPalette, onShowSave, onShowCapture,
+  isCapturing, onRandomize, onShowPalette, onShowSave, onShowCapture, onShowAbout,
   audioAnalyser,
 }) => {
   const navigate = useNavigate()
@@ -39,34 +41,23 @@ export const DesktopPanel = ({
   const setActivePanel = useStore((state) => state.setActivePanel)
   const backgroundType = useStore((state) => state.backgroundType)
   const setBackgroundType = useStore((state) => state.setBackgroundType)
-  const gradientConfig = useStore((state) => state.gradientConfig)
-  const setGradientConfig = useStore((state) => state.setGradientConfig)
-  const auroraConfig = useStore((state) => state.auroraConfig)
-  const setAuroraConfig = useStore((state) => state.setAuroraConfig)
-  const blobConfig = useStore((state) => state.blobConfig)
-  const setBlobConfig = useStore((state) => state.setBlobConfig)
-  const fluidConfig = useStore((state) => state.fluidConfig)
-  const setFluidConfig = useStore((state) => state.setFluidConfig)
-  const wavesConfig = useStore((state) => state.wavesConfig)
-  const setWavesConfig = useStore((state) => state.setWavesConfig)
-  const ribbonConfig = useStore((state) => state.ribbonConfig)
-  const setRibbonConfig = useStore((state) => state.setRibbonConfig)
-  const dandelionConfig = useStore((state) => state.dandelionConfig)
-  const setDandelionConfig = useStore((state) => state.setDandelionConfig)
-  const particleRingConfig = useStore((state) => state.particleRingConfig)
-  const setParticleRingConfig = useStore((state) => state.setParticleRingConfig)
-  const shapeTrailConfig = useStore((state) => state.shapeTrailConfig)
-  const setShapeTrailConfig = useStore((state) => state.setShapeTrailConfig)
-  const tessellationConfig = useStore((state) => state.tessellationConfig)
-  const setTessellationConfig = useStore((state) => state.setTessellationConfig)
-  const effectsConfig = useStore((state) => state.effectsConfig)
-  const setEffectsConfig = useStore((state) => state.setEffectsConfig)
+  const [gradientConfig, setGradientConfig] = useThemedConfig('gradientConfig')
+  const [auroraConfig, setAuroraConfig] = useThemedConfig('auroraConfig')
+  const [blobConfig, setBlobConfig] = useThemedConfig('blobConfig')
+  const [fluidConfig, setFluidConfig] = useThemedConfig('fluidConfig')
+  const [wavesConfig, setWavesConfig] = useThemedConfig('wavesConfig')
+  const [ribbonConfig, setRibbonConfig] = useThemedConfig('ribbonConfig')
+  const editorThemeMode = useStore((state) => state.editorThemeMode)
+  const setEditorThemeMode = useStore((state) => state.setEditorThemeMode)
+  const [dandelionConfig, setDandelionConfig] = useThemedConfig('dandelionConfig')
+  const [particleRingConfig, setParticleRingConfig] = useThemedConfig('particleRingConfig')
+  const [tessellationConfig, setTessellationConfig] = useThemedConfig('tessellationConfig')
+  const [effectsConfig, setEffectsConfig] = useThemedConfig('effectsConfig')
   const textSections = useStore((state) => state.textSections)
   const setTextSections = useStore((state) => state.setTextSections)
   const textGap = useStore((state) => state.textGap)
   const setTextGap = useStore((state) => state.setTextGap)
-  const textConfig = useStore((state) => state.textConfig)
-  const setTextConfig = useStore((state) => state.setTextConfig)
+  const [textConfig, setTextConfig] = useThemedConfig('textConfig')
   const colorPalette = useStore((state) => state.colorPalette)
   const isPaused = useStore((state) => state.isPaused)
   const setIsPaused = useStore((state) => state.setIsPaused)
@@ -119,6 +110,18 @@ export const DesktopPanel = ({
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onShowCapture} disabled={isCapturing}>
             <Camera size={16} weight={isCapturing ? 'fill' : 'regular'} />
           </Button>
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onShowAbout} title="About Aura">
+            <Info size={16} />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => setEditorThemeMode(editorThemeMode === 'dark' ? 'light' : 'dark')}
+            title={editorThemeMode === 'dark' ? 'Preview Light Mode' : 'Preview Dark Mode'}
+          >
+            {editorThemeMode === 'dark' ? <Moon size={16} /> : <Sun size={16} weight="fill" />}
+          </Button>
         </div>
         <div className="text-muted-foreground"><DotsSixVertical size={16} weight="bold" /></div>
       </div>
@@ -156,8 +159,6 @@ export const DesktopPanel = ({
                   setDandelionConfig={setDandelionConfig}
                   particleRingConfig={particleRingConfig}
                   setParticleRingConfig={setParticleRingConfig}
-                  shapeTrailConfig={shapeTrailConfig}
-                  setShapeTrailConfig={setShapeTrailConfig}
                   parsedPalette={parsedPalette}
                 />
               </TabsContent>

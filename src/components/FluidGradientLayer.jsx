@@ -166,8 +166,8 @@ const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, is
     let resizeTimeout = null
     const handleResize = () => {
       const doResize = () => {
-        const width = window.innerWidth
-        const height = window.innerHeight
+        const width = container.clientWidth || window.innerWidth
+        const height = container.clientHeight || window.innerHeight
         // Use DPR-scaled canvas for crisp rendering on Retina/4K displays
         canvas.width = width * dpr
         canvas.height = height * dpr
@@ -198,7 +198,10 @@ const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, is
     }
 
     handleResize()
-    window.addEventListener('resize', handleResize)
+
+    // Use ResizeObserver to track container size changes (e.g. in MiniSceneRenderer)
+    const resizeObserver = new ResizeObserver(handleResize)
+    resizeObserver.observe(container)
     document.addEventListener('visibilitychange', handleVisibilityChange)
 
     // Frame throttling for mobile - target ~30fps instead of 60fps
@@ -327,7 +330,7 @@ const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, is
     animationRef.current = requestAnimationFrame(animate)
 
     return () => {
-      window.removeEventListener('resize', handleResize)
+      resizeObserver.disconnect()
       document.removeEventListener('visibilitychange', handleVisibilityChange)
       if (resizeTimeout) clearTimeout(resizeTimeout)
       if (animationRef.current) {

@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import html2canvas from 'html2canvas'
 import { ArrowLeft, CircleNotch, Warning, Play, Code, Check, Copy, Download, ArrowCounterClockwiseIcon as ArrowCounterClockwise, CameraIcon, CheckCircle, XCircle } from '@phosphor-icons/react'
-import { getSceneBySlug, getProjects, updateScene, verifyDeletePassword, titleToSlug, recaptureThumbnail, deleteScene } from '@/lib/scenesApi'
+import { getSceneBySlug, getProjects, updateScene, verifyDeletePassword, titleToSlug, recaptureThumbnail, deleteScene, addRejectedScene } from '@/lib/scenesApi'
 import { generateSceneDescriptions } from '@/lib/gemini'
 import { prepareForCapture } from '@/lib/colorConversion'
+import { captureLayersToCanvas } from '@/lib/canvasCapture'
 import { Button } from '@/components/ui/button'
 import { useDocumentMeta } from '@/hooks/useDocumentMeta'
+import { useAudioAnalyser } from '@/audio/useAudioAnalyser'
+import { InputPanel } from './controls/InputControls'
 import '../App.css'
 import GradientLayer from './GradientLayer'
 import SimpleGradientLayer from './SimpleGradientLayer'
@@ -16,7 +18,6 @@ import WavesLayer from './WavesLayer'
 import RibbonLayer from './RibbonLayer'
 import DandelionLayer from './DandelionLayer'
 import ParticleRingLayer from './ParticleRingLayer'
-import ShapeTrailLayer from './ShapeTrailLayer'
 import TessellationLayer, { ICON_PATHS } from './TessellationLayer'
 import EffectsLayer from './EffectsLayer'
 import TextLayer from './TextLayer'
@@ -35,6 +36,12 @@ function SceneViewPage() {
   const loadSceneData = useStore((state) => state.loadSceneData)
   const setCurrentSceneId = useStore((state) => state.setCurrentSceneId)
   const setCurrentPage = useStore((state) => state.setCurrentPage)
+  const inputEnabled = useStore((state) => state.inputEnabled)
+  const audioEnabled = useStore((state) => state.audioConfig.enabled)
+  const mouseConfig = useStore((state) => state.mouseConfig)
+  const setMouseConfig = useStore((state) => state.setMouseConfig)
+
+  const audioAnalyser = useAudioAnalyser()
 
   const [scene, setScene] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -73,6 +80,8 @@ function SceneViewPage() {
 
   // Throttled mouse move handler
   const handleMouseMove = useCallback((e) => {
+    if (!inputEnabled || audioEnabled || !mouseConfig.enabled) return
+
     pendingMouseRef.current.x = e.clientX / window.innerWidth
     pendingMouseRef.current.y = e.clientY / window.innerHeight
 
@@ -86,7 +95,21 @@ function SceneViewPage() {
       })
       rafPendingRef.current = false
     })
-  }, [])
+  }, [inputEnabled, audioEnabled, mouseConfig.enabled])
+
+  // Reset mouse to center when audio becomes active or input disabled
+  useEffect(() => {
+    if (audioEnabled || !inputEnabled) {
+      setMousePos({ x: 0.5, y: 0.5 })
+    }
+  }, [audioEnabled, inputEnabled])
+
+  // Initialize store mouse config from scene data when scene loads
+  useEffect(() => {
+    if (scene?.scene_data?.mouseConfig) {
+      setMouseConfig(scene.scene_data.mouseConfig)
+    }
+  }, [scene, setMouseConfig])
 
   useEffect(() => {
     const fetchScene = async () => {
@@ -116,10 +139,19 @@ function SceneViewPage() {
     }
   }, [slug])
 
-  const handleApplyScene = () => {
+  const handleEditScene = () => {
     if (scene?.scene_data) {
       loadSceneData(scene.scene_data)
       setCurrentSceneId(scene.id)
+      setCurrentPage('editor')
+      navigate('/')
+    }
+  }
+
+  const handleRemixScene = () => {
+    if (scene?.scene_data) {
+      loadSceneData(scene.scene_data)
+      setCurrentSceneId(null)
       setCurrentPage('editor')
       navigate('/')
     }
@@ -220,78 +252,24 @@ function SceneViewPage() {
     try {
       await new Promise(resolve => requestAnimationFrame(resolve))
 
-      const container = layersContainerRef.current
-      const width = container.offsetWidth
-      const height = container.offsetHeight
-      const scale = 2
-
-      const outputCanvas = document.createElement('canvas')
-      outputCanvas.width = width * scale
-      outputCanvas.height = height * scale
-      const ctx = outputCanvas.getContext('2d')
-
-      ctx.fillStyle = '#000000'
-      ctx.fillRect(0, 0, outputCanvas.width, outputCanvas.height)
-
-      const getLastCanvas = (selector) => {
-        const canvases = container.querySelectorAll(`${selector} canvas`)
-        return canvases.length > 0 ? canvases[canvases.length - 1] : null
-      }
-
-      const backgroundCanvas =
-        container.querySelector('.gradient-layer canvas') ||
-        getLastCanvas('.simple-gradient-layer') ||
-        getLastCanvas('.fluid-gradient-layer') ||
-        getLastCanvas('.aurora-layer') ||
-        getLastCanvas('.waves-layer') ||
-        getLastCanvas('.ribbon-layer') ||
-        getLastCanvas('.dandelion-layer') ||
-        getLastCanvas('.particle-ring-layer') ||
-        getLastCanvas('.shape-trail-layer')
-
-      if (backgroundCanvas) {
-        const wrapper = container.querySelector('.gradient-effects-wrapper')
-        const filterStyle = wrapper ? getComputedStyle(wrapper).filter : 'none'
-        ctx.filter = filterStyle !== 'none' ? filterStyle : 'none'
-        ctx.drawImage(backgroundCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
-        ctx.filter = 'none'
-      }
-
       const currentEffectsConfig = scene?.scene_data?.effectsConfig || {}
-      drawTextureToCanvas(
-        ctx,
-        outputCanvas.width,
-        outputCanvas.height,
-        currentEffectsConfig.texture,
-        (currentEffectsConfig.textureSize || 20) * scale,
-        currentEffectsConfig.textureOpacity || 0.5,
-        currentEffectsConfig.textureBlendMode || 'overlay'
+      const sceneTextConfig = scene?.scene_data?.textConfig || {}
+
+      const outputCanvas = await captureLayersToCanvas(
+        layersContainerRef.current,
+        currentEffectsConfig,
+        {
+          scale: 2,
+          mode: 'all',
+          targetAspectRatio: 16 / 9,
+          textData: sceneTextConfig.enabled ? {
+            sections: scene?.scene_data?.textSections || [],
+            gap: scene?.scene_data?.textGap || 0,
+            color: sceneTextConfig.color,
+            opacity: sceneTextConfig.opacity,
+          } : null,
+        }
       )
-      drawVignetteToCanvas(ctx, outputCanvas.width, outputCanvas.height, currentEffectsConfig.vignetteIntensity || 0)
-
-      const tessellationLayer = container.querySelector('.tessellation-layer')
-      if (tessellationLayer) {
-        const tessCanvas = await html2canvas(tessellationLayer, {
-          useCORS: true,
-          allowTaint: true,
-          scale: scale,
-          backgroundColor: null,
-          logging: false,
-        })
-        ctx.drawImage(tessCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
-      }
-
-      const textLayer = container.querySelector('.text-layer')
-      if (textLayer) {
-        const textCanvas = await html2canvas(textLayer, {
-          useCORS: true,
-          allowTaint: true,
-          scale: scale,
-          backgroundColor: null,
-          logging: false,
-        })
-        ctx.drawImage(textCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
-      }
 
       const base64Data = outputCanvas.toDataURL('image/jpeg', 0.9)
       restoreColors()
@@ -322,78 +300,24 @@ function SceneViewPage() {
     try {
       await new Promise(resolve => requestAnimationFrame(resolve))
 
-      const container = layersContainerRef.current
-      const width = container.offsetWidth
-      const height = container.offsetHeight
-      const scale = 2
-
-      const outputCanvas = document.createElement('canvas')
-      outputCanvas.width = width * scale
-      outputCanvas.height = height * scale
-      const ctx = outputCanvas.getContext('2d')
-
-      ctx.fillStyle = '#000000'
-      ctx.fillRect(0, 0, outputCanvas.width, outputCanvas.height)
-
-      const getLastCanvas = (selector) => {
-        const canvases = container.querySelectorAll(`${selector} canvas`)
-        return canvases.length > 0 ? canvases[canvases.length - 1] : null
-      }
-
-      const backgroundCanvas =
-        container.querySelector('.gradient-layer canvas') ||
-        getLastCanvas('.simple-gradient-layer') ||
-        getLastCanvas('.fluid-gradient-layer') ||
-        getLastCanvas('.aurora-layer') ||
-        getLastCanvas('.waves-layer') ||
-        getLastCanvas('.ribbon-layer') ||
-        getLastCanvas('.dandelion-layer') ||
-        getLastCanvas('.particle-ring-layer') ||
-        getLastCanvas('.shape-trail-layer')
-
-      if (backgroundCanvas) {
-        const wrapper = container.querySelector('.gradient-effects-wrapper')
-        const filterStyle = wrapper ? getComputedStyle(wrapper).filter : 'none'
-        ctx.filter = filterStyle !== 'none' ? filterStyle : 'none'
-        ctx.drawImage(backgroundCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
-        ctx.filter = 'none'
-      }
-
       const currentEffectsConfig = scene?.scene_data?.effectsConfig || {}
-      drawTextureToCanvas(
-        ctx,
-        outputCanvas.width,
-        outputCanvas.height,
-        currentEffectsConfig.texture,
-        (currentEffectsConfig.textureSize || 20) * scale,
-        currentEffectsConfig.textureOpacity || 0.5,
-        currentEffectsConfig.textureBlendMode || 'overlay'
+      const reviewTextConfig = scene?.scene_data?.textConfig || {}
+
+      const outputCanvas = await captureLayersToCanvas(
+        layersContainerRef.current,
+        currentEffectsConfig,
+        {
+          scale: 2,
+          mode: 'all',
+          targetAspectRatio: 16 / 9,
+          textData: reviewTextConfig.enabled ? {
+            sections: scene?.scene_data?.textSections || [],
+            gap: scene?.scene_data?.textGap || 0,
+            color: reviewTextConfig.color,
+            opacity: reviewTextConfig.opacity,
+          } : null,
+        }
       )
-      drawVignetteToCanvas(ctx, outputCanvas.width, outputCanvas.height, currentEffectsConfig.vignetteIntensity || 0)
-
-      const tessellationLayer = container.querySelector('.tessellation-layer')
-      if (tessellationLayer) {
-        const tessCanvas = await html2canvas(tessellationLayer, {
-          useCORS: true,
-          allowTaint: true,
-          scale: scale,
-          backgroundColor: null,
-          logging: false,
-        })
-        ctx.drawImage(tessCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
-      }
-
-      const textLayer = container.querySelector('.text-layer')
-      if (textLayer) {
-        const textCanvas = await html2canvas(textLayer, {
-          useCORS: true,
-          allowTaint: true,
-          scale: scale,
-          backgroundColor: null,
-          logging: false,
-        })
-        ctx.drawImage(textCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
-      }
 
       const base64Data = outputCanvas.toDataURL('image/jpeg', 0.9)
       restoreColors()
@@ -422,93 +346,9 @@ function SceneViewPage() {
     const isValid = await verifyDeletePassword(password)
     if (!isValid) throw new Error('Incorrect password')
 
+    await addRejectedScene(titleToSlug(scene.title), scene.title)
     await deleteScene(scene.id)
     navigate('/scenes')
-  }
-
-  // Helper function to draw texture to canvas
-  const drawTextureToCanvas = (ctx, width, height, texture, textureSize, textureOpacity, blendMode = 'overlay') => {
-    if (!texture || texture === 'none') return
-
-    const textureCanvas = document.createElement('canvas')
-    textureCanvas.width = width
-    textureCanvas.height = height
-    const textureCtx = textureCanvas.getContext('2d')
-
-    const lineWidth = Math.max(1, textureSize / 10)
-    const dotSize = textureSize / 8
-
-    switch (texture) {
-      case 'noise': {
-        const imageData = textureCtx.createImageData(width, height)
-        for (let i = 0; i < imageData.data.length; i += 4) {
-          const value = Math.random() * 255
-          imageData.data[i] = value
-          imageData.data[i + 1] = value
-          imageData.data[i + 2] = value
-          imageData.data[i + 3] = 60
-        }
-        textureCtx.putImageData(imageData, 0, 0)
-        break
-      }
-      case 'dots': {
-        textureCtx.fillStyle = 'rgba(255, 255, 255, 0.4)'
-        for (let y = dotSize; y < height; y += textureSize) {
-          for (let x = dotSize; x < width; x += textureSize) {
-            textureCtx.beginPath()
-            textureCtx.arc(x, y, dotSize, 0, Math.PI * 2)
-            textureCtx.fill()
-          }
-        }
-        break
-      }
-      case 'grid': {
-        textureCtx.fillStyle = 'rgba(255, 255, 255, 0.15)'
-        for (let y = 0; y < height; y += textureSize) {
-          textureCtx.fillRect(0, y, width, lineWidth)
-        }
-        for (let x = 0; x < width; x += textureSize) {
-          textureCtx.fillRect(x, 0, lineWidth, height)
-        }
-        break
-      }
-      case 'diagonal': {
-        textureCtx.strokeStyle = 'rgba(255, 255, 255, 0.1)'
-        textureCtx.lineWidth = lineWidth
-        const spacing = textureSize + lineWidth
-        const totalDiagonals = Math.ceil((width + height) / spacing)
-        for (let i = -Math.ceil(height / spacing); i < totalDiagonals; i++) {
-          const startX = i * spacing
-          textureCtx.beginPath()
-          textureCtx.moveTo(startX, height)
-          textureCtx.lineTo(startX + height, 0)
-          textureCtx.stroke()
-        }
-        break
-      }
-    }
-
-    ctx.save()
-    ctx.globalAlpha = textureOpacity
-    ctx.globalCompositeOperation = blendMode
-    ctx.drawImage(textureCanvas, 0, 0)
-    ctx.restore()
-  }
-
-  // Helper function to draw vignette to canvas
-  const drawVignetteToCanvas = (ctx, width, height, intensity) => {
-    if (intensity <= 0) return
-
-    const gradient = ctx.createRadialGradient(
-      width / 2, height / 2, 0,
-      width / 2, height / 2, Math.max(width, height) * 0.7
-    )
-    gradient.addColorStop(0, 'transparent')
-    gradient.addColorStop(0.3, 'transparent')
-    gradient.addColorStop(1, `rgba(0, 0, 0, ${intensity})`)
-
-    ctx.fillStyle = gradient
-    ctx.fillRect(0, 0, width, height)
   }
 
   // Download handler (called from DownloadDialog)
@@ -520,84 +360,28 @@ function SceneViewPage() {
     try {
       await new Promise(resolve => requestAnimationFrame(resolve))
 
-      const container = layersContainerRef.current
-      const width = container.offsetWidth
-      const height = container.offsetHeight
-
       const scaleMap = { 'small': 0.5, 'medium': 1, 'large': 1.5, 'full': 2 }
       const scale = scaleMap[downloadOptions.size] || 2
 
-      const outputCanvas = document.createElement('canvas')
-      outputCanvas.width = width * scale
-      outputCanvas.height = height * scale
-      const ctx = outputCanvas.getContext('2d')
-
-      ctx.fillStyle = '#000000'
-      ctx.fillRect(0, 0, outputCanvas.width, outputCanvas.height)
-
-      const getLastCanvas = (selector) => {
-        const canvases = container.querySelectorAll(`${selector} canvas`)
-        return canvases.length > 0 ? canvases[canvases.length - 1] : null
-      }
-
-      const backgroundCanvas =
-        container.querySelector('.gradient-layer canvas') ||
-        getLastCanvas('.simple-gradient-layer') ||
-        getLastCanvas('.fluid-gradient-layer') ||
-        getLastCanvas('.aurora-layer') ||
-        getLastCanvas('.waves-layer') ||
-        getLastCanvas('.ribbon-layer') ||
-        getLastCanvas('.dandelion-layer') ||
-        getLastCanvas('.particle-ring-layer') ||
-        getLastCanvas('.shape-trail-layer')
-
-      if (backgroundCanvas) {
-        const wrapper = container.querySelector('.gradient-effects-wrapper')
-        const filterStyle = wrapper ? getComputedStyle(wrapper).filter : 'none'
-        ctx.filter = filterStyle !== 'none' ? filterStyle : 'none'
-        ctx.drawImage(backgroundCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
-        ctx.filter = 'none'
-      }
-
       const currentEffectsConfig = scene?.scene_data?.effectsConfig || {}
-      drawTextureToCanvas(
-        ctx,
-        outputCanvas.width,
-        outputCanvas.height,
-        currentEffectsConfig.texture,
-        (currentEffectsConfig.textureSize || 20) * scale,
-        currentEffectsConfig.textureOpacity || 0.5,
-        currentEffectsConfig.textureBlendMode || 'overlay'
+      const dlTextConfig = scene?.scene_data?.textConfig || {}
+
+      const outputCanvas = await captureLayersToCanvas(
+        layersContainerRef.current,
+        currentEffectsConfig,
+        {
+          scale,
+          mode: 'all',
+          hideIcons: downloadOptions.hideIcons,
+          hideText: downloadOptions.hideText,
+          textData: dlTextConfig.enabled ? {
+            sections: scene?.scene_data?.textSections || [],
+            gap: scene?.scene_data?.textGap || 0,
+            color: dlTextConfig.color,
+            opacity: dlTextConfig.opacity,
+          } : null,
+        }
       )
-      drawVignetteToCanvas(ctx, outputCanvas.width, outputCanvas.height, currentEffectsConfig.vignetteIntensity || 0)
-
-      if (!downloadOptions.hideIcons) {
-        const tessellationLayer = container.querySelector('.tessellation-layer')
-        if (tessellationLayer) {
-          const tessCanvas = await html2canvas(tessellationLayer, {
-            useCORS: true,
-            allowTaint: true,
-            scale: scale,
-            backgroundColor: null,
-            logging: false,
-          })
-          ctx.drawImage(tessCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
-        }
-      }
-
-      if (!downloadOptions.hideText) {
-        const textLayer = container.querySelector('.text-layer')
-        if (textLayer) {
-          const textCanvas = await html2canvas(textLayer, {
-            useCORS: true,
-            allowTaint: true,
-            scale: scale,
-            backgroundColor: null,
-            logging: false,
-          })
-          ctx.drawImage(textCanvas, 0, 0, outputCanvas.width, outputCanvas.height)
-        }
-      }
 
       const filename = `${scene.title || slug}-${downloadOptions.size}.png`
 
@@ -692,19 +476,16 @@ function SceneViewPage() {
   const ribbonConfig = sceneData.ribbonConfig || {}
   const dandelionConfig = sceneData.dandelionConfig || {}
   const particleRingConfig = sceneData.particleRingConfig || {}
-  const shapeTrailConfig = sceneData.shapeTrailConfig || {}
   const tessellationConfig = sceneData.tessellationConfig || {}
   const effectsConfig = sceneData.effectsConfig || {}
   const textSections = sceneData.textSections || []
   const textGap = sceneData.textGap || 0
   const textConfig = sceneData.textConfig || {}
-  const mouseConfig = sceneData.mouseConfig || { enabled: true, intensity: 0.5 }
-  const inputEnabled = sceneData.inputEnabled !== undefined ? sceneData.inputEnabled : true
-  const effectiveMouseIntensity = inputEnabled ? mouseConfig.intensity : 0
-  const effectiveMouseEnabled = inputEnabled && mouseConfig.enabled
+  const effectiveMouseIntensity = inputEnabled && !audioEnabled ? mouseConfig.intensity : 0
+  const effectiveMouseEnabled = inputEnabled && !audioEnabled && mouseConfig.enabled
 
   return (
-    <div className="min-h-screen bg-background" onMouseMove={effectiveMouseEnabled ? handleMouseMove : undefined}>
+    <div className="min-h-screen bg-background" onMouseMove={handleMouseMove}>
       {/* Full-screen scene preview */}
       <div className="fixed inset-0 z-0">
         <div ref={layersContainerRef} className="layers-container" style={{ position: 'absolute', inset: 0 }}>
@@ -742,9 +523,6 @@ function SceneViewPage() {
             {backgroundType === 'particleRing' && (
               <ParticleRingLayer config={particleRingConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
             )}
-            {backgroundType === 'shapeTrail' && (
-              <ShapeTrailLayer config={shapeTrailConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
-            )}
           </div>
 
           {/* Tessellation layer */}
@@ -780,9 +558,13 @@ function SceneViewPage() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button onClick={handleApplyScene}>
+            <Button variant="outline" onClick={handleRemixScene}>
+              <Copy size={16} weight="bold" className="mr-2" />
+              Remix
+            </Button>
+            <Button onClick={handleEditScene}>
               <Play size={16} weight="fill" className="mr-2" />
-              Open in Editor
+              Edit Scene
             </Button>
           </div>
         </div>
@@ -866,6 +648,14 @@ function SceneViewPage() {
                 </span>
               </div>
           </div>  
+          {/* Input controls */}
+          <InputPanel
+            loadAudioFile={audioAnalyser?.loadAudioFile}
+            playAudio={audioAnalyser?.playAudio}
+            pauseAudio={audioAnalyser?.pauseAudio}
+            audioElement={audioAnalyser?.audioElement}
+          />
+
           {/* Effects */}
           {(() => {
             const effects = []
@@ -1022,7 +812,7 @@ function SceneViewPage() {
               <img
                 src={`${scene.thumbnail.medium || scene.thumbnail.small}${thumbnailCacheBuster}`}
                 alt={scene.title}
-                className="w-full h-40 object-cover rounded-md"
+                className="w-full aspect-video object-cover rounded-md"
               />
               <Button
                 size="sm"

@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import useStore from '../store/useStore'
+import { useThemedConfig } from '../hooks/useThemedConfig'
 import { useRandomize } from '../hooks/useRandomize'
 import { usePanelDrag } from '../hooks/usePanelDrag'
 import { useSceneSave } from '../hooks/useSceneSave'
@@ -9,13 +10,17 @@ import { DesktopPanel } from './controls/DesktopPanel'
 import { CaptureModal } from './controls/CaptureModal'
 import { SaveSceneDialog } from './controls/SaveSceneDialog'
 import { ColorPaletteDialog } from './controls'
+import { AboutAuraModal } from './about/AboutAuraModal'
 
 const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
   // Minimal store subscriptions — only what the orchestrator needs
   const colorPalette = useStore((state) => state.colorPalette)
   const setColorPalette = useStore((state) => state.setColorPalette)
-  const gradientConfig = useStore((state) => state.gradientConfig)
-  const setGradientConfig = useStore((state) => state.setGradientConfig)
+  const isPaused = useStore((state) => state.isPaused)
+  const setIsPaused = useStore((state) => state.setIsPaused)
+  const inputEnabled = useStore((state) => state.inputEnabled)
+  const setInputEnabled = useStore((state) => state.setInputEnabled)
+  const [gradientConfig, setGradientConfig] = useThemedConfig('gradientConfig')
 
   // Mobile detection
   const [isMobile, setIsMobile] = useState(false)
@@ -28,6 +33,7 @@ const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
 
   // Palette dialog state (shared between mobile and desktop)
   const [showPaletteDialog, setShowPaletteDialog] = useState(false)
+  const [showAboutModal, setShowAboutModal] = useState(false)
 
   // Compose hooks
   const { randomize } = useRandomize()
@@ -42,6 +48,20 @@ const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
     isCapturing, showCaptureModal, setShowCaptureModal, captureSnapshot,
   } = useCanvasCapture(layersContainerRef)
 
+  // Pause scene and disable input when any modal is open, restore previous state when all close
+  const prevStateRef = useRef({ isPaused: false, inputEnabled: true })
+  const anyModalOpen = showPaletteDialog || showAboutModal || showSaveDialog || showCaptureModal
+  useEffect(() => {
+    if (anyModalOpen) {
+      prevStateRef.current = { isPaused, inputEnabled }
+      setIsPaused(true)
+      setInputEnabled(false)
+    } else {
+      setIsPaused(prevStateRef.current.isPaused)
+      setInputEnabled(prevStateRef.current.inputEnabled)
+    }
+  }, [anyModalOpen])
+
   return (
     <>
       {isMobile ? (
@@ -50,6 +70,7 @@ const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
           onShowPalette={() => setShowPaletteDialog(true)}
           onShowSave={() => setShowSaveDialog(true)}
           onShowCapture={() => setShowCaptureModal(true)}
+          onShowAbout={() => setShowAboutModal(true)}
           audioAnalyser={audioAnalyser}
         />
       ) : (
@@ -63,6 +84,7 @@ const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
           onShowPalette={() => setShowPaletteDialog(true)}
           onShowSave={() => setShowSaveDialog(true)}
           onShowCapture={() => setShowCaptureModal(true)}
+          onShowAbout={() => setShowAboutModal(true)}
           audioAnalyser={audioAnalyser}
         />
       )}
@@ -97,6 +119,10 @@ const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
         gradientConfig={gradientConfig}
         setGradientConfig={setGradientConfig}
         cmsAvailable={cmsAvailable}
+      />
+      <AboutAuraModal
+        open={showAboutModal}
+        onOpenChange={setShowAboutModal}
       />
     </>
   )

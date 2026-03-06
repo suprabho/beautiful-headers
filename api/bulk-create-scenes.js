@@ -59,6 +59,12 @@ export default async function handler(req, res) {
     return res.status(403).json({ error: 'Invalid password' })
   }
 
+  // Fetch rejected slugs to skip previously rejected scenes
+  const { data: rejectedRows } = await supabase
+    .from('rejected_scenes')
+    .select('slug')
+  const rejectedSlugs = new Set((rejectedRows || []).map(r => r.slug))
+
   const results = []
   const now = new Date().toISOString()
 
@@ -71,6 +77,18 @@ export default async function handler(req, res) {
         title: scene.title || null,
         success: false,
         error: 'Missing required fields: title and scene_data',
+      })
+      continue
+    }
+
+    const slug = titleToSlug(scene.title)
+    if (rejectedSlugs.has(slug)) {
+      results.push({
+        index: i,
+        title: scene.title,
+        slug,
+        success: false,
+        error: 'Scene was previously rejected',
       })
       continue
     }

@@ -243,8 +243,8 @@ const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig,
     }
 
     const handleResize = () => {
-      const width = window.innerWidth
-      const height = window.innerHeight
+      const width = container.clientWidth || window.innerWidth
+      const height = container.clientHeight || window.innerHeight
 
       // Use DPR-scaled canvas for crisp rendering on Retina/4K displays
       canvasA.width = width * dpr
@@ -281,7 +281,10 @@ const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig,
 
     handleResize()
     setCanvasReady(true)
-    window.addEventListener('resize', handleResize)
+
+    // Use ResizeObserver to track container size changes (e.g. in MiniSceneRenderer)
+    const resizeObserver = new ResizeObserver(handleResize)
+    resizeObserver.observe(container)
     document.addEventListener('visibilitychange', handleVisibilityChange)
 
     const animate = () => {
@@ -367,7 +370,7 @@ const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig,
     animate()
 
     return () => {
-      window.removeEventListener('resize', handleResize)
+      resizeObserver.disconnect()
       document.removeEventListener('visibilitychange', handleVisibilityChange)
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current)

@@ -5,6 +5,7 @@ import App from './App.jsx'
 import SavedScenesPage from './components/SavedScenesPage.jsx'
 import SceneViewPage from './components/SceneViewPage.jsx'
 import SceneEmbedPage from './components/SceneEmbedPage.jsx'
+import AboutPage from './components/AboutPage.jsx'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -15,6 +16,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path="/scenes" element={<SavedScenesPage />} />
         <Route path="/scenes/:slug" element={<SceneViewPage />} />
         <Route path="/embed/:slug" element={<SceneEmbedPage />} />
+        <Route path="/about" element={<AboutPage />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,
