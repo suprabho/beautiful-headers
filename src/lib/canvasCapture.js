@@ -321,7 +321,17 @@ export const captureLayersToCanvas = async (container, effectsConfig, { scale = 
         const textSectionEls = textLayer.querySelectorAll('.text-section')
         const savedStyles = []
 
-        // Step 1: Override to desktop font sizes while still in flexbox layout
+        // Apply the same responsive scaling as TextLayer.jsx
+        const containerWidth = containerW
+        let responsiveScale = 1
+        if (containerWidth <= 480) responsiveScale = 0.35
+        else if (containerWidth <= 768) responsiveScale = 0.65
+        else if (containerWidth <= 1024) responsiveScale = 0.85
+
+        const getResponsiveFontSize = (baseSize) =>
+          responsiveScale < 1 ? Math.max(14, Math.round(baseSize * responsiveScale)) : baseSize
+
+        // Step 1: Override to responsive font sizes while still in flexbox layout
         // so we can measure the actual rendered heights.
         textSectionEls.forEach((el, i) => {
           savedStyles.push({
@@ -334,7 +344,7 @@ export const captureLayersToCanvas = async (container, effectsConfig, { scale = 
             marginBottom: el.style.marginBottom,
           })
           if (textData.sections[i]) {
-            el.style.fontSize = `${textData.sections[i].size}px`
+            el.style.fontSize = `${getResponsiveFontSize(textData.sections[i].size)}px`
           }
         })
 

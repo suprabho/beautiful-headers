@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, CircleNotch, Warning, Play, Code, Check, Copy, Download, ArrowCounterClockwiseIcon as ArrowCounterClockwise, CameraIcon, CheckCircle, XCircle } from '@phosphor-icons/react'
-import { getSceneBySlug, getProjects, updateScene, verifyDeletePassword, titleToSlug, recaptureThumbnail, deleteScene } from '@/lib/scenesApi'
+import { getSceneBySlug, getProjects, updateScene, verifyDeletePassword, titleToSlug, recaptureThumbnail, deleteScene, addRejectedScene } from '@/lib/scenesApi'
 import { generateSceneDescriptions } from '@/lib/gemini'
 import { prepareForCapture } from '@/lib/colorConversion'
 import { captureLayersToCanvas } from '@/lib/canvasCapture'
@@ -346,6 +346,7 @@ function SceneViewPage() {
     const isValid = await verifyDeletePassword(password)
     if (!isValid) throw new Error('Incorrect password')
 
+    await addRejectedScene(titleToSlug(scene.title), scene.title)
     await deleteScene(scene.id)
     navigate('/scenes')
   }
@@ -811,7 +812,7 @@ function SceneViewPage() {
               <img
                 src={`${scene.thumbnail.medium || scene.thumbnail.small}${thumbnailCacheBuster}`}
                 alt={scene.title}
-                className="w-full h-40 object-cover rounded-md"
+                className="w-full aspect-video object-cover rounded-md"
               />
               <Button
                 size="sm"

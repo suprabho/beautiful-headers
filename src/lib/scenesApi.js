@@ -406,6 +406,38 @@ export async function checkCmsHealth() {
 }
 
 /**
+ * Record a rejected scene slug so it won't be re-generated
+ * @param {string} slug - The URL slug of the rejected scene
+ * @param {string} title - The original title of the rejected scene
+ */
+export async function addRejectedScene(slug, title) {
+  const { error } = await supabase
+    .from('rejected_scenes')
+    .insert({ slug, title, rejected_at: new Date().toISOString() })
+
+  if (error) {
+    console.error('Failed to record rejected scene:', error)
+  }
+}
+
+/**
+ * Fetch all rejected scene slugs
+ * @returns {Promise<string[]>} - Array of rejected slugs
+ */
+export async function getRejectedSlugs() {
+  const { data, error } = await supabase
+    .from('rejected_scenes')
+    .select('slug')
+
+  if (error) {
+    console.error('Failed to fetch rejected scenes:', error)
+    return []
+  }
+
+  return (data || []).map(r => r.slug)
+}
+
+/**
  * Verify delete password via Supabase RPC function
  * @param {string} password - The password to verify
  * @returns {Promise<boolean>} - Whether the password is valid
