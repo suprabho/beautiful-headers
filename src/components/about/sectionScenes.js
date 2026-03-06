@@ -193,7 +193,7 @@ export const SECTION_SCENES = [
   {
     id: 'text',
     title: 'Text & Fonts',
-    description: 'Add centered text with 4 font families: Manrope, Playfair Display, Space Grotesk, and Pacifico. Configure size, weight, spacing, and glow effects.',
+    description: 'Add centered text with 4 font families: Manrope, Playfair Display, Space Grotesk, and Petit Formal Script. Configure size, weight, spacing, and glow effects.',
     backgroundType: 'liquid',
     colors: ['#b80038', '#fdf7f2', '#004d9c', '#00999a'],
   },

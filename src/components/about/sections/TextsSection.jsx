@@ -22,7 +22,7 @@ const FONT_OPTIONS = [
   { value: 'sans-serif', label: 'Sans', family: 'Manrope' },
   { value: 'serif', label: 'Serif', family: 'Playfair Display' },
   { value: 'mono', label: 'Mono', family: 'Space Grotesk' },
-  { value: 'scribble', label: 'Script', family: 'Pacifico' },
+  { value: 'scribble', label: 'Script', family: 'Petit Formal Script' },
 ]
 
 export function TextsSection({ dbScene }) {

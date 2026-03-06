@@ -16,7 +16,7 @@ const FONT_FAMILIES = {
   'sans-serif': "'Manrope', sans-serif",
   'serif': "'Playfair Display', serif",
   'mono': "'Space Grotesk', monospace",
-  'scribble': "'Pacifico', cursive",
+  'scribble': "'Petit Formal Script', cursive",
 }
 
 // Memoized text section component

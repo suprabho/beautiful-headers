@@ -641,7 +641,7 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
                     <SelectItem value="sans-serif">Manrope</SelectItem>
                     <SelectItem value="serif">Playfair Display</SelectItem>
                     <SelectItem value="mono">Space Grotesk</SelectItem>
-                    <SelectItem value="scribble">Pacifico</SelectItem>
+                    <SelectItem value="scribble">Petit Formal Script</SelectItem>
                   </SelectContent>
                 </Select>
               </ControlGroup>
