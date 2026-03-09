@@ -354,8 +354,8 @@ export const captureLayersToCanvas = async (container, effectsConfig, { scale = 
         // Step 2: Measure actual rendered heights from the DOM
         const rowHeights = Array.from(textSectionEls).map((el) => el.offsetHeight)
 
-        // Tuned multiplier + offset to match live preview spacing
-        const effectiveGap = textData.gap * 2 + 5
+        // Match the live TextLayer.jsx responsive gap exactly
+        const effectiveGap = Math.round(textData.gap * responsiveScale)
 
         const totalTextHeight =
           rowHeights.reduce((sum, h) => sum + h, 0) +
