@@ -843,5 +843,462 @@
       },
       "selectedProjectIds": []
     }
+  },
+  {
+    "title": "Munich Layover – Bavarian Beer Garden Fluid Gold",
+    "short_description": "Warm amber and wheat fluid gradients evoking a cozy Munich beer garden",
+    "long_description": "Golden amber and deep wheat tones swirl lazily through this fluid header, capturing the warm glow of a Bavarian beer garden on a late afternoon layover. The organic motion recalls sunlight filtering through chestnut trees at Augustiner Keller. Perfect for travel blogs, hospitality brands, and lifestyle headers.",
+    "scene_data": {
+      "backgroundType": "fluid",
+      "gradientConfig": {
+        "colors": ["#D4A017", "#B8860B", "#F5DEB3", "#8B6914"],
+        "numColors": 4,
+        "type": "radial",
+        "startPos": { "x": 40, "y": 30 },
+        "endPos": { "x": 85, "y": 90 },
+        "colorStops": [0, 30, 60, 100],
+        "waveIntensity": 0.3,
+        "mouseInfluence": 0.35,
+        "decaySpeed": 0.94,
+        "wave1Speed": 0.1,
+        "wave1Direction": 1,
+        "wave2Speed": 0.07,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10, "maxWidth": 30, "minHeight": 200, "maxHeight": 600,
+        "minTTL": 100, "maxTTL": 300, "blurAmount": 13,
+        "hueStart": 35, "hueEnd": 55, "backgroundColor": "#3E2723",
+        "lineCount": 0, "decaySpeed": 0.95, "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5, "minRadius": 40, "maxRadius": 120, "speed": 0.5,
+        "orbitRadius": 150, "blurAmount": 12, "threshold": 180,
+        "mouseInfluence": 0.3, "decaySpeed": 0.95, "useGradientColors": true,
+        "colors": ["#40204c", "#a3225c", "#e24926"], "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true, "backgroundColor": "#3E2723",
+        "colors": ["#D4A017", "#B8860B", "#F5DEB3", "#8B6914"],
+        "speed": 0.7, "intensity": 1.8, "blurAmount": 30
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": ["#D4A017", "#B8860B", "#F5DEB3", "#8B6914"],
+        "waveHeight": 0.05, "waveFrequency": 2, "rotation": 0,
+        "speed": 0.5, "blur": 40, "layers": 5, "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true, "backgroundColor": "#3E2723",
+        "ribbonCount": 5, "speed": 0.5, "amplitude": 1.0, "spread": 0.5,
+        "rotation": -30, "thickness": 1, "taper": -0.3, "noise": 0.5, "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true, "backgroundColor": "#e8f4fc",
+        "lineCount": 120, "radiusMin": 0.1, "radiusMax": 0.8,
+        "speed": 0.3, "thickness": 1.5, "dotSize": 3, "spread": 0.3, "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true, "backgroundColor": "#fef6f9",
+        "particleCount": 800, "ringRadius": 0.35, "ringWidth": 0.15,
+        "speed": 0.5, "particleSize": 3, "dispersion": 0.3,
+        "rotationSpeed": 0.2, "tiltX": 0, "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true, "backgroundColor": "#f0f0f0",
+        "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1,
+        "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4,
+        "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60,
+        "size": 24, "opacity": 0.15, "rotation": 0, "color": "#D4A017",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 12, "texture": "grain", "textureSize": 25,
+        "textureOpacity": 0.3, "textureBlendMode": "overlay",
+        "colorMap": "vintage", "vignetteIntensity": 0.25,
+        "saturation": 95, "contrast": 105, "brightness": 100,
+        "flutedGlass": {
+          "enabled": false, "segments": 80, "rotation": 0,
+          "motionValue": 0.5, "motionSpeed": 0.5, "overlayOpacity": 0,
+          "distortionStrength": 0.02, "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        { "id": 1, "text": "München", "size": 110, "weight": 700, "spacing": -0.02, "font": "serif", "italic": true },
+        { "id": 2, "text": "BIERGARTEN LAYOVER", "size": 16, "weight": 400, "spacing": 0.35, "font": "sans-serif", "italic": false }
+      ],
+      "textGap": 14,
+      "textConfig": { "enabled": true, "color": "#FFF8E1", "opacity": 0.92 },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Munich Layover – Alpine Twilight Aurora Over the Alps",
+    "short_description": "Ethereal purple and ice-blue aurora evoking the Alpine horizon from Munich",
+    "long_description": "Luminous bands of violet and icy blue shimmer across a deep twilight sky, capturing the breathtaking view of the Bavarian Alps from Munich at dusk. The aurora effect channels the magical atmosphere of watching alpenglow during a layover. Ideal for travel, adventure, and outdoor lifestyle headers.",
+    "scene_data": {
+      "backgroundType": "aurora",
+      "gradientConfig": {
+        "colors": ["#7B1FA2", "#4FC3F7", "#E1BEE7", "#1A237E"],
+        "numColors": 4,
+        "type": "linear",
+        "startPos": { "x": 0, "y": 60 },
+        "endPos": { "x": 100, "y": 40 },
+        "colorStops": [0, 30, 65, 100],
+        "waveIntensity": 0.35,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.95,
+        "wave1Speed": 0.08,
+        "wave1Direction": 1,
+        "wave2Speed": 0.05,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "hueStart": 240, "hueEnd": 300, "maxTTL": 60, "minTTL": 200,
+        "maxWidth": 15, "minWidth": 85, "lineCount": 3,
+        "maxHeight": 60, "minHeight": 800, "blurAmount": 20,
+        "decaySpeed": 0.94, "backgroundColor": "#0D1B2A",
+        "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5, "minRadius": 40, "maxRadius": 120, "speed": 0.5,
+        "orbitRadius": 150, "blurAmount": 12, "threshold": 180,
+        "mouseInfluence": 0.3, "decaySpeed": 0.95, "useGradientColors": true,
+        "colors": ["#40204c", "#a3225c", "#e24926"], "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true, "backgroundColor": "#0D1B2A",
+        "colors": ["#7B1FA2", "#4FC3F7", "#E1BEE7", "#1A237E"],
+        "speed": 1, "intensity": 1, "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": ["#7B1FA2", "#4FC3F7", "#E1BEE7", "#1A237E"],
+        "waveHeight": 0.05, "waveFrequency": 2, "rotation": 0,
+        "speed": 0.5, "blur": 40, "layers": 5, "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true, "backgroundColor": "#0D1B2A",
+        "ribbonCount": 5, "speed": 0.5, "amplitude": 1.0, "spread": 0.5,
+        "rotation": -30, "thickness": 1, "taper": -0.3, "noise": 0.5, "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true, "backgroundColor": "#e8f4fc",
+        "lineCount": 120, "radiusMin": 0.1, "radiusMax": 0.8,
+        "speed": 0.3, "thickness": 1.5, "dotSize": 3, "spread": 0.3, "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true, "backgroundColor": "#fef6f9",
+        "particleCount": 800, "ringRadius": 0.35, "ringWidth": 0.15,
+        "speed": 0.5, "particleSize": 3, "dispersion": 0.3,
+        "rotationSpeed": 0.2, "tiltX": 0, "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true, "backgroundColor": "#f0f0f0",
+        "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1,
+        "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4,
+        "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60,
+        "size": 24, "opacity": 0.15, "rotation": 0, "color": "#7B1FA2",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 18, "texture": "grain", "textureSize": 20,
+        "textureOpacity": 0.25, "textureBlendMode": "overlay",
+        "colorMap": "none", "vignetteIntensity": 0.35,
+        "saturation": 110, "contrast": 108, "brightness": 95,
+        "flutedGlass": {
+          "enabled": false, "segments": 80, "rotation": 0,
+          "motionValue": 0.5, "motionSpeed": 0.5, "overlayOpacity": 0,
+          "distortionStrength": 0.02, "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        { "id": 1, "text": "Alpenglow", "size": 120, "weight": 200, "spacing": 0.1, "font": "sans-serif", "italic": false },
+        { "id": 2, "text": "MUNICH LAYOVER", "size": 15, "weight": 400, "spacing": 0.4, "font": "sans-serif", "italic": false }
+      ],
+      "textGap": 16,
+      "textConfig": { "enabled": true, "color": "#E1BEE7", "opacity": 0.88 },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Munich Layover – Isar River Flowing Teal Waves",
+    "short_description": "Cool teal and emerald waves mirroring the Isar River through Munich",
+    "long_description": "Layers of crisp teal, glacial blue, and alpine green ripple gently like the Isar River flowing through Munich's English Garden. The clean wave motion evokes the serene beauty of sitting by the riverbank during a layover, watching surfers ride the Eisbach wave. Perfect for nature, wellness, and travel brands.",
+    "scene_data": {
+      "backgroundType": "waves",
+      "gradientConfig": {
+        "colors": ["#00897B", "#26C6DA", "#A5D6A7", "#004D40"],
+        "numColors": 4,
+        "type": "linear",
+        "startPos": { "x": 0, "y": 40 },
+        "endPos": { "x": 100, "y": 60 },
+        "colorStops": [0, 30, 60, 100],
+        "waveIntensity": 0.25,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.95,
+        "wave1Speed": 0.12,
+        "wave1Direction": 1,
+        "wave2Speed": 0.08,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10, "maxWidth": 30, "minHeight": 200, "maxHeight": 600,
+        "minTTL": 100, "maxTTL": 300, "blurAmount": 13,
+        "hueStart": 165, "hueEnd": 185, "backgroundColor": "#004D40",
+        "lineCount": 0, "decaySpeed": 0.95, "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5, "minRadius": 40, "maxRadius": 120, "speed": 0.5,
+        "orbitRadius": 150, "blurAmount": 12, "threshold": 180,
+        "mouseInfluence": 0.3, "decaySpeed": 0.95, "useGradientColors": true,
+        "colors": ["#40204c", "#a3225c", "#e24926"], "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true, "backgroundColor": "#004D40",
+        "colors": ["#00897B", "#26C6DA", "#A5D6A7", "#004D40"],
+        "speed": 1, "intensity": 1, "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": ["#00897B", "#26C6DA", "#A5D6A7", "#004D40"],
+        "waveHeight": 0.055, "waveFrequency": 2.2,
+        "rotation": 3, "speed": 0.3, "blur": 40,
+        "layers": 7, "phaseOffset": 0.15
+      },
+      "ribbonConfig": {
+        "useGradientColors": true, "backgroundColor": "#004D40",
+        "ribbonCount": 5, "speed": 0.5, "amplitude": 1.0, "spread": 0.5,
+        "rotation": -30, "thickness": 1, "taper": -0.3, "noise": 0.5, "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true, "backgroundColor": "#e8f4fc",
+        "lineCount": 120, "radiusMin": 0.1, "radiusMax": 0.8,
+        "speed": 0.3, "thickness": 1.5, "dotSize": 3, "spread": 0.3, "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true, "backgroundColor": "#fef6f9",
+        "particleCount": 800, "ringRadius": 0.35, "ringWidth": 0.15,
+        "speed": 0.5, "particleSize": 3, "dispersion": 0.3,
+        "rotationSpeed": 0.2, "tiltX": 0, "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true, "backgroundColor": "#f0f0f0",
+        "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1,
+        "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4,
+        "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60,
+        "size": 24, "opacity": 0.15, "rotation": 0, "color": "#00897B",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 6, "texture": "none", "textureSize": 30,
+        "textureOpacity": 0, "textureBlendMode": "overlay",
+        "colorMap": "none", "vignetteIntensity": 0.15,
+        "saturation": 105, "contrast": 100, "brightness": 102,
+        "flutedGlass": {
+          "enabled": false, "segments": 80, "rotation": 0,
+          "motionValue": 0.5, "motionSpeed": 0.5, "overlayOpacity": 0,
+          "distortionStrength": 0.02, "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        { "id": 1, "text": "Eisbach", "size": 105, "weight": 400, "spacing": 0.02, "font": "serif", "italic": true },
+        { "id": 2, "text": "ISAR RIVER LAYOVER", "size": 14, "weight": 400, "spacing": 0.35, "font": "sans-serif", "italic": false }
+      ],
+      "textGap": 14,
+      "textConfig": { "enabled": true, "color": "#E0F2F1", "opacity": 0.9 },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Munich Layover – Marienplatz Baroque Ribbon Elegance",
+    "short_description": "Regal cream and gold ribbons inspired by Munich's baroque architecture",
+    "long_description": "Flowing ribbons in ivory, gold, and stone gray sweep gracefully across a warm cream canvas, echoing the ornate baroque facades of Marienplatz and the Nymphenburg Palace. The restrained elegance captures the refined atmosphere of strolling through Munich's historic center during a layover. Ideal for luxury, architecture, and cultural event headers.",
+    "scene_data": {
+      "backgroundType": "ribbon",
+      "gradientConfig": {
+        "colors": ["#C9B037", "#E8DCC8", "#8C7853", "#F5F0E1"],
+        "numColors": 4,
+        "type": "linear",
+        "startPos": { "x": 10, "y": 0 },
+        "endPos": { "x": 90, "y": 100 },
+        "colorStops": [0, 35, 65, 100],
+        "waveIntensity": 0.15,
+        "mouseInfluence": 0.2,
+        "decaySpeed": 0.96,
+        "wave1Speed": 0.07,
+        "wave1Direction": 1,
+        "wave2Speed": 0.04,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10, "maxWidth": 30, "minHeight": 200, "maxHeight": 600,
+        "minTTL": 100, "maxTTL": 300, "blurAmount": 13,
+        "hueStart": 40, "hueEnd": 55, "backgroundColor": "#F5F0E1",
+        "lineCount": 0, "decaySpeed": 0.95, "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5, "minRadius": 40, "maxRadius": 120, "speed": 0.5,
+        "orbitRadius": 150, "blurAmount": 12, "threshold": 180,
+        "mouseInfluence": 0.3, "decaySpeed": 0.95, "useGradientColors": true,
+        "colors": ["#40204c", "#a3225c", "#e24926"], "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true, "backgroundColor": "#F5F0E1",
+        "colors": ["#C9B037", "#E8DCC8", "#8C7853", "#F5F0E1"],
+        "speed": 1, "intensity": 1, "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": ["#C9B037", "#E8DCC8", "#8C7853", "#F5F0E1"],
+        "waveHeight": 0.05, "waveFrequency": 2, "rotation": 0,
+        "speed": 0.5, "blur": 40, "layers": 5, "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true, "backgroundColor": "#F5F0E1",
+        "ribbonCount": 4, "speed": 0.3, "amplitude": 0.9, "spread": 0.55,
+        "rotation": 35, "thickness": 1.1, "taper": -0.15, "noise": 0.1, "opacity": 0.65
+      },
+      "dandelionConfig": {
+        "useGradientColors": true, "backgroundColor": "#e8f4fc",
+        "lineCount": 120, "radiusMin": 0.1, "radiusMax": 0.8,
+        "speed": 0.3, "thickness": 1.5, "dotSize": 3, "spread": 0.3, "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true, "backgroundColor": "#fef6f9",
+        "particleCount": 800, "ringRadius": 0.35, "ringWidth": 0.15,
+        "speed": 0.5, "particleSize": 3, "dispersion": 0.3,
+        "rotationSpeed": 0.2, "tiltX": 0, "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true, "backgroundColor": "#f0f0f0",
+        "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1,
+        "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4,
+        "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60,
+        "size": 24, "opacity": 0.15, "rotation": 0, "color": "#C9B037",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 4, "texture": "dots", "textureSize": 30,
+        "textureOpacity": 0.12, "textureBlendMode": "overlay",
+        "colorMap": "none", "vignetteIntensity": 0.1,
+        "saturation": 90, "contrast": 100, "brightness": 105,
+        "flutedGlass": {
+          "enabled": false, "segments": 80, "rotation": 0,
+          "motionValue": 0.5, "motionSpeed": 0.5, "overlayOpacity": 0,
+          "distortionStrength": 0.02, "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        { "id": 1, "text": "Marienplatz", "size": 95, "weight": 300, "spacing": 0.03, "font": "serif", "italic": false },
+        { "id": 2, "text": "A MUNICH LAYOVER", "size": 13, "weight": 500, "spacing": 0.4, "font": "sans-serif", "italic": false }
+      ],
+      "textGap": 12,
+      "textConfig": { "enabled": true, "color": "#3E2723", "opacity": 0.88 },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Munich Layover – Airport Departure Particle Ring Glow",
+    "short_description": "Electric blue and white particle ring capturing Munich airport's modern energy",
+    "long_description": "A luminous ring of particles pulses in cool white, electric blue, and steel gray against a deep midnight background, channeling the sleek modern architecture of Munich's Franz Josef Strauss Airport. The orbital motion evokes the kinetic energy of passengers in transit, departure boards flickering, and the anticipation of the next flight. Perfect for aviation, tech, and transit-themed headers.",
+    "scene_data": {
+      "backgroundType": "particleRing",
+      "gradientConfig": {
+        "colors": ["#E3F2FD", "#42A5F5", "#90CAF9", "#1565C0"],
+        "numColors": 4,
+        "type": "radial",
+        "startPos": { "x": 50, "y": 50 },
+        "endPos": { "x": 100, "y": 100 },
+        "colorStops": [0, 25, 55, 100],
+        "waveIntensity": 0.2,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.96,
+        "wave1Speed": 0.1,
+        "wave1Direction": 1,
+        "wave2Speed": 0.06,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10, "maxWidth": 30, "minHeight": 200, "maxHeight": 600,
+        "minTTL": 100, "maxTTL": 300, "blurAmount": 13,
+        "hueStart": 210, "hueEnd": 230, "backgroundColor": "#0A1929",
+        "lineCount": 0, "decaySpeed": 0.95, "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5, "minRadius": 40, "maxRadius": 120, "speed": 0.5,
+        "orbitRadius": 150, "blurAmount": 12, "threshold": 180,
+        "mouseInfluence": 0.3, "decaySpeed": 0.95, "useGradientColors": true,
+        "colors": ["#40204c", "#a3225c", "#e24926"], "backgroundColor": "#152a8e"
+      },
+      "fluidConfig": {
+        "useGradientColors": true, "backgroundColor": "#0A1929",
+        "colors": ["#E3F2FD", "#42A5F5", "#90CAF9", "#1565C0"],
+        "speed": 1, "intensity": 1, "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": ["#E3F2FD", "#42A5F5", "#90CAF9", "#1565C0"],
+        "waveHeight": 0.05, "waveFrequency": 2, "rotation": 0,
+        "speed": 0.5, "blur": 40, "layers": 5, "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true, "backgroundColor": "#0A1929",
+        "ribbonCount": 5, "speed": 0.5, "amplitude": 1.0, "spread": 0.5,
+        "rotation": -30, "thickness": 1, "taper": -0.3, "noise": 0.5, "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true, "backgroundColor": "#e8f4fc",
+        "lineCount": 120, "radiusMin": 0.1, "radiusMax": 0.8,
+        "speed": 0.3, "thickness": 1.5, "dotSize": 3, "spread": 0.3, "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true, "backgroundColor": "#0A1929",
+        "particleCount": 1000, "ringRadius": 0.36, "ringWidth": 0.14,
+        "speed": 0.45, "particleSize": 2.2, "dispersion": 0.25,
+        "rotationSpeed": 0.18, "tiltX": 25, "tiltZ": -5
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true, "backgroundColor": "#f0f0f0",
+        "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1,
+        "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4,
+        "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60,
+        "size": 24, "opacity": 0.15, "rotation": 0, "color": "#42A5F5",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 5, "texture": "scanlines", "textureSize": 30,
+        "textureOpacity": 0.2, "textureBlendMode": "overlay",
+        "colorMap": "none", "vignetteIntensity": 0.2,
+        "saturation": 100, "contrast": 105, "brightness": 100,
+        "flutedGlass": {
+          "enabled": false, "segments": 80, "rotation": 0,
+          "motionValue": 0.5, "motionSpeed": 0.5, "overlayOpacity": 0,
+          "distortionStrength": 0.02, "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        { "id": 1, "text": "MUC", "size": 140, "weight": 900, "spacing": 0.15, "font": "mono", "italic": false },
+        { "id": 2, "text": "LAYOVER IN MUNICH", "size": 16, "weight": 300, "spacing": 0.35, "font": "sans-serif", "italic": false }
+      ],
+      "textGap": 14,
+      "textConfig": { "enabled": true, "color": "#E3F2FD", "opacity": 0.9 },
+      "selectedProjectIds": []
+    }
   }
 ]
