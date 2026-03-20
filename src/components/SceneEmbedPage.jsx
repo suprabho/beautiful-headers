@@ -246,22 +246,22 @@ function SceneEmbedPage() {
               <GradientLayer config={gradientConfig} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={false} mouseIntensity={effectiveMouseIntensity} />
             )}
             {backgroundType === 'aurora' && (
-              <AuroraLayer config={auroraConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
+              <AuroraLayer config={auroraConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} mouseIntensity={effectiveMouseIntensity} />
             )}
             {backgroundType === 'fluid' && (
-              <FluidGradientLayer config={fluidConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
+              <FluidGradientLayer config={fluidConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
             )}
             {backgroundType === 'waves' && (
-              <WavesLayer config={wavesConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
+              <WavesLayer config={wavesConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
             )}
             {backgroundType === 'ribbon' && (
-              <RibbonLayer config={ribbonConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
+              <RibbonLayer config={ribbonConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
             )}
             {backgroundType === 'dandelion' && (
               <DandelionLayer config={dandelionConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} mouseEnabled={effectiveMouseEnabled} mouseIntensity={effectiveMouseIntensity} />
             )}
             {backgroundType === 'particleRing' && (
-              <ParticleRingLayer config={particleRingConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} />
+              <ParticleRingLayer config={particleRingConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
             )}
           </div>
 

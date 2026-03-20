@@ -36,10 +36,16 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos, isPaused, mou
   const prevConfigRef = useRef(null)
   const prevEffectsConfigRef = useRef(null)
 
-  // Update target mouse position
+  // Update target mouse position — null out when interaction is disabled
   useEffect(() => {
-    targetMouseRef.current = mousePos
-  }, [mousePos])
+    if (mouseIntensity === 0) {
+      targetMouseRef.current = null
+      currentMouseRef.current = null
+    } else {
+      if (!currentMouseRef.current) currentMouseRef.current = { x: 0.5, y: 0.5 }
+      targetMouseRef.current = mousePos
+    }
+  }, [mousePos, mouseIntensity])
 
   // Update pause state ref
   useEffect(() => {
@@ -428,15 +434,19 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos, isPaused, mou
 
     timeRef.current += delta
 
-    // Smooth mouse following
-    const lerpFactor = 1 - config.decaySpeed
-    currentMouseRef.current.x += (targetMouseRef.current.x - currentMouseRef.current.x) * lerpFactor
-    currentMouseRef.current.y += (targetMouseRef.current.y - currentMouseRef.current.y) * lerpFactor
-
-    // Only update per-frame uniforms (time, mouse, resolution)
+    // Only update per-frame uniforms (time, resolution)
     mat.uniforms.u_time.value = timeRef.current
-    mat.uniforms.u_mouse.value.set(currentMouseRef.current.x, 1 - currentMouseRef.current.y)
     mat.uniforms.u_resolution.value.set(size.width, size.height)
+
+    // Smooth mouse following — skip entirely when interaction is disabled
+    if (currentMouseRef.current && targetMouseRef.current) {
+      const lerpFactor = 1 - config.decaySpeed
+      currentMouseRef.current.x += (targetMouseRef.current.x - currentMouseRef.current.x) * lerpFactor
+      currentMouseRef.current.y += (targetMouseRef.current.y - currentMouseRef.current.y) * lerpFactor
+      mat.uniforms.u_mouse.value.set(currentMouseRef.current.x, 1 - currentMouseRef.current.y)
+    } else {
+      mat.uniforms.u_mouseInfluence.value = 0
+    }
 
     // Audio reactivity: modulate wave uniforms, disable mouse influence
     if (audioData.isActive) {

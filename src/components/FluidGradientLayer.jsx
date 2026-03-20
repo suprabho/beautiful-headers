@@ -136,8 +136,14 @@ const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, is
   }, [isPaused])
 
   useEffect(() => {
-    targetMouseRef.current = mousePos
-  }, [mousePos])
+    if (mouseIntensity === 0) {
+      targetMouseRef.current = null
+      smoothedMouseRef.current = null
+    } else {
+      if (!smoothedMouseRef.current) smoothedMouseRef.current = { x: 0.5, y: 0.5 }
+      targetMouseRef.current = mousePos
+    }
+  }, [mousePos, mouseIntensity])
 
   useEffect(() => {
     mouseIntensityRef.current = mouseIntensity
@@ -248,11 +254,15 @@ const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, is
         timeRef.current += 0.016 * speed
       }
 
-      // Smooth mouse interpolation (using centralized mapping)
-      smoothMouse(smoothedMouseRef.current, targetMouseRef.current, 'fluid')
-      const mouseFx = getMouseEffects('fluid', smoothedMouseRef.current, mouseIntensityRef.current)
-      const mouseOffsetX = (mouseFx.centerOffsetX ?? 0) * width
-      const mouseOffsetY = (mouseFx.centerOffsetY ?? 0) * height
+      // Smooth mouse interpolation (using centralized mapping) — skip when interaction disabled
+      let mouseOffsetX = 0
+      let mouseOffsetY = 0
+      if (smoothedMouseRef.current && targetMouseRef.current) {
+        smoothMouse(smoothedMouseRef.current, targetMouseRef.current, 'fluid')
+        const mouseFx = getMouseEffects('fluid', smoothedMouseRef.current, mouseIntensityRef.current)
+        mouseOffsetX = (mouseFx.centerOffsetX ?? 0) * width
+        mouseOffsetY = (mouseFx.centerOffsetY ?? 0) * height
+      }
 
       // Clear and fill background
       ctx.fillStyle = background

@@ -117,8 +117,14 @@ const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig,
   }, [derivedColors])
 
   useEffect(() => {
-    targetMouseRef.current = mousePos
-  }, [mousePos])
+    if (mouseIntensity === 0) {
+      targetMouseRef.current = null
+      currentMouseRef.current = null
+    } else {
+      if (!currentMouseRef.current) currentMouseRef.current = { x: 0.5, y: 0.5 }
+      targetMouseRef.current = mousePos
+    }
+  }, [mousePos, mouseIntensity])
 
   useEffect(() => {
     isPausedRef.current = isPaused
@@ -323,8 +329,11 @@ const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig,
       }
       const lines = linesRef.current
 
-      // Smooth mouse following (using centralized mapping)
-      smoothMouse(currentMouseRef.current, targetMouseRef.current, 'aurora')
+      // Smooth mouse following (using centralized mapping) — skip when interaction disabled
+      const mouseActive = currentMouseRef.current && targetMouseRef.current
+      if (mouseActive) {
+        smoothMouse(currentMouseRef.current, targetMouseRef.current, 'aurora')
+      }
 
       // Audio width boost — 'width' isn't a base config prop so getAudioModulatedConfig
       // can't handle it; read the mapping directly (additive to drawn lineWidth)
@@ -337,10 +346,10 @@ const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig,
       }
 
       // Mouse proximity: cursor x in canvas coords, radius, and strength from mapping
-      const cursorX = currentMouseRef.current.x * logicalWidth
+      const cursorX = mouseActive ? currentMouseRef.current.x * logicalWidth : -9999
       const mouseRadius = logicalWidth * 0.2
       const mouseMapping = MOUSE_MAPPINGS.aurora?.effects?.find(e => e.param === 'width')
-      const mouseStrength = mouseMapping ? mouseMapping.strength * mouseIntensityRef.current : 0
+      const mouseStrength = mouseActive && mouseMapping ? mouseMapping.strength * mouseIntensityRef.current : 0
 
       // Clear canvas A
       ctxA.clearRect(0, 0, logicalWidth, logicalHeight)

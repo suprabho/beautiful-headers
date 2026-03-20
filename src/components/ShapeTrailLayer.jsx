@@ -254,7 +254,15 @@ const ShapeTrailLayer = memo(({ config, paletteColors = [], effectsConfig, isPau
   useEffect(() => { configRef.current = config }, [config])
   useEffect(() => { colorsRef.current = trailColors }, [trailColors])
   useEffect(() => { isPausedRef.current = isPaused }, [isPaused])
-  useEffect(() => { targetMouseRef.current = mousePos }, [mousePos])
+  useEffect(() => {
+    if (mouseIntensity === 0) {
+      targetMouseRef.current = null
+      smoothedMouseRef.current = null
+    } else {
+      if (!smoothedMouseRef.current) smoothedMouseRef.current = { x: 0.5, y: 0.5 }
+      targetMouseRef.current = mousePos
+    }
+  }, [mousePos, mouseIntensity])
   useEffect(() => { mouseIntensityRef.current = mouseIntensity }, [mouseIntensity])
 
   // Generate trails on mount and when key params change
@@ -323,11 +331,15 @@ const ShapeTrailLayer = memo(({ config, paletteColors = [], effectsConfig, isPau
       const trails = trailsRef.current
       const trailStates = trailStatesRef.current
 
-      // Smooth mouse interpolation (using centralized mapping)
-      smoothMouse(smoothedMouseRef.current, targetMouseRef.current, 'shapeTrail')
-      const mouseFx = getMouseEffects('shapeTrail', smoothedMouseRef.current, mouseIntensityRef.current)
-      const mouseOffsetX = mouseFx.centerOffsetX ?? 0
-      const mouseOffsetY = mouseFx.centerOffsetY ?? 0
+      // Smooth mouse interpolation (using centralized mapping) — skip when interaction disabled
+      let mouseOffsetX = 0
+      let mouseOffsetY = 0
+      if (smoothedMouseRef.current && targetMouseRef.current) {
+        smoothMouse(smoothedMouseRef.current, targetMouseRef.current, 'shapeTrail')
+        const mouseFx = getMouseEffects('shapeTrail', smoothedMouseRef.current, mouseIntensityRef.current)
+        mouseOffsetX = mouseFx.centerOffsetX ?? 0
+        mouseOffsetY = mouseFx.centerOffsetY ?? 0
+      }
 
       if (!trails || !trailStates || trails.length === 0) {
         animationRef.current = requestAnimationFrame(animate)

@@ -34,6 +34,12 @@ export const TextPanel = ({
     ))
   }
 
+  const updateTextSectionMulti = (id, updates) => {
+    setTextSections(textSections.map(s =>
+      s.id === id ? { ...s, ...updates } : s
+    ))
+  }
+
   const removeTextSection = (id) => {
     if (textSections.length > 1) {
       setTextSections(textSections.filter(s => s.id !== id))
@@ -144,10 +150,11 @@ export const TextPanel = ({
                   <Select
                     value={section.font || 'sans-serif'}
                     onValueChange={(value) => {
-                      updateTextSection(section.id, 'font', value)
+                      const updates = { font: value }
                       if (value !== 'serif' && value !== 'scribble') {
-                        updateTextSection(section.id, 'italic', false)
+                        updates.italic = false
                       }
+                      updateTextSectionMulti(section.id, updates)
                     }}
                   >
                     <SelectTrigger className="h-9">

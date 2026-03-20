@@ -101,7 +101,15 @@ function ParticleRingMesh({ config, colors, isPaused, mousePos = { x: 0.5, y: 0.
   const mouseIntensityRef = useRef(mouseIntensity)
 
   useEffect(() => { configRef.current = config }, [config])
-  useEffect(() => { targetMouseRef.current = mousePos }, [mousePos])
+  useEffect(() => {
+    if (mouseIntensity === 0) {
+      targetMouseRef.current = null
+      smoothedMouseRef.current = null
+    } else {
+      if (!smoothedMouseRef.current) smoothedMouseRef.current = { x: 0.5, y: 0.5 }
+      targetMouseRef.current = mousePos
+    }
+  }, [mousePos, mouseIntensity])
   useEffect(() => { mouseIntensityRef.current = mouseIntensity }, [mouseIntensity])
 
   const tempObj = useMemo(() => new THREE.Object3D(), [])
@@ -148,9 +156,12 @@ function ParticleRingMesh({ config, colors, isPaused, mousePos = { x: 0.5, y: 0.
 
     if (!groupRef.current || !meshRef.current) return
 
-    // Smooth mouse interpolation (using centralized mapping)
-    smoothMouse(smoothedMouseRef.current, targetMouseRef.current, 'particleRing')
-    const mouseFx = getMouseEffects('particleRing', smoothedMouseRef.current, mouseIntensityRef.current)
+    // Smooth mouse interpolation (using centralized mapping) — skip when interaction disabled
+    let mouseFx = {}
+    if (smoothedMouseRef.current && targetMouseRef.current) {
+      smoothMouse(smoothedMouseRef.current, targetMouseRef.current, 'particleRing')
+      mouseFx = getMouseEffects('particleRing', smoothedMouseRef.current, mouseIntensityRef.current)
+    }
 
     // Apply tilt — config tilt + mouse-driven tilt
     const tiltX = (cfg.tiltX ?? 0) * DEG2RAD + (mouseFx.tiltX ?? 0)

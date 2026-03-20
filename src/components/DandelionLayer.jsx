@@ -130,8 +130,18 @@ function DandelionMesh({ config, colors, isPaused, mouseEnabled = true, mouseInt
   useEffect(() => { configRef.current = config }, [config])
 
   // Track mouse at window level so overlapping layers don't block events
+  const mouseActiveRef = useRef(mouseEnabled)
   useEffect(() => {
-    if (!mouseEnabled) return
+    mouseActiveRef.current = mouseEnabled
+    if (!mouseEnabled) {
+      // Remove mouse refs entirely so particles render without any mouse influence
+      mouseNDC.set(NaN, NaN)
+      smoothMouse.set(NaN, NaN)
+      return
+    }
+    // Reinitialize to center when re-enabled
+    mouseNDC.set(0, 0)
+    smoothMouse.set(0, 0)
     const onMove = (e) => {
       mouseNDC.x = (e.clientX / window.innerWidth) * 2 - 1
       mouseNDC.y = -(e.clientY / window.innerHeight) * 2 + 1
@@ -187,9 +197,12 @@ function DandelionMesh({ config, colors, isPaused, mouseEnabled = true, mouseInt
     // Compute spread-modulated polar angle range (reactive to audio)
     const maxPolarAngle = Math.PI * ((cfg.spread ?? 0.3) + audioSpreadBoost)
 
-    // Smooth mouse tracking (from window-level listener)
-    smoothMouse.x += (mouseNDC.x - smoothMouse.x) * 0.05
-    smoothMouse.y += (mouseNDC.y - smoothMouse.y) * 0.05
+    // Smooth mouse tracking (from window-level listener) — skip when interaction disabled
+    const mouseActive = mouseActiveRef.current && !isNaN(mouseNDC.x)
+    if (mouseActive) {
+      smoothMouse.x += (mouseNDC.x - smoothMouse.x) * 0.05
+      smoothMouse.y += (mouseNDC.y - smoothMouse.y) * 0.05
+    }
 
     // Position group based on centerY
     if (groupRef.current) {
@@ -241,25 +254,27 @@ function DandelionMesh({ config, colors, isPaused, mouseEnabled = true, mouseInt
       let dy = baseDy + sway
       let dz = baseDz
 
-      // Project tip to screen NDC to check mouse proximity
+      // Project tip to screen NDC to check mouse proximity — skip when interaction disabled
       const len = line.length * LINE_SCALE
-      tempVec.set(dx * len, dy * len, dz * len).applyMatrix4(mvpMatrix)
-      const sdx = tempVec.x - smoothMouse.x
-      const sdy = tempVec.y - smoothMouse.y
-      const screenDist = Math.sqrt(sdx * sdx + sdy * sdy)
+      if (mouseActive) {
+        tempVec.set(dx * len, dy * len, dz * len).applyMatrix4(mvpMatrix)
+        const sdx = tempVec.x - smoothMouse.x
+        const sdy = tempVec.y - smoothMouse.y
+        const screenDist = Math.sqrt(sdx * sdx + sdy * sdy)
 
-      const repelRadius = 0.35
-      if (screenDist < repelRadius && screenDist > 0.001) {
-        const strength = (1 - screenDist / repelRadius)
-        const repel = strength * strength * 1.2 * mouseIntensity
-        // Push direction away from cursor in screen-aligned axes
-        const pushX = (sdx / screenDist) * repel
-        const pushY = (sdy / screenDist) * repel
-        // Convert screen push to local-space displacement via inverse VP
-        // Approximate: screen X maps mostly to local X/Z, screen Y to local Y
-        dx += pushX
-        dy += pushY
-        dz += pushX * 0.5
+        const repelRadius = 0.35
+        if (screenDist < repelRadius && screenDist > 0.001) {
+          const strength = (1 - screenDist / repelRadius)
+          const repel = strength * strength * 1.2 * mouseIntensity
+          // Push direction away from cursor in screen-aligned axes
+          const pushX = (sdx / screenDist) * repel
+          const pushY = (sdy / screenDist) * repel
+          // Convert screen push to local-space displacement via inverse VP
+          // Approximate: screen X maps mostly to local X/Z, screen Y to local Y
+          dx += pushX
+          dy += pushY
+          dz += pushX * 0.5
+        }
       }
 
       const mag = Math.sqrt(dx * dx + dy * dy + dz * dz)

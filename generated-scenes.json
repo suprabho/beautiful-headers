@@ -1,23 +1,23 @@
 [
   {
-    "title": "Holi Festival Fluid Color Splash – Vibrant Spring Header",
-    "short_description": "Explosive fluid colors celebrating Holi, the Indian festival of spring",
-    "long_description": "Immerse your website in the joyful spirit of Holi with this vibrant fluid color splash header. Vivid magentas, sunny yellows, and lush greens swirl together like gulal powder in the wind. Perfect for festive greetings and spring campaigns.",
+    "title": "Pastel Blue Easter Waves – Soft Spring Header",
+    "short_description": "Gentle pastel blue waves with soft pink Easter accents",
+    "long_description": "A serene Easter-inspired header featuring layered pastel blue waves with delicate pink highlights. Perfect for spring campaigns, Easter promotions, and seasonal landing pages that need a gentle, inviting feel.",
     "scene_data": {
-      "backgroundType": "fluid",
+      "backgroundType": "waves",
       "gradientConfig": {
-        "colors": ["#FF1493", "#FFD700", "#00C853", "#7C4DFF"],
+        "colors": ["#c7e3ee", "#a5cbf5", "#f9c9d5", "#e3f1f7"],
         "numColors": 4,
-        "type": "radial",
-        "startPos": { "x": 30, "y": 20 },
-        "endPos": { "x": 80, "y": 90 },
-        "colorStops": [0, 30, 60, 100],
-        "waveIntensity": 0.6,
-        "mouseInfluence": 0.7,
-        "decaySpeed": 0.92,
-        "wave1Speed": 0.25,
+        "type": "linear",
+        "startPos": { "x": 0, "y": 0 },
+        "endPos": { "x": 100, "y": 100 },
+        "colorStops": [0, 33, 66, 100],
+        "waveIntensity": 0.3,
+        "mouseInfluence": 0.4,
+        "decaySpeed": 0.95,
+        "wave1Speed": 0.15,
         "wave1Direction": 1,
-        "wave2Speed": 0.18,
+        "wave2Speed": 0.1,
         "wave2Direction": -1
       },
       "auroraConfig": {
@@ -28,9 +28,9 @@
         "minTTL": 100,
         "maxTTL": 300,
         "blurAmount": 13,
-        "hueStart": 120,
-        "hueEnd": 180,
-        "backgroundColor": "#000000",
+        "hueStart": 190,
+        "hueEnd": 220,
+        "backgroundColor": "#f5f9fd",
         "lineCount": 0,
         "decaySpeed": 0.95,
         "useGradientColors": true
@@ -46,31 +46,31 @@
         "mouseInfluence": 0.3,
         "decaySpeed": 0.95,
         "useGradientColors": true,
-        "colors": ["#40204c", "#a3225c", "#e24926"],
-        "backgroundColor": "#152a8e"
+        "colors": ["#c7e3ee", "#a5cbf5", "#f9c9d5"],
+        "backgroundColor": "#f5f9fb"
       },
       "fluidConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#1a0a2e",
-        "colors": ["#FF1493", "#FFD700", "#00C853", "#7C4DFF"],
-        "speed": 1.2,
-        "intensity": 2.0,
-        "blurAmount": 25
+        "backgroundColor": "#e3f1f7",
+        "colors": ["#c7e3ee", "#a5cbf5", "#f9c9d5", "#cbe1f8"],
+        "speed": 0.6,
+        "intensity": 1,
+        "blurAmount": 20
       },
       "wavesConfig": {
         "useGradientColors": true,
-        "colors": ["#FF1493", "#FFD700", "#00C853", "#7C4DFF"],
-        "waveHeight": 0.05,
-        "waveFrequency": 2,
+        "colors": ["#c7e3ee", "#a5cbf5", "#f9c9d5", "#cbe1f8"],
+        "waveHeight": 0.06,
+        "waveFrequency": 2.5,
         "rotation": 0,
-        "speed": 0.5,
-        "blur": 40,
-        "layers": 5,
+        "speed": 0.35,
+        "blur": 45,
+        "layers": 6,
         "phaseOffset": 0
       },
       "ribbonConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#ffffff",
+        "backgroundColor": "#f5f9fb",
         "ribbonCount": 5,
         "speed": 0.5,
         "amplitude": 1.0,
@@ -83,7 +83,7 @@
       },
       "dandelionConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#e8f4fc",
+        "backgroundColor": "#e3f1f7",
         "lineCount": 120,
         "radiusMin": 0.1,
         "radiusMax": 0.8,
@@ -95,7 +95,7 @@
       },
       "particleRingConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#fef6f9",
+        "backgroundColor": "#f5f9fd",
         "particleCount": 800,
         "ringRadius": 0.35,
         "ringWidth": 0.15,
@@ -108,7 +108,7 @@
       },
       "shapeTrailConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#f0f0f0",
+        "backgroundColor": "#f5f9fb",
         "shape": "circle",
         "startScale": 1000,
         "endScale": 2000,
@@ -130,19 +130,19 @@
         "size": 24,
         "opacity": 0.15,
         "rotation": 0,
-        "color": "#ffffff",
+        "color": "#a5cbf5",
         "mouseRotationInfluence": 0.5
       },
       "effectsConfig": {
-        "blur": 8,
+        "blur": 0,
         "texture": "none",
         "textureSize": 20,
         "textureOpacity": 0.5,
         "textureBlendMode": "overlay",
         "colorMap": "none",
         "vignetteIntensity": 0.15,
-        "saturation": 120,
-        "contrast": 105,
+        "saturation": 100,
+        "contrast": 100,
         "brightness": 100,
         "flutedGlass": {
           "enabled": false,
@@ -156,34 +156,34 @@
         }
       },
       "textSections": [
-        { "id": 1, "text": "Happy Holi", "size": 110, "weight": 900, "spacing": -0.06, "font": "serif", "italic": true },
-        { "id": 2, "text": "FESTIVAL OF COLORS 2026", "size": 18, "weight": 400, "spacing": 0.3, "font": "sans-serif", "italic": false }
+        { "id": 1, "text": "Easter Joy", "size": 110, "weight": 700, "spacing": -0.06, "font": "serif", "italic": true },
+        { "id": 2, "text": "SPRING COLLECTION", "size": 18, "weight": 400, "spacing": 0.25, "font": "sans-serif", "italic": false }
       ],
       "textGap": 14,
       "textConfig": {
         "enabled": true,
-        "color": "#ffffff",
-        "opacity": 0.95
+        "color": "#003c6e",
+        "opacity": 0.9
       },
       "selectedProjectIds": []
     }
   },
   {
-    "title": "Holi Aurora Borealis – Colorful Northern Lights Header",
-    "short_description": "Aurora-style Holi celebration with vivid rainbow light streaks",
-    "long_description": "A mesmerizing aurora effect infused with the vibrant palette of Holi. Bright saffron, magenta, and emerald streaks dance across a deep indigo sky, evoking the magical energy of India's most colorful festival.",
+    "title": "Soft Easter Aurora – Pastel Sky Blue Glow Header",
+    "short_description": "Ethereal aurora borealis in pastel blues and soft pinks",
+    "long_description": "An enchanting Easter header with aurora-style light ribbons dancing across a soft blue sky. Blending pastel blues with gentle pink accents, this design captures the magic of spring mornings and Easter celebrations.",
     "scene_data": {
       "backgroundType": "aurora",
       "gradientConfig": {
-        "colors": ["#FF6F00", "#E91E63", "#00BFA5", "#AA00FF"],
+        "colors": ["#76cfea", "#cbe1f8", "#f5a4b7", "#c9e7d1"],
         "numColors": 4,
-        "type": "linear",
-        "startPos": { "x": 0, "y": 50 },
-        "endPos": { "x": 100, "y": 50 },
+        "type": "radial",
+        "startPos": { "x": 30, "y": 20 },
+        "endPos": { "x": 80, "y": 90 },
         "colorStops": [0, 30, 65, 100],
-        "waveIntensity": 0.5,
-        "mouseInfluence": 0.6,
-        "decaySpeed": 0.93,
+        "waveIntensity": 0.25,
+        "mouseInfluence": 0.5,
+        "decaySpeed": 0.95,
         "wave1Speed": 0.2,
         "wave1Direction": 1,
         "wave2Speed": 0.12,
@@ -193,15 +193,15 @@
         "minWidth": 15,
         "maxWidth": 80,
         "minHeight": 300,
-        "maxHeight": 800,
+        "maxHeight": 700,
         "minTTL": 120,
         "maxTTL": 280,
         "blurAmount": 18,
-        "hueStart": 0,
-        "hueEnd": 360,
-        "backgroundColor": "#0d0221",
+        "hueStart": 190,
+        "hueEnd": 230,
+        "backgroundColor": "#e5f0fc",
         "lineCount": 0,
-        "decaySpeed": 0.93,
+        "decaySpeed": 0.96,
         "useGradientColors": true
       },
       "blobConfig": {
@@ -215,20 +215,20 @@
         "mouseInfluence": 0.3,
         "decaySpeed": 0.95,
         "useGradientColors": true,
-        "colors": ["#40204c", "#a3225c", "#e24926"],
-        "backgroundColor": "#152a8e"
+        "colors": ["#76cfea", "#cbe1f8", "#f5a4b7"],
+        "backgroundColor": "#e5f0fc"
       },
       "fluidConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#1C89FF",
-        "colors": ["#71ECFF", "#39F58A", "#71ECFF", "#F0CBA8"],
-        "speed": 1,
+        "backgroundColor": "#e5f0fc",
+        "colors": ["#76cfea", "#cbe1f8", "#f5a4b7", "#c9e7d1"],
+        "speed": 0.8,
         "intensity": 1,
         "blurAmount": 20
       },
       "wavesConfig": {
         "useGradientColors": true,
-        "colors": ["#06b6d4", "#a855f7", "#ec4899", "#3b82f6"],
+        "colors": ["#76cfea", "#cbe1f8", "#f5a4b7", "#c9e7d1"],
         "waveHeight": 0.05,
         "waveFrequency": 2,
         "rotation": 0,
@@ -239,7 +239,7 @@
       },
       "ribbonConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#ffffff",
+        "backgroundColor": "#e5f0fc",
         "ribbonCount": 5,
         "speed": 0.5,
         "amplitude": 1.0,
@@ -252,7 +252,7 @@
       },
       "dandelionConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#e8f4fc",
+        "backgroundColor": "#e5f0fc",
         "lineCount": 120,
         "radiusMin": 0.1,
         "radiusMax": 0.8,
@@ -264,7 +264,7 @@
       },
       "particleRingConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#fef6f9",
+        "backgroundColor": "#e5f0fc",
         "particleCount": 800,
         "ringRadius": 0.35,
         "ringWidth": 0.15,
@@ -277,7 +277,7 @@
       },
       "shapeTrailConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#f0f0f0",
+        "backgroundColor": "#e5f0fc",
         "shape": "circle",
         "startScale": 1000,
         "endScale": 2000,
@@ -299,18 +299,18 @@
         "size": 24,
         "opacity": 0.15,
         "rotation": 0,
-        "color": "#ffffff",
+        "color": "#76cfea",
         "mouseRotationInfluence": 0.5
       },
       "effectsConfig": {
-        "blur": 4,
-        "texture": "noise",
-        "textureSize": 15,
-        "textureOpacity": 0.08,
+        "blur": 5,
+        "texture": "none",
+        "textureSize": 20,
+        "textureOpacity": 0.5,
         "textureBlendMode": "overlay",
         "colorMap": "none",
-        "vignetteIntensity": 0.25,
-        "saturation": 115,
+        "vignetteIntensity": 0.2,
+        "saturation": 105,
         "contrast": 100,
         "brightness": 105,
         "flutedGlass": {
@@ -325,37 +325,37 @@
         }
       },
       "textSections": [
-        { "id": 1, "text": "Holi Hai!", "size": 120, "weight": 900, "spacing": -0.05, "font": "sans-serif", "italic": false },
-        { "id": 2, "text": "CELEBRATE WITH COLORS", "size": 16, "weight": 300, "spacing": 0.35, "font": "mono", "italic": false }
+        { "id": 1, "text": "Spring", "size": 120, "weight": 900, "spacing": -0.08, "font": "sans-serif", "italic": false },
+        { "id": 2, "text": "happy easter", "size": 22, "weight": 300, "spacing": 0.15, "font": "mono", "italic": false }
       ],
-      "textGap": 16,
+      "textGap": 12,
       "textConfig": {
         "enabled": true,
-        "color": "#ffffff",
-        "opacity": 0.9
+        "color": "#002f56",
+        "opacity": 0.85
       },
       "selectedProjectIds": []
     }
   },
   {
-    "title": "Holi Waves – Rainbow Color Powder Waves Header",
-    "short_description": "Flowing rainbow waves inspired by Holi color powder celebrations",
-    "long_description": "Capture the rhythmic joy of Holi with layered waves of vibrant color. Pink, turquoise, saffron, and violet undulate like clouds of gulal powder thrown into the spring air. A stunning animated header for festive greetings and campaigns.",
+    "title": "Easter Egg Particle Ring – Pastel Blue Celebration",
+    "short_description": "Swirling pastel blue particle ring with Easter charm",
+    "long_description": "A playful Easter header featuring a mesmerizing particle ring in soft sky blues and mint greens. The swirling particles evoke the joy of an Easter egg hunt, making it ideal for festive spring promotions and holiday greetings.",
     "scene_data": {
-      "backgroundType": "waves",
+      "backgroundType": "particleRing",
       "gradientConfig": {
-        "colors": ["#FF4081", "#00E5FF", "#FF9100", "#D500F9"],
+        "colors": ["#00bbec", "#c9e7d1", "#f9c9d5", "#cbe1f8"],
         "numColors": 4,
         "type": "conic",
         "startPos": { "x": 50, "y": 50 },
         "endPos": { "x": 100, "y": 100 },
         "colorStops": [0, 25, 55, 100],
-        "waveIntensity": 0.45,
-        "mouseInfluence": 0.5,
-        "decaySpeed": 0.94,
-        "wave1Speed": 0.22,
+        "waveIntensity": 0.2,
+        "mouseInfluence": 0.45,
+        "decaySpeed": 0.95,
+        "wave1Speed": 0.18,
         "wave1Direction": 1,
-        "wave2Speed": 0.16,
+        "wave2Speed": 0.1,
         "wave2Direction": -1
       },
       "auroraConfig": {
@@ -366,9 +366,9 @@
         "minTTL": 100,
         "maxTTL": 300,
         "blurAmount": 13,
-        "hueStart": 120,
-        "hueEnd": 180,
-        "backgroundColor": "#000000",
+        "hueStart": 190,
+        "hueEnd": 220,
+        "backgroundColor": "#f5f9fb",
         "lineCount": 0,
         "decaySpeed": 0.95,
         "useGradientColors": true
@@ -384,31 +384,31 @@
         "mouseInfluence": 0.3,
         "decaySpeed": 0.95,
         "useGradientColors": true,
-        "colors": ["#40204c", "#a3225c", "#e24926"],
-        "backgroundColor": "#152a8e"
+        "colors": ["#00bbec", "#c9e7d1", "#f9c9d5"],
+        "backgroundColor": "#f5f9fb"
       },
       "fluidConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#1C89FF",
-        "colors": ["#71ECFF", "#39F58A", "#71ECFF", "#F0CBA8"],
-        "speed": 1,
+        "backgroundColor": "#f5f9fb",
+        "colors": ["#00bbec", "#c9e7d1", "#f9c9d5", "#cbe1f8"],
+        "speed": 0.8,
         "intensity": 1,
         "blurAmount": 20
       },
       "wavesConfig": {
         "useGradientColors": true,
-        "colors": ["#FF4081", "#00E5FF", "#FF9100", "#D500F9"],
-        "waveHeight": 0.07,
-        "waveFrequency": 3,
-        "rotation": -5,
-        "speed": 0.4,
-        "blur": 35,
-        "layers": 6,
-        "phaseOffset": 0.3
+        "colors": ["#00bbec", "#c9e7d1", "#f9c9d5", "#cbe1f8"],
+        "waveHeight": 0.05,
+        "waveFrequency": 2,
+        "rotation": 0,
+        "speed": 0.5,
+        "blur": 40,
+        "layers": 5,
+        "phaseOffset": 0
       },
       "ribbonConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#ffffff",
+        "backgroundColor": "#f5f9fb",
         "ribbonCount": 5,
         "speed": 0.5,
         "amplitude": 1.0,
@@ -421,7 +421,7 @@
       },
       "dandelionConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#e8f4fc",
+        "backgroundColor": "#f5f9fb",
         "lineCount": 120,
         "radiusMin": 0.1,
         "radiusMax": 0.8,
@@ -433,20 +433,20 @@
       },
       "particleRingConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#fef6f9",
-        "particleCount": 800,
-        "ringRadius": 0.35,
-        "ringWidth": 0.15,
-        "speed": 0.5,
-        "particleSize": 3,
-        "dispersion": 0.3,
-        "rotationSpeed": 0.2,
-        "tiltX": 0,
-        "tiltZ": 0
+        "backgroundColor": "#f5f9fd",
+        "particleCount": 950,
+        "ringRadius": 0.38,
+        "ringWidth": 0.12,
+        "speed": 0.35,
+        "particleSize": 2.5,
+        "dispersion": 0.35,
+        "rotationSpeed": 0.15,
+        "tiltX": 25,
+        "tiltZ": -5
       },
       "shapeTrailConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#f0f0f0",
+        "backgroundColor": "#f5f9fb",
         "shape": "circle",
         "startScale": 1000,
         "endScale": 2000,
@@ -468,187 +468,18 @@
         "size": 24,
         "opacity": 0.15,
         "rotation": 0,
-        "color": "#ffffff",
-        "mouseRotationInfluence": 0.5
-      },
-      "effectsConfig": {
-        "blur": 0,
-        "texture": "none",
-        "textureSize": 20,
-        "textureOpacity": 0.5,
-        "textureBlendMode": "overlay",
-        "colorMap": "none",
-        "vignetteIntensity": 0.2,
-        "saturation": 110,
-        "contrast": 100,
-        "brightness": 100,
-        "flutedGlass": {
-          "enabled": false,
-          "segments": 80,
-          "rotation": 0,
-          "motionValue": 0.5,
-          "motionSpeed": 0.5,
-          "overlayOpacity": 0,
-          "distortionStrength": 0.02,
-          "waveFrequency": 1
-        }
-      },
-      "textSections": [
-        { "id": 1, "text": "Happy Holi", "size": 100, "weight": 800, "spacing": -0.04, "font": "sans-serif", "italic": false },
-        { "id": 2, "text": "SPREAD JOY & COLORS", "size": 20, "weight": 300, "spacing": 0.25, "font": "sans-serif", "italic": false }
-      ],
-      "textGap": 18,
-      "textConfig": {
-        "enabled": true,
-        "color": "#ffffff",
-        "opacity": 1
-      },
-      "selectedProjectIds": []
-    }
-  },
-  {
-    "title": "Holi Ribbons – Flowing Gulal Streaks Festival Header",
-    "short_description": "Elegant ribbon streams of Holi colors on a warm festive background",
-    "long_description": "Graceful ribbons of saffron, rose, and violet flow across this festive Holi header like streams of colored powder in the breeze. The warm cream background evokes the golden afternoon light of spring celebrations across India.",
-    "scene_data": {
-      "backgroundType": "ribbon",
-      "gradientConfig": {
-        "colors": ["#FF5722", "#E040FB", "#FFEB3B", "#00E676"],
-        "numColors": 4,
-        "type": "linear",
-        "startPos": { "x": 10, "y": 0 },
-        "endPos": { "x": 90, "y": 100 },
-        "colorStops": [0, 35, 65, 100],
-        "waveIntensity": 0.35,
-        "mouseInfluence": 0.4,
-        "decaySpeed": 0.95,
-        "wave1Speed": 0.2,
-        "wave1Direction": 1,
-        "wave2Speed": 0.15,
-        "wave2Direction": -1
-      },
-      "auroraConfig": {
-        "minWidth": 10,
-        "maxWidth": 30,
-        "minHeight": 200,
-        "maxHeight": 600,
-        "minTTL": 100,
-        "maxTTL": 300,
-        "blurAmount": 13,
-        "hueStart": 120,
-        "hueEnd": 180,
-        "backgroundColor": "#000000",
-        "lineCount": 0,
-        "decaySpeed": 0.95,
-        "useGradientColors": true
-      },
-      "blobConfig": {
-        "blobCount": 5,
-        "minRadius": 40,
-        "maxRadius": 120,
-        "speed": 0.5,
-        "orbitRadius": 150,
-        "blurAmount": 12,
-        "threshold": 180,
-        "mouseInfluence": 0.3,
-        "decaySpeed": 0.95,
-        "useGradientColors": true,
-        "colors": ["#40204c", "#a3225c", "#e24926"],
-        "backgroundColor": "#152a8e"
-      },
-      "fluidConfig": {
-        "useGradientColors": true,
-        "backgroundColor": "#1C89FF",
-        "colors": ["#71ECFF", "#39F58A", "#71ECFF", "#F0CBA8"],
-        "speed": 1,
-        "intensity": 1,
-        "blurAmount": 20
-      },
-      "wavesConfig": {
-        "useGradientColors": true,
-        "colors": ["#06b6d4", "#a855f7", "#ec4899", "#3b82f6"],
-        "waveHeight": 0.05,
-        "waveFrequency": 2,
-        "rotation": 0,
-        "speed": 0.5,
-        "blur": 40,
-        "layers": 5,
-        "phaseOffset": 0
-      },
-      "ribbonConfig": {
-        "useGradientColors": true,
-        "backgroundColor": "#FFF8E1",
-        "ribbonCount": 6,
-        "speed": 0.45,
-        "amplitude": 1.2,
-        "spread": 0.6,
-        "rotation": -20,
-        "thickness": 0.9,
-        "taper": -0.2,
-        "noise": 0.4,
-        "opacity": 0.8
-      },
-      "dandelionConfig": {
-        "useGradientColors": true,
-        "backgroundColor": "#e8f4fc",
-        "lineCount": 120,
-        "radiusMin": 0.1,
-        "radiusMax": 0.8,
-        "speed": 0.3,
-        "thickness": 1.5,
-        "dotSize": 3,
-        "spread": 0.3,
-        "centerY": 0.85
-      },
-      "particleRingConfig": {
-        "useGradientColors": true,
-        "backgroundColor": "#fef6f9",
-        "particleCount": 800,
-        "ringRadius": 0.35,
-        "ringWidth": 0.15,
-        "speed": 0.5,
-        "particleSize": 3,
-        "dispersion": 0.3,
-        "rotationSpeed": 0.2,
-        "tiltX": 0,
-        "tiltZ": 0
-      },
-      "shapeTrailConfig": {
-        "useGradientColors": true,
-        "backgroundColor": "#f0f0f0",
-        "shape": "circle",
-        "startScale": 1000,
-        "endScale": 2000,
-        "sizeCycles": 1,
-        "gap": 30,
-        "rotationOffset": 15,
-        "speed": 0.3,
-        "pathComplexity": 4,
-        "opacity": 0.8,
-        "blendMode": "normal",
-        "trailCount": 3,
-        "trailColorStops": null
-      },
-      "tessellationConfig": {
-        "enabled": false,
-        "icon": "Star",
-        "rowGap": 60,
-        "colGap": 60,
-        "size": 24,
-        "opacity": 0.15,
-        "rotation": 0,
-        "color": "#ffffff",
+        "color": "#00bbec",
         "mouseRotationInfluence": 0.5
       },
       "effectsConfig": {
         "blur": 0,
         "texture": "dots",
         "textureSize": 25,
-        "textureOpacity": 0.06,
+        "textureOpacity": 0.08,
         "textureBlendMode": "overlay",
         "colorMap": "none",
         "vignetteIntensity": 0.1,
-        "saturation": 105,
+        "saturation": 100,
         "contrast": 100,
         "brightness": 102,
         "flutedGlass": {
@@ -663,37 +494,37 @@
         }
       },
       "textSections": [
-        { "id": 1, "text": "Holi", "size": 130, "weight": 900, "spacing": -0.08, "font": "serif", "italic": true },
-        { "id": 2, "text": "RANG BARSE", "size": 22, "weight": 500, "spacing": 0.2, "font": "mono", "italic": false }
+        { "id": 1, "text": "Bloom", "size": 115, "weight": 800, "spacing": -0.05, "font": "sans-serif", "italic": false },
+        { "id": 2, "text": "EASTER 2026", "size": 20, "weight": 500, "spacing": 0.3, "font": "mono", "italic": false }
       ],
-      "textGap": 12,
+      "textGap": 16,
       "textConfig": {
         "enabled": true,
-        "color": "#4A148C",
+        "color": "#003748",
         "opacity": 0.9
       },
       "selectedProjectIds": []
     }
   },
   {
-    "title": "Holi Particle Burst – Colorful Powder Explosion Header",
-    "short_description": "Dynamic particle ring explosion in vibrant Holi festival colors",
-    "long_description": "Experience the explosive energy of Holi through a stunning particle ring burst. Thousands of colorful particles radiate outward in vivid reds, blues, greens, and golds, recreating the magical moment when color powder fills the air during the festival.",
+    "title": "Easter Ribbon Flow – Soft Pastel Blue Silk Header",
+    "short_description": "Flowing pastel silk ribbons in spring blue and blush tones",
+    "long_description": "Elegant flowing ribbons in pastel sky blue and soft blush create a sophisticated Easter header. The gentle motion and silk-like texture bring a refined spring aesthetic, perfect for luxury brands and premium Easter campaigns.",
     "scene_data": {
-      "backgroundType": "particleRing",
+      "backgroundType": "ribbon",
       "gradientConfig": {
-        "colors": ["#F44336", "#2196F3", "#4CAF50", "#FFC107"],
+        "colors": ["#459fd7", "#e3f1f7", "#ffe8ec", "#ebf3d6"],
         "numColors": 4,
-        "type": "radial",
-        "startPos": { "x": 50, "y": 50 },
-        "endPos": { "x": 100, "y": 100 },
-        "colorStops": [0, 25, 50, 100],
-        "waveIntensity": 0.4,
-        "mouseInfluence": 0.6,
-        "decaySpeed": 0.94,
-        "wave1Speed": 0.3,
+        "type": "linear",
+        "startPos": { "x": 10, "y": 0 },
+        "endPos": { "x": 90, "y": 100 },
+        "colorStops": [0, 30, 65, 100],
+        "waveIntensity": 0.35,
+        "mouseInfluence": 0.5,
+        "decaySpeed": 0.95,
+        "wave1Speed": 0.2,
         "wave1Direction": 1,
-        "wave2Speed": 0.2,
+        "wave2Speed": 0.15,
         "wave2Direction": -1
       },
       "auroraConfig": {
@@ -704,9 +535,9 @@
         "minTTL": 100,
         "maxTTL": 300,
         "blurAmount": 13,
-        "hueStart": 120,
-        "hueEnd": 180,
-        "backgroundColor": "#000000",
+        "hueStart": 190,
+        "hueEnd": 220,
+        "backgroundColor": "#f5f9fb",
         "lineCount": 0,
         "decaySpeed": 0.95,
         "useGradientColors": true
@@ -722,20 +553,20 @@
         "mouseInfluence": 0.3,
         "decaySpeed": 0.95,
         "useGradientColors": true,
-        "colors": ["#40204c", "#a3225c", "#e24926"],
-        "backgroundColor": "#152a8e"
+        "colors": ["#459fd7", "#e3f1f7", "#ffe8ec"],
+        "backgroundColor": "#f5f9fb"
       },
       "fluidConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#1C89FF",
-        "colors": ["#71ECFF", "#39F58A", "#71ECFF", "#F0CBA8"],
-        "speed": 1,
+        "backgroundColor": "#f5f9fb",
+        "colors": ["#459fd7", "#e3f1f7", "#ffe8ec", "#ebf3d6"],
+        "speed": 0.8,
         "intensity": 1,
         "blurAmount": 20
       },
       "wavesConfig": {
         "useGradientColors": true,
-        "colors": ["#06b6d4", "#a855f7", "#ec4899", "#3b82f6"],
+        "colors": ["#459fd7", "#e3f1f7", "#ffe8ec", "#ebf3d6"],
         "waveHeight": 0.05,
         "waveFrequency": 2,
         "rotation": 0,
@@ -746,20 +577,20 @@
       },
       "ribbonConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#ffffff",
-        "ribbonCount": 5,
-        "speed": 0.5,
-        "amplitude": 1.0,
-        "spread": 0.5,
-        "rotation": -30,
-        "thickness": 1,
-        "taper": -0.3,
-        "noise": 0.5,
-        "opacity": 0.85
+        "backgroundColor": "#f5f9fd",
+        "ribbonCount": 4,
+        "speed": 0.4,
+        "amplitude": 0.9,
+        "spread": 0.6,
+        "rotation": -25,
+        "thickness": 0.9,
+        "taper": -0.2,
+        "noise": 0.3,
+        "opacity": 0.75
       },
       "dandelionConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#e8f4fc",
+        "backgroundColor": "#f5f9fb",
         "lineCount": 120,
         "radiusMin": 0.1,
         "radiusMax": 0.8,
@@ -771,20 +602,20 @@
       },
       "particleRingConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#0a0a14",
-        "particleCount": 1200,
-        "ringRadius": 0.4,
-        "ringWidth": 0.2,
-        "speed": 0.6,
-        "particleSize": 2.5,
-        "dispersion": 0.45,
-        "rotationSpeed": 0.25,
-        "tiltX": 20,
-        "tiltZ": -10
+        "backgroundColor": "#f5f9fb",
+        "particleCount": 800,
+        "ringRadius": 0.35,
+        "ringWidth": 0.15,
+        "speed": 0.5,
+        "particleSize": 3,
+        "dispersion": 0.3,
+        "rotationSpeed": 0.2,
+        "tiltX": 0,
+        "tiltZ": 0
       },
       "shapeTrailConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#f0f0f0",
+        "backgroundColor": "#f5f9fb",
         "shape": "circle",
         "startScale": 1000,
         "endScale": 2000,
@@ -806,19 +637,188 @@
         "size": 24,
         "opacity": 0.15,
         "rotation": 0,
-        "color": "#ffffff",
+        "color": "#459fd7",
         "mouseRotationInfluence": 0.5
       },
       "effectsConfig": {
-        "blur": 2,
-        "texture": "noise",
-        "textureSize": 10,
-        "textureOpacity": 0.05,
+        "blur": 0,
+        "texture": "none",
+        "textureSize": 20,
+        "textureOpacity": 0.5,
         "textureBlendMode": "overlay",
         "colorMap": "none",
-        "vignetteIntensity": 0.3,
-        "saturation": 125,
-        "contrast": 110,
+        "vignetteIntensity": 0.18,
+        "saturation": 100,
+        "contrast": 100,
+        "brightness": 103,
+        "flutedGlass": {
+          "enabled": false,
+          "segments": 80,
+          "rotation": 0,
+          "motionValue": 0.5,
+          "motionSpeed": 0.5,
+          "overlayOpacity": 0,
+          "distortionStrength": 0.02,
+          "waveFrequency": 1
+        }
+      },
+      "textSections": [
+        { "id": 1, "text": "Pastel", "size": 105, "weight": 300, "spacing": 0.05, "font": "serif", "italic": true },
+        { "id": 2, "text": "EASTER DREAMS", "size": 16, "weight": 600, "spacing": 0.35, "font": "sans-serif", "italic": false }
+      ],
+      "textGap": 18,
+      "textConfig": {
+        "enabled": true,
+        "color": "#001c34",
+        "opacity": 0.85
+      },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Easter Dandelion Burst – Whimsical Blue Spring Header",
+    "short_description": "Delicate dandelion wisps in pastel blue and mint green",
+    "long_description": "A whimsical Easter header featuring dandelion-like bursts radiating in pastel sky blue and fresh mint green. The organic, nature-inspired animation brings a sense of spring renewal and playful Easter spirit to any website.",
+    "scene_data": {
+      "backgroundType": "dandelion",
+      "gradientConfig": {
+        "colors": ["#76cfea", "#9fd7af", "#a5cbf5", "#f5a4b7"],
+        "numColors": 4,
+        "type": "radial",
+        "startPos": { "x": 50, "y": 80 },
+        "endPos": { "x": 80, "y": 20 },
+        "colorStops": [0, 35, 70, 100],
+        "waveIntensity": 0.2,
+        "mouseInfluence": 0.35,
+        "decaySpeed": 0.95,
+        "wave1Speed": 0.12,
+        "wave1Direction": 1,
+        "wave2Speed": 0.08,
+        "wave2Direction": -1
+      },
+      "auroraConfig": {
+        "minWidth": 10,
+        "maxWidth": 30,
+        "minHeight": 200,
+        "maxHeight": 600,
+        "minTTL": 100,
+        "maxTTL": 300,
+        "blurAmount": 13,
+        "hueStart": 190,
+        "hueEnd": 220,
+        "backgroundColor": "#e3f1f7",
+        "lineCount": 0,
+        "decaySpeed": 0.95,
+        "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5,
+        "minRadius": 40,
+        "maxRadius": 120,
+        "speed": 0.5,
+        "orbitRadius": 150,
+        "blurAmount": 12,
+        "threshold": 180,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.95,
+        "useGradientColors": true,
+        "colors": ["#76cfea", "#9fd7af", "#f5a4b7"],
+        "backgroundColor": "#e3f1f7"
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#e3f1f7",
+        "colors": ["#76cfea", "#9fd7af", "#a5cbf5", "#f5a4b7"],
+        "speed": 0.8,
+        "intensity": 1,
+        "blurAmount": 20
+      },
+      "wavesConfig": {
+        "useGradientColors": true,
+        "colors": ["#76cfea", "#9fd7af", "#a5cbf5", "#f5a4b7"],
+        "waveHeight": 0.05,
+        "waveFrequency": 2,
+        "rotation": 0,
+        "speed": 0.5,
+        "blur": 40,
+        "layers": 5,
+        "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#e3f1f7",
+        "ribbonCount": 5,
+        "speed": 0.5,
+        "amplitude": 1.0,
+        "spread": 0.5,
+        "rotation": -30,
+        "thickness": 1,
+        "taper": -0.3,
+        "noise": 0.5,
+        "opacity": 0.85
+      },
+      "dandelionConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#e3f1f7",
+        "lineCount": 100,
+        "radiusMin": 0.08,
+        "radiusMax": 0.75,
+        "speed": 0.25,
+        "thickness": 1.2,
+        "dotSize": 3.5,
+        "spread": 0.4,
+        "centerY": 0.8
+      },
+      "particleRingConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#e3f1f7",
+        "particleCount": 800,
+        "ringRadius": 0.35,
+        "ringWidth": 0.15,
+        "speed": 0.5,
+        "particleSize": 3,
+        "dispersion": 0.3,
+        "rotationSpeed": 0.2,
+        "tiltX": 0,
+        "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#e3f1f7",
+        "shape": "circle",
+        "startScale": 1000,
+        "endScale": 2000,
+        "sizeCycles": 1,
+        "gap": 30,
+        "rotationOffset": 15,
+        "speed": 0.3,
+        "pathComplexity": 4,
+        "opacity": 0.8,
+        "blendMode": "normal",
+        "trailCount": 3,
+        "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false,
+        "icon": "Star",
+        "rowGap": 60,
+        "colGap": 60,
+        "size": 24,
+        "opacity": 0.15,
+        "rotation": 0,
+        "color": "#9fd7af",
+        "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 0,
+        "texture": "noise",
+        "textureSize": 20,
+        "textureOpacity": 0.06,
+        "textureBlendMode": "overlay",
+        "colorMap": "none",
+        "vignetteIntensity": 0.12,
+        "saturation": 100,
+        "contrast": 100,
         "brightness": 100,
         "flutedGlass": {
           "enabled": false,
@@ -832,14 +832,14 @@
         }
       },
       "textSections": [
-        { "id": 1, "text": "Colors", "size": 115, "weight": 900, "spacing": -0.1, "font": "mono", "italic": false },
-        { "id": 2, "text": "HAPPY HOLI 2026", "size": 19, "weight": 400, "spacing": 0.3, "font": "sans-serif", "italic": false }
+        { "id": 1, "text": "Renewal", "size": 100, "weight": 600, "spacing": -0.04, "font": "mono", "italic": false },
+        { "id": 2, "text": "a spring celebration", "size": 20, "weight": 300, "spacing": 0.1, "font": "serif", "italic": true }
       ],
-      "textGap": 15,
+      "textGap": 14,
       "textConfig": {
         "enabled": true,
-        "color": "#ffffff",
-        "opacity": 0.95
+        "color": "#005a77",
+        "opacity": 0.9
       },
       "selectedProjectIds": []
     }

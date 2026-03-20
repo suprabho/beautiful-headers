@@ -266,7 +266,7 @@ const Ribbon = ({ index, totalRibbons, config, colors, isPausedRef, smoothedMous
           mat.uniforms[uniformName].value = config[m.param] * baseScale + audioData[m.band] * m.weight * baseScale
         }
       }
-    } else if (smoothedMouseRef) {
+    } else if (smoothedMouseRef?.current) {
       // Mouse reactivity: modulate speed (using centralized mapping)
       const mouseFx = getMouseEffects('ribbon', smoothedMouseRef.current, mouseIntensityRef?.current ?? 0)
       mat.uniforms.u_speed.value = config.speed * (mouseFx.u_speed ?? 1)
@@ -322,8 +322,14 @@ const RibbonScene = ({ config, paletteColors, isPaused, mousePos = { x: 0.5, y: 
   }, [isPaused])
 
   useEffect(() => {
-    targetMouseRef.current = mousePos
-  }, [mousePos])
+    if (mouseIntensity === 0) {
+      targetMouseRef.current = null
+      smoothedMouseRef.current = null
+    } else {
+      if (!smoothedMouseRef.current) smoothedMouseRef.current = { x: 0.5, y: 0.5 }
+      targetMouseRef.current = mousePos
+    }
+  }, [mousePos, mouseIntensity])
 
   useEffect(() => {
     mouseIntensityRef.current = mouseIntensity
@@ -331,7 +337,9 @@ const RibbonScene = ({ config, paletteColors, isPaused, mousePos = { x: 0.5, y: 
 
   // Smooth mouse in useFrame so it updates per-frame (using centralized mapping)
   useFrame(() => {
-    smoothMouse(smoothedMouseRef.current, targetMouseRef.current, 'ribbon')
+    if (smoothedMouseRef.current && targetMouseRef.current) {
+      smoothMouse(smoothedMouseRef.current, targetMouseRef.current, 'ribbon')
+    }
   })
 
   const colors = useMemo(() => {

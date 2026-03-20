@@ -62,8 +62,14 @@ const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, 
   }, [isPaused])
 
   useEffect(() => {
-    targetMouseRef.current = mousePos
-  }, [mousePos])
+    if (mouseIntensity === 0) {
+      targetMouseRef.current = null
+      smoothedMouseRef.current = null
+    } else {
+      if (!smoothedMouseRef.current) smoothedMouseRef.current = { x: 0.5, y: 0.5 }
+      targetMouseRef.current = mousePos
+    }
+  }, [mousePos, mouseIntensity])
 
   useEffect(() => {
     mouseIntensityRef.current = mouseIntensity
@@ -149,10 +155,13 @@ const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, 
         timeRef.current += 0.016 * speed
       }
 
-      // Smooth mouse interpolation (using centralized mapping)
-      smoothMouse(smoothedMouseRef.current, targetMouseRef.current, 'waves')
-      const mouseFx = getMouseEffects('waves', smoothedMouseRef.current, mouseIntensityRef.current)
-      const mousePhaseOffset = mouseFx.layerPhase ?? 0
+      // Smooth mouse interpolation (using centralized mapping) — skip when interaction disabled
+      let mousePhaseOffset = 0
+      if (smoothedMouseRef.current && targetMouseRef.current) {
+        smoothMouse(smoothedMouseRef.current, targetMouseRef.current, 'waves')
+        const mouseFx = getMouseEffects('waves', smoothedMouseRef.current, mouseIntensityRef.current)
+        mousePhaseOffset = mouseFx.layerPhase ?? 0
+      }
 
       const time = timeRef.current
 

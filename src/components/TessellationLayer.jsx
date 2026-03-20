@@ -102,8 +102,15 @@ const TessellationLayer = memo(({ config, mousePos = { x: 0.5, y: 0.5 }, isPause
   }, [isPaused])
 
   useEffect(() => {
-    targetMouseRef.current = { x: mousePos.x, y: mousePos.y }
-  }, [mousePos.x, mousePos.y])
+    if (mouseIntensity === 0) {
+      // Remove mouse refs entirely when interaction is disabled
+      targetMouseRef.current = null
+      smoothedMouseRef.current = null
+    } else {
+      if (!smoothedMouseRef.current) smoothedMouseRef.current = { x: 0.5, y: 0.5 }
+      targetMouseRef.current = { x: mousePos.x, y: mousePos.y }
+    }
+  }, [mousePos.x, mousePos.y, mouseIntensity])
 
   // Main render loop
   useEffect(() => {
@@ -155,8 +162,9 @@ const TessellationLayer = memo(({ config, mousePos = { x: 0.5, y: 0.5 }, isPause
       const width = canvas.width / dpr
       const height = canvas.height / dpr
 
-      // Smooth mouse interpolation
-      if (!isPausedRef.current) {
+      // Smooth mouse interpolation — skip when interaction disabled (refs are null)
+      const mouseActive = smoothedMouseRef.current && targetMouseRef.current
+      if (mouseActive && !isPausedRef.current) {
         const lerpFactor = 0.1
         smoothedMouseRef.current.x += (targetMouseRef.current.x - smoothedMouseRef.current.x) * lerpFactor
         smoothedMouseRef.current.y += (targetMouseRef.current.y - smoothedMouseRef.current.y) * lerpFactor
@@ -175,8 +183,8 @@ const TessellationLayer = memo(({ config, mousePos = { x: 0.5, y: 0.5 }, isPause
       // Set up rendering
       ctx.fillStyle = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${opacity})`
 
-      const mouseX = smoothedMouseRef.current.x * width
-      const mouseY = smoothedMouseRef.current.y * height
+      const mouseX = mouseActive ? smoothedMouseRef.current.x * width : -9999
+      const mouseY = mouseActive ? smoothedMouseRef.current.y * height : -9999
       const maxDistance = 300
       const audioRotationBoost = audioData.isActive ? audioData.amplitude * Math.PI : 0
       const rotationRad = (rotation * Math.PI) / 180 + audioRotationBoost
