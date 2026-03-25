@@ -310,7 +310,7 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
             </DialogDescription>
           </DialogHeader>
           <ScrollArea className="max-h-[60vh] py-4">
-            <MobileDialogContent activeDialog={activeDialog} onCloseDialog={() => backDialog()} />
+            <MobileDialogContent activeDialog={activeDialog} onCloseDialog={() => backDialog()} onApplyDialog={() => applyDialog()} />
           </ScrollArea>
           <DialogFooter className="flex-row gap-2">
             <Button variant="outline" className="flex-1" onClick={resetDialog}><ArrowCounterClockwise size={16} className="mr-2" />Reset</Button>

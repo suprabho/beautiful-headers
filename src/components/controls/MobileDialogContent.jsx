@@ -68,7 +68,7 @@ export const getDialogTitle = (key, textSections) => {
   return titles[key] || 'Settings'
 }
 
-export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
+export const MobileDialogContent = ({ activeDialog, onCloseDialog, onApplyDialog }) => {
   const [gradientConfig, setGradientConfig] = useThemedConfig('gradientConfig')
   const auroraConfig = useStore((state) => state.auroraConfig)
   const setAuroraConfig = useStore((state) => state.setAuroraConfig)
@@ -670,7 +670,7 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog }) => {
                 </Select>
               </ControlGroup>
               <ControlGroup label="Spacing (in em)"><NumberInput value={[section.spacing]} onValueChange={([val]) => updateTextSection(section.id, 'spacing', val)} min={-0.1} max={0.5} step={0.01} showButtons={true} /></ControlGroup>
-              <Button variant="destructive" className="w-full mt-4" onClick={() => { removeTextSection(section.id); if (onCloseDialog) onCloseDialog() }} disabled={textSections.length <= 1}>
+              <Button variant="destructive" className="w-full mt-4" onClick={() => { removeTextSection(section.id); if (onApplyDialog) onApplyDialog() }} disabled={textSections.length <= 1}>
                 <Trash size={16} className="mr-2" />Delete Section
               </Button>
             </div>
