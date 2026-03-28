@@ -7,6 +7,7 @@ import WavesLayer from '../WavesLayer'
 import RibbonLayer from '../RibbonLayer'
 import DandelionLayer from '../DandelionLayer'
 import ParticleRingLayer from '../ParticleRingLayer'
+import ChidiyaUddLayer from '../ChidiyaUddLayer'
 import TessellationLayer from '../TessellationLayer'
 import EffectsLayer from '../EffectsLayer'
 import TextLayer from '../TextLayer'
@@ -24,6 +25,7 @@ export function MiniSceneRenderer({
   ribbonConfig,
   dandelionConfig,
   particleRingConfig,
+  chidiyaUddConfig,
   tessellationConfig,
   effectsConfig,
   textConfig,
@@ -126,6 +128,9 @@ export function MiniSceneRenderer({
             )}
             {backgroundType === 'particleRing' && (
               <ParticleRingLayer config={particleRingConfig || {}} paletteColors={paletteColors} effectsConfig={effectsConfig || {}} isPaused={false} mousePos={mousePos} mouseIntensity={intensity} />
+            )}
+            {backgroundType === 'chidiyaUdd' && (
+              <ChidiyaUddLayer config={chidiyaUddConfig || {}} paletteColors={paletteColors} effectsConfig={effectsConfig || {}} isPaused={false} mousePos={mousePos} mouseIntensity={intensity} />
             )}
           </div>
 

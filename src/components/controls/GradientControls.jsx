@@ -1802,6 +1802,84 @@ export const ShapeTrailControls = ({ shapeTrailConfig, setShapeTrailConfig, pars
 }
 
 // ============================================
+// CHIDIYA UDD CONTROLS
+// ============================================
+export const ChidiyaUddControls = ({ chidiyaUddConfig, setChidiyaUddConfig }) => {
+  return (
+    <>
+      {/* Item Count */}
+      <ControlGroup label="Item Count">
+        <NumberInput
+          value={[chidiyaUddConfig.itemCount]}
+          onValueChange={([val]) => setChidiyaUddConfig({
+            ...chidiyaUddConfig,
+            itemCount: val
+          })}
+          min={5}
+          max={80}
+          step={5}
+        />
+      </ControlGroup>
+
+      {/* Speed */}
+      <ControlGroup label="Speed">
+        <NumberInput
+          value={[chidiyaUddConfig.speed]}
+          onValueChange={([val]) => setChidiyaUddConfig({
+            ...chidiyaUddConfig,
+            speed: val
+          })}
+          min={0.1}
+          max={3}
+          step={0.1}
+        />
+      </ControlGroup>
+
+      {/* Item Size */}
+      <ControlGroup label="Item Size">
+        <NumberInput
+          value={[chidiyaUddConfig.itemSize]}
+          onValueChange={([val]) => setChidiyaUddConfig({
+            ...chidiyaUddConfig,
+            itemSize: val
+          })}
+          min={16}
+          max={80}
+          step={4}
+        />
+      </ControlGroup>
+
+      {/* Trail Length */}
+      <ControlGroup label="Trail Length">
+        <NumberInput
+          value={[chidiyaUddConfig.trailLength]}
+          onValueChange={([val]) => setChidiyaUddConfig({
+            ...chidiyaUddConfig,
+            trailLength: val
+          })}
+          min={0}
+          max={1}
+          step={0.1}
+        />
+      </ControlGroup>
+
+      {/* Show Labels */}
+      <ControlGroup label="Show Labels">
+        <button
+          className="h-9 px-3 rounded-md border border-white/10 bg-white/5 text-sm text-white/80 hover:bg-white/10 transition-colors"
+          onClick={() => setChidiyaUddConfig({
+            ...chidiyaUddConfig,
+            showLabels: !chidiyaUddConfig.showLabels
+          })}
+        >
+          {chidiyaUddConfig.showLabels ? 'On' : 'Off'}
+        </button>
+      </ControlGroup>
+    </>
+  )
+}
+
+// ============================================
 // MAIN GRADIENT PANEL - Restructured
 // ============================================
 export const GradientPanel = ({
@@ -1823,6 +1901,8 @@ export const GradientPanel = ({
   setDandelionConfig,
   particleRingConfig,
   setParticleRingConfig,
+  chidiyaUddConfig,
+  setChidiyaUddConfig,
   parsedPalette,
 }) => {
   return (
@@ -1854,6 +1934,7 @@ export const GradientPanel = ({
             <SelectItem value="ribbon">Ribbon</SelectItem>
             <SelectItem value="dandelion">Dandelion</SelectItem>
             <SelectItem value="particleRing">Particle Ring</SelectItem>
+            <SelectItem value="chidiyaUdd">Chidiya Udd</SelectItem>
           </SelectContent>
         </Select>
       </ControlGroup>
@@ -1910,6 +1991,12 @@ export const GradientPanel = ({
           particleRingConfig={particleRingConfig}
           setParticleRingConfig={setParticleRingConfig}
           parsedPalette={parsedPalette}
+        />
+      )}
+      {backgroundType === 'chidiyaUdd' && (
+        <ChidiyaUddControls
+          chidiyaUddConfig={chidiyaUddConfig}
+          setChidiyaUddConfig={setChidiyaUddConfig}
         />
       )}
     </div>

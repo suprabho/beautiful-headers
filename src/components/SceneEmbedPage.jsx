@@ -15,6 +15,7 @@ import WavesLayer from './WavesLayer'
 import RibbonLayer from './RibbonLayer'
 import DandelionLayer from './DandelionLayer'
 import ParticleRingLayer from './ParticleRingLayer'
+import ChidiyaUddLayer from './ChidiyaUddLayer'
 import TessellationLayer from './TessellationLayer'
 import EffectsLayer from './EffectsLayer'
 import TextLayer from './TextLayer'
@@ -223,6 +224,7 @@ function SceneEmbedPage() {
   const ribbonConfig = sceneData.ribbonConfig || {}
   const dandelionConfig = sceneData.dandelionConfig || {}
   const particleRingConfig = sceneData.particleRingConfig || {}
+  const chidiyaUddConfig = sceneData.chidiyaUddConfig || {}
 
   return (
     <div className="w-full h-screen overflow-hidden" onMouseMove={effectiveMouseEnabled ? handleMouseMove : undefined}>
@@ -262,6 +264,9 @@ function SceneEmbedPage() {
             )}
             {backgroundType === 'particleRing' && (
               <ParticleRingLayer config={particleRingConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
+            )}
+            {backgroundType === 'chidiyaUdd' && (
+              <ChidiyaUddLayer config={chidiyaUddConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
             )}
           </div>
 

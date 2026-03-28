@@ -478,6 +478,21 @@ const useStore = create((set, get) => ({
     particleRingConfig: { ...state.particleRingConfig, ...updates }
   })),
 
+  // ChidiyaUdd config
+  chidiyaUddConfig: {
+    useGradientColors: true,
+    colors: ['#1a1a2e', '#16213e', '#0f3460', '#e94560'],
+    itemCount: 25,
+    speed: 1,
+    itemSize: 32,
+    showLabels: true,
+    trailLength: 0.3,
+  },
+  setChidiyaUddConfig: (config) => set({ chidiyaUddConfig: config }),
+  updateChidiyaUddConfig: (updates) => set((state) => ({
+    chidiyaUddConfig: { ...state.chidiyaUddConfig, ...updates }
+  })),
+
   // ShapeTrail config
   shapeTrailConfig: {
     useGradientColors: true,
@@ -665,6 +680,7 @@ const useStore = create((set, get) => ({
       ribbonConfig: state.ribbonConfig,
       dandelionConfig: state.dandelionConfig,
       particleRingConfig: state.particleRingConfig,
+      chidiyaUddConfig: state.chidiyaUddConfig,
       shapeTrailConfig: state.shapeTrailConfig,
       tessellationConfig: state.tessellationConfig,
       effectsConfig: state.effectsConfig,
@@ -708,6 +724,7 @@ const useStore = create((set, get) => ({
       ...(sceneData.ribbonConfig && { ribbonConfig: sceneData.ribbonConfig }),
       ...(sceneData.dandelionConfig && { dandelionConfig: sceneData.dandelionConfig }),
       ...(sceneData.particleRingConfig && { particleRingConfig: sceneData.particleRingConfig }),
+      ...(sceneData.chidiyaUddConfig && { chidiyaUddConfig: sceneData.chidiyaUddConfig }),
       ...(sceneData.shapeTrailConfig && { shapeTrailConfig: sceneData.shapeTrailConfig }),
       ...(sceneData.tessellationConfig && { tessellationConfig: sceneData.tessellationConfig }),
       ...(sceneData.effectsConfig && { effectsConfig: sceneData.effectsConfig }),
