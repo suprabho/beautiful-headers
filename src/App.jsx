@@ -39,6 +39,7 @@ function App() {
   const isPaused = useStore((state) => state.isPaused)
   const loadSceneData = useStore((state) => state.loadSceneData)
   const currentSceneId = useStore((state) => state.currentSceneId)
+  const sceneLoaded = useStore((state) => state.sceneLoaded)
   const audioEnabled = useStore((state) => state.audioConfig.enabled)
   const inputEnabled = useStore((state) => state.inputEnabled)
   const setTextPairs = useStore((state) => state.setTextPairs)
@@ -50,8 +51,11 @@ function App() {
 
   // Load a random saved scene on initial mount (only if no scene already loaded)
   useEffect(() => {
-    // Skip if a scene was already loaded (e.g., from "Open in Editor")
-    if (currentSceneId) return
+    // Skip if a scene was already loaded — either via "Edit Scene" (sets
+    // currentSceneId) or via "Remix" (calls loadSceneData with no id, setting
+    // sceneLoaded). Without this second check, remixing would be clobbered by
+    // a random scene on App mount.
+    if (currentSceneId || sceneLoaded) return
 
     const loadRandomScene = async () => {
       try {
@@ -68,7 +72,7 @@ function App() {
       }
     }
     loadRandomScene()
-  }, [loadSceneData, currentSceneId])
+  }, [loadSceneData, currentSceneId, sceneLoaded])
 
   // Fetch AI-generated text pairs on initial mount
   useEffect(() => {

@@ -648,6 +648,11 @@ const useStore = create((set, get) => ({
   currentSceneId: null,
   setCurrentSceneId: (id) => set({ currentSceneId: id }),
 
+  // Tracks whether scene data has been intentionally loaded into the store
+  // (via loadSceneData). Used to prevent App.jsx from clobbering a remixed
+  // scene with a random scene on mount.
+  sceneLoaded: false,
+
   // Navigation
   currentPage: 'editor', // 'editor' | 'scenes'
   setCurrentPage: (page) => set({ currentPage: page }),
@@ -699,6 +704,7 @@ const useStore = create((set, get) => ({
     }
 
     set({
+      sceneLoaded: true,
       ...(sceneData.backgroundType && { backgroundType: sceneData.backgroundType }),
       ...(sceneData.gradientConfig && { gradientConfig: sceneData.gradientConfig }),
       ...(auroraConfig && { auroraConfig }),
