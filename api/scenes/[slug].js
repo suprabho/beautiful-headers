@@ -1,24 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
+import {
+  BASE_URL,
+  getHtmlTemplate,
+  escapeHtml,
+  getOgImageUrl,
+  injectMetaTags,
+} from '../_lib/seo.js';
 
-// --- Configuration ---
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
-const THUMBNAIL_CDN_URL = process.env.VITE_THUMBNAIL_CDN_URL || '';
-const BASE_URL = 'https://aura.promad.design';
-const FALLBACK_OG_IMAGE = `${BASE_URL}/og-image.png`;
-const SUPABASE_STORAGE_BASE = `${SUPABASE_URL}/storage/v1/object/public/thumbnails/`;
-
-// Fetch and cache the HTML template from the deployment's own static files
-let cachedHtml = null;
-
-async function getHtmlTemplate() {
-  if (cachedHtml) return cachedHtml;
-  const response = await fetch(`${BASE_URL}/index.html`);
-  cachedHtml = await response.text();
-  return cachedHtml;
-}
-
-// --- Helpers ---
 
 function titleToSlug(title) {
   return title
@@ -27,25 +17,6 @@ function titleToSlug(title) {
     .replace(/[^\w\s-]/g, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-');
-}
-
-function rewriteThumbnailUrl(url) {
-  if (!THUMBNAIL_CDN_URL || !url) return url;
-  return url.replace(SUPABASE_STORAGE_BASE, `${THUMBNAIL_CDN_URL}/`);
-}
-
-function getOgImageUrl(thumbnail) {
-  if (!thumbnail) return FALLBACK_OG_IMAGE;
-  const url = thumbnail.large || thumbnail.medium || thumbnail.small || thumbnail.full;
-  return url ? rewriteThumbnailUrl(url) : FALLBACK_OG_IMAGE;
-}
-
-function escapeHtml(str) {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
 }
 
 function buildJsonLd(scene, slug) {
@@ -74,7 +45,7 @@ function buildJsonLd(scene, slug) {
   });
 }
 
-function buildNoscriptContent(scene, slug) {
+function buildNoscript(scene, slug) {
   const sceneUrl = `${BASE_URL}/scenes/${slug}`;
   const title = escapeHtml(scene.title || 'Aura Scene');
   const description = escapeHtml(
@@ -93,77 +64,7 @@ function buildNoscriptContent(scene, slug) {
 </noscript>`;
 }
 
-function injectMetaTags(html, scene, slug) {
-  const sceneUrl = `${BASE_URL}/scenes/${slug}`;
-  const title = escapeHtml(
-    scene.title ? `${scene.title} - Aura` : 'Aura - Interactive Web Design Backgrounds'
-  );
-  const description = escapeHtml(
-    scene.short_description || scene.long_description ||
-    'Create stunning, interactive web backgrounds with Aura.'
-  );
-  const imageUrl = getOgImageUrl(scene.thumbnail);
-
-  let modified = html
-    // <title>
-    .replace(/<title>[^<]*<\/title>/, `<title>${title}</title>`)
-    // meta name="description" (multi-line: attribute and content on separate lines)
-    .replace(
-      /(<meta\s+name="description"[\s\S]*?content=")[^"]*(")/,
-      `$1${description}$2`
-    )
-    // og:type -> article for individual scenes
-    .replace(
-      /(<meta\s+property="og:type"\s+content=")[^"]*(")/,
-      `$1article$2`
-    )
-    // og:title and twitter:title
-    .replace(
-      /(<meta\s+property="(?:og|twitter):title"\s+content=")[^"]*(")/g,
-      `$1${title}$2`
-    )
-    // og:description and twitter:description (multi-line attributes)
-    .replace(
-      /(<meta\s+property="(?:og|twitter):description"[\s\S]*?content=")[^"]*(")/g,
-      `$1${description}$2`
-    )
-    // og:image and twitter:image
-    .replace(
-      /(<meta\s+property="(?:og|twitter):image"\s+content=")[^"]*(")/g,
-      `$1${imageUrl}$2`
-    )
-    // og:url and twitter:url
-    .replace(
-      /(<meta\s+property="(?:og|twitter):url"\s+content=")[^"]*(")/g,
-      `$1${sceneUrl}$2`
-    )
-    // canonical link
-    .replace(
-      /(<link\s+rel="canonical"\s+href=")[^"]*(")/,
-      `$1${sceneUrl}$2`
-    );
-
-  // Inject JSON-LD structured data before </head>
-  const jsonLd = buildJsonLd(scene, slug);
-  modified = modified.replace(
-    '</head>',
-    `  <script type="application/ld+json">${jsonLd}</script>\n</head>`
-  );
-
-  // Inject noscript content after <div id="root"></div>
-  const noscript = buildNoscriptContent(scene, slug);
-  modified = modified.replace(
-    '<div id="root"></div>',
-    `<div id="root"></div>\n  ${noscript}`
-  );
-
-  return modified;
-}
-
-// --- Scene lookup (mirrors src/lib/scenesApi.js getSceneBySlug) ---
-
 async function fetchSceneBySlug(supabase, slug) {
-  // Primary: exact slug match
   const { data: slugMatch, error: slugError } = await supabase
     .from('scenes')
     .select('id, title, slug, short_description, long_description, thumbnail')
@@ -173,7 +74,6 @@ async function fetchSceneBySlug(supabase, slug) {
   if (slugError) return null;
   if (slugMatch) return slugMatch;
 
-  // Fallback: word-based title search for older scenes without slug column
   const words = slug.split('-').filter(w => w.length >= 3);
   if (words.length === 0) return null;
 
@@ -192,7 +92,6 @@ async function fetchSceneBySlug(supabase, slug) {
   const scene = data.find(s => titleToSlug(s.title) === slug);
   if (!scene) return null;
 
-  // Backfill slug column (fire-and-forget)
   if (!scene.slug) {
     supabase
       .from('scenes')
@@ -204,8 +103,6 @@ async function fetchSceneBySlug(supabase, slug) {
 
   return scene;
 }
-
-// --- Handler ---
 
 export default async function handler(req, res) {
   const { slug } = req.query;
@@ -227,7 +124,24 @@ export default async function handler(req, res) {
       return res.status(200).send(htmlTemplate);
     }
 
-    const modifiedHtml = injectMetaTags(htmlTemplate, scene, slug);
+    const sceneUrl = `${BASE_URL}/scenes/${slug}`;
+    const title = escapeHtml(
+      scene.title ? `${scene.title} - Aura` : 'Aura - Interactive Web Design Backgrounds'
+    );
+    const description = escapeHtml(
+      scene.short_description || scene.long_description ||
+      'Create stunning, interactive web backgrounds with Aura.'
+    );
+
+    const modifiedHtml = injectMetaTags(htmlTemplate, {
+      title,
+      description,
+      canonicalUrl: sceneUrl,
+      ogType: 'article',
+      ogImage: getOgImageUrl(scene.thumbnail),
+      jsonLd: buildJsonLd(scene, slug),
+      noscript: buildNoscript(scene, slug),
+    });
 
     res.setHeader('Content-Type', 'text/html');
     res.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');

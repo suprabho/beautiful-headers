@@ -10,11 +10,26 @@
     },
     {
       "source": "/scenes",
-      "destination": "/index.html"
+      "destination": "/api/scenes-index"
+    },
+    {
+      "source": "/about",
+      "destination": "/api/about"
     },
     {
       "source": "/embed/:slug",
       "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/embed/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
     }
   ]
 }
