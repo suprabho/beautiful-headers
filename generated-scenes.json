@@ -1,222 +1,294 @@
 [
   {
-    "title": "Miami Sunset Aurora – Compliance Cocktail Club Consensus",
-    "short_description": "Coral and teal aurora streaks over deep Biscayne navy for upscale crypto events",
-    "long_description": "An elegant sunset aurora background evoking Miami's waterfront at dusk. Coral, gold, and teal light streaks drift across a deep navy sky—perfect for sophisticated crypto and compliance gatherings.",
+    "title": "Aubergine Midnight Aurora – Soulful Shruti Live Hero",
+    "short_description": "Antique gold and dusty rose aurora streaks drifting over deep aubergine ink for a late-night R&B stage",
+    "long_description": "A cinematic, candle-lit aurora in the Soulful Shruti palette — warm gold and rose light bleeding across a near-black plum sky. Built for the intimate, sultry hero of an Indian R&B brand: unhurried, devotional, monsoon-soaked.",
     "scene_data": {
       "backgroundType": "aurora",
       "gradientConfig": {
-        "colors": ["#ff8e72", "#f4b942", "#14b8a6", "#0a1a3a"],
+        "colors": ["#C9A24B", "#C97B7B", "#4A1A2F", "#14080E"],
         "numColors": 4,
         "type": "linear",
-        "startPos": { "x": -20, "y": -30 },
+        "startPos": { "x": -10, "y": -20 },
         "endPos": { "x": 110, "y": 120 },
-        "colorStops": [0, 33, 67, 100],
-        "waveIntensity": 0.4,
+        "colorStops": [0, 30, 65, 100],
+        "waveIntensity": 0.35,
         "mouseInfluence": 0.5,
         "decaySpeed": 0.95,
-        "wave1Speed": 0.25,
+        "wave1Speed": 0.22,
         "wave1Direction": 1,
-        "wave2Speed": 0.18,
+        "wave2Speed": 0.15,
         "wave2Direction": -1
       },
       "auroraConfig": {
-        "minWidth": 40,
-        "maxWidth": 120,
-        "minHeight": 400,
-        "maxHeight": 900,
+        "minWidth": 30,
+        "maxWidth": 110,
+        "minHeight": 420,
+        "maxHeight": 950,
         "minTTL": 180,
-        "maxTTL": 320,
-        "blurAmount": 18,
-        "hueStart": 10,
-        "hueEnd": 200,
-        "backgroundColor": "#0a1a3a",
+        "maxTTL": 340,
+        "blurAmount": 17,
+        "hueStart": 35,
+        "hueEnd": 345,
+        "backgroundColor": "#14080E",
         "lineCount": 0,
         "decaySpeed": 0.96,
         "useGradientColors": true
       },
       "blobConfig": {
-        "blobCount": 5, "minRadius": 40, "maxRadius": 120, "speed": 0.5, "orbitRadius": 150, "blurAmount": 12, "threshold": 180, "mouseInfluence": 0.3, "decaySpeed": 0.95, "useGradientColors": true, "colors": ["#40204c", "#a3225c", "#e24926"], "backgroundColor": "#152a8e"
+        "blobCount": 5, "minRadius": 40, "maxRadius": 120, "speed": 0.5, "orbitRadius": 150, "blurAmount": 12, "threshold": 180, "mouseInfluence": 0.3, "decaySpeed": 0.95, "useGradientColors": true, "colors": ["#2B0F1E", "#4A1A2F", "#C9A24B"], "backgroundColor": "#14080E"
       },
       "fluidConfig": {
-        "useGradientColors": true, "backgroundColor": "#0a1a3a", "colors": ["#ff8e72", "#f4b942", "#14b8a6", "#ff6b6b"], "speed": 1, "intensity": 1, "blurAmount": 20
+        "useGradientColors": true, "backgroundColor": "#14080E", "colors": ["#4A1A2F", "#C97B7B", "#C9A24B", "#2B0F1E"], "speed": 0.7, "intensity": 1.5, "blurAmount": 30
       },
       "wavesConfig": {
-        "useGradientColors": true, "colors": ["#06b6d4", "#a855f7", "#ec4899", "#3b82f6"], "waveHeight": 0.05, "waveFrequency": 2, "rotation": 0, "speed": 0.5, "blur": 40, "layers": 5, "phaseOffset": 0
+        "useGradientColors": true, "colors": ["#14080E", "#4A1A2F", "#C9A24B", "#C97B7B"], "waveHeight": 0.06, "waveFrequency": 2, "rotation": 0, "speed": 0.35, "blur": 48, "layers": 5, "phaseOffset": 0
       },
       "ribbonConfig": {
-        "useGradientColors": true, "backgroundColor": "#0a1a3a", "ribbonCount": 5, "speed": 0.5, "amplitude": 1.0, "spread": 0.5, "rotation": -30, "thickness": 1, "taper": -0.3, "noise": 0.5, "opacity": 0.85
+        "useGradientColors": true, "backgroundColor": "#2B0F1E", "ribbonCount": 4, "speed": 0.35, "amplitude": 1.0, "spread": 0.5, "rotation": -24, "thickness": 1.2, "taper": -0.25, "noise": 0.3, "opacity": 0.9
       },
       "dandelionConfig": {
-        "useGradientColors": true, "backgroundColor": "#e8f4fc", "lineCount": 120, "radiusMin": 0.1, "radiusMax": 0.8, "speed": 0.3, "thickness": 1.5, "dotSize": 3, "spread": 0.3, "centerY": 0.85
+        "useGradientColors": true, "backgroundColor": "#F5EEDC", "lineCount": 120, "radiusMin": 0.1, "radiusMax": 0.8, "speed": 0.3, "thickness": 1.5, "dotSize": 3, "spread": 0.3, "centerY": 0.85
       },
       "particleRingConfig": {
-        "useGradientColors": true, "backgroundColor": "#fef6f9", "particleCount": 800, "ringRadius": 0.35, "ringWidth": 0.15, "speed": 0.5, "particleSize": 3, "dispersion": 0.3, "rotationSpeed": 0.2, "tiltX": 0, "tiltZ": 0
+        "useGradientColors": true, "backgroundColor": "#14080E", "particleCount": 800, "ringRadius": 0.35, "ringWidth": 0.15, "speed": 0.5, "particleSize": 3, "dispersion": 0.3, "rotationSpeed": 0.2, "tiltX": 0, "tiltZ": 0
       },
       "shapeTrailConfig": {
-        "useGradientColors": true, "backgroundColor": "#f0f0f0", "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1, "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4, "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
+        "useGradientColors": true, "backgroundColor": "#2B0F1E", "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1, "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4, "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
       },
       "tessellationConfig": {
-        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60, "size": 24, "opacity": 0.15, "rotation": 0, "color": "#ffffff", "mouseRotationInfluence": 0.5
+        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60, "size": 24, "opacity": 0.15, "rotation": 0, "color": "#C9A24B", "mouseRotationInfluence": 0.5
       },
       "effectsConfig": {
-        "blur": 0, "texture": "noise", "textureSize": 24, "textureOpacity": 0.18, "textureBlendMode": "overlay", "colorMap": "none", "vignetteIntensity": 0.35, "saturation": 110, "contrast": 105, "brightness": 100,
+        "blur": 0, "texture": "grain", "textureSize": 26, "textureOpacity": 0.16, "textureBlendMode": "overlay", "colorMap": "none", "vignetteIntensity": 0.42, "saturation": 104, "contrast": 106, "brightness": 95,
         "flutedGlass": { "enabled": false, "segments": 80, "rotation": 0, "motionValue": 0.5, "motionSpeed": 0.5, "overlayOpacity": 0, "distortionStrength": 0.02, "waveFrequency": 1 }
       },
       "textSections": [
-        { "id": 1, "text": "Compliance Cocktail Club", "size": 88, "weight": 500, "spacing": -0.04, "font": "serif", "italic": true },
-        { "id": 2, "text": "CONSENSUS MIAMI · MAY 4", "size": 18, "weight": 600, "spacing": 0.24, "font": "mono", "italic": false }
+        { "id": 1, "text": "soulful shruti.", "size": 96, "weight": 400, "spacing": -0.04, "font": "serif", "italic": true },
+        { "id": 2, "text": "AN INDIAN R&B ARTIST · LIVE", "size": 16, "weight": 500, "spacing": 0.32, "font": "sans-serif", "italic": false }
       ],
-      "textGap": 18,
-      "textConfig": { "enabled": true, "color": "#fef6f9", "opacity": 1 },
+      "textGap": 22,
+      "textConfig": { "enabled": true, "color": "#F5EEDC", "opacity": 1 },
       "selectedProjectIds": []
     }
   },
   {
-    "title": "Biscayne Bay Fluid – Teal Cocktail Swirl Header",
-    "short_description": "Liquid teal and coral swirl evoking Miami waterfront cocktail hour",
-    "long_description": "A flowing fluid composition in Biscayne teal, warm coral, and gold accents. Designed for upscale crypto and legal networking events that want a coastal, sophisticated tone.",
+    "title": "Velvet Plum Soul – Aatma EP Cover",
+    "short_description": "Slow-morphing plum, mulberry and gold blobs over aubergine ink with film grain and glass",
+    "long_description": "A premium, organic liquid composition for album art — deep plum and mulberry forms drift through warm antique gold, wrapped in film grain and a whisper of fluted glass. Sultry, velvet, analog: the visual mood of the Aatma EP.",
     "scene_data": {
-      "backgroundType": "fluid",
+      "backgroundType": "liquid",
       "gradientConfig": {
-        "colors": ["#0f766e", "#14b8a6", "#f4b942", "#ff8e72"],
+        "colors": ["#4A1A2F", "#C9A24B", "#2B0F1E", "#14080E"],
         "numColors": 4,
         "type": "radial",
-        "startPos": { "x": 30, "y": 40 },
-        "endPos": { "x": 90, "y": 110 },
-        "colorStops": [0, 35, 70, 100],
+        "startPos": { "x": 30, "y": 35 },
+        "endPos": { "x": 95, "y": 110 },
+        "colorStops": [0, 35, 68, 100],
         "waveIntensity": 0.35,
-        "mouseInfluence": 0.45,
+        "mouseInfluence": 0.4,
         "decaySpeed": 0.95,
-        "wave1Speed": 0.28,
+        "wave1Speed": 0.2,
         "wave1Direction": 1,
-        "wave2Speed": 0.16,
+        "wave2Speed": 0.14,
         "wave2Direction": -1
       },
-      "fluidConfig": {
+      "blobConfig": {
+        "blobCount": 5,
+        "minRadius": 50,
+        "maxRadius": 150,
+        "speed": 0.4,
+        "orbitRadius": 160,
+        "blurAmount": 16,
+        "threshold": 180,
+        "mouseInfluence": 0.3,
+        "decaySpeed": 0.96,
         "useGradientColors": true,
-        "backgroundColor": "#05282a",
-        "colors": ["#14b8a6", "#0ea5a4", "#f4b942", "#ff8e72"],
-        "speed": 0.85,
-        "intensity": 1.6,
-        "blurAmount": 32
+        "colors": ["#2B0F1E", "#4A1A2F", "#C9A24B"],
+        "backgroundColor": "#14080E"
       },
       "auroraConfig": {
-        "minWidth": 10, "maxWidth": 30, "minHeight": 200, "maxHeight": 600, "minTTL": 100, "maxTTL": 300, "blurAmount": 13, "hueStart": 120, "hueEnd": 180, "backgroundColor": "#000000", "lineCount": 0, "decaySpeed": 0.95, "useGradientColors": true
+        "minWidth": 30, "maxWidth": 110, "minHeight": 420, "maxHeight": 950, "minTTL": 180, "maxTTL": 340, "blurAmount": 17, "hueStart": 35, "hueEnd": 345, "backgroundColor": "#14080E", "lineCount": 0, "decaySpeed": 0.96, "useGradientColors": true
       },
-      "blobConfig": {
-        "blobCount": 5, "minRadius": 40, "maxRadius": 120, "speed": 0.5, "orbitRadius": 150, "blurAmount": 12, "threshold": 180, "mouseInfluence": 0.3, "decaySpeed": 0.95, "useGradientColors": true, "colors": ["#40204c", "#a3225c", "#e24926"], "backgroundColor": "#152a8e"
+      "fluidConfig": {
+        "useGradientColors": true, "backgroundColor": "#14080E", "colors": ["#4A1A2F", "#C97B7B", "#C9A24B", "#2B0F1E"], "speed": 0.7, "intensity": 1.5, "blurAmount": 30
       },
       "wavesConfig": {
-        "useGradientColors": true, "colors": ["#06b6d4", "#a855f7", "#ec4899", "#3b82f6"], "waveHeight": 0.05, "waveFrequency": 2, "rotation": 0, "speed": 0.5, "blur": 40, "layers": 5, "phaseOffset": 0
+        "useGradientColors": true, "colors": ["#14080E", "#4A1A2F", "#C9A24B", "#C97B7B"], "waveHeight": 0.06, "waveFrequency": 2, "rotation": 0, "speed": 0.35, "blur": 48, "layers": 5, "phaseOffset": 0
       },
       "ribbonConfig": {
-        "useGradientColors": true, "backgroundColor": "#ffffff", "ribbonCount": 5, "speed": 0.5, "amplitude": 1.0, "spread": 0.5, "rotation": -30, "thickness": 1, "taper": -0.3, "noise": 0.5, "opacity": 0.85
+        "useGradientColors": true, "backgroundColor": "#2B0F1E", "ribbonCount": 4, "speed": 0.35, "amplitude": 1.0, "spread": 0.5, "rotation": -24, "thickness": 1.2, "taper": -0.25, "noise": 0.3, "opacity": 0.9
       },
       "dandelionConfig": {
-        "useGradientColors": true, "backgroundColor": "#e8f4fc", "lineCount": 120, "radiusMin": 0.1, "radiusMax": 0.8, "speed": 0.3, "thickness": 1.5, "dotSize": 3, "spread": 0.3, "centerY": 0.85
+        "useGradientColors": true, "backgroundColor": "#F5EEDC", "lineCount": 120, "radiusMin": 0.1, "radiusMax": 0.8, "speed": 0.3, "thickness": 1.5, "dotSize": 3, "spread": 0.3, "centerY": 0.85
       },
       "particleRingConfig": {
-        "useGradientColors": true, "backgroundColor": "#fef6f9", "particleCount": 800, "ringRadius": 0.35, "ringWidth": 0.15, "speed": 0.5, "particleSize": 3, "dispersion": 0.3, "rotationSpeed": 0.2, "tiltX": 0, "tiltZ": 0
+        "useGradientColors": true, "backgroundColor": "#14080E", "particleCount": 800, "ringRadius": 0.35, "ringWidth": 0.15, "speed": 0.5, "particleSize": 3, "dispersion": 0.3, "rotationSpeed": 0.2, "tiltX": 0, "tiltZ": 0
       },
       "shapeTrailConfig": {
-        "useGradientColors": true, "backgroundColor": "#f0f0f0", "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1, "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4, "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
+        "useGradientColors": true, "backgroundColor": "#2B0F1E", "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1, "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4, "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
       },
       "tessellationConfig": {
-        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60, "size": 24, "opacity": 0.15, "rotation": 0, "color": "#ffffff", "mouseRotationInfluence": 0.5
+        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60, "size": 24, "opacity": 0.15, "rotation": 0, "color": "#C9A24B", "mouseRotationInfluence": 0.5
       },
       "effectsConfig": {
-        "blur": 6, "texture": "grid", "textureSize": 32, "textureOpacity": 0.08, "textureBlendMode": "overlay", "colorMap": "none", "vignetteIntensity": 0.4, "saturation": 115, "contrast": 108, "brightness": 100,
-        "flutedGlass": { "enabled": true, "segments": 90, "rotation": 0, "motionValue": 0.35, "motionSpeed": 0.3, "overlayOpacity": 8, "distortionStrength": 0.015, "waveFrequency": 1 }
+        "blur": 6, "texture": "grain", "textureSize": 30, "textureOpacity": 0.18, "textureBlendMode": "overlay", "colorMap": "none", "vignetteIntensity": 0.44, "saturation": 108, "contrast": 106, "brightness": 98,
+        "flutedGlass": { "enabled": true, "segments": 88, "rotation": 78, "motionValue": 0.3, "motionSpeed": 0.4, "overlayOpacity": 10, "distortionStrength": 0.02, "waveFrequency": 1 }
       },
       "textSections": [
-        { "id": 1, "text": "Stablecoin Frameworks", "size": 74, "weight": 700, "spacing": -0.03, "font": "sans-serif", "italic": false },
-        { "id": 2, "text": "MIAMI · MAY 4 · 2026", "size": 17, "weight": 500, "spacing": 0.28, "font": "mono", "italic": false }
+        { "id": 1, "text": "Aatma.", "size": 92, "weight": 400, "spacing": -0.035, "font": "serif", "italic": true },
+        { "id": 2, "text": "A SOUL · IN FIVE MOVEMENTS", "size": 15, "weight": 500, "spacing": 0.3, "font": "sans-serif", "italic": false }
       ],
       "textGap": 20,
-      "textConfig": { "enabled": true, "color": "#fef6f9", "opacity": 0.95 },
+      "textConfig": { "enabled": true, "color": "#E8C97A", "opacity": 1 },
       "selectedProjectIds": []
     }
   },
   {
-    "title": "Gold Ribbon Nightlife – Luxe Miami Crypto Header",
-    "short_description": "Flowing gold and coral ribbons across a midnight blue lounge backdrop",
-    "long_description": "Sleek metallic ribbons of amber gold and sunset coral curl across a deep midnight blue canvas. Calibrated for high-value, invitation-only crypto compliance receptions.",
+    "title": "Antique Gold Ribbon Nights – Soulful Nights Tour",
+    "short_description": "Flowing antique gold and dusty rose ribbons curling across a deep plum lounge backdrop",
+    "long_description": "Elegant metallic ribbons of antique gold and rose drift over deep aubergine plum — composed, lowercase, intimate. Calibrated for the Soulful Nights live format: candles, a six-piece band, three hundred seats.",
     "scene_data": {
       "backgroundType": "ribbon",
       "gradientConfig": {
-        "colors": ["#f4b942", "#d4a017", "#ff8e72", "#0a1a3a"],
+        "colors": ["#E8C97A", "#C9A24B", "#C97B7B", "#2B0F1E"],
         "numColors": 4,
         "type": "linear",
         "startPos": { "x": 10, "y": 10 },
         "endPos": { "x": 95, "y": 100 },
-        "colorStops": [0, 30, 60, 100],
+        "colorStops": [0, 32, 64, 100],
         "waveIntensity": 0.3,
         "mouseInfluence": 0.55,
         "decaySpeed": 0.95,
-        "wave1Speed": 0.22,
+        "wave1Speed": 0.2,
         "wave1Direction": 1,
         "wave2Speed": 0.14,
         "wave2Direction": -1
       },
       "ribbonConfig": {
         "useGradientColors": true,
-        "backgroundColor": "#0a1a3a",
+        "backgroundColor": "#2B0F1E",
         "ribbonCount": 4,
-        "speed": 0.35,
+        "speed": 0.32,
         "amplitude": 1.1,
         "spread": 0.55,
-        "rotation": -22,
+        "rotation": -24,
         "thickness": 1.3,
         "taper": -0.25,
-        "noise": 0.35,
-        "opacity": 0.9
+        "noise": 0.3,
+        "opacity": 0.92
       },
       "auroraConfig": {
-        "minWidth": 10, "maxWidth": 30, "minHeight": 200, "maxHeight": 600, "minTTL": 100, "maxTTL": 300, "blurAmount": 13, "hueStart": 120, "hueEnd": 180, "backgroundColor": "#000000", "lineCount": 0, "decaySpeed": 0.95, "useGradientColors": true
+        "minWidth": 30, "maxWidth": 110, "minHeight": 420, "maxHeight": 950, "minTTL": 180, "maxTTL": 340, "blurAmount": 17, "hueStart": 35, "hueEnd": 345, "backgroundColor": "#14080E", "lineCount": 0, "decaySpeed": 0.96, "useGradientColors": true
       },
       "blobConfig": {
-        "blobCount": 5, "minRadius": 40, "maxRadius": 120, "speed": 0.5, "orbitRadius": 150, "blurAmount": 12, "threshold": 180, "mouseInfluence": 0.3, "decaySpeed": 0.95, "useGradientColors": true, "colors": ["#40204c", "#a3225c", "#e24926"], "backgroundColor": "#152a8e"
+        "blobCount": 5, "minRadius": 40, "maxRadius": 120, "speed": 0.5, "orbitRadius": 150, "blurAmount": 12, "threshold": 180, "mouseInfluence": 0.3, "decaySpeed": 0.95, "useGradientColors": true, "colors": ["#2B0F1E", "#4A1A2F", "#C9A24B"], "backgroundColor": "#14080E"
       },
       "fluidConfig": {
-        "useGradientColors": true, "backgroundColor": "#1C89FF", "colors": ["#71ECFF", "#39F58A", "#71ECFF", "#F0CBA8"], "speed": 1, "intensity": 1, "blurAmount": 20
+        "useGradientColors": true, "backgroundColor": "#14080E", "colors": ["#4A1A2F", "#C97B7B", "#C9A24B", "#2B0F1E"], "speed": 0.7, "intensity": 1.5, "blurAmount": 30
       },
       "wavesConfig": {
-        "useGradientColors": true, "colors": ["#06b6d4", "#a855f7", "#ec4899", "#3b82f6"], "waveHeight": 0.05, "waveFrequency": 2, "rotation": 0, "speed": 0.5, "blur": 40, "layers": 5, "phaseOffset": 0
+        "useGradientColors": true, "colors": ["#14080E", "#4A1A2F", "#C9A24B", "#C97B7B"], "waveHeight": 0.06, "waveFrequency": 2, "rotation": 0, "speed": 0.35, "blur": 48, "layers": 5, "phaseOffset": 0
       },
       "dandelionConfig": {
-        "useGradientColors": true, "backgroundColor": "#e8f4fc", "lineCount": 120, "radiusMin": 0.1, "radiusMax": 0.8, "speed": 0.3, "thickness": 1.5, "dotSize": 3, "spread": 0.3, "centerY": 0.85
+        "useGradientColors": true, "backgroundColor": "#F5EEDC", "lineCount": 120, "radiusMin": 0.1, "radiusMax": 0.8, "speed": 0.3, "thickness": 1.5, "dotSize": 3, "spread": 0.3, "centerY": 0.85
       },
       "particleRingConfig": {
-        "useGradientColors": true, "backgroundColor": "#fef6f9", "particleCount": 800, "ringRadius": 0.35, "ringWidth": 0.15, "speed": 0.5, "particleSize": 3, "dispersion": 0.3, "rotationSpeed": 0.2, "tiltX": 0, "tiltZ": 0
+        "useGradientColors": true, "backgroundColor": "#14080E", "particleCount": 800, "ringRadius": 0.35, "ringWidth": 0.15, "speed": 0.5, "particleSize": 3, "dispersion": 0.3, "rotationSpeed": 0.2, "tiltX": 0, "tiltZ": 0
       },
       "shapeTrailConfig": {
-        "useGradientColors": true, "backgroundColor": "#f0f0f0", "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1, "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4, "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
+        "useGradientColors": true, "backgroundColor": "#2B0F1E", "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1, "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4, "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
       },
       "tessellationConfig": {
-        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60, "size": 24, "opacity": 0.15, "rotation": 0, "color": "#ffffff", "mouseRotationInfluence": 0.5
+        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60, "size": 24, "opacity": 0.15, "rotation": 0, "color": "#C9A24B", "mouseRotationInfluence": 0.5
       },
       "effectsConfig": {
-        "blur": 2, "texture": "noise", "textureSize": 20, "textureOpacity": 0.12, "textureBlendMode": "overlay", "colorMap": "none", "vignetteIntensity": 0.45, "saturation": 108, "contrast": 110, "brightness": 98,
+        "blur": 2, "texture": "grain", "textureSize": 22, "textureOpacity": 0.12, "textureBlendMode": "overlay", "colorMap": "none", "vignetteIntensity": 0.4, "saturation": 106, "contrast": 108, "brightness": 97,
         "flutedGlass": { "enabled": false, "segments": 80, "rotation": 0, "motionValue": 0.5, "motionSpeed": 0.5, "overlayOpacity": 0, "distortionStrength": 0.02, "waveFrequency": 1 }
       },
       "textSections": [
-        { "id": 1, "text": "The Compliance Cocktail Club", "size": 72, "weight": 400, "spacing": -0.035, "font": "serif", "italic": true },
-        { "id": 2, "text": "DUANE MORRIS × MERKLE SCIENCE", "size": 15, "weight": 700, "spacing": 0.32, "font": "mono", "italic": false }
+        { "id": 1, "text": "Soulful Nights", "size": 80, "weight": 400, "spacing": -0.03, "font": "serif", "italic": true },
+        { "id": 2, "text": "MUMBAI · TWO NIGHTS · SIX HUNDRED SEATS", "size": 14, "weight": 600, "spacing": 0.32, "font": "sans-serif", "italic": false }
       ],
       "textGap": 22,
-      "textConfig": { "enabled": true, "color": "#f4e9c1", "opacity": 1 },
+      "textConfig": { "enabled": true, "color": "#F5EEDC", "opacity": 1 },
       "selectedProjectIds": []
     }
   },
   {
-    "title": "Coastal Waves Twilight – Sophisticated Crypto Event Background",
-    "short_description": "Layered twilight waves in teal, indigo, and warm amber for professional events",
-    "long_description": "Slow, layered waves wash across the canvas in deep teal, indigo, and amber. An atmospheric, coastal backdrop calibrated for regulatory-themed receptions in Miami.",
+    "title": "Monsoon Velvet Smoke – Roohani Single",
+    "short_description": "Liquid mulberry, rose and gold smoke curling slowly through aubergine for a bilingual slow-burn ballad",
+    "long_description": "A warm-brass fluid that moves like the last half-hour of a long evening — mulberry and dusty rose smoke threaded with antique gold over near-black plum. The visual key of Roohani: bilingual, late-night, a little luminous.",
+    "scene_data": {
+      "backgroundType": "fluid",
+      "gradientConfig": {
+        "colors": ["#4A1A2F", "#C97B7B", "#C9A24B", "#14080E"],
+        "numColors": 4,
+        "type": "radial",
+        "startPos": { "x": 30, "y": 40 },
+        "endPos": { "x": 90, "y": 110 },
+        "colorStops": [0, 35, 68, 100],
+        "waveIntensity": 0.35,
+        "mouseInfluence": 0.45,
+        "decaySpeed": 0.95,
+        "wave1Speed": 0.24,
+        "wave1Direction": 1,
+        "wave2Speed": 0.15,
+        "wave2Direction": -1
+      },
+      "fluidConfig": {
+        "useGradientColors": true,
+        "backgroundColor": "#14080E",
+        "colors": ["#4A1A2F", "#C97B7B", "#C9A24B", "#2B0F1E"],
+        "speed": 0.7,
+        "intensity": 1.5,
+        "blurAmount": 32
+      },
+      "auroraConfig": {
+        "minWidth": 30, "maxWidth": 110, "minHeight": 420, "maxHeight": 950, "minTTL": 180, "maxTTL": 340, "blurAmount": 17, "hueStart": 35, "hueEnd": 345, "backgroundColor": "#14080E", "lineCount": 0, "decaySpeed": 0.96, "useGradientColors": true
+      },
+      "blobConfig": {
+        "blobCount": 5, "minRadius": 40, "maxRadius": 120, "speed": 0.5, "orbitRadius": 150, "blurAmount": 12, "threshold": 180, "mouseInfluence": 0.3, "decaySpeed": 0.95, "useGradientColors": true, "colors": ["#2B0F1E", "#4A1A2F", "#C9A24B"], "backgroundColor": "#14080E"
+      },
+      "wavesConfig": {
+        "useGradientColors": true, "colors": ["#14080E", "#4A1A2F", "#C9A24B", "#C97B7B"], "waveHeight": 0.06, "waveFrequency": 2, "rotation": 0, "speed": 0.35, "blur": 48, "layers": 5, "phaseOffset": 0
+      },
+      "ribbonConfig": {
+        "useGradientColors": true, "backgroundColor": "#2B0F1E", "ribbonCount": 4, "speed": 0.35, "amplitude": 1.0, "spread": 0.5, "rotation": -24, "thickness": 1.2, "taper": -0.25, "noise": 0.3, "opacity": 0.9
+      },
+      "dandelionConfig": {
+        "useGradientColors": true, "backgroundColor": "#F5EEDC", "lineCount": 120, "radiusMin": 0.1, "radiusMax": 0.8, "speed": 0.3, "thickness": 1.5, "dotSize": 3, "spread": 0.3, "centerY": 0.85
+      },
+      "particleRingConfig": {
+        "useGradientColors": true, "backgroundColor": "#14080E", "particleCount": 800, "ringRadius": 0.35, "ringWidth": 0.15, "speed": 0.5, "particleSize": 3, "dispersion": 0.3, "rotationSpeed": 0.2, "tiltX": 0, "tiltZ": 0
+      },
+      "shapeTrailConfig": {
+        "useGradientColors": true, "backgroundColor": "#2B0F1E", "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1, "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4, "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
+      },
+      "tessellationConfig": {
+        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60, "size": 24, "opacity": 0.15, "rotation": 0, "color": "#C9A24B", "mouseRotationInfluence": 0.5
+      },
+      "effectsConfig": {
+        "blur": 5, "texture": "grain", "textureSize": 28, "textureOpacity": 0.14, "textureBlendMode": "overlay", "colorMap": "none", "vignetteIntensity": 0.4, "saturation": 110, "contrast": 106, "brightness": 98,
+        "flutedGlass": { "enabled": true, "segments": 90, "rotation": 0, "motionValue": 0.3, "motionSpeed": 0.3, "overlayOpacity": 8, "distortionStrength": 0.015, "waveFrequency": 1 }
+      },
+      "textSections": [
+        { "id": 1, "text": "Roohani", "size": 88, "weight": 400, "spacing": -0.035, "font": "serif", "italic": true },
+        { "id": 2, "text": "A BILINGUAL SLOW-BURN · 2025", "size": 15, "weight": 500, "spacing": 0.3, "font": "sans-serif", "italic": false }
+      ],
+      "textGap": 20,
+      "textConfig": { "enabled": true, "color": "#F5EEDC", "opacity": 0.96 },
+      "selectedProjectIds": []
+    }
+  },
+  {
+    "title": "Candle-Lit Brass Waves – One Voice",
+    "short_description": "Slow layered waves rising from aubergine through mulberry into antique gold and rose",
+    "long_description": "Unhurried, layered waves wash from near-black aubergine up into warm brass gold and a flush of dusty rose. A deep, cinematic vignette holds the room. Built for the held breath at the end of a line — when the room waits.",
     "scene_data": {
       "backgroundType": "waves",
       "gradientConfig": {
-        "colors": ["#0f172a", "#0f766e", "#d4a017", "#ff8e72"],
+        "colors": ["#14080E", "#4A1A2F", "#C9A24B", "#C97B7B"],
         "numColors": 4,
         "type": "linear",
         "startPos": { "x": 0, "y": 0 },
@@ -227,125 +299,54 @@
         "decaySpeed": 0.95,
         "wave1Speed": 0.2,
         "wave1Direction": 1,
-        "wave2Speed": 0.15,
+        "wave2Speed": 0.14,
         "wave2Direction": -1
       },
       "wavesConfig": {
         "useGradientColors": true,
-        "colors": ["#0f172a", "#0f766e", "#14b8a6", "#d4a017"],
-        "waveHeight": 0.08,
-        "waveFrequency": 2.4,
-        "rotation": -6,
-        "speed": 0.35,
-        "blur": 55,
-        "layers": 7,
+        "colors": ["#14080E", "#4A1A2F", "#C9A24B", "#C97B7B"],
+        "waveHeight": 0.07,
+        "waveFrequency": 2.2,
+        "rotation": -5,
+        "speed": 0.3,
+        "blur": 52,
+        "layers": 6,
         "phaseOffset": 0.4
       },
       "auroraConfig": {
-        "minWidth": 10, "maxWidth": 30, "minHeight": 200, "maxHeight": 600, "minTTL": 100, "maxTTL": 300, "blurAmount": 13, "hueStart": 120, "hueEnd": 180, "backgroundColor": "#000000", "lineCount": 0, "decaySpeed": 0.95, "useGradientColors": true
+        "minWidth": 30, "maxWidth": 110, "minHeight": 420, "maxHeight": 950, "minTTL": 180, "maxTTL": 340, "blurAmount": 17, "hueStart": 35, "hueEnd": 345, "backgroundColor": "#14080E", "lineCount": 0, "decaySpeed": 0.96, "useGradientColors": true
       },
       "blobConfig": {
-        "blobCount": 5, "minRadius": 40, "maxRadius": 120, "speed": 0.5, "orbitRadius": 150, "blurAmount": 12, "threshold": 180, "mouseInfluence": 0.3, "decaySpeed": 0.95, "useGradientColors": true, "colors": ["#40204c", "#a3225c", "#e24926"], "backgroundColor": "#152a8e"
+        "blobCount": 5, "minRadius": 40, "maxRadius": 120, "speed": 0.5, "orbitRadius": 150, "blurAmount": 12, "threshold": 180, "mouseInfluence": 0.3, "decaySpeed": 0.95, "useGradientColors": true, "colors": ["#2B0F1E", "#4A1A2F", "#C9A24B"], "backgroundColor": "#14080E"
       },
       "fluidConfig": {
-        "useGradientColors": true, "backgroundColor": "#1C89FF", "colors": ["#71ECFF", "#39F58A", "#71ECFF", "#F0CBA8"], "speed": 1, "intensity": 1, "blurAmount": 20
+        "useGradientColors": true, "backgroundColor": "#14080E", "colors": ["#4A1A2F", "#C97B7B", "#C9A24B", "#2B0F1E"], "speed": 0.7, "intensity": 1.5, "blurAmount": 30
       },
       "ribbonConfig": {
-        "useGradientColors": true, "backgroundColor": "#ffffff", "ribbonCount": 5, "speed": 0.5, "amplitude": 1.0, "spread": 0.5, "rotation": -30, "thickness": 1, "taper": -0.3, "noise": 0.5, "opacity": 0.85
+        "useGradientColors": true, "backgroundColor": "#2B0F1E", "ribbonCount": 4, "speed": 0.35, "amplitude": 1.0, "spread": 0.5, "rotation": -24, "thickness": 1.2, "taper": -0.25, "noise": 0.3, "opacity": 0.9
       },
       "dandelionConfig": {
-        "useGradientColors": true, "backgroundColor": "#e8f4fc", "lineCount": 120, "radiusMin": 0.1, "radiusMax": 0.8, "speed": 0.3, "thickness": 1.5, "dotSize": 3, "spread": 0.3, "centerY": 0.85
+        "useGradientColors": true, "backgroundColor": "#F5EEDC", "lineCount": 120, "radiusMin": 0.1, "radiusMax": 0.8, "speed": 0.3, "thickness": 1.5, "dotSize": 3, "spread": 0.3, "centerY": 0.85
       },
       "particleRingConfig": {
-        "useGradientColors": true, "backgroundColor": "#fef6f9", "particleCount": 800, "ringRadius": 0.35, "ringWidth": 0.15, "speed": 0.5, "particleSize": 3, "dispersion": 0.3, "rotationSpeed": 0.2, "tiltX": 0, "tiltZ": 0
+        "useGradientColors": true, "backgroundColor": "#14080E", "particleCount": 800, "ringRadius": 0.35, "ringWidth": 0.15, "speed": 0.5, "particleSize": 3, "dispersion": 0.3, "rotationSpeed": 0.2, "tiltX": 0, "tiltZ": 0
       },
       "shapeTrailConfig": {
-        "useGradientColors": true, "backgroundColor": "#f0f0f0", "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1, "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4, "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
+        "useGradientColors": true, "backgroundColor": "#2B0F1E", "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1, "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4, "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
       },
       "tessellationConfig": {
-        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60, "size": 24, "opacity": 0.15, "rotation": 0, "color": "#ffffff", "mouseRotationInfluence": 0.5
+        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60, "size": 24, "opacity": 0.15, "rotation": 0, "color": "#C9A24B", "mouseRotationInfluence": 0.5
       },
       "effectsConfig": {
-        "blur": 0, "texture": "lines", "textureSize": 40, "textureOpacity": 0.06, "textureBlendMode": "overlay", "colorMap": "none", "vignetteIntensity": 0.5, "saturation": 105, "contrast": 104, "brightness": 98,
+        "blur": 0, "texture": "grain", "textureSize": 30, "textureOpacity": 0.12, "textureBlendMode": "overlay", "colorMap": "none", "vignetteIntensity": 0.5, "saturation": 104, "contrast": 105, "brightness": 95,
         "flutedGlass": { "enabled": false, "segments": 80, "rotation": 0, "motionValue": 0.5, "motionSpeed": 0.5, "overlayOpacity": 0, "distortionStrength": 0.02, "waveFrequency": 1 }
       },
       "textSections": [
-        { "id": 1, "text": "Regulated, Together.", "size": 84, "weight": 600, "spacing": -0.04, "font": "serif", "italic": false },
-        { "id": 2, "text": "CACTUS CLUB CAFE · BISCAYNE BLVD", "size": 14, "weight": 500, "spacing": 0.3, "font": "mono", "italic": false }
-      ],
-      "textGap": 20,
-      "textConfig": { "enabled": true, "color": "#f4e9c1", "opacity": 0.95 },
-      "selectedProjectIds": []
-    }
-  },
-  {
-    "title": "City Lights Particle Ring – Miami Skyline Network Header",
-    "short_description": "Glowing coral and gold particle ring over midnight blue skyline backdrop",
-    "long_description": "A shimmering ring of particles in amber, coral, and teal rotates over a deep navy void—suggestive of Miami's nightlife skyline and the decentralized networks the event explores.",
-    "scene_data": {
-      "backgroundType": "particleRing",
-      "gradientConfig": {
-        "colors": ["#ff6b6b", "#f4b942", "#14b8a6", "#0a1a3a"],
-        "numColors": 4,
-        "type": "conic",
-        "startPos": { "x": 50, "y": 50 },
-        "endPos": { "x": 100, "y": 100 },
-        "colorStops": [0, 30, 65, 100],
-        "waveIntensity": 0.3,
-        "mouseInfluence": 0.6,
-        "decaySpeed": 0.95,
-        "wave1Speed": 0.18,
-        "wave1Direction": 1,
-        "wave2Speed": 0.12,
-        "wave2Direction": -1
-      },
-      "particleRingConfig": {
-        "useGradientColors": true,
-        "backgroundColor": "#05081c",
-        "particleCount": 1100,
-        "ringRadius": 0.42,
-        "ringWidth": 0.18,
-        "speed": 0.35,
-        "particleSize": 2.2,
-        "dispersion": 0.28,
-        "rotationSpeed": 0.12,
-        "tiltX": 24,
-        "tiltZ": -8
-      },
-      "auroraConfig": {
-        "minWidth": 10, "maxWidth": 30, "minHeight": 200, "maxHeight": 600, "minTTL": 100, "maxTTL": 300, "blurAmount": 13, "hueStart": 120, "hueEnd": 180, "backgroundColor": "#000000", "lineCount": 0, "decaySpeed": 0.95, "useGradientColors": true
-      },
-      "blobConfig": {
-        "blobCount": 5, "minRadius": 40, "maxRadius": 120, "speed": 0.5, "orbitRadius": 150, "blurAmount": 12, "threshold": 180, "mouseInfluence": 0.3, "decaySpeed": 0.95, "useGradientColors": true, "colors": ["#40204c", "#a3225c", "#e24926"], "backgroundColor": "#152a8e"
-      },
-      "fluidConfig": {
-        "useGradientColors": true, "backgroundColor": "#1C89FF", "colors": ["#71ECFF", "#39F58A", "#71ECFF", "#F0CBA8"], "speed": 1, "intensity": 1, "blurAmount": 20
-      },
-      "wavesConfig": {
-        "useGradientColors": true, "colors": ["#06b6d4", "#a855f7", "#ec4899", "#3b82f6"], "waveHeight": 0.05, "waveFrequency": 2, "rotation": 0, "speed": 0.5, "blur": 40, "layers": 5, "phaseOffset": 0
-      },
-      "ribbonConfig": {
-        "useGradientColors": true, "backgroundColor": "#ffffff", "ribbonCount": 5, "speed": 0.5, "amplitude": 1.0, "spread": 0.5, "rotation": -30, "thickness": 1, "taper": -0.3, "noise": 0.5, "opacity": 0.85
-      },
-      "dandelionConfig": {
-        "useGradientColors": true, "backgroundColor": "#e8f4fc", "lineCount": 120, "radiusMin": 0.1, "radiusMax": 0.8, "speed": 0.3, "thickness": 1.5, "dotSize": 3, "spread": 0.3, "centerY": 0.85
-      },
-      "shapeTrailConfig": {
-        "useGradientColors": true, "backgroundColor": "#f0f0f0", "shape": "circle", "startScale": 1000, "endScale": 2000, "sizeCycles": 1, "gap": 30, "rotationOffset": 15, "speed": 0.3, "pathComplexity": 4, "opacity": 0.8, "blendMode": "normal", "trailCount": 3, "trailColorStops": null
-      },
-      "tessellationConfig": {
-        "enabled": false, "icon": "Star", "rowGap": 60, "colGap": 60, "size": 24, "opacity": 0.15, "rotation": 0, "color": "#ffffff", "mouseRotationInfluence": 0.5
-      },
-      "effectsConfig": {
-        "blur": 0, "texture": "dots", "textureSize": 28, "textureOpacity": 0.12, "textureBlendMode": "overlay", "colorMap": "none", "vignetteIntensity": 0.55, "saturation": 112, "contrast": 108, "brightness": 100,
-        "flutedGlass": { "enabled": false, "segments": 80, "rotation": 0, "motionValue": 0.5, "motionSpeed": 0.5, "overlayOpacity": 0, "distortionStrength": 0.02, "waveFrequency": 1 }
-      },
-      "textSections": [
-        { "id": 1, "text": "Consensus Miami 2026", "size": 78, "weight": 800, "spacing": -0.045, "font": "sans-serif", "italic": false },
-        { "id": 2, "text": "COMPLIANCE · STABLECOINS · COCKTAILS", "size": 14, "weight": 600, "spacing": 0.3, "font": "mono", "italic": false }
+        { "id": 1, "text": "One night. One voice.", "size": 76, "weight": 400, "spacing": -0.035, "font": "serif", "italic": true },
+        { "id": 2, "text": "THE ROYAL OPERA HOUSE · MUMBAI", "size": 14, "weight": 500, "spacing": 0.3, "font": "sans-serif", "italic": false }
       ],
       "textGap": 22,
-      "textConfig": { "enabled": true, "color": "#fef6f9", "opacity": 1 },
+      "textConfig": { "enabled": true, "color": "#EDE3CC", "opacity": 0.96 },
       "selectedProjectIds": []
     }
   }
