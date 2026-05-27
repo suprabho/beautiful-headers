@@ -27,7 +27,7 @@ export default async function handler(req, res) {
 
     try {
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: 'gemini-3.1-flash-lite-preview' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-3.1-flash-lite' });
 
         const prompt = `Generate 10 creative pairs of text for a visual header/hero section design tool. Each pair should have:
 - A "title": a bold, short headline (1 word, trendy, evocative or artistic)
