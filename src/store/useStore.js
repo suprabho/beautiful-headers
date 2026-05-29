@@ -647,6 +647,12 @@ const useStore = create((set, get) => ({
   // Scene management
   currentSceneId: null,
   setCurrentSceneId: (id) => set({ currentSceneId: id }),
+  // Name of the scene currently being edited (for the editor's edit-mode banner)
+  currentSceneName: null,
+  setCurrentSceneName: (name) => set({ currentSceneName: name }),
+  // Leave edit mode without changing the current visuals — the next save
+  // creates a new scene instead of overwriting the original.
+  exitSceneEdit: () => set({ currentSceneId: null, currentSceneName: null }),
 
   // Tracks whether scene data has been intentionally loaded into the store
   // (via loadSceneData). Used to prevent App.jsx from clobbering a remixed

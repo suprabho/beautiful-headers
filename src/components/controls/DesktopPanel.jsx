@@ -4,7 +4,7 @@ import {
   Palette, GridFour, Sparkle, TextT, Waveform,
   Shuffle, DotsSixVertical, Camera, Info,
   Pause, Play, FloppyDisk, Images, PaintBrushBroad, ArrowsInSimple, ArrowsOutSimple,
-  Moon, Sun,
+  Moon, Sun, PencilSimple, X,
 } from '@phosphor-icons/react'
 import { InputPanel } from './InputControls'
 import { cn } from '@/lib/utils'
@@ -61,6 +61,9 @@ export const DesktopPanel = ({
   const colorPalette = useStore((state) => state.colorPalette)
   const isPaused = useStore((state) => state.isPaused)
   const setIsPaused = useStore((state) => state.setIsPaused)
+  const currentSceneId = useStore((state) => state.currentSceneId)
+  const currentSceneName = useStore((state) => state.currentSceneName)
+  const exitSceneEdit = useStore((state) => state.exitSceneEdit)
 
   const parsedPalette = colorPalette ? parsePaletteJson(colorPalette) : null
 
@@ -125,6 +128,26 @@ export const DesktopPanel = ({
         </div>
         <div className="text-muted-foreground"><DotsSixVertical size={16} weight="bold" /></div>
       </div>
+
+      {!isCollapsed && currentSceneId && (
+        <div className="flex items-center justify-between gap-2 px-3 py-2 bg-primary/10 border-b border-primary/30 text-primary">
+          <div className="flex items-center gap-2 min-w-0">
+            <PencilSimple size={14} weight="fill" className="shrink-0" />
+            <span className="text-xs font-medium truncate">
+              Editing &ldquo;{currentSceneName}&rdquo;
+            </span>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 shrink-0 text-primary hover:bg-primary/20"
+            onClick={exitSceneEdit}
+            title="Exit edit mode (next save creates a new scene)"
+          >
+            <X size={14} weight="bold" />
+          </Button>
+        </div>
+      )}
 
       {!isCollapsed && (
         <Tabs value={activePanel} onValueChange={setActivePanel} className="flex h-full flex-col flex-1 max-h-[calc(85vh-4rem)]">

@@ -35,6 +35,7 @@ function SceneViewPage() {
   const navigate = useNavigate()
   const loadSceneData = useStore((state) => state.loadSceneData)
   const setCurrentSceneId = useStore((state) => state.setCurrentSceneId)
+  const setCurrentSceneName = useStore((state) => state.setCurrentSceneName)
   const setCurrentPage = useStore((state) => state.setCurrentPage)
   const inputEnabled = useStore((state) => state.inputEnabled)
   const audioEnabled = useStore((state) => state.audioConfig.enabled)
@@ -143,6 +144,7 @@ function SceneViewPage() {
     if (scene?.scene_data) {
       loadSceneData(scene.scene_data)
       setCurrentSceneId(scene.id)
+      setCurrentSceneName(scene.title)
       setCurrentPage('editor')
       navigate('/')
     }
@@ -152,6 +154,7 @@ function SceneViewPage() {
     if (scene?.scene_data) {
       loadSceneData(scene.scene_data)
       setCurrentSceneId(null)
+      setCurrentSceneName(null)
       setCurrentPage('editor')
       navigate('/')
     }

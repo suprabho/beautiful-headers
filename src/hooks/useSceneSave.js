@@ -11,7 +11,6 @@ export function useSceneSave(layersContainerRef) {
   const textGap = useStore((state) => state.textGap)
   const textConfig = useStore((state) => state.textConfig)
   const getSceneData = useStore((state) => state.getSceneData)
-  const currentSceneId = useStore((state) => state.currentSceneId)
 
   const [showSaveDialog, setShowSaveDialog] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
@@ -61,13 +60,18 @@ export function useSceneSave(layersContainerRef) {
     }
   }
 
-  const handleSaveScene = async () => {
+  const handleSaveScene = async ({ forceNew = false } = {}) => {
     setIsSaving(true)
     setSaveError('')
     setSaveSuccess(false)
     setIsGenerating(false)
     setSaveThumbnail(null)
     setGeneratedContent(null)
+
+    // Read the scene id at call time (not via a subscribed value) so a
+    // "Save as new" that detaches edit mode right before calling this still
+    // takes the create branch. forceNew bypasses the existing scene entirely.
+    const currentSceneId = forceNew ? null : useStore.getState().currentSceneId
 
     try {
       // Step 1: Capture thumbnail

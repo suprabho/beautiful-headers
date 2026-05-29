@@ -7,7 +7,8 @@ export const SaveSceneDialog = ({
   isSaving, saveError, saveSuccess,
   isGenerating, saveThumbnail, generatedContent,
   cmsAvailable, gradientColors,
-  onSave,
+  isEditing, sceneName,
+  onSave, onSaveAsNew,
 }) => (
   <Dialog open={open} onOpenChange={onOpenChange}>
     <DialogContent className="max-w-lg">
@@ -15,11 +16,13 @@ export const SaveSceneDialog = ({
         <DialogTitle>
           <div className="flex items-center gap-2">
             <FloppyDisk size={20} weight="duotone" />
-            Save Scene
+            {isEditing ? `Update “${sceneName}”` : 'Save Scene'}
           </div>
         </DialogTitle>
         <DialogDescription>
-          Save your current scene configuration to your library.
+          {isEditing
+            ? 'Overwrite the saved scene with your current changes, or save a copy as a new scene.'
+            : 'Save your current scene configuration to your library.'}
         </DialogDescription>
       </DialogHeader>
 
@@ -85,6 +88,10 @@ export const SaveSceneDialog = ({
             <div className="text-center py-4">
               <p className="text-sm text-destructive">{saveError}</p>
             </div>
+          ) : isEditing ? (
+            <div className="p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg text-sm text-yellow-600 dark:text-yellow-400">
+              This will overwrite the saved scene <span className="font-semibold">“{sceneName}”</span>. Choose <span className="font-semibold">Save as new</span> to keep the original and create a copy instead.
+            </div>
           ) : (
             <div className="text-center py-4 text-muted-foreground">
               Save this scene to your collection. AI will generate a title and description automatically.
@@ -97,9 +104,14 @@ export const SaveSceneDialog = ({
           <Button variant="outline" className="flex-1" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button className="flex-1" onClick={onSave} disabled={!cmsAvailable}>
+          {isEditing && (
+            <Button variant="outline" className="flex-1" onClick={onSaveAsNew} disabled={!cmsAvailable}>
+              Save as new
+            </Button>
+          )}
+          <Button className="flex-1" onClick={() => onSave()} disabled={!cmsAvailable}>
             <FloppyDisk size={16} className="mr-2" />
-            Save Scene
+            {isEditing ? 'Update scene' : 'Save Scene'}
           </Button>
         </DialogFooter>
       )}

@@ -5,7 +5,7 @@ import {
   Shuffle, Plus, Camera, Check, ArrowCounterClockwise, Info,
   CaretCircleUp, CaretCircleDown,
   Pause, Play, FloppyDisk, Images, PaintBrushBroad,
-  Moon, Sun,
+  Moon, Sun, PencilSimple, X,
 } from '@phosphor-icons/react'
 import { parsePaletteJson } from '@/lib/colorConversion'
 import { cn } from '@/lib/utils'
@@ -56,6 +56,9 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
   const setIsPaused = useStore((state) => state.setIsPaused)
   const editorThemeMode = useStore((state) => state.editorThemeMode)
   const setEditorThemeMode = useStore((state) => state.setEditorThemeMode)
+  const currentSceneId = useStore((state) => state.currentSceneId)
+  const currentSceneName = useStore((state) => state.currentSceneName)
+  const exitSceneEdit = useStore((state) => state.exitSceneEdit)
 
   const parsedPalette = colorPalette ? parsePaletteJson(colorPalette) : null
 
@@ -112,6 +115,25 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
             {editorThemeMode === 'dark' ? <Moon size={18} weight="fill" /> : <Sun size={18} weight="fill" />}
           </Button>
         </div>
+        {currentSceneId && (
+          <div className="flex items-center justify-between gap-2 px-3 py-2 bg-primary/15 border-t border-primary/30 text-primary safe-area-top">
+            <div className="flex items-center gap-2 min-w-0">
+              <PencilSimple size={14} weight="fill" className="shrink-0" />
+              <span className="text-xs font-medium truncate">
+                Editing &ldquo;{currentSceneName}&rdquo;
+              </span>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 shrink-0 text-primary hover:bg-primary/20"
+              onClick={exitSceneEdit}
+              title="Exit edit mode (next save creates a new scene)"
+            >
+              <X size={14} weight="bold" />
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Mobile Bottom Panel */}

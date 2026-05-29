@@ -20,6 +20,9 @@ const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
   const setIsPaused = useStore((state) => state.setIsPaused)
   const inputEnabled = useStore((state) => state.inputEnabled)
   const setInputEnabled = useStore((state) => state.setInputEnabled)
+  const currentSceneId = useStore((state) => state.currentSceneId)
+  const currentSceneName = useStore((state) => state.currentSceneName)
+  const exitSceneEdit = useStore((state) => state.exitSceneEdit)
   const [gradientConfig, setGradientConfig] = useThemedConfig('gradientConfig')
 
   // Mobile detection
@@ -109,7 +112,13 @@ const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
         generatedContent={generatedContent}
         cmsAvailable={cmsAvailable}
         gradientColors={gradientConfig.colors}
+        isEditing={!!currentSceneId}
+        sceneName={currentSceneName}
         onSave={handleSaveScene}
+        onSaveAsNew={() => {
+          exitSceneEdit()
+          handleSaveScene({ forceNew: true })
+        }}
       />
       <ColorPaletteDialog
         open={showPaletteDialog}
