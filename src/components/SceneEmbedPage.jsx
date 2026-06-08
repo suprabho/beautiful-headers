@@ -250,6 +250,14 @@ function SceneEmbedPage() {
   const dandelionConfig = sceneData.dandelionConfig || {}
   const particleRingConfig = sceneData.particleRingConfig || {}
 
+  // Thumbnail sources for the progressive overlay (prefer WebP, fall back to JPEG).
+  // Use `large` (1200px) — a sharp-enough preview that loads fast since it is
+  // covered by the live scene shortly after.
+  const thumb = scene.thumbnail || {}
+  const thumbSizeKey = thumb.large ? 'large' : thumb.medium ? 'medium' : thumb.small ? 'small' : thumb.full ? 'full' : null
+  const thumbJpg = thumbSizeKey ? thumb[thumbSizeKey] : null
+  const thumbWebp = thumbSizeKey ? thumb.webp?.[thumbSizeKey] : null
+
   return (
     <div className="w-full h-screen overflow-hidden" onMouseMove={effectiveMouseEnabled ? handleMouseMove : undefined}>
       {/* Full-screen scene - no UI overlay */}
