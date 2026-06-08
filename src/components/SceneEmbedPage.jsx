@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
-import { CircleNotch } from '@phosphor-icons/react'
 import { getSceneBySlug } from '@/lib/scenesApi'
 import { useDocumentMeta } from '@/hooks/useDocumentMeta'
 import { useColorMode } from '@/hooks/useColorMode'
@@ -35,9 +34,7 @@ function SceneEmbedPage() {
   const [error, setError] = useState(null)
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 })
 
-  // Progressive loading overlay: color SVG -> thumbnail -> live scene crossfade.
-  const [thumbLoaded, setThumbLoaded] = useState(false)
-  const [webpFailed, setWebpFailed] = useState(false)
+  // Progressive loading overlay: instant color SVG -> live scene crossfade.
   const [overlayVisible, setOverlayVisible] = useState(true)
   const [overlayMounted, setOverlayMounted] = useState(true)
 
@@ -152,8 +149,6 @@ function SceneEmbedPage() {
         setIsLoading(true)
         setError(null)
         // Reset the progressive overlay for the new scene
-        setThumbLoaded(false)
-        setWebpFailed(false)
         setOverlayVisible(true)
         setOverlayMounted(true)
         const sceneData = await getSceneBySlug(slug)
@@ -175,7 +170,7 @@ function SceneEmbedPage() {
   // warm-up to render their first frames, then crossfade the overlay out.
   useEffect(() => {
     if (!scene) return
-    const t = setTimeout(() => setOverlayVisible(false), 1600)
+    const t = setTimeout(() => setOverlayVisible(false), 800)
     return () => clearTimeout(t)
   }, [scene])
 
@@ -215,10 +210,14 @@ function SceneEmbedPage() {
     return filters.filter(Boolean).join(' ') || 'none'
   }
 
+  // While the scene data loads, show the instant color SVG (neutral fallback
+  // palette) instead of a spinner — it crossfades straight into the live scene.
   if (isLoading) {
     return (
-      <div className="w-full h-screen bg-background flex items-center justify-center">
-        <CircleNotch size={32} className="animate-spin text-muted-foreground" />
+      <div className="w-full h-screen overflow-hidden bg-background">
+        <ColorPlaceholder
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+        />
       </div>
     )
   }
@@ -250,14 +249,6 @@ function SceneEmbedPage() {
   const ribbonConfig = sceneData.ribbonConfig || {}
   const dandelionConfig = sceneData.dandelionConfig || {}
   const particleRingConfig = sceneData.particleRingConfig || {}
-
-  // Thumbnail sources for the progressive overlay (prefer WebP, fall back to JPEG).
-  // Use `large` (1200px) — a sharp-enough preview that loads fast since it is
-  // covered by the live scene shortly after.
-  const thumb = scene.thumbnail || {}
-  const thumbSizeKey = thumb.large ? 'large' : thumb.medium ? 'medium' : thumb.small ? 'small' : thumb.full ? 'full' : null
-  const thumbJpg = thumbSizeKey ? thumb[thumbSizeKey] : null
-  const thumbWebp = thumbSizeKey ? thumb.webp?.[thumbSizeKey] : null
 
   return (
     <div className="w-full h-screen overflow-hidden" onMouseMove={effectiveMouseEnabled ? handleMouseMove : undefined}>
@@ -320,8 +311,8 @@ function SceneEmbedPage() {
         </div>
       </div>
 
-      {/* Progressive loading overlay: instant color SVG, then the thumbnail,
-          crossfading out once the live scene has warmed up. */}
+      {/* Progressive loading overlay: instant color SVG, crossfading out once
+          the live scene has warmed up. */}
       {overlayMounted && (
         <div
           className="embed-loading-overlay"
@@ -338,31 +329,6 @@ function SceneEmbedPage() {
             colors={gradientConfig.colors}
             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
           />
-          {thumbJpg && (
-            <picture>
-              {/* WebP first; if it fails to load at runtime, drop the source and
-                  remount the <img> so the browser loads the JPEG fallback. */}
-              {thumbWebp && !webpFailed && <source srcSet={thumbWebp} type="image/webp" />}
-              <img
-                key={thumbWebp && !webpFailed ? 'webp' : 'jpg'}
-                src={thumbJpg}
-                alt=""
-                onLoad={() => setThumbLoaded(true)}
-                onError={() => {
-                  if (thumbWebp && !webpFailed) setWebpFailed(true)
-                }}
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  opacity: thumbLoaded ? 1 : 0,
-                  transition: 'opacity 400ms ease',
-                }}
-              />
-            </picture>
-          )}
         </div>
       )}
     </div>
