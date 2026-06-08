@@ -16,8 +16,11 @@ function rewriteThumbnailUrl(url) {
 function rewriteThumbnails(thumbnailObj) {
   if (!thumbnailObj || !THUMBNAIL_CDN_URL) return thumbnailObj
   const rewritten = {}
-  for (const [size, url] of Object.entries(thumbnailObj)) {
-    rewritten[size] = rewriteThumbnailUrl(url)
+  for (const [size, value] of Object.entries(thumbnailObj)) {
+    // `webp` is a nested { small, medium, ... } object; everything else is a URL.
+    rewritten[size] = value && typeof value === 'object'
+      ? rewriteThumbnails(value)
+      : rewriteThumbnailUrl(value)
   }
   return rewritten
 }
@@ -33,9 +36,9 @@ const THUMBNAIL_SIZES = {
 }
 
 /**
- * Convert base64 to Blob for upload
+ * Convert a base64 data URL to a Blob for upload
  */
-function base64ToBlob(base64Data) {
+function base64ToBlob(base64Data, type = 'image/jpeg') {
   const base64String = base64Data.replace(/^data:image\/\w+;base64,/, '')
   const byteCharacters = atob(base64String)
   const byteNumbers = new Array(byteCharacters.length)
@@ -43,87 +46,101 @@ function base64ToBlob(base64Data) {
     byteNumbers[i] = byteCharacters.charCodeAt(i)
   }
   const byteArray = new Uint8Array(byteNumbers)
-  return new Blob([byteArray], { type: 'image/jpeg' })
+  return new Blob([byteArray], { type })
 }
 
 /**
- * Resize a base64 image to a specific width while maintaining aspect ratio
+ * Load a base64 image into an <img> element
  */
-function resizeImage(base64Data, maxWidth, quality) {
-  return new Promise((resolve) => {
+function loadImage(base64Data) {
+  return new Promise((resolve, reject) => {
     const img = document.createElement('img')
-    img.onload = () => {
-      const scale = Math.min(1, maxWidth / img.width)
-      const canvas = document.createElement('canvas')
-      canvas.width = img.width * scale
-      canvas.height = img.height * scale
-      const ctx = canvas.getContext('2d')
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-      resolve(canvas.toDataURL('image/jpeg', quality))
-    }
-    img.onerror = () => resolve(base64Data)
+    img.onload = () => resolve(img)
+    img.onerror = reject
     img.src = base64Data
   })
 }
 
 /**
- * Upload thumbnail to Supabase Storage in multiple sizes
+ * Encode a canvas to the given format and upload it; returns the public URL
+ * (with cache-buster, CDN-rewritten) or null on failure.
+ */
+async function uploadCanvas(canvas, contentType, quality, filename) {
+  const dataUrl = canvas.toDataURL(contentType, quality)
+  // Browsers that can't encode the requested format silently return a PNG.
+  if (!dataUrl.startsWith(`data:${contentType}`)) return null
+
+  const blob = base64ToBlob(dataUrl, contentType)
+  const { error } = await supabase.storage
+    .from('thumbnails')
+    .upload(filename, blob, { contentType, upsert: true })
+
+  if (error) {
+    console.error(`Error uploading ${filename}:`, error)
+    return null
+  }
+
+  const { data: { publicUrl } } = supabase.storage
+    .from('thumbnails')
+    .getPublicUrl(filename)
+
+  // Append cache-buster so recaptured thumbnails aren't served stale by CDN/browser
+  const bustUrl = `${publicUrl}?t=${Date.now()}`
+  return rewriteThumbnailUrl(bustUrl)
+}
+
+/**
+ * Upload thumbnails to Supabase Storage in multiple sizes and formats.
+ * Returns { small, medium, large, full, webp: { small, ... } } where the
+ * top-level keys are JPEG URLs (back-compat) and `webp` holds the WebP URLs.
  */
 async function uploadThumbnail(base64Data, sceneId) {
   if (!base64Data) return null
 
-  const thumbnails = {}
-  const sizes = Object.entries(THUMBNAIL_SIZES)
-
-  // Generate and upload all sizes in parallel
-  const uploadPromises = sizes.map(async ([sizeName, config]) => {
-    const resizedBase64 = await resizeImage(base64Data, config.width, config.quality)
-    const blob = base64ToBlob(resizedBase64)
-    const filename = `${sceneId}-${sizeName}.jpg`
-
-    const { error } = await supabase.storage
-      .from('thumbnails')
-      .upload(filename, blob, {
-        contentType: 'image/jpeg',
-        upsert: true,
-      })
-
-    if (error) {
-      console.error(`Error uploading ${sizeName} thumbnail:`, error)
-      return null
-    }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('thumbnails')
-      .getPublicUrl(filename)
-
-    // Append cache-buster so recaptured thumbnails aren't served stale by CDN/browser
-    const bustUrl = `${publicUrl}?t=${Date.now()}`
-    return { sizeName, publicUrl: rewriteThumbnailUrl(bustUrl) }
-  })
-
-  const results = await Promise.all(uploadPromises)
-
-  // Build thumbnails object from successful uploads
-  for (const result of results) {
-    if (result) {
-      thumbnails[result.sizeName] = result.publicUrl
-    }
-  }
-
-  // If no uploads succeeded, return null
-  if (Object.keys(thumbnails).length === 0) {
+  let img
+  try {
+    img = await loadImage(base64Data)
+  } catch {
     return null
   }
 
-  return thumbnails
+  const jpg = {}
+  const webp = {}
+  const sizes = Object.entries(THUMBNAIL_SIZES)
+
+  // Generate and upload all sizes (JPEG + WebP) in parallel
+  await Promise.all(sizes.map(async ([sizeName, config]) => {
+    const scale = Math.min(1, config.width / img.width)
+    const canvas = document.createElement('canvas')
+    canvas.width = Math.round(img.width * scale)
+    canvas.height = Math.round(img.height * scale)
+    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height)
+
+    const [jpgUrl, webpUrl] = await Promise.all([
+      uploadCanvas(canvas, 'image/jpeg', config.quality, `${sceneId}-${sizeName}.jpg`),
+      uploadCanvas(canvas, 'image/webp', config.quality, `${sceneId}-${sizeName}.webp`),
+    ])
+
+    if (jpgUrl) jpg[sizeName] = jpgUrl
+    if (webpUrl) webp[sizeName] = webpUrl
+  }))
+
+  // JPEG is the baseline; if none uploaded, treat as failure
+  if (Object.keys(jpg).length === 0) return null
+
+  const result = { ...jpg }
+  if (Object.keys(webp).length > 0) result.webp = webp
+  return result
 }
 
 /**
- * Delete all thumbnail sizes from Supabase Storage
+ * Delete all thumbnail sizes (JPEG + WebP) from Supabase Storage
  */
 async function deleteThumbnail(sceneId) {
-  const filenames = Object.keys(THUMBNAIL_SIZES).map(size => `${sceneId}-${size}.jpg`)
+  const filenames = Object.keys(THUMBNAIL_SIZES).flatMap(size => [
+    `${sceneId}-${size}.jpg`,
+    `${sceneId}-${size}.webp`,
+  ])
   await supabase.storage.from('thumbnails').remove(filenames)
 }
 

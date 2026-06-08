@@ -6,6 +6,7 @@ import { useDocumentMeta } from '@/hooks/useDocumentMeta'
 import { useColorMode } from '@/hooks/useColorMode'
 import { resolveThemedConfigs } from '@/lib/themeUtils'
 import { audioData } from '@/audio/audioData'
+import ColorPlaceholder from './ColorPlaceholder'
 import '../App.css'
 import GradientLayer from './GradientLayer'
 import SimpleGradientLayer from './SimpleGradientLayer'
@@ -33,6 +34,11 @@ function SceneEmbedPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 })
+
+  // Progressive loading overlay: color SVG -> thumbnail -> live scene crossfade.
+  const [thumbLoaded, setThumbLoaded] = useState(false)
+  const [overlayVisible, setOverlayVisible] = useState(true)
+  const [overlayMounted, setOverlayMounted] = useState(true)
 
   // Update document meta tags with scene data
   useDocumentMeta({
@@ -144,6 +150,10 @@ function SceneEmbedPage() {
       try {
         setIsLoading(true)
         setError(null)
+        // Reset the progressive overlay for the new scene
+        setThumbLoaded(false)
+        setOverlayVisible(true)
+        setOverlayMounted(true)
         const sceneData = await getSceneBySlug(slug)
         setScene(sceneData)
       } catch (err) {
@@ -158,6 +168,21 @@ function SceneEmbedPage() {
       fetchScene()
     }
   }, [slug])
+
+  // Once the scene data is in, give the live (WebGL/canvas) layers a short
+  // warm-up to render their first frames, then crossfade the overlay out.
+  useEffect(() => {
+    if (!scene) return
+    const t = setTimeout(() => setOverlayVisible(false), 1600)
+    return () => clearTimeout(t)
+  }, [scene])
+
+  // Unmount the overlay after the fade completes to free its memory.
+  useEffect(() => {
+    if (overlayVisible) return
+    const t = setTimeout(() => setOverlayMounted(false), 700)
+    return () => clearTimeout(t)
+  }, [overlayVisible])
 
   // Build the gradient filter string (uses resolved sceneData below)
   const getGradientFilter = (resolvedEffects, resolvedBgType) => {
@@ -224,6 +249,14 @@ function SceneEmbedPage() {
   const dandelionConfig = sceneData.dandelionConfig || {}
   const particleRingConfig = sceneData.particleRingConfig || {}
 
+  // Thumbnail sources for the progressive overlay (prefer WebP, fall back to JPEG).
+  // Use `large` (1200px) — a sharp-enough preview that loads fast since it is
+  // covered by the live scene shortly after.
+  const thumb = scene.thumbnail || {}
+  const thumbSizeKey = thumb.large ? 'large' : thumb.medium ? 'medium' : thumb.small ? 'small' : thumb.full ? 'full' : null
+  const thumbJpg = thumbSizeKey ? thumb[thumbSizeKey] : null
+  const thumbWebp = thumbSizeKey ? thumb.webp?.[thumbSizeKey] : null
+
   return (
     <div className="w-full h-screen overflow-hidden" onMouseMove={effectiveMouseEnabled ? handleMouseMove : undefined}>
       {/* Full-screen scene - no UI overlay */}
@@ -284,6 +317,46 @@ function SceneEmbedPage() {
           )}
         </div>
       </div>
+
+      {/* Progressive loading overlay: instant color SVG, then the thumbnail,
+          crossfading out once the live scene has warmed up. */}
+      {overlayMounted && (
+        <div
+          className="embed-loading-overlay"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 40,
+            pointerEvents: 'none',
+            opacity: overlayVisible ? 1 : 0,
+            transition: 'opacity 600ms ease',
+          }}
+        >
+          <ColorPlaceholder
+            colors={gradientConfig.colors}
+            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+          />
+          {thumbJpg && (
+            <picture>
+              {thumbWebp && <source srcSet={thumbWebp} type="image/webp" />}
+              <img
+                src={thumbJpg}
+                alt=""
+                onLoad={() => setThumbLoaded(true)}
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  opacity: thumbLoaded ? 1 : 0,
+                  transition: 'opacity 400ms ease',
+                }}
+              />
+            </picture>
+          )}
+        </div>
+      )}
     </div>
   )
 }
