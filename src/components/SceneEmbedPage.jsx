@@ -37,6 +37,7 @@ function SceneEmbedPage() {
 
   // Progressive loading overlay: color SVG -> thumbnail -> live scene crossfade.
   const [thumbLoaded, setThumbLoaded] = useState(false)
+  const [webpFailed, setWebpFailed] = useState(false)
   const [overlayVisible, setOverlayVisible] = useState(true)
   const [overlayMounted, setOverlayMounted] = useState(true)
 
@@ -152,6 +153,7 @@ function SceneEmbedPage() {
         setError(null)
         // Reset the progressive overlay for the new scene
         setThumbLoaded(false)
+        setWebpFailed(false)
         setOverlayVisible(true)
         setOverlayMounted(true)
         const sceneData = await getSceneBySlug(slug)
@@ -338,11 +340,17 @@ function SceneEmbedPage() {
           />
           {thumbJpg && (
             <picture>
-              {thumbWebp && <source srcSet={thumbWebp} type="image/webp" />}
+              {/* WebP first; if it fails to load at runtime, drop the source and
+                  remount the <img> so the browser loads the JPEG fallback. */}
+              {thumbWebp && !webpFailed && <source srcSet={thumbWebp} type="image/webp" />}
               <img
+                key={thumbWebp && !webpFailed ? 'webp' : 'jpg'}
                 src={thumbJpg}
                 alt=""
                 onLoad={() => setThumbLoaded(true)}
+                onError={() => {
+                  if (thumbWebp && !webpFailed) setWebpFailed(true)
+                }}
                 style={{
                   position: 'absolute',
                   inset: 0,
