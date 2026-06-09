@@ -17,6 +17,16 @@ want — they all expose the same `<AuraHeader config={sceneData} />` API.
 bundled — so they're shared with the host app, not duplicated. (three.js itself
 is ~600 KB; the WebGL packages assume the host already ships it.)
 
+## Documentation
+
+Full docs live in [`docs/`](./docs):
+[getting started](./docs/getting-started.md) ·
+[API reference](./docs/api.md) ·
+[scene config reference](./docs/scene-config.md) ·
+[theming](./docs/theming.md) ·
+[interactions](./docs/interactions.md) ·
+[custom backgrounds](./docs/custom-backgrounds.md)
+
 ## Architecture
 
 ```

@@ -35,3 +35,9 @@ import '@aura/headers-pro/styles.css'
 
 Want a lighter bundle? Pick `@aura/headers-lite` (no WebGL) or a single-layer
 package (`@aura/headers-ribbon`, …).
+
+## Documentation
+
+Full guides — scene config reference, theming, interactions, custom
+backgrounds — live at
+<https://github.com/suprabho/beautiful-headers/tree/main/packages/docs>.

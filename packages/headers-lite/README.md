@@ -44,3 +44,9 @@ Need the WebGL backgrounds? Use a layer package (`@aura/headers-ribbon`, …) or
 > Note: the Canvas2D layers currently size their backing buffer to the window;
 > they display correctly scaled inside any container, full-bleed hero headers
 > are pixel-perfect. Per-container sizing is on the roadmap.
+
+## Documentation
+
+Full guides — scene config reference, theming, interactions, custom
+backgrounds — live at
+<https://github.com/suprabho/beautiful-headers/tree/main/packages/docs>.

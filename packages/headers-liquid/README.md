@@ -22,3 +22,9 @@ See [`@aura/headers-lite`](../headers-lite) for the full prop reference. Other
 WebGL backgrounds (`ribbon`, `dandelion`, `particleRing`) degrade to the SVG
 placeholder here — use the matching package or `@aura/headers-pro` for all of
 them.
+
+## Documentation
+
+Full guides — scene config reference, theming, interactions, custom
+backgrounds — live at
+<https://github.com/suprabho/beautiful-headers/tree/main/packages/docs>.

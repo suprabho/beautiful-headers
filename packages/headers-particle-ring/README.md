@@ -21,3 +21,9 @@ import '@aura/headers-particle-ring/styles.css'
 
 See [`@aura/headers-lite`](../headers-lite) for the full prop reference. Want all
 backgrounds at once? Use `@aura/headers-pro`.
+
+## Documentation
+
+Full guides — scene config reference, theming, interactions, custom
+backgrounds — live at
+<https://github.com/suprabho/beautiful-headers/tree/main/packages/docs>.
