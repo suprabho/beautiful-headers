@@ -1,0 +1,106 @@
+/**
+ * Structural styles for AuraHeader layers. Background layers position
+ * themselves inline, but the text / effects / tessellation layers rely on
+ * these classes (notably the text mix-blend-mode and centering). Import once
+ * in your app:  import '@aura/headers-<variant>/styles.css'
+ */
+
+.aura-header {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.layers-container {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.gradient-layer,
+.simple-gradient-layer,
+.aurora-layer,
+.fluid-gradient-layer,
+.waves-layer,
+.ribbon-layer,
+.dandelion-layer,
+.particle-ring-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Tessellation / icon layer */
+.tessellation-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.tessellation-grid {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.tessellation-row {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.tessellation-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease-out;
+}
+
+/* Effects layer */
+.effects-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.texture-overlay,
+.vignette-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Text layer */
+.text-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.text-section {
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #fff;
+  text-align: center;
+  line-height: 1;
+  mix-blend-mode: difference;
+}

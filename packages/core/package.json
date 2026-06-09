@@ -1,0 +1,28 @@
+{
+  "name": "@aura/headers-core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared internals for the Aura header packages (bundled, not published).",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./backgrounds/liquid": "./src/backgrounds/liquid.jsx",
+    "./backgrounds/ribbon": "./src/backgrounds/ribbon.jsx",
+    "./backgrounds/dandelion": "./src/backgrounds/dandelion.jsx",
+    "./backgrounds/particleRing": "./src/backgrounds/particleRing.jsx",
+    "./backgrounds/glass": "./src/backgrounds/glass.js",
+    "./styles.css": "./src/aura.css"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18",
+    "three": ">=0.160",
+    "@react-three/fiber": ">=8",
+    "@react-three/postprocessing": ">=2"
+  },
+  "peerDependenciesMeta": {
+    "three": { "optional": true },
+    "@react-three/fiber": { "optional": true },
+    "@react-three/postprocessing": { "optional": true }
+  }
+}

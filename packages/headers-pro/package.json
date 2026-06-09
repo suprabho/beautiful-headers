@@ -1,0 +1,32 @@
+{
+  "name": "@aura/headers-pro",
+  "version": "0.1.0",
+  "description": "Aura animated headers — Pro. Every background (Canvas2D + all four WebGL) plus the fluted-glass overlay.",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": ["dist"],
+  "sideEffects": true,
+  "scripts": {
+    "build": "tsup && cp ../core/src/aura.css dist/styles.css && cp ../core/types.d.ts dist/index.d.ts"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18",
+    "three": ">=0.160",
+    "@react-three/fiber": ">=8",
+    "@react-three/postprocessing": ">=2"
+  },
+  "devDependencies": {
+    "@aura/headers-core": "workspace:*"
+  }
+}
