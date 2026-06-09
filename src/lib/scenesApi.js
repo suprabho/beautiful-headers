@@ -184,6 +184,57 @@ export async function getScenes({ offset = 0, limit = 20, backgroundType = null,
 }
 
 /**
+ * Fetch every scene in a lightweight shape for the analytics dashboard.
+ *
+ * Selects only the JSON sub-fields the analysis needs (not the full scene_data,
+ * which carries a multi-KB color palette per row), and paginates by the unique
+ * `id` so no rows slip across page boundaries — ordering by a non-unique column
+ * like created_at can silently skip rows when values tie.
+ *
+ * @returns {Promise<Array>} normalized rows consumable by analyzeScenes()
+ */
+export async function getAllScenesForAnalysis() {
+  const pageSize = 200
+  let offset = 0
+  const rows = []
+
+  while (true) {
+    const { data, error } = await supabase
+      .from('scenes')
+      .select(
+        'id, title, slug, short_description, long_description, thumbnail, created_at, ' +
+        'backgroundType:scene_data->>backgroundType, ' +
+        'effectsConfig:scene_data->effectsConfig, ' +
+        'gradientColors:scene_data->gradientConfig->colors'
+      )
+      .order('id', { ascending: true })
+      .range(offset, offset + pageSize - 1)
+
+    if (error) {
+      console.error('Failed to fetch scenes for analysis:', error)
+      throw new Error('Failed to fetch scenes for analysis')
+    }
+
+    rows.push(...data)
+    if (data.length < pageSize) break
+    offset += pageSize
+  }
+
+  return rows.map((s) => ({
+    id: s.id,
+    title: s.title,
+    slug: s.slug,
+    short_description: s.short_description,
+    long_description: s.long_description,
+    thumbnail: rewriteThumbnails(s.thumbnail),
+    created_at: s.created_at,
+    backgroundType: s.backgroundType || 'unknown',
+    effectsConfig: s.effectsConfig || {},
+    colors: Array.isArray(s.gradientColors) ? s.gradientColors : [],
+  }))
+}
+
+/**
  * Fetch a single scene by ID
  */
 export async function getScene(id) {
