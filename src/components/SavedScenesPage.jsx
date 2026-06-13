@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, Trash, CircleNotch, Warning, ImageBroken, Sparkle } from '@phosphor-icons/react'
 import { SlidersHorizontal } from 'lucide-react'
 import { getScenes, getProjects, deleteScene, checkCmsHealth, titleToSlug, verifyDeletePassword } from '@/lib/scenesApi'
@@ -115,12 +115,25 @@ function SavedScenesPage() {
   const [deletePassword, setDeletePassword] = useState('')
   const [passwordError, setPasswordError] = useState('')
 
-  // Filter state
+  // Filter state. `projectId` is URL-backed (?project=<id>) so a filtered view
+  // is bookmarkable and always reflects the live DB; the other filters stay local.
+  const [searchParams, setSearchParams] = useSearchParams()
+  const projectId = searchParams.get('project') || null
+  const setProjectId = useCallback((id) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev)
+      if (id) next.set('project', id)
+      else next.delete('project')
+      return next
+    }, { replace: true })
+  }, [setSearchParams])
+
   const [backgroundType, setBackgroundType] = useState(null)
-  const [projectId, setProjectId] = useState(null)
   const [colorFamily, setColorFamily] = useState(null)
   const [projects, setProjects] = useState([])
-  const [showFilters, setShowFilters] = useState(false)
+  // Open the filter panel by default on a deep-linked project so the active
+  // filter is visible rather than silently applied.
+  const [showFilters, setShowFilters] = useState(() => !!searchParams.get('project'))
 
   const sentinelRef = useRef(null)
   const serverFilteredTotal = useRef(0)
