@@ -264,6 +264,43 @@ export function titleToSlug(title) {
 }
 
 /**
+ * Generate a slug from a title that is unique across the scenes table.
+ * Falls back to the bare base slug if the uniqueness lookup fails so a
+ * transient error never blocks a save.
+ *
+ * @param {string} title - Scene title
+ * @param {string|null} excludeId - Scene id to ignore (when re-slugging an
+ *   existing scene during an update, so it doesn't collide with itself)
+ * @returns {Promise<string>} A slug not currently used by any other scene
+ */
+export async function generateUniqueSlug(title, excludeId = null) {
+  const base = titleToSlug(title) || 'scene'
+
+  // Pull every existing slug that could collide with `base` or `base-<n>`.
+  const { data, error } = await supabase
+    .from('scenes')
+    .select('id, slug')
+    .like('slug', `${base}%`)
+
+  if (error) {
+    console.error('Failed to check slug uniqueness:', error)
+    return base
+  }
+
+  const taken = new Set(
+    (data || [])
+      .filter(r => r.id !== excludeId && r.slug)
+      .map(r => r.slug)
+  )
+
+  if (!taken.has(base)) return base
+
+  let n = 2
+  while (taken.has(`${base}-${n}`)) n++
+  return `${base}-${n}`
+}
+
+/**
  * Fetch a single scene by slug (URL-friendly title)
  */
 export async function getSceneBySlug(slug) {
@@ -333,11 +370,12 @@ export async function getSceneBySlug(slug) {
  */
 export async function createScene(title, sceneData, thumbnail = null, descriptions = null) {
   // First create the scene to get an ID
+  const slug = await generateUniqueSlug(title)
   const { data: scene, error } = await supabase
     .from('scenes')
     .insert({
       title,
-      slug: titleToSlug(title),
+      slug,
       scene_data: sceneData,
       thumbnail: null,
       short_description: descriptions?.shortDescription || null,
@@ -388,7 +426,7 @@ export async function updateScene(id, data) {
 
   if (data.title !== undefined) {
     updateData.title = data.title
-    updateData.slug = titleToSlug(data.title)
+    updateData.slug = await generateUniqueSlug(data.title, id)
   }
   if (data.sceneData !== undefined) updateData.scene_data = data.sceneData
   if (data.short_description !== undefined) updateData.short_description = data.short_description
