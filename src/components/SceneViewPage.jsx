@@ -228,7 +228,7 @@ function SceneViewPage() {
 
     if (!content) throw new Error('AI generation failed. Please try again.')
 
-    await updateScene(scene.id, {
+    const updated = await updateScene(scene.id, {
       title: content.title,
       short_description: content.shortDescription,
       long_description: content.longDescription,
@@ -237,7 +237,7 @@ function SceneViewPage() {
     setScene(prev => ({
       ...prev,
       title: content.title,
-      slug: titleToSlug(content.title),
+      slug: updated.slug,
       short_description: content.shortDescription,
       long_description: content.longDescription,
     }))
