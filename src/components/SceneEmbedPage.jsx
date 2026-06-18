@@ -4,6 +4,7 @@ import { getSceneBySlug } from '@/lib/scenesApi'
 import { useDocumentMeta } from '@/hooks/useDocumentMeta'
 import { useColorMode } from '@/hooks/useColorMode'
 import { resolveThemedConfigs } from '@/lib/themeUtils'
+import { captureLayersToCanvas } from '@/lib/canvasCapture'
 import { audioData } from '@/audio/audioData'
 import ColorPlaceholder from './ColorPlaceholder'
 import '../App.css'
@@ -23,10 +24,17 @@ function SceneEmbedPage() {
   const { slug } = useParams()
   const [searchParams] = useSearchParams()
 
+  // Capture mode: a headless browser loads /embed/:slug?capture=1, waits for
+  // window.__auraCaptureReady, then calls window.__auraCapture() to get a PNG.
+  // It disables the loading overlay + live input so the snapshot is a clean,
+  // settled frame of the scene itself.
+  const captureMode = searchParams.get('capture') === '1'
+
   // Parse query parameters for hiding elements and input mode
   const hideText = searchParams.get('hideText') === 'true'
   const hideIcons = searchParams.get('hideIcons') === 'true'
-  const inputMode = searchParams.get('input') || 'mouse' // 'off' | 'mouse' | 'mic'
+  // Force input off in capture mode — no mouse/mic, so the frame is deterministic.
+  const inputMode = captureMode ? 'off' : (searchParams.get('input') || 'mouse') // 'off' | 'mouse' | 'mic'
   const colorMode = useColorMode(searchParams)
 
   const [scene, setScene] = useState(null)
@@ -49,6 +57,78 @@ function SceneEmbedPage() {
   // Ref to track if RAF is pending for mouse throttling
   const rafPendingRef = useRef(false)
   const pendingMouseRef = useRef({ x: 0.5, y: 0.5 })
+
+  // Latest resolved capture inputs, written during render (see below) so the
+  // capture bridges can read them without re-subscribing on every change.
+  const captureInputsRef = useRef(null)
+
+  // Composite the live scene layers (WebGL background + tessellation + text) into
+  // a PNG data URL, using the same pipeline as the in-app capture button. Shared
+  // by both capture bridges below. Waits briefly for the layers to mount, since a
+  // caller may ask before React has painted the first frame.
+  const captureToDataUrl = useCallback(async (scale = 2) => {
+    let container = document.querySelector('.layers-container')
+    for (let i = 0; i < 30 && !container; i++) {
+      await new Promise((r) => setTimeout(r, 100))
+      container = document.querySelector('.layers-container')
+    }
+    if (!container) throw new Error('layers-container not found')
+    const inputs = captureInputsRef.current || {}
+    const canvas = await captureLayersToCanvas(container, inputs.effectsConfig || {}, {
+      scale,
+      mode: 'all',
+      textData: inputs.textData || null,
+      hideIcons: inputs.hideIcons,
+      hideText: inputs.hideText,
+    })
+    return canvas.toDataURL('image/png')
+  }, [])
+
+  // Same-origin capture bridge: a headless renderer loads /embed/:slug?capture=1,
+  // waits for window.__auraCaptureReady, then calls window.__auraCapture().
+  useEffect(() => {
+    if (!captureMode) return
+    window.__auraCapture = ({ scale = 2 } = {}) => captureToDataUrl(scale)
+    return () => { delete window.__auraCapture }
+  }, [captureMode, captureToDataUrl])
+
+  // Cross-origin capture bridge (postMessage): the Deconflict studio embeds this
+  // scene in a cross-origin iframe, so it can't reach window.__auraCapture. It
+  // asks for a snapshot by message and we reply with a PNG data URL. Always on
+  // (NOT gated on ?capture=1) because the studio loads the embed with its normal
+  // background params (input=off, hideText, hideIcons). Contract:
+  //   parent → { type: 'promad-aura:capture', requestId, width, height, pixelRatio }
+  //   reply  → { type: 'promad-aura:capture-result', requestId, dataUrl }  (or { error })
+  useEffect(() => {
+    const onMessage = async (e) => {
+      if (e.data?.type !== 'promad-aura:capture') return
+      const { requestId, pixelRatio = 2 } = e.data
+      const reply = (payload) =>
+        e.source?.postMessage({ type: 'promad-aura:capture-result', requestId, ...payload }, e.origin)
+      try {
+        reply({ dataUrl: await captureToDataUrl(pixelRatio) })
+      } catch (err) {
+        reply({ error: err?.message || 'capture failed' })
+      }
+    }
+    window.addEventListener('message', onMessage)
+    return () => window.removeEventListener('message', onMessage)
+  }, [captureToDataUrl])
+
+  // Signal readiness once the scene has mounted, fonts have loaded, and the
+  // WebGL/canvas layers have had a moment to render their first frames.
+  useEffect(() => {
+    if (!captureMode || !scene) return
+    let cancelled = false
+    window.__auraCaptureReady = false
+    const run = async () => {
+      try { if (document.fonts?.ready) await document.fonts.ready } catch { /* ignore */ }
+      await new Promise((r) => setTimeout(r, 1200)) // WebGL warm-up / settle
+      if (!cancelled) window.__auraCaptureReady = true
+    }
+    run()
+    return () => { cancelled = true; window.__auraCaptureReady = false }
+  }, [captureMode, scene])
 
   // Throttled mouse move handler
   const handleMouseMove = useCallback((e) => {
@@ -243,6 +323,18 @@ function SceneEmbedPage() {
   const effectiveMouseIntensity = inputEnabled && inputMode !== 'mic' ? mouseConfig.intensity : 0
   const effectiveMouseEnabled = inputEnabled && inputMode !== 'mic' && mouseConfig.enabled
 
+  // Stash the resolved capture inputs so the capture bridges can read the latest
+  // config without threading it through window globals on every render. Populated
+  // in all modes — the cross-origin postMessage bridge runs without ?capture=1.
+  captureInputsRef.current = {
+    effectsConfig,
+    hideIcons,
+    hideText,
+    textData: (textConfig.enabled && !hideText && textSections.length)
+      ? { sections: textSections, gap: textGap, color: textConfig.color, opacity: textConfig.opacity }
+      : null,
+  }
+
   const auroraConfig = sceneData.auroraConfig || {}
   const fluidConfig = sceneData.fluidConfig || {}
   const wavesConfig = sceneData.wavesConfig || {}
@@ -320,8 +412,9 @@ function SceneEmbedPage() {
       </div>
 
       {/* Progressive loading overlay: instant color SVG, crossfading out once
-          the live scene has warmed up. */}
-      {overlayMounted && (
+          the live scene has warmed up. Skipped entirely in capture mode so the
+          snapshot is never of the placeholder. */}
+      {overlayMounted && !captureMode && (
         <div
           className="embed-loading-overlay"
           style={{
