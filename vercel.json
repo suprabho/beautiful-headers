@@ -1,8 +1,18 @@
 {
+  "functions": {
+    "api/scenes/[slug]/capture.js": {
+      "memory": 3008,
+      "maxDuration": 60
+    }
+  },
   "rewrites": [
     {
       "source": "/sitemap.xml",
       "destination": "/api/sitemap"
+    },
+    {
+      "source": "/scenes/:slug/capture.png",
+      "destination": "/api/scenes/:slug/capture"
     },
     {
       "source": "/scenes/:slug",
