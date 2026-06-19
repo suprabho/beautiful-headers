@@ -1,0 +1,3511 @@
+{
+  "projectId": "d898af6c-131c-47e8-9394-45bde843518c",
+  "_note": "DECONFLICT Tactile Security Materials (spec Part 3). Built from real working templates + Deconflict recolor. Password injected at POST time.",
+  "scenes": [
+    {
+      "title": "Ribbon Foil Cobalt Holographic Security",
+      "short_description": "Cursor-reactive cobalt–violet foil shimmer for premium Deconflict headers.",
+      "long_description": "Cursor-reactive cobalt–violet foil shimmer for premium Deconflict headers. Cobalt-family foil on a frost substrate (Deconflict Part 3).",
+      "scene_data": {
+        "textGap": 2,
+        "blobConfig": {
+          "speed": 0.5,
+          "colors": [
+            "#2E54E8",
+            "#5B7BF0",
+            "#6D5BE8",
+            "#C9D2E8"
+          ],
+          "blobCount": 5,
+          "maxRadius": 120,
+          "minRadius": 40,
+          "threshold": 180,
+          "blurAmount": 12,
+          "decaySpeed": 0.95,
+          "orbitRadius": 150,
+          "mouseInfluence": 0.3,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "textConfig": {
+          "color": "#0B1B33",
+          "enabled": true,
+          "opacity": 1
+        },
+        "fluidConfig": {
+          "speed": 2.4,
+          "colors": [
+            "#2E54E8",
+            "#5B7BF0",
+            "#6D5BE8",
+            "#C9D2E8"
+          ],
+          "intensity": 1.6,
+          "blurAmount": 55,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "wavesConfig": {
+          "blur": 35,
+          "speed": 0.8,
+          "colors": [
+            "#2E54E8",
+            "#5B7BF0",
+            "#6D5BE8",
+            "#C9D2E8"
+          ],
+          "layers": 6,
+          "rotation": -5,
+          "waveHeight": 0.07,
+          "phaseOffset": 0.3,
+          "waveFrequency": 3,
+          "useGradientColors": true
+        },
+        "auroraConfig": {
+          "ttl": 490,
+          "width": 95,
+          "hueEnd": 220,
+          "hueStart": 190,
+          "lineCount": 450,
+          "maxHeight": 850,
+          "minHeight": 650,
+          "blurAmount": 29,
+          "decaySpeed": 0.95,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "colorPalette": {
+          "cobalt": {
+            "50": "#eef2ff",
+            "100": "#dbe3ff",
+            "200": "#bccaff",
+            "300": "#92a8ff",
+            "400": "#5B7BF0",
+            "500": "#2E54E8",
+            "600": "#1f3fc4",
+            "700": "#1b34a0",
+            "800": "#192d80",
+            "900": "#13294B",
+            "950": "#0B1B33"
+          },
+          "white": "#fff",
+          "black": "#0B1B33"
+        },
+        "inputEnabled": false,
+        "ribbonConfig": {
+          "noise": 0.3,
+          "speed": 1.8,
+          "taper": -0.6,
+          "spread": 2.5,
+          "opacity": 0.5,
+          "rotation": 50,
+          "amplitude": 1.1,
+          "thickness": 0.35,
+          "ribbonCount": 3,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "textSections": [],
+        "effectsConfig": {
+          "blur": 6,
+          "texture": "none",
+          "textureSize": 30,
+          "textureOpacity": 0,
+          "textureBlendMode": "overlay",
+          "colorMap": "none",
+          "contrast": 108,
+          "brightness": 102,
+          "saturation": 110,
+          "vignetteIntensity": 22,
+          "flutedGlass": {
+            "enabled": true,
+            "rotation": 62,
+            "segments": 84,
+            "motionSpeed": 0.9,
+            "motionValue": 1.6,
+            "waveFrequency": 1.3,
+            "overlayOpacity": 14,
+            "distortionStrength": 0.06
+          }
+        },
+        "backgroundType": "ribbon",
+        "gradientConfig": {
+          "type": "linear",
+          "colors": [
+            "#2E54E8",
+            "#5B7BF0",
+            "#6D5BE8",
+            "#C9D2E8"
+          ],
+          "endPos": {
+            "x": 45.4980137699568,
+            "y": -12.169678095618792
+          },
+          "startPos": {
+            "x": -47.53128591671509,
+            "y": -91.92612522405079
+          },
+          "numColors": 4,
+          "colorStops": [
+            0,
+            33,
+            67,
+            100
+          ],
+          "decaySpeed": 0.95,
+          "wave1Speed": 0.39052778508262226,
+          "wave2Speed": 0.1225075717217266,
+          "waveIntensity": 0.14260430476175742,
+          "mouseInfluence": 0.7722311595091766,
+          "wave1Direction": -1,
+          "wave2Direction": -1
+        },
+        "dandelionConfig": {
+          "speed": 0.1,
+          "spread": 1,
+          "centerY": 0.95,
+          "dotSize": 2.5,
+          "lineCount": 114,
+          "radiusMax": 0.8,
+          "radiusMin": 0.5,
+          "thickness": 0.5,
+          "gradientEndX": 28,
+          "gradientEndY": 122,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true,
+          "radialGradientStops": [
+            0,
+            100
+          ],
+          "radialGradientColors": [
+            "#C9D2E8",
+            "#5B7BF0"
+          ]
+        },
+        "shapeTrailConfig": {
+          "gap": 30,
+          "shape": "square",
+          "speed": 0.3,
+          "opacity": 0.8,
+          "endScale": 2000,
+          "blendMode": "normal",
+          "sizeCycles": 1,
+          "startScale": 1000,
+          "trailCount": 3,
+          "pathComplexity": 4,
+          "rotationOffset": 15,
+          "backgroundColor": "#F4F6FA",
+          "trailColorStops": null,
+          "useGradientColors": true
+        },
+        "particleRingConfig": {
+          "speed": 0.1,
+          "tiltX": 27,
+          "tiltZ": -29,
+          "ringWidth": 0.24,
+          "dispersion": 0.47,
+          "ringRadius": 0.37,
+          "gradientEndX": 176,
+          "gradientEndY": 22,
+          "particleSize": 4.1,
+          "particleCount": 861,
+          "rotationSpeed": 0.23,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true,
+          "radialGradientStops": [
+            0,
+            100
+          ],
+          "radialGradientColors": [
+            "#C9D2E8",
+            "#5B7BF0"
+          ]
+        },
+        "selectedProjectIds": [],
+        "tessellationConfig": {
+          "icon": "MusicNote",
+          "size": 24,
+          "color": "#2E54E8",
+          "colGap": 60,
+          "rowGap": 60,
+          "enabled": false,
+          "opacity": 0.3419551929603327,
+          "rotation": 0,
+          "mouseRotationInfluence": 0.5
+        },
+        "tags": [
+          "ribbon",
+          "cobalt",
+          "foil",
+          "premium",
+          "security",
+          "header"
+        ]
+      }
+    },
+    {
+      "title": "Ribbon Foil Violet Holographic Flip",
+      "short_description": "Violet-forward foil with a strong holographic flip for hero CTAs.",
+      "long_description": "Violet-forward foil with a strong holographic flip for hero CTAs. Cobalt-family foil on a frost substrate (Deconflict Part 3).",
+      "scene_data": {
+        "textGap": 2,
+        "blobConfig": {
+          "speed": 0.5,
+          "colors": [
+            "#6D5BE8",
+            "#5B7BF0",
+            "#6D5BE8",
+            "#C9D2E8"
+          ],
+          "blobCount": 5,
+          "maxRadius": 120,
+          "minRadius": 40,
+          "threshold": 180,
+          "blurAmount": 12,
+          "decaySpeed": 0.95,
+          "orbitRadius": 150,
+          "mouseInfluence": 0.3,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "textConfig": {
+          "color": "#0B1B33",
+          "enabled": true,
+          "opacity": 1
+        },
+        "fluidConfig": {
+          "speed": 2.4,
+          "colors": [
+            "#6D5BE8",
+            "#5B7BF0",
+            "#6D5BE8",
+            "#C9D2E8"
+          ],
+          "intensity": 1.6,
+          "blurAmount": 55,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "wavesConfig": {
+          "blur": 35,
+          "speed": 0.8,
+          "colors": [
+            "#6D5BE8",
+            "#5B7BF0",
+            "#6D5BE8",
+            "#C9D2E8"
+          ],
+          "layers": 6,
+          "rotation": -5,
+          "waveHeight": 0.07,
+          "phaseOffset": 0.3,
+          "waveFrequency": 3,
+          "useGradientColors": true
+        },
+        "auroraConfig": {
+          "ttl": 490,
+          "width": 95,
+          "hueEnd": 220,
+          "hueStart": 190,
+          "lineCount": 450,
+          "maxHeight": 850,
+          "minHeight": 650,
+          "blurAmount": 29,
+          "decaySpeed": 0.95,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "colorPalette": {
+          "cobalt": {
+            "50": "#eef2ff",
+            "100": "#dbe3ff",
+            "200": "#bccaff",
+            "300": "#92a8ff",
+            "400": "#5B7BF0",
+            "500": "#2E54E8",
+            "600": "#1f3fc4",
+            "700": "#1b34a0",
+            "800": "#192d80",
+            "900": "#13294B",
+            "950": "#0B1B33"
+          },
+          "white": "#fff",
+          "black": "#0B1B33"
+        },
+        "inputEnabled": false,
+        "ribbonConfig": {
+          "noise": 0.3,
+          "speed": 1.8,
+          "taper": -0.6,
+          "spread": 2.5,
+          "opacity": 0.55,
+          "rotation": 78,
+          "amplitude": 1.1,
+          "thickness": 0.35,
+          "ribbonCount": 3,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "textSections": [],
+        "effectsConfig": {
+          "blur": 6,
+          "texture": "none",
+          "textureSize": 30,
+          "textureOpacity": 0,
+          "textureBlendMode": "overlay",
+          "colorMap": "none",
+          "contrast": 108,
+          "brightness": 102,
+          "saturation": 114,
+          "vignetteIntensity": 24,
+          "flutedGlass": {
+            "enabled": true,
+            "rotation": 80,
+            "segments": 92,
+            "motionSpeed": 0.9,
+            "motionValue": 1.6,
+            "waveFrequency": 1.3,
+            "overlayOpacity": 16,
+            "distortionStrength": 0.1
+          }
+        },
+        "backgroundType": "ribbon",
+        "gradientConfig": {
+          "type": "linear",
+          "colors": [
+            "#6D5BE8",
+            "#5B7BF0",
+            "#6D5BE8",
+            "#C9D2E8"
+          ],
+          "endPos": {
+            "x": 45.4980137699568,
+            "y": -12.169678095618792
+          },
+          "startPos": {
+            "x": -47.53128591671509,
+            "y": -91.92612522405079
+          },
+          "numColors": 4,
+          "colorStops": [
+            0,
+            33,
+            67,
+            100
+          ],
+          "decaySpeed": 0.95,
+          "wave1Speed": 0.39052778508262226,
+          "wave2Speed": 0.1225075717217266,
+          "waveIntensity": 0.14260430476175742,
+          "mouseInfluence": 0.7722311595091766,
+          "wave1Direction": -1,
+          "wave2Direction": -1
+        },
+        "dandelionConfig": {
+          "speed": 0.1,
+          "spread": 1,
+          "centerY": 0.95,
+          "dotSize": 2.5,
+          "lineCount": 114,
+          "radiusMax": 0.8,
+          "radiusMin": 0.5,
+          "thickness": 0.5,
+          "gradientEndX": 28,
+          "gradientEndY": 122,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true,
+          "radialGradientStops": [
+            0,
+            100
+          ],
+          "radialGradientColors": [
+            "#C9D2E8",
+            "#5B7BF0"
+          ]
+        },
+        "shapeTrailConfig": {
+          "gap": 30,
+          "shape": "square",
+          "speed": 0.3,
+          "opacity": 0.8,
+          "endScale": 2000,
+          "blendMode": "normal",
+          "sizeCycles": 1,
+          "startScale": 1000,
+          "trailCount": 3,
+          "pathComplexity": 4,
+          "rotationOffset": 15,
+          "backgroundColor": "#F4F6FA",
+          "trailColorStops": null,
+          "useGradientColors": true
+        },
+        "particleRingConfig": {
+          "speed": 0.1,
+          "tiltX": 27,
+          "tiltZ": -29,
+          "ringWidth": 0.24,
+          "dispersion": 0.47,
+          "ringRadius": 0.37,
+          "gradientEndX": 176,
+          "gradientEndY": 22,
+          "particleSize": 4.1,
+          "particleCount": 861,
+          "rotationSpeed": 0.23,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true,
+          "radialGradientStops": [
+            0,
+            100
+          ],
+          "radialGradientColors": [
+            "#C9D2E8",
+            "#5B7BF0"
+          ]
+        },
+        "selectedProjectIds": [],
+        "tessellationConfig": {
+          "icon": "MusicNote",
+          "size": 24,
+          "color": "#2E54E8",
+          "colGap": 60,
+          "rowGap": 60,
+          "enabled": false,
+          "opacity": 0.3419551929603327,
+          "rotation": 0,
+          "mouseRotationInfluence": 0.5
+        },
+        "tags": [
+          "ribbon",
+          "violet",
+          "foil",
+          "holographic",
+          "security",
+          "header"
+        ]
+      }
+    },
+    {
+      "title": "Ribbon Foil Silver Brushed Calm",
+      "short_description": "Calm brushed-silver foil — softer cycle, text-friendly contrast.",
+      "long_description": "Calm brushed-silver foil — softer cycle, text-friendly contrast. Cobalt-family foil on a frost substrate (Deconflict Part 3).",
+      "scene_data": {
+        "textGap": 2,
+        "blobConfig": {
+          "speed": 0.5,
+          "colors": [
+            "#C9D2E8",
+            "#5B7BF0",
+            "#C9D2E8",
+            "#2E54E8"
+          ],
+          "blobCount": 5,
+          "maxRadius": 120,
+          "minRadius": 40,
+          "threshold": 180,
+          "blurAmount": 12,
+          "decaySpeed": 0.95,
+          "orbitRadius": 150,
+          "mouseInfluence": 0.3,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "textConfig": {
+          "color": "#0B1B33",
+          "enabled": true,
+          "opacity": 1
+        },
+        "fluidConfig": {
+          "speed": 2.4,
+          "colors": [
+            "#C9D2E8",
+            "#5B7BF0",
+            "#C9D2E8",
+            "#2E54E8"
+          ],
+          "intensity": 1.6,
+          "blurAmount": 55,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "wavesConfig": {
+          "blur": 35,
+          "speed": 0.8,
+          "colors": [
+            "#C9D2E8",
+            "#5B7BF0",
+            "#C9D2E8",
+            "#2E54E8"
+          ],
+          "layers": 6,
+          "rotation": -5,
+          "waveHeight": 0.07,
+          "phaseOffset": 0.3,
+          "waveFrequency": 3,
+          "useGradientColors": true
+        },
+        "auroraConfig": {
+          "ttl": 490,
+          "width": 95,
+          "hueEnd": 220,
+          "hueStart": 190,
+          "lineCount": 450,
+          "maxHeight": 850,
+          "minHeight": 650,
+          "blurAmount": 29,
+          "decaySpeed": 0.95,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "colorPalette": {
+          "cobalt": {
+            "50": "#eef2ff",
+            "100": "#dbe3ff",
+            "200": "#bccaff",
+            "300": "#92a8ff",
+            "400": "#5B7BF0",
+            "500": "#2E54E8",
+            "600": "#1f3fc4",
+            "700": "#1b34a0",
+            "800": "#192d80",
+            "900": "#13294B",
+            "950": "#0B1B33"
+          },
+          "white": "#fff",
+          "black": "#0B1B33"
+        },
+        "inputEnabled": false,
+        "ribbonConfig": {
+          "noise": 0.3,
+          "speed": 1.8,
+          "taper": -0.6,
+          "spread": 2.5,
+          "opacity": 0.45,
+          "rotation": 45,
+          "amplitude": 1.1,
+          "thickness": 0.35,
+          "ribbonCount": 3,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "textSections": [],
+        "effectsConfig": {
+          "blur": 6,
+          "texture": "none",
+          "textureSize": 30,
+          "textureOpacity": 0,
+          "textureBlendMode": "overlay",
+          "colorMap": "none",
+          "contrast": 108,
+          "brightness": 102,
+          "saturation": 102,
+          "vignetteIntensity": 18,
+          "flutedGlass": {
+            "enabled": true,
+            "rotation": 48,
+            "segments": 72,
+            "motionSpeed": 0.9,
+            "motionValue": 1.6,
+            "waveFrequency": 1.3,
+            "overlayOpacity": 10,
+            "distortionStrength": 0.04
+          }
+        },
+        "backgroundType": "ribbon",
+        "gradientConfig": {
+          "type": "linear",
+          "colors": [
+            "#C9D2E8",
+            "#5B7BF0",
+            "#C9D2E8",
+            "#2E54E8"
+          ],
+          "endPos": {
+            "x": 45.4980137699568,
+            "y": -12.169678095618792
+          },
+          "startPos": {
+            "x": -47.53128591671509,
+            "y": -91.92612522405079
+          },
+          "numColors": 4,
+          "colorStops": [
+            0,
+            33,
+            67,
+            100
+          ],
+          "decaySpeed": 0.95,
+          "wave1Speed": 0.39052778508262226,
+          "wave2Speed": 0.1225075717217266,
+          "waveIntensity": 0.14260430476175742,
+          "mouseInfluence": 0.7722311595091766,
+          "wave1Direction": -1,
+          "wave2Direction": -1
+        },
+        "dandelionConfig": {
+          "speed": 0.1,
+          "spread": 1,
+          "centerY": 0.95,
+          "dotSize": 2.5,
+          "lineCount": 114,
+          "radiusMax": 0.8,
+          "radiusMin": 0.5,
+          "thickness": 0.5,
+          "gradientEndX": 28,
+          "gradientEndY": 122,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true,
+          "radialGradientStops": [
+            0,
+            100
+          ],
+          "radialGradientColors": [
+            "#C9D2E8",
+            "#5B7BF0"
+          ]
+        },
+        "shapeTrailConfig": {
+          "gap": 30,
+          "shape": "square",
+          "speed": 0.3,
+          "opacity": 0.8,
+          "endScale": 2000,
+          "blendMode": "normal",
+          "sizeCycles": 1,
+          "startScale": 1000,
+          "trailCount": 3,
+          "pathComplexity": 4,
+          "rotationOffset": 15,
+          "backgroundColor": "#F4F6FA",
+          "trailColorStops": null,
+          "useGradientColors": true
+        },
+        "particleRingConfig": {
+          "speed": 0.1,
+          "tiltX": 27,
+          "tiltZ": -29,
+          "ringWidth": 0.24,
+          "dispersion": 0.47,
+          "ringRadius": 0.37,
+          "gradientEndX": 176,
+          "gradientEndY": 22,
+          "particleSize": 4.1,
+          "particleCount": 861,
+          "rotationSpeed": 0.23,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true,
+          "radialGradientStops": [
+            0,
+            100
+          ],
+          "radialGradientColors": [
+            "#C9D2E8",
+            "#5B7BF0"
+          ]
+        },
+        "selectedProjectIds": [],
+        "tessellationConfig": {
+          "icon": "MusicNote",
+          "size": 24,
+          "color": "#2E54E8",
+          "colGap": 60,
+          "rowGap": 60,
+          "enabled": false,
+          "opacity": 0.3419551929603327,
+          "rotation": 0,
+          "mouseRotationInfluence": 0.5
+        },
+        "tags": [
+          "ribbon",
+          "silver",
+          "foil",
+          "brushed",
+          "subtle",
+          "header"
+        ]
+      }
+    },
+    {
+      "title": "Ribbon Foil Security Thread Shimmer",
+      "short_description": "Single high-opacity ribbon mimicking a banknote security thread.",
+      "long_description": "Single high-opacity ribbon mimicking a banknote security thread. Cobalt-family foil on a frost substrate (Deconflict Part 3).",
+      "scene_data": {
+        "textGap": 2,
+        "blobConfig": {
+          "speed": 0.5,
+          "colors": [
+            "#2E54E8",
+            "#5B7BF0",
+            "#C9D2E8",
+            "#6D5BE8"
+          ],
+          "blobCount": 5,
+          "maxRadius": 120,
+          "minRadius": 40,
+          "threshold": 180,
+          "blurAmount": 12,
+          "decaySpeed": 0.95,
+          "orbitRadius": 150,
+          "mouseInfluence": 0.3,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "textConfig": {
+          "color": "#0B1B33",
+          "enabled": true,
+          "opacity": 1
+        },
+        "fluidConfig": {
+          "speed": 2.4,
+          "colors": [
+            "#2E54E8",
+            "#5B7BF0",
+            "#C9D2E8",
+            "#6D5BE8"
+          ],
+          "intensity": 1.6,
+          "blurAmount": 55,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "wavesConfig": {
+          "blur": 35,
+          "speed": 0.8,
+          "colors": [
+            "#2E54E8",
+            "#5B7BF0",
+            "#C9D2E8",
+            "#6D5BE8"
+          ],
+          "layers": 6,
+          "rotation": -5,
+          "waveHeight": 0.07,
+          "phaseOffset": 0.3,
+          "waveFrequency": 3,
+          "useGradientColors": true
+        },
+        "auroraConfig": {
+          "ttl": 490,
+          "width": 95,
+          "hueEnd": 220,
+          "hueStart": 190,
+          "lineCount": 450,
+          "maxHeight": 850,
+          "minHeight": 650,
+          "blurAmount": 29,
+          "decaySpeed": 0.95,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "colorPalette": {
+          "cobalt": {
+            "50": "#eef2ff",
+            "100": "#dbe3ff",
+            "200": "#bccaff",
+            "300": "#92a8ff",
+            "400": "#5B7BF0",
+            "500": "#2E54E8",
+            "600": "#1f3fc4",
+            "700": "#1b34a0",
+            "800": "#192d80",
+            "900": "#13294B",
+            "950": "#0B1B33"
+          },
+          "white": "#fff",
+          "black": "#0B1B33"
+        },
+        "inputEnabled": false,
+        "ribbonConfig": {
+          "noise": 0.3,
+          "speed": 1.8,
+          "taper": -0.6,
+          "spread": 1.2,
+          "opacity": 0.7,
+          "rotation": 60,
+          "amplitude": 1.1,
+          "thickness": 0.35,
+          "ribbonCount": 1,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "textSections": [],
+        "effectsConfig": {
+          "blur": 6,
+          "texture": "none",
+          "textureSize": 30,
+          "textureOpacity": 0,
+          "textureBlendMode": "overlay",
+          "colorMap": "none",
+          "contrast": 108,
+          "brightness": 102,
+          "saturation": 112,
+          "vignetteIntensity": 20,
+          "flutedGlass": {
+            "enabled": true,
+            "rotation": 64,
+            "segments": 100,
+            "motionSpeed": 0.9,
+            "motionValue": 1.6,
+            "waveFrequency": 1.3,
+            "overlayOpacity": 16,
+            "distortionStrength": 0.07
+          }
+        },
+        "backgroundType": "ribbon",
+        "gradientConfig": {
+          "type": "linear",
+          "colors": [
+            "#2E54E8",
+            "#5B7BF0",
+            "#C9D2E8",
+            "#6D5BE8"
+          ],
+          "endPos": {
+            "x": 45.4980137699568,
+            "y": -12.169678095618792
+          },
+          "startPos": {
+            "x": -47.53128591671509,
+            "y": -91.92612522405079
+          },
+          "numColors": 4,
+          "colorStops": [
+            0,
+            33,
+            67,
+            100
+          ],
+          "decaySpeed": 0.95,
+          "wave1Speed": 0.39052778508262226,
+          "wave2Speed": 0.1225075717217266,
+          "waveIntensity": 0.14260430476175742,
+          "mouseInfluence": 0.7722311595091766,
+          "wave1Direction": -1,
+          "wave2Direction": -1
+        },
+        "dandelionConfig": {
+          "speed": 0.1,
+          "spread": 1,
+          "centerY": 0.95,
+          "dotSize": 2.5,
+          "lineCount": 114,
+          "radiusMax": 0.8,
+          "radiusMin": 0.5,
+          "thickness": 0.5,
+          "gradientEndX": 28,
+          "gradientEndY": 122,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true,
+          "radialGradientStops": [
+            0,
+            100
+          ],
+          "radialGradientColors": [
+            "#C9D2E8",
+            "#5B7BF0"
+          ]
+        },
+        "shapeTrailConfig": {
+          "gap": 30,
+          "shape": "square",
+          "speed": 0.3,
+          "opacity": 0.8,
+          "endScale": 2000,
+          "blendMode": "normal",
+          "sizeCycles": 1,
+          "startScale": 1000,
+          "trailCount": 3,
+          "pathComplexity": 4,
+          "rotationOffset": 15,
+          "backgroundColor": "#F4F6FA",
+          "trailColorStops": null,
+          "useGradientColors": true
+        },
+        "particleRingConfig": {
+          "speed": 0.1,
+          "tiltX": 27,
+          "tiltZ": -29,
+          "ringWidth": 0.24,
+          "dispersion": 0.47,
+          "ringRadius": 0.37,
+          "gradientEndX": 176,
+          "gradientEndY": 22,
+          "particleSize": 4.1,
+          "particleCount": 861,
+          "rotationSpeed": 0.23,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true,
+          "radialGradientStops": [
+            0,
+            100
+          ],
+          "radialGradientColors": [
+            "#C9D2E8",
+            "#5B7BF0"
+          ]
+        },
+        "selectedProjectIds": [],
+        "tessellationConfig": {
+          "icon": "MusicNote",
+          "size": 24,
+          "color": "#2E54E8",
+          "colGap": 60,
+          "rowGap": 60,
+          "enabled": false,
+          "opacity": 0.3419551929603327,
+          "rotation": 0,
+          "mouseRotationInfluence": 0.5
+        },
+        "tags": [
+          "ribbon",
+          "thread",
+          "foil",
+          "security",
+          "single",
+          "header"
+        ]
+      }
+    },
+    {
+      "title": "Ribbon Foil Cobalt Dense Intricate",
+      "short_description": "Five-ribbon dense cobalt foil lacework for showcase headers.",
+      "long_description": "Five-ribbon dense cobalt foil lacework for showcase headers. Cobalt-family foil on a frost substrate (Deconflict Part 3).",
+      "scene_data": {
+        "textGap": 2,
+        "blobConfig": {
+          "speed": 0.5,
+          "colors": [
+            "#2E54E8",
+            "#5B7BF0",
+            "#6D5BE8",
+            "#C9D2E8"
+          ],
+          "blobCount": 5,
+          "maxRadius": 120,
+          "minRadius": 40,
+          "threshold": 180,
+          "blurAmount": 12,
+          "decaySpeed": 0.95,
+          "orbitRadius": 150,
+          "mouseInfluence": 0.3,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "textConfig": {
+          "color": "#0B1B33",
+          "enabled": true,
+          "opacity": 1
+        },
+        "fluidConfig": {
+          "speed": 2.4,
+          "colors": [
+            "#2E54E8",
+            "#5B7BF0",
+            "#6D5BE8",
+            "#C9D2E8"
+          ],
+          "intensity": 1.6,
+          "blurAmount": 55,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "wavesConfig": {
+          "blur": 35,
+          "speed": 0.8,
+          "colors": [
+            "#2E54E8",
+            "#5B7BF0",
+            "#6D5BE8",
+            "#C9D2E8"
+          ],
+          "layers": 6,
+          "rotation": -5,
+          "waveHeight": 0.07,
+          "phaseOffset": 0.3,
+          "waveFrequency": 3,
+          "useGradientColors": true
+        },
+        "auroraConfig": {
+          "ttl": 490,
+          "width": 95,
+          "hueEnd": 220,
+          "hueStart": 190,
+          "lineCount": 450,
+          "maxHeight": 850,
+          "minHeight": 650,
+          "blurAmount": 29,
+          "decaySpeed": 0.95,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "colorPalette": {
+          "cobalt": {
+            "50": "#eef2ff",
+            "100": "#dbe3ff",
+            "200": "#bccaff",
+            "300": "#92a8ff",
+            "400": "#5B7BF0",
+            "500": "#2E54E8",
+            "600": "#1f3fc4",
+            "700": "#1b34a0",
+            "800": "#192d80",
+            "900": "#13294B",
+            "950": "#0B1B33"
+          },
+          "white": "#fff",
+          "black": "#0B1B33"
+        },
+        "inputEnabled": false,
+        "ribbonConfig": {
+          "noise": 0.3,
+          "speed": 1.8,
+          "taper": -0.6,
+          "spread": 2.5,
+          "opacity": 0.55,
+          "rotation": 88,
+          "amplitude": 1.1,
+          "thickness": 0.35,
+          "ribbonCount": 5,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "textSections": [],
+        "effectsConfig": {
+          "blur": 6,
+          "texture": "none",
+          "textureSize": 30,
+          "textureOpacity": 0,
+          "textureBlendMode": "overlay",
+          "colorMap": "none",
+          "contrast": 108,
+          "brightness": 102,
+          "saturation": 115,
+          "vignetteIntensity": 26,
+          "flutedGlass": {
+            "enabled": true,
+            "rotation": 88,
+            "segments": 100,
+            "motionSpeed": 0.9,
+            "motionValue": 1.6,
+            "waveFrequency": 1.3,
+            "overlayOpacity": 18,
+            "distortionStrength": 0.09
+          }
+        },
+        "backgroundType": "ribbon",
+        "gradientConfig": {
+          "type": "linear",
+          "colors": [
+            "#2E54E8",
+            "#5B7BF0",
+            "#6D5BE8",
+            "#C9D2E8"
+          ],
+          "endPos": {
+            "x": 45.4980137699568,
+            "y": -12.169678095618792
+          },
+          "startPos": {
+            "x": -47.53128591671509,
+            "y": -91.92612522405079
+          },
+          "numColors": 4,
+          "colorStops": [
+            0,
+            33,
+            67,
+            100
+          ],
+          "decaySpeed": 0.95,
+          "wave1Speed": 0.39052778508262226,
+          "wave2Speed": 0.1225075717217266,
+          "waveIntensity": 0.14260430476175742,
+          "mouseInfluence": 0.7722311595091766,
+          "wave1Direction": -1,
+          "wave2Direction": -1
+        },
+        "dandelionConfig": {
+          "speed": 0.1,
+          "spread": 1,
+          "centerY": 0.95,
+          "dotSize": 2.5,
+          "lineCount": 114,
+          "radiusMax": 0.8,
+          "radiusMin": 0.5,
+          "thickness": 0.5,
+          "gradientEndX": 28,
+          "gradientEndY": 122,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true,
+          "radialGradientStops": [
+            0,
+            100
+          ],
+          "radialGradientColors": [
+            "#C9D2E8",
+            "#5B7BF0"
+          ]
+        },
+        "shapeTrailConfig": {
+          "gap": 30,
+          "shape": "square",
+          "speed": 0.3,
+          "opacity": 0.8,
+          "endScale": 2000,
+          "blendMode": "normal",
+          "sizeCycles": 1,
+          "startScale": 1000,
+          "trailCount": 3,
+          "pathComplexity": 4,
+          "rotationOffset": 15,
+          "backgroundColor": "#F4F6FA",
+          "trailColorStops": null,
+          "useGradientColors": true
+        },
+        "particleRingConfig": {
+          "speed": 0.1,
+          "tiltX": 27,
+          "tiltZ": -29,
+          "ringWidth": 0.24,
+          "dispersion": 0.47,
+          "ringRadius": 0.37,
+          "gradientEndX": 176,
+          "gradientEndY": 22,
+          "particleSize": 4.1,
+          "particleCount": 861,
+          "rotationSpeed": 0.23,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true,
+          "radialGradientStops": [
+            0,
+            100
+          ],
+          "radialGradientColors": [
+            "#C9D2E8",
+            "#5B7BF0"
+          ]
+        },
+        "selectedProjectIds": [],
+        "tessellationConfig": {
+          "icon": "MusicNote",
+          "size": 24,
+          "color": "#2E54E8",
+          "colGap": 60,
+          "rowGap": 60,
+          "enabled": false,
+          "opacity": 0.3419551929603327,
+          "rotation": 0,
+          "mouseRotationInfluence": 0.5
+        },
+        "tags": [
+          "ribbon",
+          "cobalt",
+          "foil",
+          "intricate",
+          "dynamic",
+          "header"
+        ]
+      }
+    },
+    {
+      "title": "Simple Frost Intaglio Engraved Substrate",
+      "short_description": "Subtle currency-paper grain for engraved security-print overlays.",
+      "long_description": "Subtle currency-paper grain for engraved security-print overlays. Text-safe frost substrate, no fluted glass (Deconflict Part 3).",
+      "scene_data": {
+        "textGap": 9,
+        "blobConfig": {
+          "speed": 0.5,
+          "colors": [
+            "#F4F6FA",
+            "#E9EEF6",
+            "#F4F6FA"
+          ],
+          "blobCount": 5,
+          "maxRadius": 120,
+          "minRadius": 40,
+          "threshold": 180,
+          "blurAmount": 12,
+          "decaySpeed": 0.95,
+          "orbitRadius": 150,
+          "mouseInfluence": 0.3,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "textConfig": {
+          "color": "#13294B",
+          "enabled": true,
+          "opacity": 1
+        },
+        "fluidConfig": {
+          "speed": 2.4,
+          "colors": [
+            "#F4F6FA",
+            "#E9EEF6",
+            "#F4F6FA"
+          ],
+          "intensity": 5.1,
+          "blurAmount": 91,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "wavesConfig": {
+          "blur": 55,
+          "speed": 0.35,
+          "colors": [
+            "#F4F6FA",
+            "#E9EEF6",
+            "#F4F6FA"
+          ],
+          "layers": 7,
+          "rotation": -6,
+          "waveHeight": 0.08,
+          "phaseOffset": 0.4,
+          "waveFrequency": 2.4,
+          "useGradientColors": true
+        },
+        "auroraConfig": {
+          "ttl": 10,
+          "width": 80,
+          "hueEnd": 180,
+          "hueStart": 120,
+          "lineCount": 460,
+          "maxHeight": 750,
+          "minHeight": 850,
+          "blurAmount": 48,
+          "decaySpeed": 0.95,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "colorPalette": {
+          "frost": {
+            "50": "#ffffff",
+            "100": "#F4F6FA",
+            "200": "#E9EEF6",
+            "300": "#DCE2EC",
+            "400": "#B9C4D6",
+            "500": "#8A98B0",
+            "600": "#5A6B85",
+            "700": "#33455f",
+            "800": "#1d3050",
+            "900": "#13294B",
+            "950": "#0B1B33"
+          },
+          "white": "#fff",
+          "black": "#0B1B33"
+        },
+        "inputEnabled": false,
+        "ribbonConfig": {
+          "noise": 1.4,
+          "speed": 1.9,
+          "taper": 0.9,
+          "spread": 2.8,
+          "opacity": 0.95,
+          "rotation": -65,
+          "amplitude": 1.2,
+          "thickness": 0.1,
+          "ribbonCount": 7,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "textSections": [],
+        "effectsConfig": {
+          "blur": 3,
+          "texture": "grain",
+          "textureSize": 28,
+          "textureOpacity": 52,
+          "textureBlendMode": "overlay",
+          "colorMap": "none",
+          "contrast": 102,
+          "brightness": 100,
+          "saturation": 96,
+          "vignetteIntensity": 24,
+          "flutedGlass": {
+            "enabled": false,
+            "rotation": 87,
+            "segments": 84,
+            "motionSpeed": 1,
+            "motionValue": 0,
+            "waveFrequency": 1,
+            "overlayOpacity": 11,
+            "distortionStrength": 0
+          }
+        },
+        "backgroundType": "simple",
+        "gradientConfig": {
+          "type": "conic",
+          "colors": [
+            "#F4F6FA",
+            "#E9EEF6",
+            "#F4F6FA"
+          ],
+          "endPos": {
+            "x": -29.55724965114348,
+            "y": 0.7302032808701426
+          },
+          "startPos": {
+            "x": 46.26778516629679,
+            "y": 130
+          },
+          "numColors": 3,
+          "colorStops": [
+            0,
+            50,
+            100
+          ],
+          "decaySpeed": 0.95,
+          "wave1Speed": 0.3136998405933228,
+          "wave2Speed": 0.3508962405962838,
+          "waveIntensity": 0.3974045599119247,
+          "mouseInfluence": 0.8129751038509141,
+          "wave1Direction": 1,
+          "wave2Direction": -1
+        },
+        "dandelionConfig": {
+          "speed": 0.9,
+          "spread": 0.28,
+          "centerY": 0.76,
+          "dotSize": 3.5,
+          "lineCount": 121,
+          "radiusMax": 0.51,
+          "radiusMin": 0.12,
+          "thickness": 1.4,
+          "gradientEndX": 146,
+          "gradientEndY": 17,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true,
+          "radialGradientStops": [
+            0,
+            100
+          ],
+          "radialGradientColors": [
+            "#C9D2E8",
+            "#5B7BF0"
+          ]
+        },
+        "shapeTrailConfig": {
+          "gap": 30,
+          "shape": "circle",
+          "speed": 0.3,
+          "opacity": 0.8,
+          "endScale": 2000,
+          "blendMode": "normal",
+          "sizeCycles": 1,
+          "startScale": 1000,
+          "trailCount": 3,
+          "pathComplexity": 4,
+          "rotationOffset": 15,
+          "backgroundColor": "#F4F6FA",
+          "trailColorStops": null,
+          "useGradientColors": true
+        },
+        "particleRingConfig": {
+          "speed": 0.8,
+          "tiltX": 6,
+          "tiltZ": -5,
+          "ringWidth": 0.28,
+          "dispersion": 0.49,
+          "ringRadius": 0.2,
+          "gradientEndX": 186,
+          "gradientEndY": 127,
+          "particleSize": 4.3,
+          "particleCount": 886,
+          "rotationSpeed": 0.14,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true,
+          "radialGradientStops": [
+            0,
+            50,
+            100
+          ],
+          "radialGradientColors": [
+            "#C9D2E8",
+            "#5B7BF0"
+          ]
+        },
+        "selectedProjectIds": [],
+        "tessellationConfig": {
+          "icon": "Plus",
+          "size": 24,
+          "color": "#2E54E8",
+          "colGap": 60,
+          "rowGap": 60,
+          "enabled": false,
+          "opacity": 0.27596532115207173,
+          "rotation": 0,
+          "mouseRotationInfluence": 0.5
+        },
+        "tags": [
+          "simple",
+          "frost",
+          "intaglio",
+          "paper",
+          "accessible",
+          "substrate"
+        ]
+      }
+    },
+    {
+      "title": "Simple Frost Heavy Grain Currency Paper",
+      "short_description": "Heavier multiply grain for a tactile banknote-paper substrate.",
+      "long_description": "Heavier multiply grain for a tactile banknote-paper substrate. Text-safe frost substrate, no fluted glass (Deconflict Part 3).",
+      "scene_data": {
+        "textGap": 9,
+        "blobConfig": {
+          "speed": 0.5,
+          "colors": [
+            "#F4F6FA",
+            "#E9EEF6",
+            "#F4F6FA"
+          ],
+          "blobCount": 5,
+          "maxRadius": 120,
+          "minRadius": 40,
+          "threshold": 180,
+          "blurAmount": 12,
+          "decaySpeed": 0.95,
+          "orbitRadius": 150,
+          "mouseInfluence": 0.3,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "textConfig": {
+          "color": "#13294B",
+          "enabled": true,
+          "opacity": 1
+        },
+        "fluidConfig": {
+          "speed": 2.4,
+          "colors": [
+            "#F4F6FA",
+            "#E9EEF6",
+            "#F4F6FA"
+          ],
+          "intensity": 5.1,
+          "blurAmount": 91,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "wavesConfig": {
+          "blur": 55,
+          "speed": 0.35,
+          "colors": [
+            "#F4F6FA",
+            "#E9EEF6",
+            "#F4F6FA"
+          ],
+          "layers": 7,
+          "rotation": -6,
+          "waveHeight": 0.08,
+          "phaseOffset": 0.4,
+          "waveFrequency": 2.4,
+          "useGradientColors": true
+        },
+        "auroraConfig": {
+          "ttl": 10,
+          "width": 80,
+          "hueEnd": 180,
+          "hueStart": 120,
+          "lineCount": 460,
+          "maxHeight": 750,
+          "minHeight": 850,
+          "blurAmount": 48,
+          "decaySpeed": 0.95,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "colorPalette": {
+          "frost": {
+            "50": "#ffffff",
+            "100": "#F4F6FA",
+            "200": "#E9EEF6",
+            "300": "#DCE2EC",
+            "400": "#B9C4D6",
+            "500": "#8A98B0",
+            "600": "#5A6B85",
+            "700": "#33455f",
+            "800": "#1d3050",
+            "900": "#13294B",
+            "950": "#0B1B33"
+          },
+          "white": "#fff",
+          "black": "#0B1B33"
+        },
+        "inputEnabled": false,
+        "ribbonConfig": {
+          "noise": 1.4,
+          "speed": 1.9,
+          "taper": 0.9,
+          "spread": 2.8,
+          "opacity": 0.95,
+          "rotation": -65,
+          "amplitude": 1.2,
+          "thickness": 0.1,
+          "ribbonCount": 7,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "textSections": [],
+        "effectsConfig": {
+          "blur": 3,
+          "texture": "grain",
+          "textureSize": 32,
+          "textureOpacity": 60,
+          "textureBlendMode": "multiply",
+          "colorMap": "none",
+          "contrast": 102,
+          "brightness": 100,
+          "saturation": 95,
+          "vignetteIntensity": 28,
+          "flutedGlass": {
+            "enabled": false,
+            "rotation": 87,
+            "segments": 84,
+            "motionSpeed": 1,
+            "motionValue": 0,
+            "waveFrequency": 1,
+            "overlayOpacity": 11,
+            "distortionStrength": 0
+          }
+        },
+        "backgroundType": "simple",
+        "gradientConfig": {
+          "type": "conic",
+          "colors": [
+            "#F4F6FA",
+            "#E9EEF6",
+            "#F4F6FA"
+          ],
+          "endPos": {
+            "x": -29.55724965114348,
+            "y": 0.7302032808701426
+          },
+          "startPos": {
+            "x": 46.26778516629679,
+            "y": 130
+          },
+          "numColors": 3,
+          "colorStops": [
+            0,
+            50,
+            100
+          ],
+          "decaySpeed": 0.95,
+          "wave1Speed": 0.3136998405933228,
+          "wave2Speed": 0.3508962405962838,
+          "waveIntensity": 0.3974045599119247,
+          "mouseInfluence": 0.8129751038509141,
+          "wave1Direction": 1,
+          "wave2Direction": -1
+        },
+        "dandelionConfig": {
+          "speed": 0.9,
+          "spread": 0.28,
+          "centerY": 0.76,
+          "dotSize": 3.5,
+          "lineCount": 121,
+          "radiusMax": 0.51,
+          "radiusMin": 0.12,
+          "thickness": 1.4,
+          "gradientEndX": 146,
+          "gradientEndY": 17,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true,
+          "radialGradientStops": [
+            0,
+            100
+          ],
+          "radialGradientColors": [
+            "#C9D2E8",
+            "#5B7BF0"
+          ]
+        },
+        "shapeTrailConfig": {
+          "gap": 30,
+          "shape": "circle",
+          "speed": 0.3,
+          "opacity": 0.8,
+          "endScale": 2000,
+          "blendMode": "normal",
+          "sizeCycles": 1,
+          "startScale": 1000,
+          "trailCount": 3,
+          "pathComplexity": 4,
+          "rotationOffset": 15,
+          "backgroundColor": "#F4F6FA",
+          "trailColorStops": null,
+          "useGradientColors": true
+        },
+        "particleRingConfig": {
+          "speed": 0.8,
+          "tiltX": 6,
+          "tiltZ": -5,
+          "ringWidth": 0.28,
+          "dispersion": 0.49,
+          "ringRadius": 0.2,
+          "gradientEndX": 186,
+          "gradientEndY": 127,
+          "particleSize": 4.3,
+          "particleCount": 886,
+          "rotationSpeed": 0.14,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true,
+          "radialGradientStops": [
+            0,
+            50,
+            100
+          ],
+          "radialGradientColors": [
+            "#C9D2E8",
+            "#5B7BF0"
+          ]
+        },
+        "selectedProjectIds": [],
+        "tessellationConfig": {
+          "icon": "Plus",
+          "size": 24,
+          "color": "#2E54E8",
+          "colGap": 60,
+          "rowGap": 60,
+          "enabled": false,
+          "opacity": 0.27596532115207173,
+          "rotation": 0,
+          "mouseRotationInfluence": 0.5
+        },
+        "tags": [
+          "simple",
+          "frost",
+          "intaglio",
+          "paper",
+          "grain",
+          "substrate"
+        ]
+      }
+    },
+    {
+      "title": "Simple Frost Deep Relief Engraved Substrate",
+      "short_description": "Deeper vignette relief for a pressed-plate intaglio feel.",
+      "long_description": "Deeper vignette relief for a pressed-plate intaglio feel. Text-safe frost substrate, no fluted glass (Deconflict Part 3).",
+      "scene_data": {
+        "textGap": 9,
+        "blobConfig": {
+          "speed": 0.5,
+          "colors": [
+            "#F4F6FA",
+            "#DCE2EC",
+            "#F4F6FA"
+          ],
+          "blobCount": 5,
+          "maxRadius": 120,
+          "minRadius": 40,
+          "threshold": 180,
+          "blurAmount": 12,
+          "decaySpeed": 0.95,
+          "orbitRadius": 150,
+          "mouseInfluence": 0.3,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "textConfig": {
+          "color": "#13294B",
+          "enabled": true,
+          "opacity": 1
+        },
+        "fluidConfig": {
+          "speed": 2.4,
+          "colors": [
+            "#F4F6FA",
+            "#DCE2EC",
+            "#F4F6FA"
+          ],
+          "intensity": 5.1,
+          "blurAmount": 91,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "wavesConfig": {
+          "blur": 55,
+          "speed": 0.35,
+          "colors": [
+            "#F4F6FA",
+            "#DCE2EC",
+            "#F4F6FA"
+          ],
+          "layers": 7,
+          "rotation": -6,
+          "waveHeight": 0.08,
+          "phaseOffset": 0.4,
+          "waveFrequency": 2.4,
+          "useGradientColors": true
+        },
+        "auroraConfig": {
+          "ttl": 10,
+          "width": 80,
+          "hueEnd": 180,
+          "hueStart": 120,
+          "lineCount": 460,
+          "maxHeight": 750,
+          "minHeight": 850,
+          "blurAmount": 48,
+          "decaySpeed": 0.95,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "colorPalette": {
+          "frost": {
+            "50": "#ffffff",
+            "100": "#F4F6FA",
+            "200": "#E9EEF6",
+            "300": "#DCE2EC",
+            "400": "#B9C4D6",
+            "500": "#8A98B0",
+            "600": "#5A6B85",
+            "700": "#33455f",
+            "800": "#1d3050",
+            "900": "#13294B",
+            "950": "#0B1B33"
+          },
+          "white": "#fff",
+          "black": "#0B1B33"
+        },
+        "inputEnabled": false,
+        "ribbonConfig": {
+          "noise": 1.4,
+          "speed": 1.9,
+          "taper": 0.9,
+          "spread": 2.8,
+          "opacity": 0.95,
+          "rotation": -65,
+          "amplitude": 1.2,
+          "thickness": 0.1,
+          "ribbonCount": 7,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "textSections": [],
+        "effectsConfig": {
+          "blur": 3,
+          "texture": "grain",
+          "textureSize": 26,
+          "textureOpacity": 50,
+          "textureBlendMode": "overlay",
+          "colorMap": "none",
+          "contrast": 102,
+          "brightness": 100,
+          "saturation": 96,
+          "vignetteIntensity": 34,
+          "flutedGlass": {
+            "enabled": false,
+            "rotation": 87,
+            "segments": 84,
+            "motionSpeed": 1,
+            "motionValue": 0,
+            "waveFrequency": 1,
+            "overlayOpacity": 11,
+            "distortionStrength": 0
+          }
+        },
+        "backgroundType": "simple",
+        "gradientConfig": {
+          "type": "conic",
+          "colors": [
+            "#F4F6FA",
+            "#DCE2EC",
+            "#F4F6FA"
+          ],
+          "endPos": {
+            "x": -29.55724965114348,
+            "y": 0.7302032808701426
+          },
+          "startPos": {
+            "x": 46.26778516629679,
+            "y": 130
+          },
+          "numColors": 3,
+          "colorStops": [
+            0,
+            50,
+            100
+          ],
+          "decaySpeed": 0.95,
+          "wave1Speed": 0.3136998405933228,
+          "wave2Speed": 0.3508962405962838,
+          "waveIntensity": 0.3974045599119247,
+          "mouseInfluence": 0.8129751038509141,
+          "wave1Direction": 1,
+          "wave2Direction": -1
+        },
+        "dandelionConfig": {
+          "speed": 0.9,
+          "spread": 0.28,
+          "centerY": 0.76,
+          "dotSize": 3.5,
+          "lineCount": 121,
+          "radiusMax": 0.51,
+          "radiusMin": 0.12,
+          "thickness": 1.4,
+          "gradientEndX": 146,
+          "gradientEndY": 17,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true,
+          "radialGradientStops": [
+            0,
+            100
+          ],
+          "radialGradientColors": [
+            "#C9D2E8",
+            "#5B7BF0"
+          ]
+        },
+        "shapeTrailConfig": {
+          "gap": 30,
+          "shape": "circle",
+          "speed": 0.3,
+          "opacity": 0.8,
+          "endScale": 2000,
+          "blendMode": "normal",
+          "sizeCycles": 1,
+          "startScale": 1000,
+          "trailCount": 3,
+          "pathComplexity": 4,
+          "rotationOffset": 15,
+          "backgroundColor": "#F4F6FA",
+          "trailColorStops": null,
+          "useGradientColors": true
+        },
+        "particleRingConfig": {
+          "speed": 0.8,
+          "tiltX": 6,
+          "tiltZ": -5,
+          "ringWidth": 0.28,
+          "dispersion": 0.49,
+          "ringRadius": 0.2,
+          "gradientEndX": 186,
+          "gradientEndY": 127,
+          "particleSize": 4.3,
+          "particleCount": 886,
+          "rotationSpeed": 0.14,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true,
+          "radialGradientStops": [
+            0,
+            50,
+            100
+          ],
+          "radialGradientColors": [
+            "#C9D2E8",
+            "#5B7BF0"
+          ]
+        },
+        "selectedProjectIds": [],
+        "tessellationConfig": {
+          "icon": "Plus",
+          "size": 24,
+          "color": "#2E54E8",
+          "colGap": 60,
+          "rowGap": 60,
+          "enabled": false,
+          "opacity": 0.27596532115207173,
+          "rotation": 0,
+          "mouseRotationInfluence": 0.5
+        },
+        "tags": [
+          "simple",
+          "frost",
+          "intaglio",
+          "relief",
+          "vignette",
+          "substrate"
+        ]
+      }
+    },
+    {
+      "title": "Simple Frost Calm Accessible Substrate",
+      "short_description": "Lightest, calmest frost substrate for text-heavy security pages.",
+      "long_description": "Lightest, calmest frost substrate for text-heavy security pages. Text-safe frost substrate, no fluted glass (Deconflict Part 3).",
+      "scene_data": {
+        "textGap": 9,
+        "blobConfig": {
+          "speed": 0.5,
+          "colors": [
+            "#F4F6FA",
+            "#E9EEF6",
+            "#F4F6FA"
+          ],
+          "blobCount": 5,
+          "maxRadius": 120,
+          "minRadius": 40,
+          "threshold": 180,
+          "blurAmount": 12,
+          "decaySpeed": 0.95,
+          "orbitRadius": 150,
+          "mouseInfluence": 0.3,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "textConfig": {
+          "color": "#13294B",
+          "enabled": true,
+          "opacity": 1
+        },
+        "fluidConfig": {
+          "speed": 2.4,
+          "colors": [
+            "#F4F6FA",
+            "#E9EEF6",
+            "#F4F6FA"
+          ],
+          "intensity": 5.1,
+          "blurAmount": 91,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "wavesConfig": {
+          "blur": 55,
+          "speed": 0.35,
+          "colors": [
+            "#F4F6FA",
+            "#E9EEF6",
+            "#F4F6FA"
+          ],
+          "layers": 7,
+          "rotation": -6,
+          "waveHeight": 0.08,
+          "phaseOffset": 0.4,
+          "waveFrequency": 2.4,
+          "useGradientColors": true
+        },
+        "auroraConfig": {
+          "ttl": 10,
+          "width": 80,
+          "hueEnd": 180,
+          "hueStart": 120,
+          "lineCount": 460,
+          "maxHeight": 750,
+          "minHeight": 850,
+          "blurAmount": 48,
+          "decaySpeed": 0.95,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "colorPalette": {
+          "frost": {
+            "50": "#ffffff",
+            "100": "#F4F6FA",
+            "200": "#E9EEF6",
+            "300": "#DCE2EC",
+            "400": "#B9C4D6",
+            "500": "#8A98B0",
+            "600": "#5A6B85",
+            "700": "#33455f",
+            "800": "#1d3050",
+            "900": "#13294B",
+            "950": "#0B1B33"
+          },
+          "white": "#fff",
+          "black": "#0B1B33"
+        },
+        "inputEnabled": false,
+        "ribbonConfig": {
+          "noise": 1.4,
+          "speed": 1.9,
+          "taper": 0.9,
+          "spread": 2.8,
+          "opacity": 0.95,
+          "rotation": -65,
+          "amplitude": 1.2,
+          "thickness": 0.1,
+          "ribbonCount": 7,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "textSections": [],
+        "effectsConfig": {
+          "blur": 2,
+          "texture": "grain",
+          "textureSize": 24,
+          "textureOpacity": 45,
+          "textureBlendMode": "overlay",
+          "colorMap": "none",
+          "contrast": 102,
+          "brightness": 100,
+          "saturation": 98,
+          "vignetteIntensity": 18,
+          "flutedGlass": {
+            "enabled": false,
+            "rotation": 87,
+            "segments": 84,
+            "motionSpeed": 1,
+            "motionValue": 0,
+            "waveFrequency": 1,
+            "overlayOpacity": 11,
+            "distortionStrength": 0
+          }
+        },
+        "backgroundType": "simple",
+        "gradientConfig": {
+          "type": "conic",
+          "colors": [
+            "#F4F6FA",
+            "#E9EEF6",
+            "#F4F6FA"
+          ],
+          "endPos": {
+            "x": -29.55724965114348,
+            "y": 0.7302032808701426
+          },
+          "startPos": {
+            "x": 46.26778516629679,
+            "y": 130
+          },
+          "numColors": 3,
+          "colorStops": [
+            0,
+            50,
+            100
+          ],
+          "decaySpeed": 0.95,
+          "wave1Speed": 0.3136998405933228,
+          "wave2Speed": 0.3508962405962838,
+          "waveIntensity": 0.3974045599119247,
+          "mouseInfluence": 0.8129751038509141,
+          "wave1Direction": 1,
+          "wave2Direction": -1
+        },
+        "dandelionConfig": {
+          "speed": 0.9,
+          "spread": 0.28,
+          "centerY": 0.76,
+          "dotSize": 3.5,
+          "lineCount": 121,
+          "radiusMax": 0.51,
+          "radiusMin": 0.12,
+          "thickness": 1.4,
+          "gradientEndX": 146,
+          "gradientEndY": 17,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true,
+          "radialGradientStops": [
+            0,
+            100
+          ],
+          "radialGradientColors": [
+            "#C9D2E8",
+            "#5B7BF0"
+          ]
+        },
+        "shapeTrailConfig": {
+          "gap": 30,
+          "shape": "circle",
+          "speed": 0.3,
+          "opacity": 0.8,
+          "endScale": 2000,
+          "blendMode": "normal",
+          "sizeCycles": 1,
+          "startScale": 1000,
+          "trailCount": 3,
+          "pathComplexity": 4,
+          "rotationOffset": 15,
+          "backgroundColor": "#F4F6FA",
+          "trailColorStops": null,
+          "useGradientColors": true
+        },
+        "particleRingConfig": {
+          "speed": 0.8,
+          "tiltX": 6,
+          "tiltZ": -5,
+          "ringWidth": 0.28,
+          "dispersion": 0.49,
+          "ringRadius": 0.2,
+          "gradientEndX": 186,
+          "gradientEndY": 127,
+          "particleSize": 4.3,
+          "particleCount": 886,
+          "rotationSpeed": 0.14,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true,
+          "radialGradientStops": [
+            0,
+            50,
+            100
+          ],
+          "radialGradientColors": [
+            "#C9D2E8",
+            "#5B7BF0"
+          ]
+        },
+        "selectedProjectIds": [],
+        "tessellationConfig": {
+          "icon": "Plus",
+          "size": 24,
+          "color": "#2E54E8",
+          "colGap": 60,
+          "rowGap": 60,
+          "enabled": false,
+          "opacity": 0.27596532115207173,
+          "rotation": 0,
+          "mouseRotationInfluence": 0.5
+        },
+        "tags": [
+          "simple",
+          "frost",
+          "intaglio",
+          "accessible",
+          "subtle",
+          "substrate"
+        ]
+      }
+    },
+    {
+      "title": "Simple Frost Fine Engraving Microline Substrate",
+      "short_description": "Fine-grain cool-tinted substrate tuned for microline overlays.",
+      "long_description": "Fine-grain cool-tinted substrate tuned for microline overlays. Text-safe frost substrate, no fluted glass (Deconflict Part 3).",
+      "scene_data": {
+        "textGap": 9,
+        "blobConfig": {
+          "speed": 0.5,
+          "colors": [
+            "#F4F6FA",
+            "#E9EEF6",
+            "#DCE2EC"
+          ],
+          "blobCount": 5,
+          "maxRadius": 120,
+          "minRadius": 40,
+          "threshold": 180,
+          "blurAmount": 12,
+          "decaySpeed": 0.95,
+          "orbitRadius": 150,
+          "mouseInfluence": 0.3,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "textConfig": {
+          "color": "#13294B",
+          "enabled": true,
+          "opacity": 1
+        },
+        "fluidConfig": {
+          "speed": 2.4,
+          "colors": [
+            "#F4F6FA",
+            "#E9EEF6",
+            "#DCE2EC"
+          ],
+          "intensity": 5.1,
+          "blurAmount": 91,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "wavesConfig": {
+          "blur": 55,
+          "speed": 0.35,
+          "colors": [
+            "#F4F6FA",
+            "#E9EEF6",
+            "#DCE2EC"
+          ],
+          "layers": 7,
+          "rotation": -6,
+          "waveHeight": 0.08,
+          "phaseOffset": 0.4,
+          "waveFrequency": 2.4,
+          "useGradientColors": true
+        },
+        "auroraConfig": {
+          "ttl": 10,
+          "width": 80,
+          "hueEnd": 180,
+          "hueStart": 120,
+          "lineCount": 460,
+          "maxHeight": 750,
+          "minHeight": 850,
+          "blurAmount": 48,
+          "decaySpeed": 0.95,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "colorPalette": {
+          "frost": {
+            "50": "#ffffff",
+            "100": "#F4F6FA",
+            "200": "#E9EEF6",
+            "300": "#DCE2EC",
+            "400": "#B9C4D6",
+            "500": "#8A98B0",
+            "600": "#5A6B85",
+            "700": "#33455f",
+            "800": "#1d3050",
+            "900": "#13294B",
+            "950": "#0B1B33"
+          },
+          "white": "#fff",
+          "black": "#0B1B33"
+        },
+        "inputEnabled": false,
+        "ribbonConfig": {
+          "noise": 1.4,
+          "speed": 1.9,
+          "taper": 0.9,
+          "spread": 2.8,
+          "opacity": 0.95,
+          "rotation": -65,
+          "amplitude": 1.2,
+          "thickness": 0.1,
+          "ribbonCount": 7,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true
+        },
+        "textSections": [],
+        "effectsConfig": {
+          "blur": 3,
+          "texture": "grain",
+          "textureSize": 20,
+          "textureOpacity": 48,
+          "textureBlendMode": "overlay",
+          "colorMap": "none",
+          "contrast": 102,
+          "brightness": 100,
+          "saturation": 96,
+          "vignetteIntensity": 26,
+          "flutedGlass": {
+            "enabled": false,
+            "rotation": 87,
+            "segments": 84,
+            "motionSpeed": 1,
+            "motionValue": 0,
+            "waveFrequency": 1,
+            "overlayOpacity": 11,
+            "distortionStrength": 0
+          }
+        },
+        "backgroundType": "simple",
+        "gradientConfig": {
+          "type": "conic",
+          "colors": [
+            "#F4F6FA",
+            "#E9EEF6",
+            "#DCE2EC"
+          ],
+          "endPos": {
+            "x": -29.55724965114348,
+            "y": 0.7302032808701426
+          },
+          "startPos": {
+            "x": 46.26778516629679,
+            "y": 130
+          },
+          "numColors": 3,
+          "colorStops": [
+            0,
+            50,
+            100
+          ],
+          "decaySpeed": 0.95,
+          "wave1Speed": 0.3136998405933228,
+          "wave2Speed": 0.3508962405962838,
+          "waveIntensity": 0.3974045599119247,
+          "mouseInfluence": 0.8129751038509141,
+          "wave1Direction": 1,
+          "wave2Direction": -1
+        },
+        "dandelionConfig": {
+          "speed": 0.9,
+          "spread": 0.28,
+          "centerY": 0.76,
+          "dotSize": 3.5,
+          "lineCount": 121,
+          "radiusMax": 0.51,
+          "radiusMin": 0.12,
+          "thickness": 1.4,
+          "gradientEndX": 146,
+          "gradientEndY": 17,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true,
+          "radialGradientStops": [
+            0,
+            100
+          ],
+          "radialGradientColors": [
+            "#C9D2E8",
+            "#5B7BF0"
+          ]
+        },
+        "shapeTrailConfig": {
+          "gap": 30,
+          "shape": "circle",
+          "speed": 0.3,
+          "opacity": 0.8,
+          "endScale": 2000,
+          "blendMode": "normal",
+          "sizeCycles": 1,
+          "startScale": 1000,
+          "trailCount": 3,
+          "pathComplexity": 4,
+          "rotationOffset": 15,
+          "backgroundColor": "#F4F6FA",
+          "trailColorStops": null,
+          "useGradientColors": true
+        },
+        "particleRingConfig": {
+          "speed": 0.8,
+          "tiltX": 6,
+          "tiltZ": -5,
+          "ringWidth": 0.28,
+          "dispersion": 0.49,
+          "ringRadius": 0.2,
+          "gradientEndX": 186,
+          "gradientEndY": 127,
+          "particleSize": 4.3,
+          "particleCount": 886,
+          "rotationSpeed": 0.14,
+          "backgroundColor": "#F4F6FA",
+          "useGradientColors": true,
+          "radialGradientStops": [
+            0,
+            50,
+            100
+          ],
+          "radialGradientColors": [
+            "#C9D2E8",
+            "#5B7BF0"
+          ]
+        },
+        "selectedProjectIds": [],
+        "tessellationConfig": {
+          "icon": "Plus",
+          "size": 24,
+          "color": "#2E54E8",
+          "colGap": 60,
+          "rowGap": 60,
+          "enabled": false,
+          "opacity": 0.27596532115207173,
+          "rotation": 0,
+          "mouseRotationInfluence": 0.5
+        },
+        "tags": [
+          "simple",
+          "frost",
+          "intaglio",
+          "microline",
+          "fine",
+          "substrate"
+        ]
+      }
+    },
+    {
+      "title": "Liquid Metallic Navy Molten Foil Cinematic",
+      "short_description": "Dark molten-metal hero for the Deconflict landing fold.",
+      "long_description": "Dark molten-metal hero for the Deconflict landing fold. Deep-navy molten-foil hero with fluted glass + grain (Deconflict Part 3).",
+      "scene_data": {
+        "textGap": 20,
+        "blobConfig": {
+          "speed": 0.4,
+          "colors": [
+            "#13294B",
+            "#2E54E8",
+            "#5B7BF0",
+            "#C9D2E8"
+          ],
+          "blobCount": 5,
+          "maxRadius": 130,
+          "minRadius": 45,
+          "threshold": 180,
+          "blurAmount": 12,
+          "decaySpeed": 0.95,
+          "orbitRadius": 160,
+          "mouseInfluence": 0.35,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "textConfig": {
+          "color": "#F4F6FA",
+          "enabled": true,
+          "opacity": 0.95
+        },
+        "fluidConfig": {
+          "speed": 0.7,
+          "colors": [
+            "#13294B",
+            "#2E54E8",
+            "#5B7BF0",
+            "#C9D2E8"
+          ],
+          "intensity": 1.5,
+          "blurAmount": 30,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "wavesConfig": {
+          "blur": 48,
+          "speed": 0.35,
+          "colors": [
+            "#13294B",
+            "#2E54E8",
+            "#5B7BF0",
+            "#C9D2E8"
+          ],
+          "layers": 5,
+          "rotation": 0,
+          "waveHeight": 0.06,
+          "phaseOffset": 0,
+          "waveFrequency": 2,
+          "useGradientColors": true
+        },
+        "auroraConfig": {
+          "hueEnd": 345,
+          "maxTTL": 340,
+          "minTTL": 180,
+          "hueStart": 35,
+          "maxWidth": 110,
+          "minWidth": 30,
+          "lineCount": 0,
+          "maxHeight": 950,
+          "minHeight": 420,
+          "blurAmount": 17,
+          "decaySpeed": 0.96,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "ribbonConfig": {
+          "noise": 0.3,
+          "speed": 0.35,
+          "taper": -0.25,
+          "spread": 0.5,
+          "opacity": 0.9,
+          "rotation": -24,
+          "amplitude": 1,
+          "thickness": 1.2,
+          "ribbonCount": 4,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "textSections": [],
+        "effectsConfig": {
+          "blur": 10,
+          "texture": "grain",
+          "textureSize": 32,
+          "textureOpacity": 40,
+          "textureBlendMode": "overlay",
+          "colorMap": "none",
+          "contrast": 112,
+          "brightness": 98,
+          "saturation": 105,
+          "vignetteIntensity": 36,
+          "flutedGlass": {
+            "enabled": true,
+            "rotation": 70,
+            "segments": 90,
+            "motionSpeed": 1.1,
+            "motionValue": 1.8,
+            "waveFrequency": 1.4,
+            "overlayOpacity": 16,
+            "distortionStrength": 0.08
+          }
+        },
+        "backgroundType": "liquid",
+        "gradientConfig": {
+          "type": "radial",
+          "colors": [
+            "#13294B",
+            "#2E54E8",
+            "#5B7BF0",
+            "#C9D2E8"
+          ],
+          "endPos": {
+            "x": 95,
+            "y": 110
+          },
+          "startPos": {
+            "x": 30,
+            "y": 35
+          },
+          "numColors": 4,
+          "colorStops": [
+            0,
+            35,
+            68,
+            100
+          ],
+          "decaySpeed": 0.95,
+          "wave1Speed": 0.2,
+          "wave2Speed": 0.14,
+          "waveIntensity": 0.35,
+          "mouseInfluence": 0.4,
+          "wave1Direction": 1,
+          "wave2Direction": -1
+        },
+        "dandelionConfig": {
+          "speed": 0.3,
+          "spread": 0.3,
+          "centerY": 0.85,
+          "dotSize": 3,
+          "lineCount": 120,
+          "radiusMax": 0.8,
+          "radiusMin": 0.1,
+          "thickness": 1.5,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "shapeTrailConfig": {
+          "gap": 30,
+          "shape": "circle",
+          "speed": 0.3,
+          "opacity": 0.8,
+          "endScale": 2000,
+          "blendMode": "normal",
+          "sizeCycles": 1,
+          "startScale": 1000,
+          "trailCount": 3,
+          "pathComplexity": 4,
+          "rotationOffset": 15,
+          "backgroundColor": "#0B1B33",
+          "trailColorStops": null,
+          "useGradientColors": true
+        },
+        "particleRingConfig": {
+          "speed": 0.5,
+          "tiltX": 0,
+          "tiltZ": 0,
+          "ringWidth": 0.15,
+          "dispersion": 0.3,
+          "ringRadius": 0.35,
+          "particleSize": 3,
+          "particleCount": 800,
+          "rotationSpeed": 0.2,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "selectedProjectIds": [],
+        "tessellationConfig": {
+          "icon": "Star",
+          "size": 24,
+          "color": "#2E54E8",
+          "colGap": 60,
+          "rowGap": 60,
+          "enabled": false,
+          "opacity": 0.15,
+          "rotation": 0,
+          "mouseRotationInfluence": 0.5
+        },
+        "colorPalette": {
+          "cobalt": {
+            "50": "#eef2ff",
+            "100": "#dbe3ff",
+            "200": "#bccaff",
+            "300": "#92a8ff",
+            "400": "#5B7BF0",
+            "500": "#2E54E8",
+            "600": "#1f3fc4",
+            "700": "#1b34a0",
+            "800": "#192d80",
+            "900": "#13294B",
+            "950": "#0B1B33"
+          },
+          "white": "#fff",
+          "black": "#0B1B33"
+        },
+        "inputEnabled": false,
+        "tags": [
+          "liquid",
+          "navy",
+          "molten-foil",
+          "cinematic",
+          "hero",
+          "premium"
+        ]
+      }
+    },
+    {
+      "title": "Liquid Metallic Cobalt Molten Foil Dynamic",
+      "short_description": "Brighter cobalt-led molten foil with faster, busier flow.",
+      "long_description": "Brighter cobalt-led molten foil with faster, busier flow. Deep-navy molten-foil hero with fluted glass + grain (Deconflict Part 3).",
+      "scene_data": {
+        "textGap": 20,
+        "blobConfig": {
+          "speed": 0.5,
+          "colors": [
+            "#2E54E8",
+            "#5B7BF0",
+            "#13294B",
+            "#C9D2E8"
+          ],
+          "blobCount": 6,
+          "maxRadius": 140,
+          "minRadius": 45,
+          "threshold": 175,
+          "blurAmount": 12,
+          "decaySpeed": 0.95,
+          "orbitRadius": 160,
+          "mouseInfluence": 0.35,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "textConfig": {
+          "color": "#F4F6FA",
+          "enabled": true,
+          "opacity": 0.95
+        },
+        "fluidConfig": {
+          "speed": 0.7,
+          "colors": [
+            "#2E54E8",
+            "#5B7BF0",
+            "#13294B",
+            "#C9D2E8"
+          ],
+          "intensity": 1.5,
+          "blurAmount": 30,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "wavesConfig": {
+          "blur": 48,
+          "speed": 0.35,
+          "colors": [
+            "#2E54E8",
+            "#5B7BF0",
+            "#13294B",
+            "#C9D2E8"
+          ],
+          "layers": 5,
+          "rotation": 0,
+          "waveHeight": 0.06,
+          "phaseOffset": 0,
+          "waveFrequency": 2,
+          "useGradientColors": true
+        },
+        "auroraConfig": {
+          "hueEnd": 345,
+          "maxTTL": 340,
+          "minTTL": 180,
+          "hueStart": 35,
+          "maxWidth": 110,
+          "minWidth": 30,
+          "lineCount": 0,
+          "maxHeight": 950,
+          "minHeight": 420,
+          "blurAmount": 17,
+          "decaySpeed": 0.96,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "ribbonConfig": {
+          "noise": 0.3,
+          "speed": 0.35,
+          "taper": -0.25,
+          "spread": 0.5,
+          "opacity": 0.9,
+          "rotation": -24,
+          "amplitude": 1,
+          "thickness": 1.2,
+          "ribbonCount": 4,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "textSections": [],
+        "effectsConfig": {
+          "blur": 10,
+          "texture": "grain",
+          "textureSize": 32,
+          "textureOpacity": 40,
+          "textureBlendMode": "overlay",
+          "colorMap": "none",
+          "contrast": 112,
+          "brightness": 98,
+          "saturation": 108,
+          "vignetteIntensity": 32,
+          "flutedGlass": {
+            "enabled": true,
+            "rotation": 72,
+            "segments": 84,
+            "motionSpeed": 1.1,
+            "motionValue": 1.8,
+            "waveFrequency": 1.4,
+            "overlayOpacity": 16,
+            "distortionStrength": 0.09
+          }
+        },
+        "backgroundType": "liquid",
+        "gradientConfig": {
+          "type": "radial",
+          "colors": [
+            "#2E54E8",
+            "#5B7BF0",
+            "#13294B",
+            "#C9D2E8"
+          ],
+          "endPos": {
+            "x": 95,
+            "y": 110
+          },
+          "startPos": {
+            "x": 30,
+            "y": 35
+          },
+          "numColors": 4,
+          "colorStops": [
+            0,
+            35,
+            68,
+            100
+          ],
+          "decaySpeed": 0.95,
+          "wave1Speed": 0.2,
+          "wave2Speed": 0.14,
+          "waveIntensity": 0.35,
+          "mouseInfluence": 0.4,
+          "wave1Direction": 1,
+          "wave2Direction": -1
+        },
+        "dandelionConfig": {
+          "speed": 0.3,
+          "spread": 0.3,
+          "centerY": 0.85,
+          "dotSize": 3,
+          "lineCount": 120,
+          "radiusMax": 0.8,
+          "radiusMin": 0.1,
+          "thickness": 1.5,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "shapeTrailConfig": {
+          "gap": 30,
+          "shape": "circle",
+          "speed": 0.3,
+          "opacity": 0.8,
+          "endScale": 2000,
+          "blendMode": "normal",
+          "sizeCycles": 1,
+          "startScale": 1000,
+          "trailCount": 3,
+          "pathComplexity": 4,
+          "rotationOffset": 15,
+          "backgroundColor": "#0B1B33",
+          "trailColorStops": null,
+          "useGradientColors": true
+        },
+        "particleRingConfig": {
+          "speed": 0.5,
+          "tiltX": 0,
+          "tiltZ": 0,
+          "ringWidth": 0.15,
+          "dispersion": 0.3,
+          "ringRadius": 0.35,
+          "particleSize": 3,
+          "particleCount": 800,
+          "rotationSpeed": 0.2,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "selectedProjectIds": [],
+        "tessellationConfig": {
+          "icon": "Star",
+          "size": 24,
+          "color": "#2E54E8",
+          "colGap": 60,
+          "rowGap": 60,
+          "enabled": false,
+          "opacity": 0.15,
+          "rotation": 0,
+          "mouseRotationInfluence": 0.5
+        },
+        "colorPalette": {
+          "cobalt": {
+            "50": "#eef2ff",
+            "100": "#dbe3ff",
+            "200": "#bccaff",
+            "300": "#92a8ff",
+            "400": "#5B7BF0",
+            "500": "#2E54E8",
+            "600": "#1f3fc4",
+            "700": "#1b34a0",
+            "800": "#192d80",
+            "900": "#13294B",
+            "950": "#0B1B33"
+          },
+          "white": "#fff",
+          "black": "#0B1B33"
+        },
+        "inputEnabled": false,
+        "tags": [
+          "liquid",
+          "cobalt",
+          "molten-foil",
+          "dynamic",
+          "hero",
+          "premium"
+        ]
+      }
+    },
+    {
+      "title": "Liquid Metallic Silver Quicksilver Molten Foil",
+      "short_description": "Mercury-like silver molten foil with heavy merging blobs.",
+      "long_description": "Mercury-like silver molten foil with heavy merging blobs. Deep-navy molten-foil hero with fluted glass + grain (Deconflict Part 3).",
+      "scene_data": {
+        "textGap": 20,
+        "blobConfig": {
+          "speed": 0.4,
+          "colors": [
+            "#C9D2E8",
+            "#5B7BF0",
+            "#13294B",
+            "#2E54E8"
+          ],
+          "blobCount": 5,
+          "maxRadius": 150,
+          "minRadius": 45,
+          "threshold": 160,
+          "blurAmount": 12,
+          "decaySpeed": 0.95,
+          "orbitRadius": 160,
+          "mouseInfluence": 0.35,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "textConfig": {
+          "color": "#F4F6FA",
+          "enabled": true,
+          "opacity": 0.95
+        },
+        "fluidConfig": {
+          "speed": 0.7,
+          "colors": [
+            "#C9D2E8",
+            "#5B7BF0",
+            "#13294B",
+            "#2E54E8"
+          ],
+          "intensity": 1.5,
+          "blurAmount": 30,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "wavesConfig": {
+          "blur": 48,
+          "speed": 0.35,
+          "colors": [
+            "#C9D2E8",
+            "#5B7BF0",
+            "#13294B",
+            "#2E54E8"
+          ],
+          "layers": 5,
+          "rotation": 0,
+          "waveHeight": 0.06,
+          "phaseOffset": 0,
+          "waveFrequency": 2,
+          "useGradientColors": true
+        },
+        "auroraConfig": {
+          "hueEnd": 345,
+          "maxTTL": 340,
+          "minTTL": 180,
+          "hueStart": 35,
+          "maxWidth": 110,
+          "minWidth": 30,
+          "lineCount": 0,
+          "maxHeight": 950,
+          "minHeight": 420,
+          "blurAmount": 17,
+          "decaySpeed": 0.96,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "ribbonConfig": {
+          "noise": 0.3,
+          "speed": 0.35,
+          "taper": -0.25,
+          "spread": 0.5,
+          "opacity": 0.9,
+          "rotation": -24,
+          "amplitude": 1,
+          "thickness": 1.2,
+          "ribbonCount": 4,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "textSections": [],
+        "effectsConfig": {
+          "blur": 11,
+          "texture": "grain",
+          "textureSize": 32,
+          "textureOpacity": 40,
+          "textureBlendMode": "overlay",
+          "colorMap": "none",
+          "contrast": 112,
+          "brightness": 98,
+          "saturation": 102,
+          "vignetteIntensity": 30,
+          "flutedGlass": {
+            "enabled": true,
+            "rotation": 68,
+            "segments": 88,
+            "motionSpeed": 1.1,
+            "motionValue": 1.8,
+            "waveFrequency": 1.4,
+            "overlayOpacity": 14,
+            "distortionStrength": 0.07
+          }
+        },
+        "backgroundType": "liquid",
+        "gradientConfig": {
+          "type": "radial",
+          "colors": [
+            "#C9D2E8",
+            "#5B7BF0",
+            "#13294B",
+            "#2E54E8"
+          ],
+          "endPos": {
+            "x": 95,
+            "y": 110
+          },
+          "startPos": {
+            "x": 30,
+            "y": 35
+          },
+          "numColors": 4,
+          "colorStops": [
+            0,
+            35,
+            68,
+            100
+          ],
+          "decaySpeed": 0.95,
+          "wave1Speed": 0.2,
+          "wave2Speed": 0.14,
+          "waveIntensity": 0.35,
+          "mouseInfluence": 0.4,
+          "wave1Direction": 1,
+          "wave2Direction": -1
+        },
+        "dandelionConfig": {
+          "speed": 0.3,
+          "spread": 0.3,
+          "centerY": 0.85,
+          "dotSize": 3,
+          "lineCount": 120,
+          "radiusMax": 0.8,
+          "radiusMin": 0.1,
+          "thickness": 1.5,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "shapeTrailConfig": {
+          "gap": 30,
+          "shape": "circle",
+          "speed": 0.3,
+          "opacity": 0.8,
+          "endScale": 2000,
+          "blendMode": "normal",
+          "sizeCycles": 1,
+          "startScale": 1000,
+          "trailCount": 3,
+          "pathComplexity": 4,
+          "rotationOffset": 15,
+          "backgroundColor": "#0B1B33",
+          "trailColorStops": null,
+          "useGradientColors": true
+        },
+        "particleRingConfig": {
+          "speed": 0.5,
+          "tiltX": 0,
+          "tiltZ": 0,
+          "ringWidth": 0.15,
+          "dispersion": 0.3,
+          "ringRadius": 0.35,
+          "particleSize": 3,
+          "particleCount": 800,
+          "rotationSpeed": 0.2,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "selectedProjectIds": [],
+        "tessellationConfig": {
+          "icon": "Star",
+          "size": 24,
+          "color": "#2E54E8",
+          "colGap": 60,
+          "rowGap": 60,
+          "enabled": false,
+          "opacity": 0.15,
+          "rotation": 0,
+          "mouseRotationInfluence": 0.5
+        },
+        "colorPalette": {
+          "cobalt": {
+            "50": "#eef2ff",
+            "100": "#dbe3ff",
+            "200": "#bccaff",
+            "300": "#92a8ff",
+            "400": "#5B7BF0",
+            "500": "#2E54E8",
+            "600": "#1f3fc4",
+            "700": "#1b34a0",
+            "800": "#192d80",
+            "900": "#13294B",
+            "950": "#0B1B33"
+          },
+          "white": "#fff",
+          "black": "#0B1B33"
+        },
+        "inputEnabled": false,
+        "tags": [
+          "liquid",
+          "silver",
+          "molten-foil",
+          "quicksilver",
+          "hero",
+          "premium"
+        ]
+      }
+    },
+    {
+      "title": "Liquid Metallic Violet Molten Foil Aurora",
+      "short_description": "Violet-forward molten foil with a wide orbit and deep vignette.",
+      "long_description": "Violet-forward molten foil with a wide orbit and deep vignette. Deep-navy molten-foil hero with fluted glass + grain (Deconflict Part 3).",
+      "scene_data": {
+        "textGap": 20,
+        "blobConfig": {
+          "speed": 0.4,
+          "colors": [
+            "#6D5BE8",
+            "#2E54E8",
+            "#13294B",
+            "#C9D2E8"
+          ],
+          "blobCount": 5,
+          "maxRadius": 130,
+          "minRadius": 45,
+          "threshold": 178,
+          "blurAmount": 12,
+          "decaySpeed": 0.95,
+          "orbitRadius": 180,
+          "mouseInfluence": 0.35,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "textConfig": {
+          "color": "#F4F6FA",
+          "enabled": true,
+          "opacity": 0.95
+        },
+        "fluidConfig": {
+          "speed": 0.7,
+          "colors": [
+            "#6D5BE8",
+            "#2E54E8",
+            "#13294B",
+            "#C9D2E8"
+          ],
+          "intensity": 1.5,
+          "blurAmount": 30,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "wavesConfig": {
+          "blur": 48,
+          "speed": 0.35,
+          "colors": [
+            "#6D5BE8",
+            "#2E54E8",
+            "#13294B",
+            "#C9D2E8"
+          ],
+          "layers": 5,
+          "rotation": 0,
+          "waveHeight": 0.06,
+          "phaseOffset": 0,
+          "waveFrequency": 2,
+          "useGradientColors": true
+        },
+        "auroraConfig": {
+          "hueEnd": 345,
+          "maxTTL": 340,
+          "minTTL": 180,
+          "hueStart": 35,
+          "maxWidth": 110,
+          "minWidth": 30,
+          "lineCount": 0,
+          "maxHeight": 950,
+          "minHeight": 420,
+          "blurAmount": 17,
+          "decaySpeed": 0.96,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "ribbonConfig": {
+          "noise": 0.3,
+          "speed": 0.35,
+          "taper": -0.25,
+          "spread": 0.5,
+          "opacity": 0.9,
+          "rotation": -24,
+          "amplitude": 1,
+          "thickness": 1.2,
+          "ribbonCount": 4,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "textSections": [],
+        "effectsConfig": {
+          "blur": 10,
+          "texture": "grain",
+          "textureSize": 32,
+          "textureOpacity": 40,
+          "textureBlendMode": "overlay",
+          "colorMap": "none",
+          "contrast": 112,
+          "brightness": 98,
+          "saturation": 110,
+          "vignetteIntensity": 38,
+          "flutedGlass": {
+            "enabled": true,
+            "rotation": 76,
+            "segments": 92,
+            "motionSpeed": 1.1,
+            "motionValue": 1.8,
+            "waveFrequency": 1.4,
+            "overlayOpacity": 17,
+            "distortionStrength": 0.1
+          }
+        },
+        "backgroundType": "liquid",
+        "gradientConfig": {
+          "type": "radial",
+          "colors": [
+            "#6D5BE8",
+            "#2E54E8",
+            "#13294B",
+            "#C9D2E8"
+          ],
+          "endPos": {
+            "x": 95,
+            "y": 110
+          },
+          "startPos": {
+            "x": 30,
+            "y": 35
+          },
+          "numColors": 4,
+          "colorStops": [
+            0,
+            35,
+            68,
+            100
+          ],
+          "decaySpeed": 0.95,
+          "wave1Speed": 0.2,
+          "wave2Speed": 0.14,
+          "waveIntensity": 0.35,
+          "mouseInfluence": 0.4,
+          "wave1Direction": 1,
+          "wave2Direction": -1
+        },
+        "dandelionConfig": {
+          "speed": 0.3,
+          "spread": 0.3,
+          "centerY": 0.85,
+          "dotSize": 3,
+          "lineCount": 120,
+          "radiusMax": 0.8,
+          "radiusMin": 0.1,
+          "thickness": 1.5,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "shapeTrailConfig": {
+          "gap": 30,
+          "shape": "circle",
+          "speed": 0.3,
+          "opacity": 0.8,
+          "endScale": 2000,
+          "blendMode": "normal",
+          "sizeCycles": 1,
+          "startScale": 1000,
+          "trailCount": 3,
+          "pathComplexity": 4,
+          "rotationOffset": 15,
+          "backgroundColor": "#0B1B33",
+          "trailColorStops": null,
+          "useGradientColors": true
+        },
+        "particleRingConfig": {
+          "speed": 0.5,
+          "tiltX": 0,
+          "tiltZ": 0,
+          "ringWidth": 0.15,
+          "dispersion": 0.3,
+          "ringRadius": 0.35,
+          "particleSize": 3,
+          "particleCount": 800,
+          "rotationSpeed": 0.2,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "selectedProjectIds": [],
+        "tessellationConfig": {
+          "icon": "Star",
+          "size": 24,
+          "color": "#2E54E8",
+          "colGap": 60,
+          "rowGap": 60,
+          "enabled": false,
+          "opacity": 0.15,
+          "rotation": 0,
+          "mouseRotationInfluence": 0.5
+        },
+        "colorPalette": {
+          "cobalt": {
+            "50": "#eef2ff",
+            "100": "#dbe3ff",
+            "200": "#bccaff",
+            "300": "#92a8ff",
+            "400": "#5B7BF0",
+            "500": "#2E54E8",
+            "600": "#1f3fc4",
+            "700": "#1b34a0",
+            "800": "#192d80",
+            "900": "#13294B",
+            "950": "#0B1B33"
+          },
+          "white": "#fff",
+          "black": "#0B1B33"
+        },
+        "inputEnabled": false,
+        "tags": [
+          "liquid",
+          "violet",
+          "molten-foil",
+          "aurora",
+          "hero",
+          "premium"
+        ]
+      }
+    },
+    {
+      "title": "Liquid Metallic Navy Molten Foil Mobile Safe",
+      "short_description": "Lighter molten foil tuned to degrade gracefully on mobile.",
+      "long_description": "Lighter molten foil tuned to degrade gracefully on mobile. Deep-navy molten-foil hero with fluted glass + grain (Deconflict Part 3).",
+      "scene_data": {
+        "textGap": 20,
+        "blobConfig": {
+          "speed": 0.4,
+          "colors": [
+            "#13294B",
+            "#2E54E8",
+            "#5B7BF0",
+            "#C9D2E8"
+          ],
+          "blobCount": 4,
+          "maxRadius": 125,
+          "minRadius": 45,
+          "threshold": 180,
+          "blurAmount": 12,
+          "decaySpeed": 0.95,
+          "orbitRadius": 150,
+          "mouseInfluence": 0.35,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "textConfig": {
+          "color": "#F4F6FA",
+          "enabled": true,
+          "opacity": 0.95
+        },
+        "fluidConfig": {
+          "speed": 0.7,
+          "colors": [
+            "#13294B",
+            "#2E54E8",
+            "#5B7BF0",
+            "#C9D2E8"
+          ],
+          "intensity": 1.5,
+          "blurAmount": 30,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "wavesConfig": {
+          "blur": 48,
+          "speed": 0.35,
+          "colors": [
+            "#13294B",
+            "#2E54E8",
+            "#5B7BF0",
+            "#C9D2E8"
+          ],
+          "layers": 5,
+          "rotation": 0,
+          "waveHeight": 0.06,
+          "phaseOffset": 0,
+          "waveFrequency": 2,
+          "useGradientColors": true
+        },
+        "auroraConfig": {
+          "hueEnd": 345,
+          "maxTTL": 340,
+          "minTTL": 180,
+          "hueStart": 35,
+          "maxWidth": 110,
+          "minWidth": 30,
+          "lineCount": 0,
+          "maxHeight": 950,
+          "minHeight": 420,
+          "blurAmount": 17,
+          "decaySpeed": 0.96,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "ribbonConfig": {
+          "noise": 0.3,
+          "speed": 0.35,
+          "taper": -0.25,
+          "spread": 0.5,
+          "opacity": 0.9,
+          "rotation": -24,
+          "amplitude": 1,
+          "thickness": 1.2,
+          "ribbonCount": 4,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "textSections": [],
+        "effectsConfig": {
+          "blur": 8,
+          "texture": "grain",
+          "textureSize": 32,
+          "textureOpacity": 40,
+          "textureBlendMode": "overlay",
+          "colorMap": "none",
+          "contrast": 112,
+          "brightness": 98,
+          "saturation": 104,
+          "vignetteIntensity": 34,
+          "flutedGlass": {
+            "enabled": true,
+            "rotation": 70,
+            "segments": 48,
+            "motionSpeed": 1.1,
+            "motionValue": 1.8,
+            "waveFrequency": 1.4,
+            "overlayOpacity": 14,
+            "distortionStrength": 0.06
+          }
+        },
+        "backgroundType": "liquid",
+        "gradientConfig": {
+          "type": "radial",
+          "colors": [
+            "#13294B",
+            "#2E54E8",
+            "#5B7BF0",
+            "#C9D2E8"
+          ],
+          "endPos": {
+            "x": 95,
+            "y": 110
+          },
+          "startPos": {
+            "x": 30,
+            "y": 35
+          },
+          "numColors": 4,
+          "colorStops": [
+            0,
+            35,
+            68,
+            100
+          ],
+          "decaySpeed": 0.95,
+          "wave1Speed": 0.2,
+          "wave2Speed": 0.14,
+          "waveIntensity": 0.35,
+          "mouseInfluence": 0.4,
+          "wave1Direction": 1,
+          "wave2Direction": -1
+        },
+        "dandelionConfig": {
+          "speed": 0.3,
+          "spread": 0.3,
+          "centerY": 0.85,
+          "dotSize": 3,
+          "lineCount": 120,
+          "radiusMax": 0.8,
+          "radiusMin": 0.1,
+          "thickness": 1.5,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "shapeTrailConfig": {
+          "gap": 30,
+          "shape": "circle",
+          "speed": 0.3,
+          "opacity": 0.8,
+          "endScale": 2000,
+          "blendMode": "normal",
+          "sizeCycles": 1,
+          "startScale": 1000,
+          "trailCount": 3,
+          "pathComplexity": 4,
+          "rotationOffset": 15,
+          "backgroundColor": "#0B1B33",
+          "trailColorStops": null,
+          "useGradientColors": true
+        },
+        "particleRingConfig": {
+          "speed": 0.5,
+          "tiltX": 0,
+          "tiltZ": 0,
+          "ringWidth": 0.15,
+          "dispersion": 0.3,
+          "ringRadius": 0.35,
+          "particleSize": 3,
+          "particleCount": 800,
+          "rotationSpeed": 0.2,
+          "backgroundColor": "#0B1B33",
+          "useGradientColors": true
+        },
+        "selectedProjectIds": [],
+        "tessellationConfig": {
+          "icon": "Star",
+          "size": 24,
+          "color": "#2E54E8",
+          "colGap": 60,
+          "rowGap": 60,
+          "enabled": false,
+          "opacity": 0.15,
+          "rotation": 0,
+          "mouseRotationInfluence": 0.5
+        },
+        "colorPalette": {
+          "cobalt": {
+            "50": "#eef2ff",
+            "100": "#dbe3ff",
+            "200": "#bccaff",
+            "300": "#92a8ff",
+            "400": "#5B7BF0",
+            "500": "#2E54E8",
+            "600": "#1f3fc4",
+            "700": "#1b34a0",
+            "800": "#192d80",
+            "900": "#13294B",
+            "950": "#0B1B33"
+          },
+          "white": "#fff",
+          "black": "#0B1B33"
+        },
+        "inputEnabled": false,
+        "tags": [
+          "liquid",
+          "navy",
+          "molten-foil",
+          "mobile-safe",
+          "performance",
+          "premium"
+        ]
+      }
+    }
+  ]
+}
