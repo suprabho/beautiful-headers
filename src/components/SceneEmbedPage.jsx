@@ -15,6 +15,7 @@ import WavesLayer from './WavesLayer'
 import RibbonLayer from './RibbonLayer'
 import DandelionLayer from './DandelionLayer'
 import ParticleRingLayer from './ParticleRingLayer'
+import GuillocheLayer from './GuillocheLayer'
 import TessellationLayer from './TessellationLayer'
 import EffectsLayer from './EffectsLayer'
 import TextLayer from './TextLayer'
@@ -249,6 +250,7 @@ function SceneEmbedPage() {
   const ribbonConfig = sceneData.ribbonConfig || {}
   const dandelionConfig = sceneData.dandelionConfig || {}
   const particleRingConfig = sceneData.particleRingConfig || {}
+  const guillocheConfig = sceneData.guillocheConfig || {}
 
   // Thumbnail sources for the progressive overlay (prefer WebP, fall back to JPEG).
   // Use `large` (1200px) — a sharp-enough preview that loads fast since it is
@@ -296,6 +298,9 @@ function SceneEmbedPage() {
             )}
             {backgroundType === 'particleRing' && (
               <ParticleRingLayer config={particleRingConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
+            )}
+            {backgroundType === 'guilloche' && (
+              <GuillocheLayer config={guillocheConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
             )}
           </div>
 

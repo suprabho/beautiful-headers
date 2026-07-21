@@ -35,6 +35,13 @@ export const MOUSE_MAPPINGS = {
       { param: 'tiltZ', type: 'tilt', axis: 'x', strength: 0.4 },
     ],
   },
+  guilloche: {
+    lerpFactor: 0.08,
+    effects: [
+      { param: 'tiltX', type: 'tilt', axis: 'y', strength: 0.35 },
+      { param: 'tiltZ', type: 'tilt', axis: 'x', strength: 0.35 },
+    ],
+  },
   aurora: {
     lerpFactor: 0.05, // uses 1 - decaySpeed internally
     effects: [

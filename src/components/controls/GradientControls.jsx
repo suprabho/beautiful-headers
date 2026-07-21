@@ -1534,6 +1534,169 @@ export const ParticleRingControls = ({ particleRingConfig, setParticleRingConfig
 }
 
 // ============================================
+// GUILLOCHE CONTROLS — security-print pattern generators
+// (rosette spirograph + intaglio engraving, rendered in 3D)
+// ============================================
+const RIPPLE_SHAPE_OPTIONS = ['ellipse', 'circle', 'rectangle', 'triangle', 'diamond', 'pentagon', 'hexagon', 'octagon', 'star']
+
+export const GuillocheControls = ({ guillocheConfig, setGuillocheConfig, parsedPalette }) => {
+  const colors = guillocheConfig.radialGradientColors || [
+    guillocheConfig.backgroundColor || '#101c3f',
+    '#05070f'
+  ]
+  const colorStops = guillocheConfig.radialGradientStops || [0, 100]
+  const motif = guillocheConfig.motif || 'rosette'
+  const upd = (updates) => setGuillocheConfig({ ...guillocheConfig, ...updates })
+
+  return (
+    <>
+      {/* Radial Gradient Section */}
+      <RadialGradientSection
+        colors={colors}
+        colorStops={colorStops}
+        endX={guillocheConfig.gradientEndX ?? 100}
+        endY={guillocheConfig.gradientEndY ?? 100}
+        onColorsChange={(newColors) => upd({ radialGradientColors: newColors })}
+        onColorStopsChange={(newStops) => upd({ radialGradientStops: newStops })}
+        onBothChange={(newColors, newStops) => upd({ radialGradientColors: newColors, radialGradientStops: newStops })}
+        onEndXChange={(val) => upd({ gradientEndX: val })}
+        onEndYChange={(val) => upd({ gradientEndY: val })}
+        parsedPalette={parsedPalette}
+      />
+
+      {/* Motif */}
+      <ControlGroup label="Motif">
+        <Select value={motif} onValueChange={(value) => upd({ motif: value })}>
+          <SelectTrigger className="h-9">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="rosette">Rosette · Guilloché</SelectItem>
+            <SelectItem value="intaglio">Intaglio · Engraving</SelectItem>
+          </SelectContent>
+        </Select>
+      </ControlGroup>
+
+      {/* Shared 3D controls */}
+      <ControlGroup label="Scale">
+        <NumberInput value={[guillocheConfig.scale ?? 0.85]} onValueChange={([val]) => upd({ scale: val })} min={0.2} max={2} step={0.05} />
+      </ControlGroup>
+      <ControlGroup label="Depth">
+        <NumberInput value={[guillocheConfig.depth ?? 1.8]} onValueChange={([val]) => upd({ depth: val })} min={0} max={5} step={0.1} />
+      </ControlGroup>
+      <ControlGroup label="Line Opacity">
+        <NumberInput value={[guillocheConfig.lineOpacity ?? 0.55]} onValueChange={([val]) => upd({ lineOpacity: val })} min={0.05} max={1} step={0.05} />
+      </ControlGroup>
+      <ControlGroup label="Speed">
+        <NumberInput value={[guillocheConfig.speed ?? 0.5]} onValueChange={([val]) => upd({ speed: val })} min={0} max={2} step={0.05} />
+      </ControlGroup>
+      <ControlGroup label="Rotation Speed">
+        <NumberInput value={[guillocheConfig.rotationSpeed ?? 0.1]} onValueChange={([val]) => upd({ rotationSpeed: val })} min={0} max={1} step={0.05} />
+      </ControlGroup>
+      <ControlGroup label="Tilt X">
+        <NumberInput value={[guillocheConfig.tiltX ?? 0]} onValueChange={([val]) => upd({ tiltX: val })} min={-90} max={90} step={5} />
+      </ControlGroup>
+      <ControlGroup label="Tilt Z">
+        <NumberInput value={[guillocheConfig.tiltZ ?? 0]} onValueChange={([val]) => upd({ tiltZ: val })} min={-90} max={90} step={5} />
+      </ControlGroup>
+
+      {/* Rosette — four-harmonic spirograph terms */}
+      {motif === 'rosette' && (
+        <>
+          <div className="h-px bg-border my-2" />
+          <Label className="text-xs uppercase tracking-wide font-semibold">Spirograph Harmonics</Label>
+          <ControlGroup label="Angle A">
+            <NumberInput value={[guillocheConfig.angleA ?? 1]} onValueChange={([val]) => upd({ angleA: val })} min={-72} max={72} step={1} />
+          </ControlGroup>
+          <ControlGroup label="Angle B">
+            <NumberInput value={[guillocheConfig.angleB ?? 6]} onValueChange={([val]) => upd({ angleB: val })} min={-72} max={72} step={1} />
+          </ControlGroup>
+          <ControlGroup label="Angle C">
+            <NumberInput value={[guillocheConfig.angleC ?? -4]} onValueChange={([val]) => upd({ angleC: val })} min={-72} max={72} step={1} />
+          </ControlGroup>
+          <ControlGroup label="Angle D">
+            <NumberInput value={[guillocheConfig.angleD ?? 9]} onValueChange={([val]) => upd({ angleD: val })} min={-72} max={72} step={1} />
+          </ControlGroup>
+          <ControlGroup label="Scale A">
+            <NumberInput value={[guillocheConfig.scaleA ?? 110]} onValueChange={([val]) => upd({ scaleA: val })} min={-360} max={360} step={5} />
+          </ControlGroup>
+          <ControlGroup label="Scale B">
+            <NumberInput value={[guillocheConfig.scaleB ?? 70]} onValueChange={([val]) => upd({ scaleB: val })} min={-360} max={360} step={5} />
+          </ControlGroup>
+          <ControlGroup label="Scale C">
+            <NumberInput value={[guillocheConfig.scaleC ?? 45]} onValueChange={([val]) => upd({ scaleC: val })} min={-360} max={360} step={5} />
+          </ControlGroup>
+          <ControlGroup label="Scale D">
+            <NumberInput value={[guillocheConfig.scaleD ?? 28]} onValueChange={([val]) => upd({ scaleD: val })} min={-360} max={360} step={5} />
+          </ControlGroup>
+          <ControlGroup label="Phase Offset">
+            <NumberInput value={[guillocheConfig.offset ?? 0]} onValueChange={([val]) => upd({ offset: val })} min={0} max={360} step={5} />
+          </ControlGroup>
+          <ControlGroup label="Repeat Offset">
+            <NumberInput value={[guillocheConfig.repeatOffset ?? 4]} onValueChange={([val]) => upd({ repeatOffset: val })} min={-20} max={20} step={0.5} />
+          </ControlGroup>
+          <ControlGroup label="Repeat Count">
+            <NumberInput value={[guillocheConfig.repeatCount ?? 18]} onValueChange={([val]) => upd({ repeatCount: val })} min={1} max={50} step={1} />
+          </ControlGroup>
+        </>
+      )}
+
+      {/* Intaglio — engraved waves + morphing ripple rings */}
+      {motif === 'intaglio' && (
+        <>
+          <div className="h-px bg-border my-2" />
+          <Label className="text-xs uppercase tracking-wide font-semibold">Engraved Waves</Label>
+          <ControlGroup label="Wave Rows">
+            <NumberInput value={[guillocheConfig.waveRows ?? 22]} onValueChange={([val]) => upd({ waveRows: val })} min={4} max={48} step={1} />
+          </ControlGroup>
+          <ControlGroup label="Wave Amplitude">
+            <NumberInput value={[guillocheConfig.waveAmplitude ?? 22]} onValueChange={([val]) => upd({ waveAmplitude: val })} min={0} max={80} step={1} />
+          </ControlGroup>
+          <ControlGroup label="Wave Frequency">
+            <NumberInput value={[guillocheConfig.waveFrequency ?? 1]} onValueChange={([val]) => upd({ waveFrequency: val })} min={0.2} max={4} step={0.1} />
+          </ControlGroup>
+
+          <div className="h-px bg-border my-2" />
+          <Label className="text-xs uppercase tracking-wide font-semibold">Ripple Morph</Label>
+          <ControlGroup label="Start Shape">
+            <Select value={guillocheConfig.rippleStartShape || 'ellipse'} onValueChange={(value) => upd({ rippleStartShape: value })}>
+              <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {RIPPLE_SHAPE_OPTIONS.map((s) => (
+                  <SelectItem key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </ControlGroup>
+          <ControlGroup label="End Shape">
+            <Select value={guillocheConfig.rippleEndShape || 'hexagon'} onValueChange={(value) => upd({ rippleEndShape: value })}>
+              <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {RIPPLE_SHAPE_OPTIONS.map((s) => (
+                  <SelectItem key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </ControlGroup>
+          <ControlGroup label="Ripple Steps">
+            <NumberInput value={[guillocheConfig.rippleSteps ?? 16]} onValueChange={([val]) => upd({ rippleSteps: val })} min={2} max={40} step={1} />
+          </ControlGroup>
+          <ControlGroup label="Start Scale">
+            <NumberInput value={[guillocheConfig.rippleStartScale ?? 0.3]} onValueChange={([val]) => upd({ rippleStartScale: val })} min={0.05} max={2} step={0.05} />
+          </ControlGroup>
+          <ControlGroup label="End Scale">
+            <NumberInput value={[guillocheConfig.rippleEndScale ?? 1.25]} onValueChange={([val]) => upd({ rippleEndScale: val })} min={0.05} max={2} step={0.05} />
+          </ControlGroup>
+          <ControlGroup label="Morph Rotation">
+            <NumberInput value={[guillocheConfig.rippleRotation ?? 60]} onValueChange={([val]) => upd({ rippleRotation: val })} min={-360} max={360} step={5} />
+          </ControlGroup>
+        </>
+      )}
+    </>
+  )
+}
+
+// ============================================
 // SHAPE TRAIL CONTROLS
 // ============================================
 export const ShapeTrailControls = ({ shapeTrailConfig, setShapeTrailConfig, parsedPalette, gradientColors = [] }) => {
@@ -1823,6 +1986,8 @@ export const GradientPanel = ({
   setDandelionConfig,
   particleRingConfig,
   setParticleRingConfig,
+  guillocheConfig,
+  setGuillocheConfig,
   parsedPalette,
 }) => {
   return (
@@ -1854,6 +2019,7 @@ export const GradientPanel = ({
             <SelectItem value="ribbon">Ribbon</SelectItem>
             <SelectItem value="dandelion">Dandelion</SelectItem>
             <SelectItem value="particleRing">Particle Ring</SelectItem>
+            <SelectItem value="guilloche">Guilloché</SelectItem>
           </SelectContent>
         </Select>
       </ControlGroup>
@@ -1909,6 +2075,13 @@ export const GradientPanel = ({
         <ParticleRingControls
           particleRingConfig={particleRingConfig}
           setParticleRingConfig={setParticleRingConfig}
+          parsedPalette={parsedPalette}
+        />
+      )}
+      {backgroundType === 'guilloche' && (
+        <GuillocheControls
+          guillocheConfig={guillocheConfig}
+          setGuillocheConfig={setGuillocheConfig}
           parsedPalette={parsedPalette}
         />
       )}

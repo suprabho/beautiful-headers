@@ -8,6 +8,7 @@ import WavesLayer from './components/WavesLayer'
 import RibbonLayer from './components/RibbonLayer'
 import DandelionLayer from './components/DandelionLayer'
 import ParticleRingLayer from './components/ParticleRingLayer'
+import GuillocheLayer from './components/GuillocheLayer'
 import TessellationLayer from './components/TessellationLayer'
 import EffectsLayer from './components/EffectsLayer'
 import TextLayer from './components/TextLayer'
@@ -31,6 +32,7 @@ function App() {
   const [ribbonConfig] = useThemedConfig('ribbonConfig')
   const [dandelionConfig] = useThemedConfig('dandelionConfig')
   const [particleRingConfig] = useThemedConfig('particleRingConfig')
+  const [guillocheConfig] = useThemedConfig('guillocheConfig')
   const [tessellationConfig] = useThemedConfig('tessellationConfig')
   const [effectsConfig] = useThemedConfig('effectsConfig')
   const textSections = useStore((state) => state.textSections)
@@ -197,6 +199,9 @@ function App() {
           )}
           {backgroundType === 'particleRing' && (
             <ParticleRingLayer config={particleRingConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
+          )}
+          {backgroundType === 'guilloche' && (
+            <GuillocheLayer config={guillocheConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
           )}
         </div>
 

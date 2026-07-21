@@ -187,6 +187,7 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
                       <SelectItem value="ribbon">Ribbon</SelectItem>
                       <SelectItem value="dandelion">Dandelion</SelectItem>
                       <SelectItem value="particleRing">Particle Ring</SelectItem>
+                      <SelectItem value="guilloche">Guilloché</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -251,6 +252,15 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
                       <SubsectionButton title="Particles" onClick={() => openDialog('particleRing-particles')} />
                       <SubsectionButton title="Animation" onClick={() => openDialog('particleRing-animation')} />
                       <SubsectionButton title="Tilt" onClick={() => openDialog('particleRing-tilt')} />
+                    </>
+                  )}
+                  {backgroundType === 'guilloche' && (
+                    <>
+                      <SubsectionButton title="Background" onClick={() => openDialog('guilloche-background')} />
+                      <SubsectionButton title="Motif" onClick={() => openDialog('guilloche-motif')} />
+                      <SubsectionButton title="Pattern" onClick={() => openDialog('guilloche-pattern')} />
+                      <SubsectionButton title="Animation" onClick={() => openDialog('guilloche-animation')} />
+                      <SubsectionButton title="Tilt" onClick={() => openDialog('guilloche-tilt')} />
                     </>
                   )}
                 </div>

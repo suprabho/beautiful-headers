@@ -7,6 +7,7 @@ import WavesLayer from '../WavesLayer'
 import RibbonLayer from '../RibbonLayer'
 import DandelionLayer from '../DandelionLayer'
 import ParticleRingLayer from '../ParticleRingLayer'
+import GuillocheLayer from '../GuillocheLayer'
 import TessellationLayer from '../TessellationLayer'
 import EffectsLayer from '../EffectsLayer'
 import TextLayer from '../TextLayer'
@@ -24,6 +25,7 @@ export function MiniSceneRenderer({
   ribbonConfig,
   dandelionConfig,
   particleRingConfig,
+  guillocheConfig,
   tessellationConfig,
   effectsConfig,
   textConfig,
@@ -126,6 +128,9 @@ export function MiniSceneRenderer({
             )}
             {backgroundType === 'particleRing' && (
               <ParticleRingLayer config={particleRingConfig || {}} paletteColors={paletteColors} effectsConfig={effectsConfig || {}} isPaused={false} mousePos={mousePos} mouseIntensity={intensity} />
+            )}
+            {backgroundType === 'guilloche' && (
+              <GuillocheLayer config={guillocheConfig || {}} paletteColors={paletteColors} effectsConfig={effectsConfig || {}} isPaused={false} mousePos={mousePos} mouseIntensity={intensity} />
             )}
           </div>
 

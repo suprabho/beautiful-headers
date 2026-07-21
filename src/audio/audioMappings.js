@@ -36,4 +36,9 @@ export const AUDIO_MAPPINGS = {
     { param: 'ringRadius', band: 'amplitude', weight: 0.25 },
     { param: 'ringWidth',  band: 'bass',      weight: 0.1  },
   ],
+  guilloche: [
+    { param: 'speed',         band: 'treble',    weight: 1.2 },
+    { param: 'waveAmplitude', band: 'bass',      weight: 18  },
+    { param: 'depth',         band: 'amplitude', weight: 0.8 },
+  ],
 }

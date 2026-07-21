@@ -478,6 +478,51 @@ const useStore = create((set, get) => ({
     particleRingConfig: { ...state.particleRingConfig, ...updates }
   })),
 
+  // Guilloche config — security-print pattern generators (rosette spirograph +
+  // intaglio engraving) ported from the Deconflict studio, rendered in 3D
+  guillocheConfig: {
+    motif: 'rosette', // 'rosette' | 'intaglio'
+    useGradientColors: true,
+    backgroundColor: '#0b1024',
+    radialGradientColors: ['#101c3f', '#05070f'],
+    radialGradientStops: [0, 100],
+    gradientEndX: 100,
+    gradientEndY: 100,
+    scale: 0.85,
+    depth: 1.8,
+    lineOpacity: 0.55,
+    speed: 0.5,
+    rotationSpeed: 0.1,
+    tiltX: 0,
+    tiltZ: 0,
+    // Rosette — four-harmonic spirograph terms
+    angleA: 1,
+    angleB: 6,
+    angleC: -4,
+    angleD: 9,
+    scaleA: 110,
+    scaleB: 70,
+    scaleC: 45,
+    scaleD: 28,
+    offset: 0,
+    repeatOffset: 4,
+    repeatCount: 18,
+    // Intaglio — engraved waves + morphing ripple rings
+    waveRows: 22,
+    waveAmplitude: 22,
+    waveFrequency: 1,
+    rippleSteps: 16,
+    rippleStartShape: 'ellipse',
+    rippleEndShape: 'hexagon',
+    rippleStartScale: 0.3,
+    rippleEndScale: 1.25,
+    rippleRotation: 60,
+  },
+  setGuillocheConfig: (config) => set({ guillocheConfig: config }),
+  updateGuillocheConfig: (updates) => set((state) => ({
+    guillocheConfig: { ...state.guillocheConfig, ...updates }
+  })),
+
   // ShapeTrail config
   shapeTrailConfig: {
     useGradientColors: true,
@@ -676,6 +721,7 @@ const useStore = create((set, get) => ({
       ribbonConfig: state.ribbonConfig,
       dandelionConfig: state.dandelionConfig,
       particleRingConfig: state.particleRingConfig,
+      guillocheConfig: state.guillocheConfig,
       shapeTrailConfig: state.shapeTrailConfig,
       tessellationConfig: state.tessellationConfig,
       effectsConfig: state.effectsConfig,
@@ -720,6 +766,7 @@ const useStore = create((set, get) => ({
       ...(sceneData.ribbonConfig && { ribbonConfig: sceneData.ribbonConfig }),
       ...(sceneData.dandelionConfig && { dandelionConfig: sceneData.dandelionConfig }),
       ...(sceneData.particleRingConfig && { particleRingConfig: sceneData.particleRingConfig }),
+      ...(sceneData.guillocheConfig && { guillocheConfig: sceneData.guillocheConfig }),
       ...(sceneData.shapeTrailConfig && { shapeTrailConfig: sceneData.shapeTrailConfig }),
       ...(sceneData.tessellationConfig && { tessellationConfig: sceneData.tessellationConfig }),
       ...(sceneData.effectsConfig && { effectsConfig: sceneData.effectsConfig }),

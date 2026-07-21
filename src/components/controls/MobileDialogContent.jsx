@@ -49,6 +49,11 @@ export const getDialogTitle = (key, textSections) => {
     'particleRing-particles': 'Particle Settings',
     'particleRing-animation': 'Ring Animation',
     'particleRing-tilt': 'Ring Tilt',
+    'guilloche-background': 'Guilloché Background',
+    'guilloche-motif': 'Guilloché Motif',
+    'guilloche-pattern': 'Pattern Settings',
+    'guilloche-animation': 'Guilloché Animation',
+    'guilloche-tilt': 'Guilloché Tilt',
     'pattern-icon': 'Icon Settings',
     'pattern-spacing': 'Spacing',
     'effects-blur': 'Background Blur',
@@ -84,6 +89,8 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog, onApplyDialog
   const setDandelionConfig = useStore((state) => state.setDandelionConfig)
   const particleRingConfig = useStore((state) => state.particleRingConfig)
   const setParticleRingConfig = useStore((state) => state.setParticleRingConfig)
+  const guillocheConfig = useStore((state) => state.guillocheConfig)
+  const setGuillocheConfig = useStore((state) => state.setGuillocheConfig)
   const tessellationConfig = useStore((state) => state.tessellationConfig)
   const setTessellationConfig = useStore((state) => state.setTessellationConfig)
   const effectsConfig = useStore((state) => state.effectsConfig)
@@ -424,6 +431,104 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog, onApplyDialog
         <div className="space-y-2">
           <ControlGroup label={`Tilt X`}><NumberInput value={[particleRingConfig.tiltX ?? 0]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, tiltX: val })} min={-90} max={90} step={5} showButtons /></ControlGroup>
           <ControlGroup label={`Tilt Z`}><NumberInput value={[particleRingConfig.tiltZ ?? 0]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, tiltZ: val })} min={-90} max={90} step={5} showButtons /></ControlGroup>
+        </div>
+      )
+    case 'guilloche-background': {
+      const guillocheColors = guillocheConfig.radialGradientColors || [
+        guillocheConfig.backgroundColor || '#101c3f',
+        '#05070f'
+      ]
+      const guillocheStops = guillocheConfig.radialGradientStops || [0, 100]
+      return (
+        <RadialGradientSection
+          colors={guillocheColors}
+          colorStops={guillocheStops}
+          endX={guillocheConfig.gradientEndX ?? 100}
+          endY={guillocheConfig.gradientEndY ?? 100}
+          onColorsChange={(newColors) => setGuillocheConfig({ ...guillocheConfig, radialGradientColors: newColors })}
+          onColorStopsChange={(newStops) => setGuillocheConfig({ ...guillocheConfig, radialGradientStops: newStops })}
+          onBothChange={(newColors, newStops) => setGuillocheConfig({ ...guillocheConfig, radialGradientColors: newColors, radialGradientStops: newStops })}
+          onEndXChange={(val) => setGuillocheConfig({ ...guillocheConfig, gradientEndX: val })}
+          onEndYChange={(val) => setGuillocheConfig({ ...guillocheConfig, gradientEndY: val })}
+          parsedPalette={parsedPalette}
+        />
+      )
+    }
+    case 'guilloche-motif':
+      return (
+        <div className="space-y-2">
+          <ControlGroup label="Motif">
+            <Select value={guillocheConfig.motif || 'rosette'} onValueChange={(value) => setGuillocheConfig({ ...guillocheConfig, motif: value })}>
+              <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="rosette">Rosette · Guilloché</SelectItem>
+                <SelectItem value="intaglio">Intaglio · Engraving</SelectItem>
+              </SelectContent>
+            </Select>
+          </ControlGroup>
+          <ControlGroup label={`Scale`}><NumberInput value={[guillocheConfig.scale ?? 0.85]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, scale: val })} min={0.2} max={2} step={0.05} showButtons /></ControlGroup>
+          <ControlGroup label={`Depth`}><NumberInput value={[guillocheConfig.depth ?? 1.8]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, depth: val })} min={0} max={5} step={0.1} showButtons /></ControlGroup>
+          <ControlGroup label={`Line Opacity`}><NumberInput value={[guillocheConfig.lineOpacity ?? 0.55]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, lineOpacity: val })} min={0.05} max={1} step={0.05} showButtons /></ControlGroup>
+        </div>
+      )
+    case 'guilloche-pattern':
+      return (guillocheConfig.motif || 'rosette') === 'rosette' ? (
+        <div className="space-y-2">
+          <ControlGroup label={`Angle A`}><NumberInput value={[guillocheConfig.angleA ?? 1]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, angleA: val })} min={-72} max={72} step={1} showButtons /></ControlGroup>
+          <ControlGroup label={`Angle B`}><NumberInput value={[guillocheConfig.angleB ?? 6]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, angleB: val })} min={-72} max={72} step={1} showButtons /></ControlGroup>
+          <ControlGroup label={`Angle C`}><NumberInput value={[guillocheConfig.angleC ?? -4]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, angleC: val })} min={-72} max={72} step={1} showButtons /></ControlGroup>
+          <ControlGroup label={`Angle D`}><NumberInput value={[guillocheConfig.angleD ?? 9]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, angleD: val })} min={-72} max={72} step={1} showButtons /></ControlGroup>
+          <ControlGroup label={`Scale A`}><NumberInput value={[guillocheConfig.scaleA ?? 110]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, scaleA: val })} min={-360} max={360} step={5} showButtons /></ControlGroup>
+          <ControlGroup label={`Scale B`}><NumberInput value={[guillocheConfig.scaleB ?? 70]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, scaleB: val })} min={-360} max={360} step={5} showButtons /></ControlGroup>
+          <ControlGroup label={`Scale C`}><NumberInput value={[guillocheConfig.scaleC ?? 45]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, scaleC: val })} min={-360} max={360} step={5} showButtons /></ControlGroup>
+          <ControlGroup label={`Scale D`}><NumberInput value={[guillocheConfig.scaleD ?? 28]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, scaleD: val })} min={-360} max={360} step={5} showButtons /></ControlGroup>
+          <ControlGroup label={`Phase Offset`}><NumberInput value={[guillocheConfig.offset ?? 0]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, offset: val })} min={0} max={360} step={5} showButtons /></ControlGroup>
+          <ControlGroup label={`Repeat Offset`}><NumberInput value={[guillocheConfig.repeatOffset ?? 4]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, repeatOffset: val })} min={-20} max={20} step={0.5} showButtons /></ControlGroup>
+          <ControlGroup label={`Repeat Count`}><NumberInput value={[guillocheConfig.repeatCount ?? 18]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, repeatCount: val })} min={1} max={50} step={1} showButtons /></ControlGroup>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <ControlGroup label={`Wave Rows`}><NumberInput value={[guillocheConfig.waveRows ?? 22]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, waveRows: val })} min={4} max={48} step={1} showButtons /></ControlGroup>
+          <ControlGroup label={`Wave Amplitude`}><NumberInput value={[guillocheConfig.waveAmplitude ?? 22]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, waveAmplitude: val })} min={0} max={80} step={1} showButtons /></ControlGroup>
+          <ControlGroup label={`Wave Frequency`}><NumberInput value={[guillocheConfig.waveFrequency ?? 1]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, waveFrequency: val })} min={0.2} max={4} step={0.1} showButtons /></ControlGroup>
+          <ControlGroup label="Start Shape">
+            <Select value={guillocheConfig.rippleStartShape || 'ellipse'} onValueChange={(value) => setGuillocheConfig({ ...guillocheConfig, rippleStartShape: value })}>
+              <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {['ellipse', 'circle', 'rectangle', 'triangle', 'diamond', 'pentagon', 'hexagon', 'octagon', 'star'].map((s) => (
+                  <SelectItem key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </ControlGroup>
+          <ControlGroup label="End Shape">
+            <Select value={guillocheConfig.rippleEndShape || 'hexagon'} onValueChange={(value) => setGuillocheConfig({ ...guillocheConfig, rippleEndShape: value })}>
+              <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {['ellipse', 'circle', 'rectangle', 'triangle', 'diamond', 'pentagon', 'hexagon', 'octagon', 'star'].map((s) => (
+                  <SelectItem key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </ControlGroup>
+          <ControlGroup label={`Ripple Steps`}><NumberInput value={[guillocheConfig.rippleSteps ?? 16]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, rippleSteps: val })} min={2} max={40} step={1} showButtons /></ControlGroup>
+          <ControlGroup label={`Start Scale`}><NumberInput value={[guillocheConfig.rippleStartScale ?? 0.3]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, rippleStartScale: val })} min={0.05} max={2} step={0.05} showButtons /></ControlGroup>
+          <ControlGroup label={`End Scale`}><NumberInput value={[guillocheConfig.rippleEndScale ?? 1.25]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, rippleEndScale: val })} min={0.05} max={2} step={0.05} showButtons /></ControlGroup>
+          <ControlGroup label={`Morph Rotation`}><NumberInput value={[guillocheConfig.rippleRotation ?? 60]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, rippleRotation: val })} min={-360} max={360} step={5} showButtons /></ControlGroup>
+        </div>
+      )
+    case 'guilloche-animation':
+      return (
+        <div className="space-y-2">
+          <ControlGroup label={`Speed`}><NumberInput value={[guillocheConfig.speed ?? 0.5]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, speed: val })} min={0} max={2} step={0.05} showButtons /></ControlGroup>
+          <ControlGroup label={`Rotation Speed`}><NumberInput value={[guillocheConfig.rotationSpeed ?? 0.1]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, rotationSpeed: val })} min={0} max={1} step={0.05} showButtons /></ControlGroup>
+        </div>
+      )
+    case 'guilloche-tilt':
+      return (
+        <div className="space-y-2">
+          <ControlGroup label={`Tilt X`}><NumberInput value={[guillocheConfig.tiltX ?? 0]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, tiltX: val })} min={-90} max={90} step={5} showButtons /></ControlGroup>
+          <ControlGroup label={`Tilt Z`}><NumberInput value={[guillocheConfig.tiltZ ?? 0]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, tiltZ: val })} min={-90} max={90} step={5} showButtons /></ControlGroup>
         </div>
       )
     case 'pattern-icon':
