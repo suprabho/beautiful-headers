@@ -19,6 +19,8 @@ export function useMobileDialogs() {
   const setDandelionConfig = useStore((state) => state.setDandelionConfig)
   const particleRingConfig = useStore((state) => state.particleRingConfig)
   const setParticleRingConfig = useStore((state) => state.setParticleRingConfig)
+  const guillocheConfig = useStore((state) => state.guillocheConfig)
+  const setGuillocheConfig = useStore((state) => state.setGuillocheConfig)
   const tessellationConfig = useStore((state) => state.tessellationConfig)
   const setTessellationConfig = useStore((state) => state.setTessellationConfig)
   const effectsConfig = useStore((state) => state.effectsConfig)
@@ -35,8 +37,8 @@ export function useMobileDialogs() {
 
   const openDialog = (dialogKey) => {
     setActiveDialog(dialogKey)
-    if (dialogKey.startsWith('gradient-') || dialogKey.startsWith('aurora-') || dialogKey.startsWith('blob-') || dialogKey.startsWith('fluid-') || dialogKey.startsWith('waves-') || dialogKey.startsWith('ribbon-') || dialogKey.startsWith('dandelion-') || dialogKey.startsWith('particleRing-')) {
-      setOriginalValues({ type: 'gradient', data: { gradientConfig: { ...gradientConfig }, auroraConfig: { ...auroraConfig }, blobConfig: { ...blobConfig }, fluidConfig: { ...fluidConfig }, wavesConfig: { ...wavesConfig }, ribbonConfig: { ...ribbonConfig }, dandelionConfig: { ...dandelionConfig }, particleRingConfig: { ...particleRingConfig } } })
+    if (dialogKey.startsWith('gradient-') || dialogKey.startsWith('aurora-') || dialogKey.startsWith('blob-') || dialogKey.startsWith('fluid-') || dialogKey.startsWith('waves-') || dialogKey.startsWith('ribbon-') || dialogKey.startsWith('dandelion-') || dialogKey.startsWith('particleRing-') || dialogKey.startsWith('guilloche-')) {
+      setOriginalValues({ type: 'gradient', data: { gradientConfig: { ...gradientConfig }, auroraConfig: { ...auroraConfig }, blobConfig: { ...blobConfig }, fluidConfig: { ...fluidConfig }, wavesConfig: { ...wavesConfig }, ribbonConfig: { ...ribbonConfig }, dandelionConfig: { ...dandelionConfig }, particleRingConfig: { ...particleRingConfig }, guillocheConfig: { ...guillocheConfig } } })
     } else if (dialogKey.startsWith('pattern-')) {
       setOriginalValues({ type: 'pattern', data: { ...tessellationConfig } })
     } else if (dialogKey.startsWith('effects-')) {
@@ -61,6 +63,7 @@ export function useMobileDialogs() {
         if (originalValues.data.ribbonConfig) setRibbonConfig(originalValues.data.ribbonConfig)
         if (originalValues.data.dandelionConfig) setDandelionConfig(originalValues.data.dandelionConfig)
         if (originalValues.data.particleRingConfig) setParticleRingConfig(originalValues.data.particleRingConfig)
+        if (originalValues.data.guillocheConfig) setGuillocheConfig(originalValues.data.guillocheConfig)
       } else if (originalValues.type === 'pattern') {
         setTessellationConfig(originalValues.data)
       } else if (originalValues.type === 'effects') {
@@ -86,6 +89,7 @@ export function useMobileDialogs() {
         if (originalValues.data.ribbonConfig) setRibbonConfig(originalValues.data.ribbonConfig)
         if (originalValues.data.dandelionConfig) setDandelionConfig(originalValues.data.dandelionConfig)
         if (originalValues.data.particleRingConfig) setParticleRingConfig(originalValues.data.particleRingConfig)
+        if (originalValues.data.guillocheConfig) setGuillocheConfig(originalValues.data.guillocheConfig)
       } else if (originalValues.type === 'pattern') {
         setTessellationConfig(originalValues.data)
       } else if (originalValues.type === 'effects') {

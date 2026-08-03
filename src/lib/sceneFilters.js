@@ -8,6 +8,7 @@ export const BACKGROUND_EFFECTS = [
   { value: 'ribbon', label: 'Ribbon' },
   { value: 'dandelion', label: 'Dandelion' },
   { value: 'particleRing', label: 'Particle Ring' },
+  { value: 'guilloche', label: 'Guilloché' },
 ]
 
 // Color family definitions with hue ranges and representative colors

@@ -23,6 +23,8 @@ export function useRandomize() {
   const setDandelionConfig = useStore((state) => state.setDandelionConfig)
   const particleRingConfig = useStore((state) => state.particleRingConfig)
   const setParticleRingConfig = useStore((state) => state.setParticleRingConfig)
+  const guillocheConfig = useStore((state) => state.guillocheConfig)
+  const setGuillocheConfig = useStore((state) => state.setGuillocheConfig)
   const auroraConfig = useStore((state) => state.auroraConfig)
   const setAuroraConfig = useStore((state) => state.setAuroraConfig)
   const fluidConfig = useStore((state) => state.fluidConfig)
@@ -35,7 +37,7 @@ export function useRandomize() {
     const pickOne = (arr) => arr[Math.floor(Math.random() * arr.length)]
 
     // Randomize background type
-    const backgroundTypes = ['simple', 'liquid', 'aurora', 'fluid', 'waves', 'ribbon', 'dandelion', 'particleRing']
+    const backgroundTypes = ['simple', 'liquid', 'aurora', 'fluid', 'waves', 'ribbon', 'dandelion', 'particleRing', 'guilloche']
     setBackgroundType(pickOne(backgroundTypes))
 
     let colors
@@ -195,6 +197,44 @@ export function useRandomize() {
       tiltZ: Math.round(randomInRange(-45, 45)),
     })
 
+    // Randomize guilloche config — random harmonics reshuffle the spirograph
+    const guillocheRadialCount = Math.floor(randomInRange(2, 4))
+    const guillocheRadialColors = Array.from({ length: guillocheRadialCount }, () => pickOne(colors))
+    const guillocheRadialStops = guillocheRadialColors.map((_, i) => Math.round((i / (guillocheRadialCount - 1)) * 100))
+    const rippleShapes = ['ellipse', 'circle', 'rectangle', 'triangle', 'diamond', 'pentagon', 'hexagon', 'octagon', 'star']
+    setGuillocheConfig({
+      ...guillocheConfig,
+      motif: pickOne(['rosette', 'intaglio']),
+      radialGradientColors: guillocheRadialColors,
+      radialGradientStops: guillocheRadialStops,
+      gradientEndX: Math.floor(randomInRange(-200, 200)),
+      gradientEndY: Math.floor(randomInRange(-200, 200)),
+      scale: Math.round(randomInRange(0.5, 1.2) * 100) / 100,
+      depth: Math.round(randomInRange(0.5, 3) * 10) / 10,
+      lineOpacity: Math.round(randomInRange(0.3, 0.8) * 100) / 100,
+      speed: Math.round(randomInRange(0.1, 1) * 20) / 20,
+      rotationSpeed: Math.round(randomInRange(0, 0.4) * 100) / 100,
+      angleA: Math.floor(randomInRange(1, 8)),
+      angleB: Math.floor(randomInRange(-12, 12)),
+      angleC: Math.floor(randomInRange(-12, 12)),
+      angleD: Math.floor(randomInRange(3, 16)),
+      scaleA: Math.floor(randomInRange(60, 160)),
+      scaleB: Math.floor(randomInRange(20, 110)),
+      scaleC: Math.floor(randomInRange(10, 80)),
+      scaleD: Math.floor(randomInRange(10, 60)),
+      repeatOffset: Math.round(randomInRange(1, 8) * 2) / 2,
+      repeatCount: Math.floor(randomInRange(8, 30)),
+      waveRows: Math.floor(randomInRange(12, 36)),
+      waveAmplitude: Math.floor(randomInRange(8, 45)),
+      waveFrequency: Math.round(randomInRange(0.5, 2.5) * 10) / 10,
+      rippleSteps: Math.floor(randomInRange(8, 28)),
+      rippleStartShape: pickOne(rippleShapes),
+      rippleEndShape: pickOne(rippleShapes),
+      rippleStartScale: Math.round(randomInRange(0.1, 0.5) * 100) / 100,
+      rippleEndScale: Math.round(randomInRange(0.8, 1.6) * 100) / 100,
+      rippleRotation: Math.floor(randomInRange(-180, 180) / 15) * 15,
+    })
+
     // Randomize aurora config
     setAuroraConfig({
       ...auroraConfig,
@@ -213,7 +253,7 @@ export function useRandomize() {
       intensity: Math.round(randomInRange(0.1, 10) * 10) / 10,
       blurAmount: Math.floor(randomInRange(0, 100)),
     })
-  }, [colorPalette, gradientConfig, tessellationConfig, effectsConfig, textConfig, textSections, ribbonConfig, auroraConfig, fluidConfig, dandelionConfig, particleRingConfig, textPairs, setBackgroundType, setGradientConfig, setTessellationConfig, setEffectsConfig, setTextConfig, setTextSections, setTextGap, setRibbonConfig, setAuroraConfig, setFluidConfig, setDandelionConfig, setParticleRingConfig])
+  }, [colorPalette, gradientConfig, tessellationConfig, effectsConfig, textConfig, textSections, ribbonConfig, auroraConfig, fluidConfig, dandelionConfig, particleRingConfig, guillocheConfig, textPairs, setBackgroundType, setGradientConfig, setTessellationConfig, setEffectsConfig, setTextConfig, setTextSections, setTextGap, setRibbonConfig, setAuroraConfig, setFluidConfig, setDandelionConfig, setParticleRingConfig, setGuillocheConfig])
 
   return { randomize }
 }

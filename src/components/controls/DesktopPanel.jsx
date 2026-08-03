@@ -51,6 +51,7 @@ export const DesktopPanel = ({
   const setEditorThemeMode = useStore((state) => state.setEditorThemeMode)
   const [dandelionConfig, setDandelionConfig] = useThemedConfig('dandelionConfig')
   const [particleRingConfig, setParticleRingConfig] = useThemedConfig('particleRingConfig')
+  const [guillocheConfig, setGuillocheConfig] = useThemedConfig('guillocheConfig')
   const [tessellationConfig, setTessellationConfig] = useThemedConfig('tessellationConfig')
   const [effectsConfig, setEffectsConfig] = useThemedConfig('effectsConfig')
   const textSections = useStore((state) => state.textSections)
@@ -182,6 +183,8 @@ export const DesktopPanel = ({
                   setDandelionConfig={setDandelionConfig}
                   particleRingConfig={particleRingConfig}
                   setParticleRingConfig={setParticleRingConfig}
+                  guillocheConfig={guillocheConfig}
+                  setGuillocheConfig={setGuillocheConfig}
                   parsedPalette={parsedPalette}
                 />
               </TabsContent>

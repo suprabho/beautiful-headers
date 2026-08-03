@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 const TYPE_COLORS = {
   liquid: '#a855f7', fluid: '#1C89FF', ribbon: '#d6dae6', aurora: '#71ECFF',
   waves: '#06b6d4', dandelion: '#F0CBA8', simple: '#94a3b8', particleRing: '#ec4899',
+  guilloche: '#2E54E8',
   unknown: '#64748b',
 }
 
