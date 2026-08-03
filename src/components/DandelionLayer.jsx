@@ -325,16 +325,8 @@ function DandelionMesh({ config, colors, isPaused, mouseEnabled = true, mouseInt
   )
 }
 
-function CanvasRefExporter({ canvasRef, onReady }) {
-  const { gl } = useThree()
-  useEffect(() => {
-    canvasRef.current = gl.domElement
-    onReady()
-  }, [gl])
-  return null
-}
-
 const DandelionLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mouseEnabled = true, mouseIntensity = 1 }) => {
+  const containerRef = useRef(null)
   const canvasRef = useRef(null)
   const [canvasReady, setCanvasReady] = useState(false)
 
@@ -344,10 +336,23 @@ const DandelionLayer = memo(({ config, paletteColors = [], effectsConfig, isPaus
     [paletteColors]
   )
 
-  const handleCanvasReady = useMemo(() => () => setCanvasReady(true), [])
+  // After mount, grab the R3F canvas element for FlutedGlassCanvas to sample.
+  // Must run in this component's own effect — signalling readiness from inside
+  // the R3F tree can mount FlutedGlassCanvas mid-commit of the R3F root, where
+  // its size measurement never fires and its renderer never initializes.
+  useEffect(() => {
+    if (containerRef.current) {
+      const canvas = containerRef.current.querySelector('canvas')
+      if (canvas) {
+        canvasRef.current = canvas
+        setCanvasReady(true)
+      }
+    }
+  }, [])
 
   return (
     <div
+      ref={containerRef}
       className="dandelion-layer"
       style={{
         position: 'absolute',
@@ -364,7 +369,6 @@ const DandelionLayer = memo(({ config, paletteColors = [], effectsConfig, isPaus
         style={{ width: '100%', height: '100%' }}
         dpr={Math.min(window.devicePixelRatio, 2)}
       >
-        <CanvasRefExporter canvasRef={canvasRef} onReady={handleCanvasReady} />
         <SceneSetup config={config} colors={colors} />
         <DandelionMesh config={config} colors={colors} isPaused={isPaused} mouseEnabled={mouseEnabled} mouseIntensity={mouseIntensity} />
       </Canvas>

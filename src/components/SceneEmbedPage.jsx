@@ -5,6 +5,7 @@ import { useDocumentMeta } from '@/hooks/useDocumentMeta'
 import { useColorMode } from '@/hooks/useColorMode'
 import { resolveThemedConfigs } from '@/lib/themeUtils'
 import { captureLayersToCanvas } from '@/lib/canvasCapture'
+import { prepareForCapture } from '@/lib/colorConversion'
 import { audioData } from '@/audio/audioData'
 import ColorPlaceholder from './ColorPlaceholder'
 import '../App.css'
@@ -74,14 +75,22 @@ function SceneEmbedPage() {
     }
     if (!container) throw new Error('layers-container not found')
     const inputs = captureInputsRef.current || {}
-    const canvas = await captureLayersToCanvas(container, inputs.effectsConfig || {}, {
-      scale,
-      mode: 'all',
-      textData: inputs.textData || null,
-      hideIcons: inputs.hideIcons,
-      hideText: inputs.hideText,
-    })
-    return canvas.toDataURL('image/png')
+    // Same guard as the in-app capture button: html2canvas (tessellation/text
+    // layers) can't parse oklch() colors, so swap them for rgb during capture.
+    const restoreColors = prepareForCapture(document.body)
+    try {
+      await new Promise((resolve) => requestAnimationFrame(resolve))
+      const canvas = await captureLayersToCanvas(container, inputs.effectsConfig || {}, {
+        scale,
+        mode: 'all',
+        textData: inputs.textData || null,
+        hideIcons: inputs.hideIcons,
+        hideText: inputs.hideText,
+      })
+      return canvas.toDataURL('image/png')
+    } finally {
+      restoreColors()
+    }
   }, [])
 
   // Same-origin capture bridge: a headless renderer loads /embed/:slug?capture=1,
