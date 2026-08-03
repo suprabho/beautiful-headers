@@ -10,8 +10,9 @@ import chromium from '@sparticuz/chromium';
 import puppeteer from 'puppeteer-core';
 
 // SwiftShader gives software WebGL on the GPU-less Lambda host. Without these
-// flags the r3f canvases render black.
-const WEBGL_ARGS = ['--use-gl=angle', '--use-angle=swiftshader', '--enable-webgl'];
+// flags the r3f canvases render black. Chromium 136+ additionally requires
+// --enable-unsafe-swiftshader or software WebGL context creation is refused.
+const WEBGL_ARGS = ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--enable-webgl'];
 
 let browserPromise = null;
 

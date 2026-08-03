@@ -215,16 +215,8 @@ function ParticleRingMesh({ config, colors, isPaused, mousePos = { x: 0.5, y: 0.
   )
 }
 
-function CanvasRefExporter({ canvasRef, onReady }) {
-  const { gl } = useThree()
-  useEffect(() => {
-    canvasRef.current = gl.domElement
-    onReady()
-  }, [gl])
-  return null
-}
-
 const ParticleRingLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1 }) => {
+  const containerRef = useRef(null)
   const canvasRef = useRef(null)
   const [canvasReady, setCanvasReady] = useState(false)
 
@@ -234,10 +226,23 @@ const ParticleRingLayer = memo(({ config, paletteColors = [], effectsConfig, isP
     [paletteColors]
   )
 
-  const handleCanvasReady = useMemo(() => () => setCanvasReady(true), [])
+  // After mount, grab the R3F canvas element for FlutedGlassCanvas to sample.
+  // Must run in this component's own effect — signalling readiness from inside
+  // the R3F tree can mount FlutedGlassCanvas mid-commit of the R3F root, where
+  // its size measurement never fires and its renderer never initializes.
+  useEffect(() => {
+    if (containerRef.current) {
+      const canvas = containerRef.current.querySelector('canvas')
+      if (canvas) {
+        canvasRef.current = canvas
+        setCanvasReady(true)
+      }
+    }
+  }, [])
 
   return (
     <div
+      ref={containerRef}
       className="particle-ring-layer"
       style={{
         position: 'absolute',
@@ -255,7 +260,6 @@ const ParticleRingLayer = memo(({ config, paletteColors = [], effectsConfig, isP
         dpr={Math.min(window.devicePixelRatio, 2)}
         frameloop="always"
       >
-        <CanvasRefExporter canvasRef={canvasRef} onReady={handleCanvasReady} />
         <SceneSetup config={config} colors={colors} />
         <ParticleRingMesh config={config} colors={colors} isPaused={isPaused} mousePos={mousePos} mouseIntensity={mouseIntensity} />
       </Canvas>

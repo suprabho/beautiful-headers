@@ -252,9 +252,19 @@ export const captureLayersToCanvas = async (container, effectsConfig, { scale = 
   // For layers with separate FlutedGlassCanvas overlay (fluid, aurora, waves),
   // we need to grab the LAST canvas (fluted glass if enabled, or base canvas)
   // GradientLayer has fluted glass built into its shader, so only has one canvas
+  //
+  // Skip canvases whose renderer never initialized: backing store still at the
+  // browser default 300×150 with no data-engine tag and no explicit CSS size.
+  // Compositing such a canvas paints an empty (black) frame over the scene, so
+  // fall back to the live canvas beneath it instead.
+  const isRendererInitialized = (canvas) =>
+    canvas.width !== 300 || canvas.height !== 150 ||
+    canvas.hasAttribute('data-engine') || canvas.style.width !== ''
   const getLastCanvas = (selector) => {
-    const canvases = container.querySelectorAll(`${selector} canvas`)
-    return canvases.length > 0 ? canvases[canvases.length - 1] : null
+    const canvases = Array.from(container.querySelectorAll(`${selector} canvas`))
+    const alive = canvases.filter(isRendererInitialized)
+    const pool = alive.length > 0 ? alive : canvases
+    return pool.length > 0 ? pool[pool.length - 1] : null
   }
 
   const backgroundCanvas =

@@ -59,6 +59,7 @@ const LAUNCH = {
     '--disable-setuid-sandbox',
     '--use-gl=angle',
     '--use-angle=swiftshader',
+    '--enable-unsafe-swiftshader', // required for software WebGL on Chromium 136+
     '--enable-webgl',
     '--ignore-gpu-blocklist',
     '--hide-scrollbars',
