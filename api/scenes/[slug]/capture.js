@@ -13,6 +13,7 @@
 import crypto from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 import { renderSceneToPng } from '../../_lib/render.js';
+import { renderServiceConfigured, captureViaService } from '../../_lib/remote.js';
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
@@ -88,21 +89,28 @@ export default async function handler(req, res) {
       return res.status(404).json({ error: 'Scene not found' });
     }
 
-    // 3. Render.
-    const proto = req.headers['x-forwarded-proto'] || 'https';
-    const host = req.headers['x-forwarded-host'] || req.headers.host;
-    const baseUrl = host ? `${proto}://${host}` : 'https://aura.promad.design';
+    // 3. Render — via the warm render service when configured (see
+    //    api/_lib/remote.js), else in-process with @sparticuz/chromium.
+    let png;
+    if (renderServiceConfigured()) {
+      png = await captureViaService({ slug, width, height, dpr, hideText, hideIcons, theme });
+      // The service persists to the same bucket/key itself — no upload here.
+    } else {
+      const proto = req.headers['x-forwarded-proto'] || 'https';
+      const host = req.headers['x-forwarded-host'] || req.headers.host;
+      const baseUrl = host ? `${proto}://${host}` : 'https://aura.promad.design';
 
-    const png = await renderSceneToPng({
-      baseUrl, slug, width, height, dpr, hideText, hideIcons, theme,
-    });
+      png = await renderSceneToPng({
+        baseUrl, slug, width, height, dpr, hideText, hideIcons, theme,
+      });
 
-    // 4. Persist for future requests (best-effort — a failure just means we
-    //    re-render on the next miss).
-    supabase.storage
-      .from(CAPTURES_BUCKET)
-      .upload(objectPath, png, { contentType: 'image/png', upsert: true, cacheControl: String(CACHE_TTL) })
-      .catch((e) => console.warn('capture cache upload failed:', e?.message || e));
+      // 4. Persist for future requests (best-effort — a failure just means we
+      //    re-render on the next miss).
+      supabase.storage
+        .from(CAPTURES_BUCKET)
+        .upload(objectPath, png, { contentType: 'image/png', upsert: true, cacheControl: String(CACHE_TTL) })
+        .catch((e) => console.warn('capture cache upload failed:', e?.message || e));
+    }
 
     return sendPng(png, 'miss');
   } catch (err) {
