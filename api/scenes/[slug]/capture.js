@@ -27,6 +27,47 @@ const CACHE_TTL = 60 * 60 * 24 * 30; // 30 days
 // Render cost is the abuse vector, so clamp hard.
 const LIMITS = { wMin: 16, wMax: 3840, hMin: 16, hMax: 3840, dprMin: 1, dprMax: 3 };
 const clamp = (n, lo, hi) => Math.min(hi, Math.max(lo, n));
+
+// Mirrors titleToSlug in api/scenes/[slug].js and src/lib/scenesApi.js.
+function titleToSlug(title) {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+}
+
+/**
+ * Resolve a scene by slug the same way the page route and the client do:
+ * exact `slug` column first, then a title-derived match for rows predating
+ * the slug column. Without the fallback this route 404s on scenes that
+ * /scenes/:slug and /embed/:slug both resolve fine.
+ * @returns {Promise<boolean>} whether the slug names a real scene.
+ */
+async function sceneExists(supabase, slug) {
+  const { data: slugMatch, error: slugError } = await supabase
+    .from('scenes')
+    .select('slug')
+    .eq('slug', slug)
+    .maybeSingle();
+
+  // maybeSingle() errors rather than returning a row when a slug is duplicated,
+  // so an ignored error here would read as "not found".
+  if (slugError) return false;
+  if (slugMatch) return true;
+
+  const words = slug.split('-').filter((w) => w.length >= 3);
+  if (words.length === 0) return false;
+
+  const searchWords = [...words].sort((a, b) => b.length - a.length).slice(0, 3);
+  let query = supabase.from('scenes').select('title');
+  for (const word of searchWords) query = query.ilike('title', `%${word}%`);
+
+  const { data, error } = await query;
+  if (error || !data) return false;
+  return data.some((s) => s.title && titleToSlug(s.title) === slug);
+}
 const intParam = (v, def) => {
   const n = parseInt(v, 10);
   return Number.isFinite(n) ? n : def;
@@ -36,8 +77,21 @@ const intParam = (v, def) => {
 export const config = { maxDuration: 60 };
 
 export default async function handler(req, res) {
+  // Browser consumers (vismay share cards rasterize via html-to-image) read
+  // these bytes cross-origin, so every response — errors included, so the
+  // caller can see why — carries an open CORS header. The route is a public
+  // GET with no credentials, so `*` grants nothing a direct fetch wouldn't.
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Timing-Allow-Origin', '*');
+  res.setHeader('Vary', 'Origin');
+
+  if (req.method === 'OPTIONS') {
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Max-Age', '86400');
+    return res.status(204).end();
+  }
   if (req.method !== 'GET') {
-    res.setHeader('Allow', 'GET');
+    res.setHeader('Allow', 'GET, OPTIONS');
     return res.status(405).json({ error: 'Method not allowed' });
   }
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
@@ -80,12 +134,7 @@ export default async function handler(req, res) {
     }
 
     // 2. Fail fast on unknown slugs before launching a browser.
-    const { data: scene } = await supabase
-      .from('scenes')
-      .select('slug')
-      .eq('slug', slug)
-      .maybeSingle();
-    if (!scene) {
+    if (!(await sceneExists(supabase, slug))) {
       return res.status(404).json({ error: 'Scene not found' });
     }
 
