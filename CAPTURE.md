@@ -1,5 +1,12 @@
 # Scene capture endpoint
 
+> **Render service:** with `AURA_RENDER_URL` + `AURA_RENDER_SECRET` set on the
+> Vercel project, this endpoint proxies to the warm-browser
+> [`render-service/`](render-service/README.md) (Fly.io) instead of launching
+> `@sparticuz/chromium` in the Lambda. The service also renders **videos**
+> (`/scene/:slug/video.mp4`) and serves other apps (greenmentor, vismay)
+> directly — see its README.
+
 Render any scene to a PNG at requested frame dimensions, by slug.
 
 ```
