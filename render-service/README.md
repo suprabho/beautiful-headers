@@ -106,7 +106,7 @@ community-engine can point `HEADER_RENDER_URL` at this service unchanged.
 | `VIDEO_CONCURRENCY`         | `1`                         | Max concurrent video renders per machine.    |
 | `SUPABASE_URL`              | —                           | Optional origin cache (also reads `VITE_SUPABASE_URL`). |
 | `SUPABASE_SERVICE_ROLE_KEY` | —                           | Needed to read/write the cache bucket.       |
-| `CAPTURES_BUCKET`           | `captures`                  | Same bucket the Vercel endpoint uses.        |
+| `CAPTURES_BUCKET`           | `aura-cache`                | Same bucket the Vercel endpoint uses.        |
 | `FFMPEG_PATH`               | `ffmpeg`                    | System ffmpeg from the Docker image.         |
 
 ## Deploy
@@ -116,9 +116,15 @@ From this directory:
 ```bash
 fly launch --no-deploy          # first time only; note the (possibly suffixed) app name
 fly secrets set RENDER_SECRET=<generate a strong value>
-fly secrets set SUPABASE_URL=… SUPABASE_SERVICE_ROLE_KEY=…   # optional cache
+fly secrets set SUPABASE_URL=… SUPABASE_SERVICE_ROLE_KEY=…   # cache (see below)
 fly deploy
 ```
+
+Without the Supabase secrets the cache is off — and because `capture.js` skips
+its own upload whenever the service is configured, that means *nothing* writes
+to the bucket and every request pays a full render. Set them. The bucket
+(`aura-cache` by default) must already exist; Storage returns `NoSuchBucket` as
+a `400`, and the put is fire-and-forget, so a wrong name fails silently.
 
 The Docker base image tag (`mcr.microsoft.com/playwright:vX.Y.Z-jammy`) **must**
 match the `playwright` version in `package.json`. Bump both together.

@@ -10,7 +10,7 @@ import crypto from "node:crypto";
 
 const BASE = (process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || "").replace(/\/+$/, "");
 const KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
-const BUCKET = process.env.CAPTURES_BUCKET || "captures";
+const BUCKET = process.env.CAPTURES_BUCKET || "aura-cache";
 const CACHE_TTL = 60 * 60 * 24 * 30; // 30 days, matches the Vercel endpoint
 
 export const cacheEnabled = Boolean(BASE && KEY);

@@ -96,8 +96,14 @@ export async function renderVideo(o) {
     if (waitForCaptureReady) {
       // Real timers still run under the vclock, so the embed's readiness gate
       // (scene fetch + fonts + settle timeout) fires normally.
+      //
+      // `polling` is essential: waitForFunction defaults to polling on
+      // requestAnimationFrame, which the vclock has replaced with a queue that
+      // is only pumped *after* this wait. Left on the default the predicate
+      // would never run and every video render would time out here.
       await page.waitForFunction(() => window.__auraCaptureReady === true, null, {
         timeout: 45_000,
+        polling: 250,
       });
     }
     mark("ready");
@@ -132,9 +138,18 @@ export async function renderVideo(o) {
     // crashing the process with an unhandled EPIPE.
     ff.stdin.on("error", () => {});
 
+    // Screenshot over raw CDP rather than page.screenshot(): Playwright's
+    // screenshot path first awaits `rafraf` (two requestAnimationFrame ticks)
+    // for render stability, and the vclock has replaced rAF with a queue that
+    // only advances when we tick it — so page.screenshot() deadlocks until its
+    // timeout. Page.captureScreenshot has no such wait, and skipping the
+    // stability/font checks makes each frame cheaper too.
+    const cdp = await context.newCDPSession(page);
+
     for (let i = 0; i < totalFrames; i++) {
       await page.evaluate((dt) => window.__vclockTick(dt), dtMs);
-      const frame = await page.screenshot({ type: "png" });
+      const { data } = await cdp.send("Page.captureScreenshot", { format: "png" });
+      const frame = Buffer.from(data, "base64");
       if (!ff.stdin.write(frame)) await once(ff.stdin, "drain");
       if (i % fps === 0) mark(`frame ${i}/${totalFrames}`);
     }

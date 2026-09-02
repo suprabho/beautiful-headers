@@ -21,7 +21,7 @@ const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
 // a permissive storage policy is set). Reads/renders still work without it.
 const SUPABASE_WRITE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY;
 
-const CAPTURES_BUCKET = 'captures';
+const CAPTURES_BUCKET = process.env.CAPTURES_BUCKET || 'aura-cache';
 const CACHE_TTL = 60 * 60 * 24 * 30; // 30 days
 
 // Render cost is the abuse vector, so clamp hard.
