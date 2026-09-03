@@ -41,7 +41,7 @@ export default async function handler(req, res) {
 
     try {
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: 'gemini-3.1-flash-lite' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-3.7-flash' });
 
         // Construct the prompt
         const prompt = `You are describing a beautiful gradient/visual header design for a website in a SEO-friendly way to help it get discovered by search engines.
