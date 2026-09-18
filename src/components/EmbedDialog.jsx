@@ -9,32 +9,44 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
+import {
+  PRODUCTION_ORIGIN,
+  buildEmbedUrl,
+  iframeSnippet,
+  facadeSnippet,
+  nextSnippet,
+} from '@/lib/embedSnippets'
 
-export function EmbedDialogContent({ slug, sceneTitle, className = '' }) {
+function CopyButton({ code, copied, onCopy }) {
+  return (
+    <Button variant="secondary" className="w-full" onClick={() => onCopy(code)}>
+      {copied ? (
+        <>
+          <Check size={16} className="mr-2" />
+          Copied!
+        </>
+      ) : (
+        <>
+          <Copy size={16} className="mr-2" />
+          Copy Code
+        </>
+      )}
+    </Button>
+  )
+}
+
+export function EmbedDialogContent({ slug, sceneTitle, colors, className = '' }) {
   const [copied, setCopied] = useState(false)
   const [embedOptions, setEmbedOptions] = useState({ hideText: false, hideIcons: false, input: 'mouse', theme: 'auto', height: 600 })
 
-  const getEmbedCode = () => {
-    const params = new URLSearchParams()
-    if (embedOptions.hideText) params.set('hideText', 'true')
-    if (embedOptions.hideIcons) params.set('hideIcons', 'true')
-    if (embedOptions.input !== 'mouse') params.set('input', embedOptions.input)
-    if (embedOptions.theme !== 'auto') params.set('theme', embedOptions.theme)
-    const queryString = params.toString()
-    const embedUrl = `${window.location.origin}/embed/${slug}${queryString ? `?${queryString}` : ''}`
-    return `<iframe src="${embedUrl}" width="100%" height="${embedOptions.height}" frameborder="0" style="border:0;border-radius:8px;" allowfullscreen></iframe>`
-  }
+  const title = sceneTitle || slug
+  const localUrl = buildEmbedUrl({ origin: window.location.origin, slug, ...embedOptions })
+  const productionUrl = buildEmbedUrl({ origin: PRODUCTION_ORIGIN, slug, ...embedOptions })
+  const snippetProps = { title, height: embedOptions.height, input: embedOptions.input }
 
-  const getGenerationEmbedCode = () => {
-    const title = sceneTitle || slug
-    const params = new URLSearchParams()
-    if (embedOptions.hideText) params.set('hideText', 'true')
-    if (embedOptions.hideIcons) params.set('hideIcons', 'true')
-    if (embedOptions.input !== 'mouse') params.set('input', embedOptions.input)
-    if (embedOptions.theme !== 'auto') params.set('theme', embedOptions.theme)
-    const queryString = params.toString()
-    return `<iframe title="${title}" src="https://aura.promad.design/embed/${slug}${queryString ? `?${queryString}` : ''}" style={{width:"100%", height:"${embedOptions.height}px"}} allowFullScreen></iframe>`
-  }
+  const htmlCode = iframeSnippet({ url: localUrl, ...snippetProps })
+  const lazyCode = facadeSnippet({ url: localUrl, slug, colors, ...snippetProps })
+  const nextCode = nextSnippet({ url: productionUrl, ...snippetProps })
 
   const handleCopyEmbed = async (code) => {
     try {
@@ -121,33 +133,31 @@ export function EmbedDialogContent({ slug, sceneTitle, className = '' }) {
         </div>
       </div>
 
-      <Tabs defaultValue="scene" className="mt-3" onValueChange={() => setCopied(false)}>
+      <Tabs defaultValue="lazy" className="mt-3" onValueChange={() => setCopied(false)}>
         <TabsList className="w-full">
+          <TabsTrigger value="lazy" className="flex-1">Lazy (poster)</TabsTrigger>
           <TabsTrigger value="scene" className="flex-1">HTML Embed</TabsTrigger>
           <TabsTrigger value="generation" className="flex-1">NextJS Embed</TabsTrigger>
         </TabsList>
 
+        <TabsContent value="lazy" className="space-y-4 mt-4">
+          <p className="text-xs text-muted-foreground">
+            Recommended for hero backgrounds. Paints the scene&apos;s palette instantly and loads the live
+            scene only after your page has rendered, so it stays out of your Lighthouse critical path.
+            Set <code className="font-mono">trigger</code> to <code className="font-mono">&apos;interaction&apos;</code> to
+            wait for the first scroll or pointer move instead.
+          </p>
+          <pre className="bg-muted p-4 rounded-lg text-xs overflow-x-auto whitespace-pre-wrap break-all max-h-64 overflow-y-auto">
+            {lazyCode}
+          </pre>
+          <CopyButton code={lazyCode} copied={copied} onCopy={handleCopyEmbed} />
+        </TabsContent>
+
         <TabsContent value="scene" className="space-y-4 mt-4">
           <pre className="bg-muted p-4 rounded-lg text-xs overflow-x-auto whitespace-pre-wrap break-all">
-            {getEmbedCode()}
+            {htmlCode}
           </pre>
-          <Button
-            variant="secondary"
-            className="w-full"
-            onClick={() => handleCopyEmbed(getEmbedCode())}
-          >
-            {copied ? (
-              <>
-                <Check size={16} className="mr-2" />
-                Copied!
-              </>
-            ) : (
-              <>
-                <Copy size={16} className="mr-2" />
-                Copy Code
-              </>
-            )}
-          </Button>
+          <CopyButton code={htmlCode} copied={copied} onCopy={handleCopyEmbed} />
           <div className="text-sm text-muted-foreground">
             <p>Preview URL: <a href={`/embed/${slug}`} target="_blank" rel="noopener noreferrer" className="text-primary underline">{window.location.origin}/embed/{slug}</a></p>
           </div>
@@ -155,27 +165,11 @@ export function EmbedDialogContent({ slug, sceneTitle, className = '' }) {
 
         <TabsContent value="generation" className="space-y-4 mt-4">
           <pre className="bg-muted p-4 rounded-lg text-xs overflow-x-auto whitespace-pre-wrap break-all">
-            {getGenerationEmbedCode()}
+            {nextCode}
           </pre>
-          <Button
-            variant="secondary"
-            className="w-full"
-            onClick={() => handleCopyEmbed(getGenerationEmbedCode())}
-          >
-            {copied ? (
-              <>
-                <Check size={16} className="mr-2" />
-                Copied!
-              </>
-            ) : (
-              <>
-                <Copy size={16} className="mr-2" />
-                Copy Code
-              </>
-            )}
-          </Button>
+          <CopyButton code={nextCode} copied={copied} onCopy={handleCopyEmbed} />
           <div className="text-sm text-muted-foreground">
-            <p>Production URL: <a href={`https://aura.promad.design/embed/${slug}`} target="_blank" rel="noopener noreferrer" className="text-primary underline">https://aura.promad.design/embed/{slug}</a></p>
+            <p>Production URL: <a href={productionUrl} target="_blank" rel="noopener noreferrer" className="text-primary underline">{PRODUCTION_ORIGIN}/embed/{slug}</a></p>
           </div>
         </TabsContent>
       </Tabs>
@@ -183,7 +177,7 @@ export function EmbedDialogContent({ slug, sceneTitle, className = '' }) {
   )
 }
 
-function EmbedDialog({ open, onOpenChange, slug, sceneTitle }) {
+function EmbedDialog({ open, onOpenChange, slug, sceneTitle, colors }) {
   const handleOpenChange = (open) => {
     onOpenChange(open)
   }
@@ -191,7 +185,7 @@ function EmbedDialog({ open, onOpenChange, slug, sceneTitle }) {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-lg">
-        <EmbedDialogContent slug={slug} sceneTitle={sceneTitle} />
+        <EmbedDialogContent slug={slug} sceneTitle={sceneTitle} colors={colors} />
       </DialogContent>
     </Dialog>
   )

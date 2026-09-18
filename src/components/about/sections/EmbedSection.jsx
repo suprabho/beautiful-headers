@@ -18,7 +18,7 @@ import {
 
 const fallback = getScene('embed')
 
-const EMBED_CODE = `<iframe src="https://aura.promad.design/embed/your-scene" width="100%" height="600" frameborder="0" style="border:0;border-radius:8px;" allowfullscreen></iframe>`
+const EMBED_CODE = `<iframe src="https://aura.promad.design/embed/your-scene" title="Aura scene" width="100%" height="600" loading="lazy" style="border:0;border-radius:8px;" allowfullscreen></iframe>`
 
 export function EmbedSection({ dbScene }) {
   const sd = dbScene?.scene_data

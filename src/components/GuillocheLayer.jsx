@@ -370,7 +370,7 @@ function CanvasRefExporter({ canvasRef, onReady }) {
   return null
 }
 
-const GuillocheLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1 }) => {
+const GuillocheLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1, frameloop = 'always' }) => {
   const canvasRef = useRef(null)
   const [canvasReady, setCanvasReady] = useState(false)
   const configRef = useRef(config)
@@ -404,7 +404,7 @@ const GuillocheLayer = memo(({ config, paletteColors = [], effectsConfig, isPaus
         camera={{ position: [0, 0, 8], fov: 50 }}
         style={{ width: '100%', height: '100%' }}
         dpr={Math.min(window.devicePixelRatio, 2)}
-        frameloop="always"
+        frameloop={frameloop}
       >
         <CanvasRefExporter canvasRef={canvasRef} onReady={handleCanvasReady} />
         <SceneSetup config={config} colors={colors} />
@@ -431,6 +431,7 @@ const GuillocheLayer = memo(({ config, paletteColors = [], effectsConfig, isPaus
         <FlutedGlassCanvas
           sourceCanvasRef={canvasRef}
           effectsConfig={effectsConfig}
+          frameloop={frameloop}
         />
       )}
     </div>

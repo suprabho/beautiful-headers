@@ -199,7 +199,7 @@ const FlutedGlassScene = ({ textureRef, effectsConfig }) => {
 }
 
 // Wrapper component that applies fluted glass effect to a source canvas
-const FlutedGlassCanvas = ({ sourceCanvasRef, effectsConfig, style }) => {
+const FlutedGlassCanvas = ({ sourceCanvasRef, effectsConfig, style, frameloop = 'always' }) => {
   return (
     <div style={{ position: 'absolute', inset: 0, ...style }}>
       <Canvas
@@ -208,6 +208,7 @@ const FlutedGlassCanvas = ({ sourceCanvasRef, effectsConfig, style }) => {
         camera={{ position: [0, 0, 1], left: -1, right: 1, top: 1, bottom: -1, near: 0.1, far: 10 }}
         style={{ width: '100%', height: '100%' }}
         dpr={Math.min(window.devicePixelRatio, 2)}
+        frameloop={frameloop}
       >
         <FlutedGlassScene textureRef={sourceCanvasRef} effectsConfig={effectsConfig} />
       </Canvas>

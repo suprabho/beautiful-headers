@@ -215,7 +215,7 @@ function ParticleRingMesh({ config, colors, isPaused, mousePos = { x: 0.5, y: 0.
   )
 }
 
-const ParticleRingLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1 }) => {
+const ParticleRingLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1, frameloop = 'always' }) => {
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
   const [canvasReady, setCanvasReady] = useState(false)
@@ -258,7 +258,7 @@ const ParticleRingLayer = memo(({ config, paletteColors = [], effectsConfig, isP
         camera={{ position: [0, 0, 8], fov: 50 }}
         style={{ width: '100%', height: '100%' }}
         dpr={Math.min(window.devicePixelRatio, 2)}
-        frameloop="always"
+        frameloop={frameloop}
       >
         <SceneSetup config={config} colors={colors} />
         <ParticleRingMesh config={config} colors={colors} isPaused={isPaused} mousePos={mousePos} mouseIntensity={mouseIntensity} />
@@ -267,6 +267,7 @@ const ParticleRingLayer = memo(({ config, paletteColors = [], effectsConfig, isP
         <FlutedGlassCanvas
           sourceCanvasRef={canvasRef}
           effectsConfig={effectsConfig}
+          frameloop={frameloop}
         />
       )}
     </div>

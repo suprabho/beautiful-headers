@@ -1,7 +1,10 @@
-import { useRef, useEffect, useMemo, useState, memo } from 'react'
-import FlutedGlassCanvas from './FlutedGlassCanvas'
+import { useRef, useEffect, useMemo, useState, memo, lazy, Suspense } from 'react'
 import { getAudioModulatedConfig } from '../audio/applyAudioModulation'
 import { smoothMouse, getMouseEffects } from '../mouse/applyMouseEffect'
+
+// WebGL glass overlay is loaded on demand so this Canvas2D layer never pulls
+// three.js into its chunk (only scenes with fluted glass enabled fetch it).
+const FlutedGlassCanvas = lazy(() => import('./FlutedGlassCanvas'))
 
 // Detect mobile device for performance optimizations
 const isMobile = typeof window !== 'undefined' && (
@@ -78,7 +81,7 @@ const interpolateValues = (values, progress) => {
   }
 }
 
-const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1 }) => {
+const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1, frameloop = 'always' }) => {
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
   const tempCanvasRef = useRef(null)
@@ -363,10 +366,9 @@ const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, is
       }}
     >
       {flutedEnabled && canvasReady && canvasRef.current && (
-        <FlutedGlassCanvas
-          sourceCanvasRef={canvasRef}
-          effectsConfig={effectsConfig}
-        />
+        <Suspense fallback={null}>
+          <FlutedGlassCanvas sourceCanvasRef={canvasRef} effectsConfig={effectsConfig} frameloop={frameloop} />
+        </Suspense>
       )}
     </div>
   )

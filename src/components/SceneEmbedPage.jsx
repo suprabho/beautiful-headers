@@ -1,30 +1,61 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
-import { useParams, useSearchParams } from 'react-router-dom'
-import { getSceneBySlug } from '@/lib/scenesApi'
+import { useState, useEffect, useCallback, useRef, useMemo, lazy, Suspense } from 'react'
+import { fetchSceneBySlug } from '@/lib/sceneFetch'
+import { ensureTextFonts } from '@/lib/fontLoader'
 import { useDocumentMeta } from '@/hooks/useDocumentMeta'
 import { useColorMode } from '@/hooks/useColorMode'
+import { useInView, usePrefersReducedMotion } from '@/hooks/useInView'
 import { resolveThemedConfigs } from '@/lib/themeUtils'
-import { captureLayersToCanvas } from '@/lib/canvasCapture'
-import { prepareForCapture } from '@/lib/colorConversion'
 import { audioData } from '@/audio/audioData'
 import ColorPlaceholder from './ColorPlaceholder'
-import '../App.css'
-import GradientLayer from './GradientLayer'
-import SimpleGradientLayer from './SimpleGradientLayer'
-import AuroraLayer from './AuroraLayer'
-import FluidGradientLayer from './FluidGradientLayer'
-import WavesLayer from './WavesLayer'
-import RibbonLayer from './RibbonLayer'
-import DandelionLayer from './DandelionLayer'
-import ParticleRingLayer from './ParticleRingLayer'
-import GuillocheLayer from './GuillocheLayer'
-import TessellationLayer from './TessellationLayer'
 import EffectsLayer from './EffectsLayer'
 import TextLayer from './TextLayer'
+import '../App.css'
+
+// Background renderers are code-split per type, so an embed only downloads the
+// one it needs: Canvas2D scenes (simple/aurora/fluid/waves) never pull in
+// three.js, and the WebGL ones share a single three chunk. The loader map is
+// also used to know when the chunk has arrived (overlay fade, capture ready).
+const LAYER_LOADERS = {
+  simple: () => import('./SimpleGradientLayer'),
+  liquid: () => import('./GradientLayer'),
+  aurora: () => import('./AuroraLayer'),
+  fluid: () => import('./FluidGradientLayer'),
+  waves: () => import('./WavesLayer'),
+  ribbon: () => import('./RibbonLayer'),
+  dandelion: () => import('./DandelionLayer'),
+  particleRing: () => import('./ParticleRingLayer'),
+  guilloche: () => import('./GuillocheLayer'),
+}
+const SimpleGradientLayer = lazy(LAYER_LOADERS.simple)
+const GradientLayer = lazy(LAYER_LOADERS.liquid)
+const AuroraLayer = lazy(LAYER_LOADERS.aurora)
+const FluidGradientLayer = lazy(LAYER_LOADERS.fluid)
+const WavesLayer = lazy(LAYER_LOADERS.waves)
+const RibbonLayer = lazy(LAYER_LOADERS.ribbon)
+const DandelionLayer = lazy(LAYER_LOADERS.dandelion)
+const ParticleRingLayer = lazy(LAYER_LOADERS.particleRing)
+const GuillocheLayer = lazy(LAYER_LOADERS.guilloche)
+const TessellationLayer = lazy(() => import('./TessellationLayer'))
+
+// The page runs both as its own entry (embed.html, no router) and as a
+// fallback route inside the studio app, so it reads the slug and the query
+// straight from the location rather than from react-router.
+function readEmbedLocation() {
+  const match = window.location.pathname.match(/^\/embed\/([^/?#]+)/)
+  return {
+    slug: match ? decodeURIComponent(match[1]) : null,
+    searchParams: new URLSearchParams(window.location.search),
+  }
+}
+
+// The inline bootstrap in embed.html may already have fetched the scene.
+function earlyScene(slug) {
+  const scene = typeof window !== 'undefined' ? window.__auraScene : null
+  return scene && scene.slug === slug ? scene : null
+}
 
 function SceneEmbedPage() {
-  const { slug } = useParams()
-  const [searchParams] = useSearchParams()
+  const { slug, searchParams } = useMemo(readEmbedLocation, [])
 
   // Capture mode: a headless browser loads /embed/:slug?capture=1, waits for
   // window.__auraCaptureReady, then calls window.__auraCapture() to get a PNG.
@@ -39,14 +70,27 @@ function SceneEmbedPage() {
   const inputMode = captureMode ? 'off' : (searchParams.get('input') || 'mouse') // 'off' | 'mouse' | 'mic'
   const colorMode = useColorMode(searchParams)
 
-  const [scene, setScene] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [scene, setScene] = useState(() => earlyScene(slug))
+  const [isLoading, setIsLoading] = useState(() => !earlyScene(slug))
   const [error, setError] = useState(null)
   const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 })
+
+  // True once the code-split renderer for this scene's background has loaded.
+  const [layerReady, setLayerReady] = useState(false)
 
   // Progressive loading overlay: instant color SVG -> live scene crossfade.
   const [overlayVisible, setOverlayVisible] = useState(true)
   const [overlayMounted, setOverlayMounted] = useState(true)
+
+  // Stop animating when the iframe is scrolled out of the host's viewport or
+  // the visitor prefers reduced motion. Never in capture mode: the headless
+  // renderer needs live frames regardless of what IntersectionObserver says.
+  const [inViewRef, inView] = useInView()
+  const reducedMotion = usePrefersReducedMotion()
+  const isPaused = !captureMode && (!inView || reducedMotion)
+  // 'demand' still paints the first frame (and any prop-driven update) but
+  // stops the per-frame WebGL render loop while paused.
+  const frameloop = isPaused ? 'demand' : 'always'
 
   // Update document meta tags with scene data
   useDocumentMeta({
@@ -64,10 +108,15 @@ function SceneEmbedPage() {
   // capture bridges can read them without re-subscribing on every change.
   const captureInputsRef = useRef(null)
 
+  // Fonts requested for the text layer (see below); awaited before capture.
+  const fontsPromiseRef = useRef(Promise.resolve())
+
   // Composite the live scene layers (WebGL background + tessellation + text) into
   // a PNG data URL, using the same pipeline as the in-app capture button. Shared
   // by both capture bridges below. Waits briefly for the layers to mount, since a
-  // caller may ask before React has painted the first frame.
+  // caller may ask before React has painted the first frame. The capture
+  // libraries (html2canvas et al.) are loaded on demand so ordinary embeds never
+  // download them.
   const captureToDataUrl = useCallback(async (scale = 2) => {
     let container = document.querySelector('.layers-container')
     for (let i = 0; i < 30 && !container; i++) {
@@ -75,6 +124,10 @@ function SceneEmbedPage() {
       container = document.querySelector('.layers-container')
     }
     if (!container) throw new Error('layers-container not found')
+    const [{ captureLayersToCanvas }, { prepareForCapture }] = await Promise.all([
+      import('@/lib/canvasCapture'),
+      import('@/lib/colorConversion'),
+    ])
     const inputs = captureInputsRef.current || {}
     // Same guard as the in-app capture button: html2canvas (tessellation/text
     // layers) can't parse oklch() colors, so swap them for rgb during capture.
@@ -124,21 +177,6 @@ function SceneEmbedPage() {
     window.addEventListener('message', onMessage)
     return () => window.removeEventListener('message', onMessage)
   }, [captureToDataUrl])
-
-  // Signal readiness once the scene has mounted, fonts have loaded, and the
-  // WebGL/canvas layers have had a moment to render their first frames.
-  useEffect(() => {
-    if (!captureMode || !scene) return
-    let cancelled = false
-    window.__auraCaptureReady = false
-    const run = async () => {
-      try { if (document.fonts?.ready) await document.fonts.ready } catch { /* ignore */ }
-      await new Promise((r) => setTimeout(r, 1200)) // WebGL warm-up / settle
-      if (!cancelled) window.__auraCaptureReady = true
-    }
-    run()
-    return () => { cancelled = true; window.__auraCaptureReady = false }
-  }, [captureMode, scene])
 
   // Throttled mouse move handler
   const handleMouseMove = useCallback((e) => {
@@ -234,6 +272,14 @@ function SceneEmbedPage() {
   }, [inputMode])
 
   useEffect(() => {
+    if (!slug) {
+      setError('Scene not found')
+      setIsLoading(false)
+      return
+    }
+    if (earlyScene(slug)) return // already seeded from the inline bootstrap
+
+    let cancelled = false
     const fetchScene = async () => {
       try {
         setIsLoading(true)
@@ -241,28 +287,71 @@ function SceneEmbedPage() {
         // Reset the progressive overlay for the new scene
         setOverlayVisible(true)
         setOverlayMounted(true)
-        const sceneData = await getSceneBySlug(slug)
-        setScene(sceneData)
+        const sceneData = await fetchSceneBySlug(slug)
+        if (!cancelled) setScene(sceneData)
       } catch (err) {
         console.error('Failed to fetch scene:', err)
-        setError('Scene not found')
+        if (!cancelled) setError('Scene not found')
       } finally {
-        setIsLoading(false)
+        if (!cancelled) setIsLoading(false)
       }
     }
 
-    if (slug) {
-      fetchScene()
-    }
+    fetchScene()
+    return () => { cancelled = true }
   }, [slug])
 
-  // Once the scene data is in, give the live (WebGL/canvas) layers a short
-  // warm-up to render their first frames, then crossfade the overlay out.
+  // Load the renderer chunk for this scene's background type. Unknown types
+  // render nothing (as before), so count them as ready immediately.
   useEffect(() => {
     if (!scene) return
+    let cancelled = false
+    setLayerReady(false)
+    const load = LAYER_LOADERS[scene.scene_data?.backgroundType || 'liquid']
+    if (!load) {
+      setLayerReady(true)
+      return
+    }
+    load().then(
+      () => { if (!cancelled) setLayerReady(true) },
+      () => { if (!cancelled) setLayerReady(true) },
+    )
+    return () => { cancelled = true }
+  }, [scene])
+
+  // Request only the Google Font families this scene's text actually uses.
+  useEffect(() => {
+    if (!scene) return
+    const data = scene.scene_data || {}
+    if (data.textConfig?.enabled && !hideText && data.textSections?.length) {
+      fontsPromiseRef.current = ensureTextFonts(data.textSections)
+    }
+  }, [scene, hideText])
+
+  // Signal readiness once the scene + its renderer have mounted, fonts have
+  // loaded, and the WebGL/canvas layers have had a moment to render their
+  // first frames.
+  useEffect(() => {
+    if (!captureMode || !scene || !layerReady) return
+    let cancelled = false
+    window.__auraCaptureReady = false
+    const run = async () => {
+      try { await fontsPromiseRef.current } catch { /* ignore */ }
+      try { if (document.fonts?.ready) await document.fonts.ready } catch { /* ignore */ }
+      await new Promise((r) => setTimeout(r, 1200)) // WebGL warm-up / settle
+      if (!cancelled) window.__auraCaptureReady = true
+    }
+    run()
+    return () => { cancelled = true; window.__auraCaptureReady = false }
+  }, [captureMode, scene, layerReady])
+
+  // Once the renderer chunk is in, give the live (WebGL/canvas) layers a short
+  // warm-up to render their first frames, then crossfade the overlay out.
+  useEffect(() => {
+    if (!layerReady) return
     const t = setTimeout(() => setOverlayVisible(false), 800)
     return () => clearTimeout(t)
-  }, [scene])
+  }, [layerReady])
 
   // Unmount the overlay after the fade completes to free its memory.
   useEffect(() => {
@@ -300,11 +389,13 @@ function SceneEmbedPage() {
     return filters.filter(Boolean).join(' ') || 'none'
   }
 
+  const fullScreen = { position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }
+
   // While the scene data loads, show the instant color SVG (neutral fallback
   // palette) instead of a spinner — it crossfades straight into the live scene.
   if (isLoading) {
     return (
-      <div className="w-full h-screen overflow-hidden bg-background">
+      <div style={{ ...fullScreen, background: '#000' }}>
         <ColorPlaceholder
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
         />
@@ -314,8 +405,8 @@ function SceneEmbedPage() {
 
   if (error || !scene) {
     return (
-      <div className="w-full h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">{error || 'Scene not found'}</p>
+      <div style={{ ...fullScreen, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000', color: '#a1a1aa', fontFamily: 'system-ui, sans-serif' }}>
+        <p>{error || 'Scene not found'}</p>
       </div>
     )
   }
@@ -353,76 +444,70 @@ function SceneEmbedPage() {
   const particleRingConfig = sceneData.particleRingConfig || {}
   const guillocheConfig = sceneData.guillocheConfig || {}
 
-  // Thumbnail sources for the progressive overlay (prefer WebP, fall back to JPEG).
-  // Use `large` (1200px) — a sharp-enough preview that loads fast since it is
-  // covered by the live scene shortly after.
-  const thumb = scene.thumbnail || {}
-  const thumbSizeKey = thumb.large ? 'large' : thumb.medium ? 'medium' : thumb.small ? 'small' : thumb.full ? 'full' : null
-  const thumbJpg = thumbSizeKey ? thumb[thumbSizeKey] : null
-  const thumbWebp = thumbSizeKey ? thumb.webp?.[thumbSizeKey] : null
-
   return (
-    <div className="w-full h-screen overflow-hidden" onMouseMove={effectiveMouseEnabled ? handleMouseMove : undefined}>
+    <div ref={inViewRef} style={fullScreen} onMouseMove={effectiveMouseEnabled ? handleMouseMove : undefined}>
       {/* Full-screen scene - no UI overlay */}
-      <div className="absolute inset-0">
-        <div className="layers-container" style={{ position: 'absolute', inset: 0 }}>
-          {/* Background layer */}
-          <div
-            className="gradient-effects-wrapper"
-            style={{
-              position: 'absolute',
-              inset: 0,
-              zIndex: 1,
-              filter: getGradientFilter(effectsConfig, backgroundType),
-            }}
-          >
+      <div className="layers-container" style={{ position: 'absolute', inset: 0 }}>
+        {/* Background layer */}
+        <div
+          className="gradient-effects-wrapper"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 1,
+            filter: getGradientFilter(effectsConfig, backgroundType),
+          }}
+        >
+          <Suspense fallback={null}>
             {backgroundType === 'simple' && (
-              <SimpleGradientLayer config={gradientConfig} gradientColors={gradientConfig.colors} effectsConfig={effectsConfig} />
+              <SimpleGradientLayer config={gradientConfig} gradientColors={gradientConfig.colors} effectsConfig={effectsConfig} frameloop={frameloop} />
             )}
             {backgroundType === 'liquid' && (
-              <GradientLayer config={gradientConfig} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={false} mouseIntensity={effectiveMouseIntensity} />
+              <GradientLayer config={gradientConfig} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={isPaused} mouseIntensity={effectiveMouseIntensity} frameloop={frameloop} />
             )}
             {backgroundType === 'aurora' && (
-              <AuroraLayer config={auroraConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} mouseIntensity={effectiveMouseIntensity} />
+              <AuroraLayer config={auroraConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mouseIntensity={effectiveMouseIntensity} frameloop={frameloop} />
             )}
             {backgroundType === 'fluid' && (
-              <FluidGradientLayer config={fluidConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
+              <FluidGradientLayer config={fluidConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} frameloop={frameloop} />
             )}
             {backgroundType === 'waves' && (
-              <WavesLayer config={wavesConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
+              <WavesLayer config={wavesConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} frameloop={frameloop} />
             )}
             {backgroundType === 'ribbon' && (
-              <RibbonLayer config={ribbonConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
+              <RibbonLayer config={ribbonConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} frameloop={frameloop} />
             )}
             {backgroundType === 'dandelion' && (
-              <DandelionLayer config={dandelionConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} mouseEnabled={effectiveMouseEnabled} mouseIntensity={effectiveMouseIntensity} />
+              <DandelionLayer config={dandelionConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mouseEnabled={effectiveMouseEnabled} mouseIntensity={effectiveMouseIntensity} frameloop={frameloop} />
             )}
             {backgroundType === 'particleRing' && (
-              <ParticleRingLayer config={particleRingConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
+              <ParticleRingLayer config={particleRingConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} frameloop={frameloop} />
             )}
             {backgroundType === 'guilloche' && (
-              <GuillocheLayer config={guillocheConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
+              <GuillocheLayer config={guillocheConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} frameloop={frameloop} />
             )}
-          </div>
-
-          {/* Tessellation layer */}
-          {tessellationConfig.enabled && !hideIcons && (
-            <TessellationLayer config={tessellationConfig} mousePos={mousePos} isPaused={false} mouseIntensity={effectiveMouseIntensity} />
-          )}
-
-          {/* Effects layer */}
-          <EffectsLayer config={effectsConfig} />
-
-          {/* Text layer */}
-          {textConfig.enabled && !hideText && (
-            <TextLayer
-              sections={textSections}
-              gap={textGap}
-              color={textConfig.color}
-              opacity={textConfig.opacity}
-            />
-          )}
+          </Suspense>
         </div>
+
+        {/* Tessellation layer */}
+        {tessellationConfig.enabled && !hideIcons && (
+          <Suspense fallback={null}>
+            <TessellationLayer config={tessellationConfig} mousePos={mousePos} isPaused={isPaused} mouseIntensity={effectiveMouseIntensity} />
+          </Suspense>
+        )}
+
+        {/* Effects layer */}
+        <EffectsLayer config={effectsConfig} />
+
+        {/* Text layer */}
+        {textConfig.enabled && !hideText && (
+          <TextLayer
+            sections={textSections}
+            gap={textGap}
+            color={textConfig.color}
+            opacity={textConfig.opacity}
+          />
+        )}
       </div>
 
       {/* Progressive loading overlay: instant color SVG, crossfading out once

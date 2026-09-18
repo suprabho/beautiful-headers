@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex" />
+  <title>Aura scene</title>
+  <style>
+    /* Critical CSS: the embed is a full-bleed canvas, nothing else. */
+    html, body { margin: 0; width: 100%; height: 100%; background: #000; overflow: hidden; }
+    #root { width: 100%; height: 100%; position: relative; }
+    canvas, svg { display: block; }
+  </style>
+  <script>
+    // Kick off the scene fetch as soon as the host page has painted, in
+    // parallel with the JS bundle, and paint the palette placeholder as soon as
+    // the JSON lands — before React has even downloaded. The app reads
+    // window.__auraScenePromise / __auraScene so the request is never
+    // duplicated. Vite substitutes the VITE_SUPABASE_* placeholders below; an
+    // unset env var leaves the placeholder text in place, in which case we
+    // fall back to the defaults.
+    (function () {
+      var url = '%VITE_SUPABASE_URL%'
+      var key = '%VITE_SUPABASE_ANON_KEY%'
+      if (url.charAt(0) === '%') url = 'https://grbrfpaznehikakupavx.supabase.co'
+      if (key.charAt(0) === '%') key = 'sb_publishable_nFT6O21VoCZSKs7lQe-UaA_tSkoc4su'
+      window.__AURA_SUPABASE = { url: url, key: key }
+
+      var match = location.pathname.match(/^\/embed\/([^/?#]+)/)
+      if (!match) return
+      var slug = decodeURIComponent(match[1])
+      var columns = 'id,title,slug,scene_data,thumbnail,short_description,long_description'
+
+      var started = false
+      function start() {
+        if (started) return
+        started = true
+
+        // Resolves to the scene row, null when no row has this slug, or undefined
+        // when the request itself failed (the app then retries with its own fetch).
+        window.__auraScenePromise = fetch(
+          url + '/rest/v1/scenes?select=' + columns + '&slug=eq.' + encodeURIComponent(slug) + '&limit=1',
+          // Low priority: inside a host page the background must yield to the host's own resources.
+          { headers: { apikey: key, Authorization: 'Bearer ' + key }, priority: 'low' }
+        )
+          .then(function (res) { return res.ok ? res.json() : Promise.reject(new Error(String(res.status))) })
+          .then(function (rows) { return (rows && rows[0]) || null })
+          .catch(function () { return undefined })
+
+        window.__auraScenePromise.then(function (scene) {
+          window.__auraScene = scene || null
+          var root = document.getElementById('root')
+          if (!scene || !root || root.childNodes.length) return
+          var data = scene.scene_data || {}
+          var colors = (data.gradientConfig && data.gradientConfig.colors) || []
+          colors = colors.filter(function (c) { return /^#[0-9a-f]{3,8}$/i.test(c) })
+          if (!colors.length) colors = ['#1f1f1f', '#2b2b2b']
+          var pos = [[22, 28], [78, 22], [72, 74], [28, 72], [50, 48], [86, 54], [14, 52], [50, 90]]
+          var circles = colors.map(function (c, i) {
+            var p = pos[i % pos.length]
+            return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="42" fill="' + c + '" opacity="0.85"/>'
+          }).join('')
+          root.innerHTML =
+            '<svg style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' +
+            '<defs><filter id="aura-lqip-blur" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="14"/></filter></defs>' +
+            '<rect width="100" height="100" fill="' + colors[0] + '"/>' +
+            '<g filter="url(#aura-lqip-blur)">' + circles + '</g></svg>'
+        })
+      }
+
+      // Inside an iframe, the first two animation frames only arrive once the
+      // host page has presented its first frame. Starting our requests after
+      // that keeps them out of the host's Lighthouse critical path (its
+      // simulated FCP/LCP count every request that finishes before its first
+      // paint). Real-world cost: about two frames. The timer is a safety net
+      // for environments that never tick animation frames.
+      requestAnimationFrame(function () { requestAnimationFrame(start) })
+      setTimeout(start, 1000)
+    })()
+  </script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/embed.jsx"></script>
+</body>
+
+</html>
