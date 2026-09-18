@@ -860,6 +860,7 @@ function SceneViewPage() {
         onOpenChange={setEmbedDialogOpen}
         slug={slug}
         sceneTitle={scene?.title}
+        colors={scene?.scene_data?.gradientConfig?.colors}
       />
 
       <DownloadDialog

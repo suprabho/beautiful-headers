@@ -1,11 +1,14 @@
-import { memo, useRef, useEffect, useState, useCallback } from 'react'
-import FlutedGlassCanvas from './FlutedGlassCanvas'
+import { memo, useRef, useEffect, useState, useCallback, lazy, Suspense } from 'react'
+
+// WebGL glass overlay is loaded on demand so this Canvas2D layer never pulls
+// three.js into its chunk (only scenes with fluted glass enabled fetch it).
+const FlutedGlassCanvas = lazy(() => import('./FlutedGlassCanvas'))
 
 /**
  * SimpleGradientLayer - Renders a gradient to canvas without any animated effects
  * Supports fluted glass overlay effect
  */
-const SimpleGradientLayer = memo(({ config, gradientColors, effectsConfig }) => {
+const SimpleGradientLayer = memo(({ config, gradientColors, effectsConfig, frameloop = 'always' }) => {
   const canvasRef = useRef(null)
   const [canvasReady, setCanvasReady] = useState(false)
 
@@ -119,10 +122,9 @@ const SimpleGradientLayer = memo(({ config, gradientColors, effectsConfig }) => 
     <div className="simple-gradient-layer" style={containerStyle}>
       <canvas ref={canvasRef} style={canvasStyle} />
       {flutedEnabled && canvasReady && canvasRef.current && (
-        <FlutedGlassCanvas
-          sourceCanvasRef={canvasRef}
-          effectsConfig={effectsConfig}
-        />
+        <Suspense fallback={null}>
+          <FlutedGlassCanvas sourceCanvasRef={canvasRef} effectsConfig={effectsConfig} frameloop={frameloop} />
+        </Suspense>
       )}
     </div>
   )

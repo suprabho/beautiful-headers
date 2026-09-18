@@ -1,10 +1,13 @@
-import { useRef, useEffect, useMemo, useState, memo } from 'react'
-import FlutedGlassCanvas from './FlutedGlassCanvas'
+import { useRef, useEffect, useMemo, useState, memo, lazy, Suspense } from 'react'
 import { getAudioModulatedConfig } from '../audio/applyAudioModulation'
 import { audioData } from '../audio/audioData'
 import { AUDIO_MAPPINGS } from '../audio/audioMappings'
 import { smoothMouse } from '../mouse/applyMouseEffect'
 import { MOUSE_MAPPINGS } from '../mouse/mouseMappings'
+
+// WebGL glass overlay is loaded on demand so this Canvas2D layer never pulls
+// three.js into its chunk (only scenes with fluted glass enabled fetch it).
+const FlutedGlassCanvas = lazy(() => import('./FlutedGlassCanvas'))
 
 // Color cache for hex to HSL conversions
 const hslCache = new Map()
@@ -67,7 +70,7 @@ const fadeInOut = (t, m) => {
   return Math.abs((t + hm) % m - hm) / hm
 }
 
-const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig, isPaused, mouseIntensity = 1 }) => {
+const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig, isPaused, mouseIntensity = 1, frameloop = 'always' }) => {
   const containerRef = useRef(null)
   const canvasARef = useRef(null)
   const canvasBRef = useRef(null)
@@ -406,10 +409,9 @@ const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig,
       }}
     >
       {flutedEnabled && canvasReady && canvasBRef.current && (
-        <FlutedGlassCanvas 
-          sourceCanvasRef={canvasBRef} 
-          effectsConfig={effectsConfig}
-        />
+        <Suspense fallback={null}>
+          <FlutedGlassCanvas sourceCanvasRef={canvasBRef} effectsConfig={effectsConfig} frameloop={frameloop} />
+        </Suspense>
       )}
     </div>
   )

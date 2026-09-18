@@ -2,10 +2,14 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
+import { embedDevRewrite } from './vite.embed.plugin.js'
 
+// Studio build (index.html). The embed page has its own build, see
+// vite.embed.config.js; the dev/preview rewrite here just routes /embed/:slug
+// to it.
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), embedDevRewrite()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

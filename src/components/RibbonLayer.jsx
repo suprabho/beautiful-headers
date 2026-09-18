@@ -372,7 +372,7 @@ const RibbonScene = ({ config, paletteColors, isPaused, mousePos = { x: 0.5, y: 
   )
 }
 
-const RibbonLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1 }) => {
+const RibbonLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1, frameloop = 'always' }) => {
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
   const [canvasReady, setCanvasReady] = useState(false)
@@ -409,7 +409,7 @@ const RibbonLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused,
         camera={{ position: [0, 0, 5], left: -1, right: 1, top: 1, bottom: -1, near: 0.1, far: 100, zoom: 1 }}
         style={{ width: '100%', height: '100%' }}
         dpr={Math.min(window.devicePixelRatio, 2)}
-        frameloop="always"
+        frameloop={frameloop}
       >
         <RibbonScene
           config={config}
@@ -423,6 +423,7 @@ const RibbonLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused,
         <FlutedGlassCanvas
           sourceCanvasRef={canvasRef}
           effectsConfig={effectsConfig}
+          frameloop={frameloop}
         />
       )}
     </div>

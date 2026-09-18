@@ -578,7 +578,7 @@ const GradientScene = ({ config, effectsConfig, mousePos, isPaused, mouseIntensi
   )
 }
 
-const GradientLayer = memo(({ config, effectsConfig, mousePos, isPaused, mouseIntensity = 1 }) => {
+const GradientLayer = memo(({ config, effectsConfig, mousePos, isPaused, mouseIntensity = 1, frameloop = 'always' }) => {
   return (
     <div
       className="gradient-layer"
@@ -597,9 +597,9 @@ const GradientLayer = memo(({ config, effectsConfig, mousePos, isPaused, mouseIn
         camera={{ position: [0, 0, 1], left: -1, right: 1, top: 1, bottom: -1, near: 0.1, far: 10 }}
         style={{ width: '100%', height: '100%' }}
         dpr={Math.min(window.devicePixelRatio, 2)}
-        // Keep frameloop always running so canvas is always rendered (for export)
-        // Animation updates are skipped in useFrame when isPaused is true
-        frameloop="always"
+        // 'always' keeps the canvas rendered for export (animation updates are
+        // skipped in useFrame when isPaused); embeds pass 'demand' when offscreen.
+        frameloop={frameloop}
       >
         <GradientScene config={config} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={isPaused} mouseIntensity={mouseIntensity} />
       </Canvas>

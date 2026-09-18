@@ -325,7 +325,7 @@ function DandelionMesh({ config, colors, isPaused, mouseEnabled = true, mouseInt
   )
 }
 
-const DandelionLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mouseEnabled = true, mouseIntensity = 1 }) => {
+const DandelionLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mouseEnabled = true, mouseIntensity = 1, frameloop = 'always' }) => {
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
   const [canvasReady, setCanvasReady] = useState(false)
@@ -368,6 +368,7 @@ const DandelionLayer = memo(({ config, paletteColors = [], effectsConfig, isPaus
         camera={{ position: [0, 0, 8], fov: 50 }}
         style={{ width: '100%', height: '100%' }}
         dpr={Math.min(window.devicePixelRatio, 2)}
+        frameloop={frameloop}
       >
         <SceneSetup config={config} colors={colors} />
         <DandelionMesh config={config} colors={colors} isPaused={isPaused} mouseEnabled={mouseEnabled} mouseIntensity={mouseIntensity} />
@@ -376,6 +377,7 @@ const DandelionLayer = memo(({ config, paletteColors = [], effectsConfig, isPaus
         <FlutedGlassCanvas
           sourceCanvasRef={canvasRef}
           effectsConfig={effectsConfig}
+          frameloop={frameloop}
         />
       )}
     </div>
