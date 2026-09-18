@@ -10,16 +10,19 @@ to add your own backgrounds or replace built-in ones.
 
 When a scene's `backgroundType` has no registered renderer (e.g. a `ribbon`
 scene rendered by `@aura/headers-lite`), `AuraHeader` renders the `fallback`
-component — by default `ColorPlaceholder`, a static SVG of blurred blobs in
-the scene's palette colors. The header still shows its text, icons, and
-effects layers, so a degraded scene remains presentable.
+component — by default `ColorPlaceholder`, a static SVG that mirrors the
+scene: its own background colour (or radial gradient) with the palette placed
+the way the missing renderer would place it (ribbon bands, a dandelion burst,
+a particle ring, …). The header still shows its text, icons, and effects
+layers, so a degraded scene remains presentable.
 
-Override it per instance:
+Override it per instance — the fallback receives the theme-resolved `scene`
+and its palette `colors`:
 
 ```jsx
 <AuraHeader
   config={scene}
-  fallback={({ colors, style }) => (
+  fallback={({ scene, colors, style }) => (
     <div style={{ ...style, background: `linear-gradient(135deg, ${colors.join(', ')})` }} />
   )}
 />

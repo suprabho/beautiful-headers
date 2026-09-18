@@ -8,6 +8,9 @@ export type AuraColorMode = 'auto' | 'dark' | 'light' | 'default'
 
 /** Props for the fallback component used when a background is not registered. */
 export interface AuraFallbackProps {
+  /** The theme-resolved `scene_data`; `ColorPlaceholder` mirrors its background type. */
+  scene?: Record<string, any>
+  /** `gradientConfig.colors` — the palette, for fallbacks that only need colours. */
   colors?: string[]
   className?: string
   style?: CSSProperties
@@ -36,7 +39,11 @@ export interface AuraHeaderProps {
 /** Renders an animated header background from a scene_data config. */
 export const AuraHeader: ComponentType<AuraHeaderProps>
 
-/** SVG palette placeholder — the default fallback for unregistered backgrounds. */
+/**
+ * SVG scene placeholder — the default fallback for unregistered backgrounds.
+ * With `scene` it mirrors that background type (its background colour and the
+ * placement of its palette); with only `colors` it renders blurred palette blobs.
+ */
 export const ColorPlaceholder: ComponentType<AuraFallbackProps>
 
 /** A background renderer receives the resolved scene context and returns a node. */

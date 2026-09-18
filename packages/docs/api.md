@@ -25,7 +25,7 @@ import '@aura/headers-pro/styles.css'
 | `hideText` | `boolean` | `false` | Suppress the scene's text layer even if the config enables it. |
 | `hideIcons` | `boolean` | `false` | Suppress the icon/tessellation layer even if the config enables it. |
 | `paused` | `boolean` | `false` | Freeze all animation (backgrounds receive `isPaused`). |
-| `fallback` | `ComponentType<AuraFallbackProps>` | `ColorPlaceholder` | Component rendered when the scene's `backgroundType` has no registered renderer in this package. Receives `{ colors, className, style }`. |
+| `fallback` | `ComponentType<AuraFallbackProps>` | `ColorPlaceholder` | Component rendered when the scene's `backgroundType` has no registered renderer in this package. Receives `{ scene, colors, className, style }` — `scene` is the theme-resolved config, `colors` its palette. |
 | `className` | `string` | — | Appended to the root element's `aura-header` class. |
 | `style` | `CSSProperties` | — | Merged into the root element. The root is `position: relative; width: 100%; height: 100%; overflow: hidden` — **set the header height here** or on a sized wrapper. |
 
@@ -41,19 +41,22 @@ import '@aura/headers-pro/styles.css'
 
 ## `ColorPlaceholder`
 
-The default fallback: a static SVG of blurred palette-colored blobs. Useful as
-a loading placeholder or as an explicit `fallback` prop.
+The default fallback: a static SVG built from the scene so it resembles the
+live background — the same placeholder the hosted embed paints while a scene
+loads. Useful as a loading placeholder or as an explicit `fallback` prop.
 
 ```jsx
 import { ColorPlaceholder } from '@aura/headers-lite'
 
+<ColorPlaceholder scene={scene} style={{ height: 320 }} />
 <ColorPlaceholder colors={['#ff006e', '#8338ec', '#3a86ff']} />
 ```
 
 | Prop | Type | Description |
 | --- | --- | --- |
-| `colors` | `string[]` | Palette hex colors. |
-| `className` / `style` | — | Forwarded to the SVG container. |
+| `scene` | `object` | A (theme-resolved) `scene_data`. Per `backgroundType`: `aurora`, `ribbon`, `dandelion`, `particleRing` and `guilloche` get the scene's own background (colour or radial gradient) with the palette placed the way that renderer places it — glow rising from the bottom edge, ribbon bands, a ray burst from the centre-Y point, particles on the projected ring, soft concentric rings. `simple`, `liquid`, `fluid` and `waves` get blurred palette blobs. |
+| `colors` | `string[]` | Palette hex colors; without `scene`, renders the blurred blobs. |
+| `className` / `style` | — | Forwarded to the container the SVG fills. |
 
 ## Registry
 
