@@ -48,7 +48,9 @@ function getGradientFilter(effectsConfig = {}, backgroundType) {
  *   hideText    hide the text layer (default false)
  *   hideIcons   hide the tessellation/icon layer (default false)
  *   paused      freeze animation (default false)
- *   fallback    component used for unregistered backgrounds (default ColorPlaceholder)
+ *   fallback    component used for unregistered backgrounds (default
+ *               ColorPlaceholder); receives the theme-resolved `scene` plus
+ *               `colors` (its palette), `className` and `style`
  *   className / style  applied to the root element (set height via style)
  */
 export default function AuraHeader({
@@ -194,6 +196,7 @@ export default function AuraHeader({
             renderBackground(backgroundCtx)
           ) : (
             <Fallback
+              scene={sceneData}
               colors={gradientConfig.colors}
               style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
             />

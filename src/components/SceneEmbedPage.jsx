@@ -510,9 +510,10 @@ function SceneEmbedPage() {
         )}
       </div>
 
-      {/* Progressive loading overlay: instant color SVG, crossfading out once
-          the live scene has warmed up. Skipped entirely in capture mode so the
-          snapshot is never of the placeholder. */}
+      {/* Progressive loading overlay: instant color SVG (the same one the
+          inline bootstrap in embed.html paints, built from the resolved scene),
+          crossfading out once the live scene has warmed up. Skipped entirely in
+          capture mode so the snapshot is never of the placeholder. */}
       {overlayMounted && !captureMode && (
         <div
           className="embed-loading-overlay"
@@ -526,7 +527,7 @@ function SceneEmbedPage() {
           }}
         >
           <ColorPlaceholder
-            colors={gradientConfig.colors}
+            scene={sceneData}
             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
           />
         </div>

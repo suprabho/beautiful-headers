@@ -13,8 +13,9 @@ component:
 
 All six packages share the same API; they differ only in which backgrounds are
 compiled in (and therefore bundle weight). Any `backgroundType` a package
-doesn't include degrades gracefully to an SVG color placeholder built from the
-scene's palette.
+doesn't include degrades gracefully to a static SVG placeholder built from the
+scene's config (its background plus the palette, laid out like that
+background type).
 
 | Package | Backgrounds included | three.js | gzip |
 | --- | --- | --- | --- |

@@ -5,8 +5,8 @@ Animated header backgrounds for React — **Lite build, no WebGL**.
 Ships the Canvas2D/DOM backgrounds (`simple`, `aurora`, `fluid`, `waves`) plus
 the icon, effects and text layers. Scenes whose `backgroundType` is one of the
 WebGL-only types (`liquid`, `ribbon`, `dandelion`, `particleRing`) gracefully
-degrade to an SVG color placeholder. **three.js is never bundled** — this is the
-lightest variant.
+degrade to a static SVG placeholder that mirrors the scene's background and
+palette layout. **three.js is never bundled** — this is the lightest variant.
 
 ```bash
 npm i @aura/headers-lite react react-dom

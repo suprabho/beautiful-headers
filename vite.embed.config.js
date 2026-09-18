@@ -1,12 +1,12 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
-import { embedHtmlOptimizations } from './vite.embed.plugin.js'
+import { embedHtmlOptimizations, embedInlineModules } from './vite.embed.plugin.js'
 
 // Embed build (embed.html -> /embed/:slug). Runs after the studio build and
 // adds its hashed chunks next to the studio's in dist/ (see package.json).
 export default defineConfig({
-  plugins: [react(), embedHtmlOptimizations()],
+  plugins: [react(), embedInlineModules(), embedHtmlOptimizations()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
