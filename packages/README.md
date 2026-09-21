@@ -41,7 +41,8 @@ core/ (private, source-shared, bundled into each package)
  │   │                    imports this by default → every package has them)
  │   ├─ liquid|ribbon|dandelion|particleRing.jsx   one WebGL background each
  │   └─ glass.js          registers the FlutedGlassCanvas overlay
- ├─ audio/ mouse/ lib/    interaction + theme helpers
+ ├─ audio/ mouse/ lib/    interaction + theme helpers; lib/auroraScene.js is the
+ │                        aurora drawing (a copy of the app's, keep in sync)
  └─ aura.css              structural styles (shipped as each pkg's styles.css)
 ```
 

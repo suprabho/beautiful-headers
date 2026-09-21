@@ -437,6 +437,11 @@ function SceneEmbedPage() {
   }
 
   const auroraConfig = sceneData.auroraConfig || {}
+  // Draw the aurora in a worker (OffscreenCanvas) so a same-process host page
+  // keeps its main thread. Not for captures, whose frame-stepped clock only
+  // reaches the page's own requestAnimationFrame, nor with mic input, whose
+  // analyser feeds the main-thread loop.
+  const auroraOffscreen = !captureMode && inputMode !== 'mic'
   const fluidConfig = sceneData.fluidConfig || {}
   const wavesConfig = sceneData.wavesConfig || {}
   const ribbonConfig = sceneData.ribbonConfig || {}
@@ -466,7 +471,7 @@ function SceneEmbedPage() {
               <GradientLayer config={gradientConfig} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={isPaused} mouseIntensity={effectiveMouseIntensity} frameloop={frameloop} />
             )}
             {backgroundType === 'aurora' && (
-              <AuroraLayer config={auroraConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mouseIntensity={effectiveMouseIntensity} frameloop={frameloop} />
+              <AuroraLayer config={auroraConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mouseIntensity={effectiveMouseIntensity} frameloop={frameloop} offscreen={auroraOffscreen} />
             )}
             {backgroundType === 'fluid' && (
               <FluidGradientLayer config={fluidConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} frameloop={frameloop} />
