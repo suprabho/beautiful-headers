@@ -57,8 +57,10 @@ const darkenHex = (hex, amount = 0.7) => {
 
 // The drawing itself lives in ../lib/auroraScene.js; this component owns the
 // DOM canvas, forwards prop changes to the renderer (../lib/auroraRenderer.js)
-// and mounts the optional glass overlay from the registry.
-const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig, isPaused, mouseIntensity = 1 }) => {
+// and mounts the optional glass overlay from the registry. `blurScale`
+// ('auto' or a fraction) opts into the reduced-resolution blur stage described
+// in auroraScene.js; 1 renders exactly as before.
+const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig, isPaused, mouseIntensity = 1, blurScale = 1 }) => {
   const containerRef = useRef(null)
   const canvasBRef = useRef(null)
   const [canvasReady, setCanvasReady] = useState(false)
@@ -137,7 +139,7 @@ const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig,
     container.insertBefore(canvasB, container.firstChild)
     canvasBRef.current = canvasB
 
-    const renderer = createMainThreadRenderer({ canvas: canvasB, dpr, state: stateRef.current })
+    const renderer = createMainThreadRenderer({ canvas: canvasB, dpr, state: stateRef.current, blurScale })
     rendererRef.current = renderer
 
     const handleResize = () => {

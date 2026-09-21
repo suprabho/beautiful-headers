@@ -20,9 +20,11 @@
 //    ResizeObserver notification rebuilt everything even at the same size);
 //  - while paused (out of view / reduced motion) nothing is redrawn unless a
 //    pending mouse or config change would alter the frame;
-//  - optionally the lines are rasterised and blurred at a lower resolution
-//    than the visible canvas (`blurScale`), since a blur this wide leaves no
-//    detail a full-resolution intermediate could preserve.
+//  - as an opt-in (`blurScale`), the lines are rasterised and blurred at a
+//    lower resolution than the visible canvas. Off by default: it is not
+//    pixel-faithful (measured against the previous renderer it stays within
+//    about 10/255, with a mean under one level, where the default path stays
+//    within 2/255), but it halves or quarters the blur's cost.
 //
 // Compositing. The visible canvas B has its context scaled by the device pixel
 // ratio and the line layer A is drawn onto it with drawImage(A, 0, 0), i.e. at
@@ -51,10 +53,11 @@ const DEFAULT_BLUR = 13
 // The studio's slider stops at 50; sizing the line layer for that keeps blur
 // changes from resizing it (only bigger values, from hand-edited JSON, do).
 const MARGIN_BLUR = 50
-// Reduced-resolution blur: keep at least this many intermediate pixels of
-// blur sigma so the resampling is far below the blur's own footprint, and
-// never go below this fraction of the visible canvas's resolution.
-const MIN_SIGMA_PX = 8
+// Reduced-resolution blur ('auto'): halve the resolution while at least this
+// many intermediate pixels of blur sigma remain, so the resampling stays far
+// below the blur's own footprint; power-of-two scales resample more evenly
+// than fractional ones. Never below this fraction of the visible canvas.
+const MIN_SIGMA_PX = 6
 const MIN_SCALE = 0.25
 
 const getRandomInt = (random, min, max) => Math.round(random() * (max - min)) + min
@@ -80,7 +83,9 @@ export function auroraLineCount(cfg, logicalWidth) {
  */
 export function auroraBlurScale(blurAmount, dpr = 1) {
   if (!(blurAmount > 0)) return 1
-  return Math.min(1, Math.max(MIN_SCALE, (MIN_SIGMA_PX * dpr) / blurAmount))
+  let scale = 1
+  while (scale / 2 >= MIN_SCALE && (blurAmount * (scale / 2)) / dpr >= MIN_SIGMA_PX) scale /= 2
+  return scale
 }
 
 /**
@@ -91,10 +96,10 @@ export function auroraBlurScale(blurAmount, dpr = 1) {
  * @param {number} [o.dpr]  device pixel ratio (already capped by the caller)
  * @param {() => number} [o.random]  RNG (injectable so frames can be reproduced)
  * @param {number|'auto'} [o.blurScale]  resolution of the line/blur stage
- *   relative to the visible canvas: 1 renders exactly as before, 'auto' picks
- *   a lower one from the blur amount (see auroraBlurScale)
+ *   relative to the visible canvas: 1 (default) renders exactly as before,
+ *   'auto' picks a lower one from the blur amount (see auroraBlurScale)
  */
-export function createAuroraScene({ canvas, createCanvas, dpr = 1, random = Math.random, blurScale = 'auto' }) {
+export function createAuroraScene({ canvas, createCanvas, dpr = 1, random = Math.random, blurScale = 1 }) {
   const canvasB = canvas
   const ctxB = canvasB.getContext('2d')
   // A: the lines, transparent, additive. C: bg + blurred A, only used when the

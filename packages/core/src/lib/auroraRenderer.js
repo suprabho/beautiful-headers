@@ -13,8 +13,9 @@ const documentVisible = () => typeof document === 'undefined' || !document.hidde
  * @param {HTMLCanvasElement} o.canvas  visible canvas, already in the DOM
  * @param {number} o.dpr
  * @param {object} o.state  initial { config, derived, mouse, mouseIntensity, paused }
+ * @param {number|'auto'} [o.blurScale]  see createAuroraScene
  */
-export function createMainThreadRenderer({ canvas, dpr, state }) {
+export function createMainThreadRenderer({ canvas, dpr, state, blurScale = 1 }) {
   const scene = createAuroraScene({
     canvas,
     createCanvas: (w, h) => {
@@ -24,6 +25,7 @@ export function createMainThreadRenderer({ canvas, dpr, state }) {
       return c
     },
     dpr,
+    blurScale,
   })
   scene.setConfig(state.config)
   scene.setDerivedColors(state.derived)

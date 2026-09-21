@@ -46,6 +46,7 @@ self.onmessage = (e) => {
         canvas: m.canvas,
         createCanvas: (w, h) => new OffscreenCanvas(w, h),
         dpr: m.dpr,
+        blurScale: m.blurScale ?? 1,
       })
       scene.setConfig(m.config)
       scene.setDerivedColors(m.derived)
