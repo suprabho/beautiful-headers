@@ -6,7 +6,7 @@
  */
 
 export const DOCUMENTED_TEXTURES = ['none', 'grain', 'scanlines', 'diagonal', 'dots', 'grid']
-export const DOCUMENTED_TYPES = ['liquid', 'fluid', 'ribbon', 'aurora', 'waves', 'dandelion', 'simple', 'particleRing', 'guilloche']
+export const DOCUMENTED_TYPES = ['liquid', 'fluid', 'ribbon', 'aurora', 'waves', 'dandelion', 'simple', 'particleRing', 'guilloche', 'sky', 'watercolor', 'glow', 'forms', 'prism']
 
 const DAY = 86400000
 

@@ -24,6 +24,7 @@ import {
   DEFAULT_EFFECTS_CONFIG,
 } from './index'
 import { InputPanel } from './InputControls'
+import { TypePicker, StudioControls, SectionLabel, isStudioType } from './StudioControls'
 import { MobileDialogContent, getDialogTitle } from './MobileDialogContent'
 import { useKeyboardOffset } from '../../hooks/useKeyboardOffset'
 
@@ -43,6 +44,7 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
   const setActivePanel = useStore((state) => state.setActivePanel)
   const backgroundType = useStore((state) => state.backgroundType)
   const setBackgroundType = useStore((state) => state.setBackgroundType)
+  const [studioConfig, setStudioConfig] = useThemedConfig('studioConfig')
   const [gradientConfig, setGradientConfig] = useThemedConfig('gradientConfig')
   const tessellationConfig = useStore((state) => state.tessellationConfig)
   const setTessellationConfig = useStore((state) => state.setTessellationConfig)
@@ -174,23 +176,22 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
                   parsedPalette={parsedPalette}
                 />
                 {/* Background Type Selector */}
-                <div className="flex items-center justify-between px-0 py-2">
-                  <Label className="text-sm">Background Type</Label>
-                  <Select value={backgroundType} onValueChange={(value) => setBackgroundType(value)}>
-                    <SelectTrigger className="w-[120px] h-9"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="simple">Simple</SelectItem>
-                      <SelectItem value="liquid">Fog</SelectItem>
-                      <SelectItem value="aurora">Aurora</SelectItem>
-                      <SelectItem value="fluid">Mesh</SelectItem>
-                      <SelectItem value="waves">Waves</SelectItem>
-                      <SelectItem value="ribbon">Ribbon</SelectItem>
-                      <SelectItem value="dandelion">Dandelion</SelectItem>
-                      <SelectItem value="particleRing">Particle Ring</SelectItem>
-                      <SelectItem value="guilloche">Guilloché</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="flex flex-col gap-2 py-3">
+                  <SectionLabel>Type</SectionLabel>
+                  <TypePicker value={backgroundType} onChange={setBackgroundType} />
                 </div>
+
+                {isStudioType(backgroundType) && (
+                  <div className="pb-3">
+                    <StudioControls
+                      backgroundType={backgroundType}
+                      studioConfig={studioConfig}
+                      setStudioConfig={setStudioConfig}
+                      gradientConfig={gradientConfig}
+                      setGradientConfig={setGradientConfig}
+                    />
+                  </div>
+                )}
 
                 {/* Type-specific settings */}
                 <div className="space-y-1 flex flex-row flex-wrap gap-1 px-1">

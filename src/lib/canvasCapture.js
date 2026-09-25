@@ -277,6 +277,7 @@ export const captureLayersToCanvas = async (container, effectsConfig, { scale = 
     getLastCanvas('.dandelion-layer') ||
     getLastCanvas('.particle-ring-layer') ||
     getLastCanvas('.guilloche-layer') ||
+    getLastCanvas('.studio-gradient-layer') ||
     getLastCanvas('.shape-trail-layer')
 
   if (backgroundCanvas) {

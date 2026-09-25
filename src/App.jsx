@@ -10,6 +10,8 @@ import DandelionLayer from './components/DandelionLayer'
 import ParticleRingLayer from './components/ParticleRingLayer'
 import GuillocheLayer from './components/GuillocheLayer'
 import TessellationLayer from './components/TessellationLayer'
+import StudioGradientLayer from './components/StudioGradientLayer'
+import { STUDIO_TYPES } from './lib/studioShaders'
 import EffectsLayer from './components/EffectsLayer'
 import TextLayer from './components/TextLayer'
 import ControlPanel from './components/ControlPanel'
@@ -33,6 +35,7 @@ function App() {
   const [dandelionConfig] = useThemedConfig('dandelionConfig')
   const [particleRingConfig] = useThemedConfig('particleRingConfig')
   const [guillocheConfig] = useThemedConfig('guillocheConfig')
+  const [studioConfig] = useThemedConfig('studioConfig')
   const [tessellationConfig] = useThemedConfig('tessellationConfig')
   const [effectsConfig] = useThemedConfig('effectsConfig')
   const textSections = useStore((state) => state.textSections)
@@ -202,6 +205,9 @@ function App() {
           )}
           {backgroundType === 'guilloche' && (
             <GuillocheLayer config={guillocheConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
+          )}
+          {STUDIO_TYPES.includes(backgroundType) && (
+            <StudioGradientLayer type={backgroundType} config={studioConfig} paletteColors={gradientConfig.colors} colorStops={gradientConfig.colorStops} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
           )}
         </div>
 

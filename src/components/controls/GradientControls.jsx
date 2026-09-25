@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { TypePicker, StudioControls, SectionLabel, isStudioType } from './StudioControls'
 
 // ============================================
 // COLORS SECTION - Shared by all background types
@@ -47,8 +48,8 @@ export const ColorsSection = ({
   }
 
   return (
-    <div className="flex flex-col gap-3 pb-2 border-b border-border/50">
-      <Label className="text-sm md:text-xs md:uppercase tracking-wide font-medium md:font-semibold">Background Colors</Label>
+    <div className="flex flex-col gap-3 pb-2">
+      <SectionLabel hint="tap a swatch to pick">Colours</SectionLabel>
 
       {/* Color grid */}
       <div className="flex flex-wrap w-full flex-1 gap-2 px-1">
@@ -1988,43 +1989,38 @@ export const GradientPanel = ({
   setParticleRingConfig,
   guillocheConfig,
   setGuillocheConfig,
+  studioConfig,
+  setStudioConfig,
   parsedPalette,
 }) => {
   return (
-    <div className="space-y-0">
-      {/* SECTION 1: Background Colors - Always visible */}
+    <div className="flex flex-col gap-5">
+      {/* SECTION 1: Background Type */}
+      <div className="flex flex-col gap-2.5">
+        <SectionLabel>Type</SectionLabel>
+        <TypePicker value={backgroundType} onChange={setBackgroundType} />
+      </div>
+
+      {/* SECTION 2: Studio presets + shape & motion */}
+      {isStudioType(backgroundType) && (
+        <StudioControls
+          backgroundType={backgroundType}
+          studioConfig={studioConfig}
+          setStudioConfig={setStudioConfig}
+          gradientConfig={gradientConfig}
+          setGradientConfig={setGradientConfig}
+        />
+      )}
+
+      {/* SECTION 3: Colours - always visible */}
       <ColorsSection
         gradientConfig={gradientConfig}
         setGradientConfig={setGradientConfig}
         parsedPalette={parsedPalette}
       />
 
-      <div className="h-px bg-border my-2" />
-
-      {/* SECTION 2: Background Type Selector */}
-      <ControlGroup label="Background Type">
-        <Select
-          value={backgroundType}
-          onValueChange={(value) => setBackgroundType(value)}
-        >
-          <SelectTrigger className="h-9">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="simple">Simple</SelectItem>
-            <SelectItem value="liquid">Fog</SelectItem>
-            <SelectItem value="aurora">Aurora</SelectItem>
-            <SelectItem value="fluid">Mesh</SelectItem>
-            <SelectItem value="waves">Waves</SelectItem>
-            <SelectItem value="ribbon">Ribbon</SelectItem>
-            <SelectItem value="dandelion">Dandelion</SelectItem>
-            <SelectItem value="particleRing">Particle Ring</SelectItem>
-            <SelectItem value="guilloche">Guilloché</SelectItem>
-          </SelectContent>
-        </Select>
-      </ControlGroup>
-
-      {/* SECTION 3: Type-specific controls */}
+      {/* SECTION 4: Legacy type-specific controls */}
+      <div className="space-y-0 empty:hidden">
       {backgroundType === 'simple' && (
         <SimpleControls
           gradientConfig={gradientConfig}
@@ -2085,6 +2081,7 @@ export const GradientPanel = ({
           parsedPalette={parsedPalette}
         />
       )}
+      </div>
     </div>
   )
 }

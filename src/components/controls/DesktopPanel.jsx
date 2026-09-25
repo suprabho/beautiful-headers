@@ -22,7 +22,7 @@ import {
 } from './index'
 
 const tabs = [
-  { id: 'gradient', label: 'Background', icon: PaintBrushBroad },
+  { id: 'gradient', label: 'Design', icon: PaintBrushBroad },
   { id: 'tessellation', label: 'Pattern', icon: GridFour },
   { id: 'effects', label: 'Effects', icon: Sparkle },
   { id: 'text', label: 'Text', icon: TextT },
@@ -52,6 +52,7 @@ export const DesktopPanel = ({
   const [dandelionConfig, setDandelionConfig] = useThemedConfig('dandelionConfig')
   const [particleRingConfig, setParticleRingConfig] = useThemedConfig('particleRingConfig')
   const [guillocheConfig, setGuillocheConfig] = useThemedConfig('guillocheConfig')
+  const [studioConfig, setStudioConfig] = useThemedConfig('studioConfig')
   const [tessellationConfig, setTessellationConfig] = useThemedConfig('tessellationConfig')
   const [effectsConfig, setEffectsConfig] = useThemedConfig('effectsConfig')
   const textSections = useStore((state) => state.textSections)
@@ -72,7 +73,7 @@ export const DesktopPanel = ({
     <div
       ref={panelRef}
       className={cn(
-        "fixed z-50 bg-card/95 backdrop-blur-xl border border-border rounded-2xl w-[340px] max-h-[85vh]",
+        "fixed z-50 bg-card/85 backdrop-blur-2xl border border-border/70 rounded-[28px] w-[360px] max-h-[88vh]",
         "shadow-2xl shadow-black/50 transition-shadow duration-200",
         "text-foreground",
         isDragging && "shadow-3xl shadow-black/60",
@@ -151,12 +152,16 @@ export const DesktopPanel = ({
       )}
 
       {!isCollapsed && (
-        <Tabs value={activePanel} onValueChange={setActivePanel} className="flex h-full flex-col flex-1 max-h-[calc(85vh-4rem)]">
-          <TabsList className="w-full rounded-none border-b border-border bg-transparent p-1 gap-1 shrink-0">
+        <Tabs value={activePanel} onValueChange={setActivePanel} className="flex h-full flex-col flex-1 max-h-[calc(88vh-4rem)]">
+          <TabsList className="mx-auto mt-3 w-auto rounded-full bg-muted p-1 gap-0.5 shrink-0">
             {tabs.map(tab => (
-              <TabsTrigger key={tab.id} value={tab.id} className="flex-1 flex flex-col gap-1 py-2 data-[state=active]:bg-muted rounded-md">
-                <tab.icon size={14} weight={activePanel === tab.id ? 'fill' : 'regular'} />
-                <span className="text-[10px] uppercase tracking-wide">{tab.label}</span>
+              <TabsTrigger
+                key={tab.id}
+                value={tab.id}
+                title={tab.label}
+                className="rounded-full px-3 py-1.5 text-[11px] font-medium data-[state=active]:bg-background data-[state=active]:font-semibold data-[state=active]:shadow-md"
+              >
+                {tab.label}
               </TabsTrigger>
             ))}
           </TabsList>
@@ -185,6 +190,8 @@ export const DesktopPanel = ({
                   setParticleRingConfig={setParticleRingConfig}
                   guillocheConfig={guillocheConfig}
                   setGuillocheConfig={setGuillocheConfig}
+                  studioConfig={studioConfig}
+                  setStudioConfig={setStudioConfig}
                   parsedPalette={parsedPalette}
                 />
               </TabsContent>

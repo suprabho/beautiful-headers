@@ -19,6 +19,8 @@ import RibbonLayer from './RibbonLayer'
 import DandelionLayer from './DandelionLayer'
 import ParticleRingLayer from './ParticleRingLayer'
 import GuillocheLayer from './GuillocheLayer'
+import StudioGradientLayer from './StudioGradientLayer'
+import { STUDIO_TYPES } from '@/lib/studioShaders'
 import TessellationLayer, { ICON_PATHS } from './TessellationLayer'
 import EffectsLayer from './EffectsLayer'
 import TextLayer from './TextLayer'
@@ -481,6 +483,7 @@ function SceneViewPage() {
   const dandelionConfig = sceneData.dandelionConfig || {}
   const particleRingConfig = sceneData.particleRingConfig || {}
   const guillocheConfig = sceneData.guillocheConfig || {}
+  const studioConfig = sceneData.studioConfig || {}
   const tessellationConfig = sceneData.tessellationConfig || {}
   const effectsConfig = sceneData.effectsConfig || {}
   const textSections = sceneData.textSections || []
@@ -530,6 +533,9 @@ function SceneViewPage() {
             )}
             {backgroundType === 'guilloche' && (
               <GuillocheLayer config={guillocheConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={false} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
+            )}
+            {STUDIO_TYPES.includes(backgroundType) && (
+              <StudioGradientLayer type={backgroundType} config={studioConfig} paletteColors={gradientConfig.colors} colorStops={gradientConfig.colorStops} effectsConfig={effectsConfig} isPaused={false} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
             )}
           </div>
 

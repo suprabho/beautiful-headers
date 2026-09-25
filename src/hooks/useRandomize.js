@@ -37,7 +37,7 @@ export function useRandomize() {
     const pickOne = (arr) => arr[Math.floor(Math.random() * arr.length)]
 
     // Randomize background type
-    const backgroundTypes = ['simple', 'liquid', 'aurora', 'fluid', 'waves', 'ribbon', 'dandelion', 'particleRing', 'guilloche']
+    const backgroundTypes = ['simple', 'liquid', 'aurora', 'fluid', 'waves', 'ribbon', 'dandelion', 'particleRing', 'guilloche', 'sky', 'watercolor', 'glow', 'forms', 'prism']
     setBackgroundType(pickOne(backgroundTypes))
 
     let colors

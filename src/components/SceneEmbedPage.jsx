@@ -7,6 +7,7 @@ import { useInView, usePrefersReducedMotion } from '@/hooks/useInView'
 import { resolveThemedConfigs } from '@/lib/themeUtils'
 import { audioData } from '@/audio/audioData'
 import ColorPlaceholder from './ColorPlaceholder'
+import { STUDIO_TYPES } from '@/lib/studioShaders'
 import EffectsLayer from './EffectsLayer'
 import TextLayer from './TextLayer'
 import '../App.css'
@@ -25,6 +26,12 @@ const LAYER_LOADERS = {
   dandelion: () => import('./DandelionLayer'),
   particleRing: () => import('./ParticleRingLayer'),
   guilloche: () => import('./GuillocheLayer'),
+  // One shader layer serves every studio type
+  sky: () => import('./StudioGradientLayer'),
+  watercolor: () => import('./StudioGradientLayer'),
+  glow: () => import('./StudioGradientLayer'),
+  forms: () => import('./StudioGradientLayer'),
+  prism: () => import('./StudioGradientLayer'),
 }
 const SimpleGradientLayer = lazy(LAYER_LOADERS.simple)
 const GradientLayer = lazy(LAYER_LOADERS.liquid)
@@ -35,6 +42,7 @@ const RibbonLayer = lazy(LAYER_LOADERS.ribbon)
 const DandelionLayer = lazy(LAYER_LOADERS.dandelion)
 const ParticleRingLayer = lazy(LAYER_LOADERS.particleRing)
 const GuillocheLayer = lazy(LAYER_LOADERS.guilloche)
+const StudioGradientLayer = lazy(LAYER_LOADERS.sky)
 const TessellationLayer = lazy(() => import('./TessellationLayer'))
 
 // The page runs both as its own entry (embed.html, no router) and as a
@@ -448,6 +456,7 @@ function SceneEmbedPage() {
   const dandelionConfig = sceneData.dandelionConfig || {}
   const particleRingConfig = sceneData.particleRingConfig || {}
   const guillocheConfig = sceneData.guillocheConfig || {}
+  const studioConfig = sceneData.studioConfig || {}
 
   return (
     <div ref={inViewRef} style={fullScreen} onMouseMove={effectiveMouseEnabled ? handleMouseMove : undefined}>
@@ -490,6 +499,9 @@ function SceneEmbedPage() {
             )}
             {backgroundType === 'guilloche' && (
               <GuillocheLayer config={guillocheConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} frameloop={frameloop} />
+            )}
+            {STUDIO_TYPES.includes(backgroundType) && (
+              <StudioGradientLayer type={backgroundType} config={studioConfig} paletteColors={gradientConfig.colors} colorStops={gradientConfig.colorStops} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} frameloop={frameloop} />
             )}
           </Suspense>
         </div>
