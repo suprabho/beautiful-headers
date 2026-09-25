@@ -9,6 +9,11 @@ export const BACKGROUND_EFFECTS = [
   { value: 'dandelion', label: 'Dandelion' },
   { value: 'particleRing', label: 'Particle Ring' },
   { value: 'guilloche', label: 'Guilloché' },
+  { value: 'sky', label: 'Sky' },
+  { value: 'watercolor', label: 'Watercolors' },
+  { value: 'glow', label: 'Glow' },
+  { value: 'forms', label: 'Forms' },
+  { value: 'prism', label: 'Prism' },
 ]
 
 // Color family definitions with hue ranges and representative colors

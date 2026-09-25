@@ -36,6 +36,10 @@ export const AUDIO_MAPPINGS = {
     { param: 'ringRadius', band: 'amplitude', weight: 0.25 },
     { param: 'ringWidth',  band: 'bass',      weight: 0.1  },
   ],
+  ...Object.fromEntries(['sky', 'watercolor', 'glow', 'forms', 'prism'].map((t) => [t, [
+    { param: 'speed',  band: 'amplitude', weight: 0.8 },
+    { param: 'amount', band: 'bass',      weight: 0.3 },
+  ]])),
   guilloche: [
     { param: 'speed',         band: 'treble',    weight: 1.2 },
     { param: 'waveAmplitude', band: 'bass',      weight: 18  },

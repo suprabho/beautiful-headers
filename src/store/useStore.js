@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { deepMerge } from '../lib/themeUtils'
+import { STUDIO_DEFAULTS } from '../lib/studioPresets'
 
 // localStorage key for color palette
 const COLOR_PALETTE_STORAGE_KEY = 'aura-color-palette'
@@ -523,6 +524,14 @@ const useStore = create((set, get) => ({
     guillocheConfig: { ...state.guillocheConfig, ...updates }
   })),
 
+  // Studio config — shared by the shader-driven sky, watercolor, glow, forms
+  // and prism background types (see lib/studioShaders.js)
+  studioConfig: { ...STUDIO_DEFAULTS },
+  setStudioConfig: (config) => set({ studioConfig: config }),
+  updateStudioConfig: (updates) => set((state) => ({
+    studioConfig: { ...state.studioConfig, ...updates }
+  })),
+
   // ShapeTrail config
   shapeTrailConfig: {
     useGradientColors: true,
@@ -722,6 +731,7 @@ const useStore = create((set, get) => ({
       dandelionConfig: state.dandelionConfig,
       particleRingConfig: state.particleRingConfig,
       guillocheConfig: state.guillocheConfig,
+      studioConfig: state.studioConfig,
       shapeTrailConfig: state.shapeTrailConfig,
       tessellationConfig: state.tessellationConfig,
       effectsConfig: state.effectsConfig,
@@ -767,6 +777,7 @@ const useStore = create((set, get) => ({
       ...(sceneData.dandelionConfig && { dandelionConfig: sceneData.dandelionConfig }),
       ...(sceneData.particleRingConfig && { particleRingConfig: sceneData.particleRingConfig }),
       ...(sceneData.guillocheConfig && { guillocheConfig: sceneData.guillocheConfig }),
+      ...(sceneData.studioConfig && { studioConfig: { ...STUDIO_DEFAULTS, ...sceneData.studioConfig } }),
       ...(sceneData.shapeTrailConfig && { shapeTrailConfig: sceneData.shapeTrailConfig }),
       ...(sceneData.tessellationConfig && { tessellationConfig: sceneData.tessellationConfig }),
       ...(sceneData.effectsConfig && { effectsConfig: sceneData.effectsConfig }),

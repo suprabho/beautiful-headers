@@ -9,7 +9,7 @@ import useStore from '../../store/useStore'
 import { useThemedConfig } from '../../hooks/useThemedConfig'
 import {
   ControlGroup,
-  NumberInput,
+  SliderInput,
   PaletteColorPicker,
   ContrastAwarePaletteColorPicker,
   ColorsSection,
@@ -175,54 +175,32 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog, onApplyDialog
     case 'simple-position':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Start X: `}>
-            <NumberInput value={[gradientConfig.startPos.x]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, startPos: { ...gradientConfig.startPos, x: val } })} min={-100} max={200} step={10} showButtons />
-          </ControlGroup>
-          <ControlGroup label={`Start Y: `}>
-            <NumberInput value={[gradientConfig.startPos.y]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, startPos: { ...gradientConfig.startPos, y: val } })} min={-100} max={200} step={10} showButtons />
-          </ControlGroup>
-          <ControlGroup label={`End X: `}>
-            <NumberInput value={[gradientConfig.endPos.x]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, endPos: { ...gradientConfig.endPos, x: val } })} min={-100} max={200} step={10} showButtons />
-          </ControlGroup>
-          <ControlGroup label={`End Y: `}>
-            <NumberInput value={[gradientConfig.endPos.y]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, endPos: { ...gradientConfig.endPos, y: val } })} min={-100} max={200} step={10} showButtons />
-          </ControlGroup>
+          <SliderInput label={`Start X: `} value={[gradientConfig.startPos.x]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, startPos: { ...gradientConfig.startPos, x: val } })} min={-100} max={200} step={10} />
+          <SliderInput label={`Start Y: `} value={[gradientConfig.startPos.y]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, startPos: { ...gradientConfig.startPos, y: val } })} min={-100} max={200} step={10} />
+          <SliderInput label={`End X: `} value={[gradientConfig.endPos.x]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, endPos: { ...gradientConfig.endPos, x: val } })} min={-100} max={200} step={10} />
+          <SliderInput label={`End Y: `} value={[gradientConfig.endPos.y]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, endPos: { ...gradientConfig.endPos, y: val } })} min={-100} max={200} step={10} />
         </div>
       )
     case 'gradient-stops':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Start X: `}>
-            <NumberInput value={[gradientConfig.startPos.x]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, startPos: { ...gradientConfig.startPos, x: val } })} min={-100} max={100} step={5} showButtons />
-          </ControlGroup>
-          <ControlGroup label={`Start Y: `}>
-            <NumberInput value={[gradientConfig.startPos.y]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, startPos: { ...gradientConfig.startPos, y: val } })} min={-100} max={100} step={5} showButtons />
-          </ControlGroup>
-          <ControlGroup label={`End X: `}>
-            <NumberInput value={[gradientConfig.endPos.x]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, endPos: { ...gradientConfig.endPos, x: val } })} min={-100} max={100} step={5} showButtons />
-          </ControlGroup>
-          <ControlGroup label={`End Y: `}>
-            <NumberInput value={[gradientConfig.endPos.y]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, endPos: { ...gradientConfig.endPos, y: val } })} min={-100} max={100} step={5} showButtons />
-          </ControlGroup>
+          <SliderInput label={`Start X: `} value={[gradientConfig.startPos.x]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, startPos: { ...gradientConfig.startPos, x: val } })} min={-100} max={100} step={5} />
+          <SliderInput label={`Start Y: `} value={[gradientConfig.startPos.y]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, startPos: { ...gradientConfig.startPos, y: val } })} min={-100} max={100} step={5} />
+          <SliderInput label={`End X: `} value={[gradientConfig.endPos.x]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, endPos: { ...gradientConfig.endPos, x: val } })} min={-100} max={100} step={5} />
+          <SliderInput label={`End Y: `} value={[gradientConfig.endPos.y]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, endPos: { ...gradientConfig.endPos, y: val } })} min={-100} max={100} step={5} />
         </div>
       )
     case 'gradient-wave':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Wave Intensity`}>
-            <NumberInput value={[gradientConfig.waveIntensity]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, waveIntensity: val })} max={1} step={0.05} showButtons />
-          </ControlGroup>
-          <ControlGroup label={`Wave 1 Speed`}>
-            <NumberInput value={[gradientConfig.wave1Speed]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, wave1Speed: val })} max={0.5} step={0.05} showButtons />
-          </ControlGroup>
+          <SliderInput label={`Wave Intensity`} value={[gradientConfig.waveIntensity]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, waveIntensity: val })} max={1} step={0.05} />
+          <SliderInput label={`Wave 1 Speed`} value={[gradientConfig.wave1Speed]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, wave1Speed: val })} max={0.5} step={0.05} />
           <ControlGroup label="Wave 1 Direction">
             <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => setGradientConfig({ ...gradientConfig, wave1Direction: gradientConfig.wave1Direction === 1 ? -1 : 1 })}>
               {gradientConfig.wave1Direction === 1 ? <ArrowRight className="h-4 w-4" /> : <ArrowLeft className="h-4 w-4" />}
             </Button>
           </ControlGroup>
-          <ControlGroup label={`Wave 2 Speed`}>
-            <NumberInput value={[gradientConfig.wave2Speed]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, wave2Speed: val })} max={0.5} step={0.05} showButtons />
-          </ControlGroup>
+          <SliderInput label={`Wave 2 Speed`} value={[gradientConfig.wave2Speed]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, wave2Speed: val })} max={0.5} step={0.05} />
           <ControlGroup label="Wave 2 Direction">
             <Button variant="outline" size="icon" className="h-9 w-9" onClick={() => setGradientConfig({ ...gradientConfig, wave2Direction: gradientConfig.wave2Direction === 1 ? -1 : 1 })}>
               {gradientConfig.wave2Direction === 1 ? <ArrowRight className="h-4 w-4" /> : <ArrowLeft className="h-4 w-4" />}
@@ -233,9 +211,7 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog, onApplyDialog
     case 'gradient-mouse':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Decay Speed`}>
-            <NumberInput value={[gradientConfig.decaySpeed]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, decaySpeed: val })} min={0.8} max={0.99} step={0.01} showButtons />
-          </ControlGroup>
+          <SliderInput label={`Decay Speed`} value={[gradientConfig.decaySpeed]} onValueChange={([val]) => setGradientConfig({ ...gradientConfig, decaySpeed: val })} min={0.8} max={0.99} step={0.01} />
         </div>
       )
     case 'aurora-background':
@@ -250,17 +226,17 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog, onApplyDialog
     case 'aurora-lines':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Width`}><NumberInput value={[auroraConfig.width]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, width: val })} min={1} max={100} step={5} showButtons /></ControlGroup>
-          <ControlGroup label={`Min Height`}><NumberInput value={[auroraConfig.minHeight]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, minHeight: val })} min={50} max={1000} step={50} showButtons /></ControlGroup>
-          <ControlGroup label={`Max Height`}><NumberInput value={[auroraConfig.maxHeight]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, maxHeight: val })} min={50} max={1000} step={50} showButtons /></ControlGroup>
-          <ControlGroup label={`Line Count (0 = auto)`}><NumberInput value={[auroraConfig.lineCount]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, lineCount: val })} min={0} max={500} step={10} showButtons /></ControlGroup>
+          <SliderInput label={`Width`} value={[auroraConfig.width]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, width: val })} min={1} max={100} step={5} />
+          <SliderInput label={`Min Height`} value={[auroraConfig.minHeight]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, minHeight: val })} min={50} max={1000} step={50} />
+          <SliderInput label={`Max Height`} value={[auroraConfig.maxHeight]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, maxHeight: val })} min={50} max={1000} step={50} />
+          <SliderInput label={`Line Count (0 = auto)`} value={[auroraConfig.lineCount]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, lineCount: val })} min={0} max={500} step={10} />
         </div>
       )
     case 'aurora-animation':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`TTL`}><NumberInput value={[auroraConfig.ttl]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, ttl: val })} min={10} max={500} step={10} showButtons /></ControlGroup>
-          <ControlGroup label={`Blur Amount`}><NumberInput value={[auroraConfig.blurAmount]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, blurAmount: val })} min={0} max={50} step={1} showButtons /></ControlGroup>
+          <SliderInput label={`TTL`} value={[auroraConfig.ttl]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, ttl: val })} min={10} max={500} step={10} />
+          <SliderInput label={`Blur Amount`} value={[auroraConfig.blurAmount]} onValueChange={([val]) => setAuroraConfig({ ...auroraConfig, blurAmount: val })} min={0} max={50} step={1} />
         </div>
       )
     case 'fluid-background':
@@ -275,37 +251,37 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog, onApplyDialog
     case 'fluid-animation':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Speed`}><NumberInput value={[fluidConfig.speed]} onValueChange={([val]) => setFluidConfig({ ...fluidConfig, speed: val })} min={0.1} max={3} step={0.1} showButtons /></ControlGroup>
+          <SliderInput label={`Speed`} value={[fluidConfig.speed]} onValueChange={([val]) => setFluidConfig({ ...fluidConfig, speed: val })} min={0.1} max={3} step={0.1} />
         </div>
       )
     case 'fluid-settings':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Intensity`}><NumberInput value={[fluidConfig.intensity]} onValueChange={([val]) => setFluidConfig({ ...fluidConfig, intensity: val })} min={0.5} max={2} step={0.1} showButtons /></ControlGroup>
-          <ControlGroup label={`Scale`}><NumberInput value={[fluidConfig.scale]} onValueChange={([val]) => setFluidConfig({ ...fluidConfig, scale: val })} min={0.1} max={10} step={0.1} showButtons /></ControlGroup>
-          <ControlGroup label={`Blur`}><NumberInput value={[fluidConfig.blurAmount]} onValueChange={([val]) => setFluidConfig({ ...fluidConfig, blurAmount: val })} min={0} max={100} step={1} showButtons /></ControlGroup>
+          <SliderInput label={`Intensity`} value={[fluidConfig.intensity]} onValueChange={([val]) => setFluidConfig({ ...fluidConfig, intensity: val })} min={0.5} max={2} step={0.1} />
+          <SliderInput label={`Scale`} value={[fluidConfig.scale ?? 1]} onValueChange={([val]) => setFluidConfig({ ...fluidConfig, scale: val })} min={0.1} max={10} step={0.1} />
+          <SliderInput label={`Blur`} value={[fluidConfig.blurAmount]} onValueChange={([val]) => setFluidConfig({ ...fluidConfig, blurAmount: val })} min={0} max={100} step={1} />
         </div>
       )
     case 'waves-shape':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Wave Height`}><NumberInput value={[wavesConfig.waveHeight]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, waveHeight: val })} min={0.05} max={0.5} step={0.05} showButtons /></ControlGroup>
-          <ControlGroup label={`Frequency`}><NumberInput value={[wavesConfig.waveFrequency]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, waveFrequency: val })} min={1} max={10} step={0.5} showButtons /></ControlGroup>
-          <ControlGroup label={`Layers`}><NumberInput value={[wavesConfig.layers]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, layers: val })} min={2} max={8} step={1} showButtons /></ControlGroup>
+          <SliderInput label={`Wave Height`} value={[wavesConfig.waveHeight]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, waveHeight: val })} min={0.05} max={0.5} step={0.05} />
+          <SliderInput label={`Frequency`} value={[wavesConfig.waveFrequency]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, waveFrequency: val })} min={1} max={10} step={0.5} />
+          <SliderInput label={`Layers`} value={[wavesConfig.layers]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, layers: val })} min={2} max={8} step={1} />
         </div>
       )
     case 'waves-position':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Rotation (°)`}><NumberInput value={[wavesConfig.rotation]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, rotation: val })} min={-180} max={180} step={15} showButtons /></ControlGroup>
-          <ControlGroup label={`Phase Offset`}><NumberInput value={[wavesConfig.phaseOffset ?? 0]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, phaseOffset: val })} min={0} max={2} step={0.1} showButtons /></ControlGroup>
+          <SliderInput label={`Rotation (°)`} value={[wavesConfig.rotation]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, rotation: val })} min={-180} max={180} step={15} />
+          <SliderInput label={`Phase Offset`} value={[wavesConfig.phaseOffset ?? 0]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, phaseOffset: val })} min={0} max={2} step={0.1} />
         </div>
       )
     case 'waves-animation':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Speed`}><NumberInput value={[wavesConfig.speed]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, speed: val })} min={0} max={2} step={0.1} showButtons /></ControlGroup>
-          <ControlGroup label={`Blur`}><NumberInput value={[wavesConfig.blur]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, blur: val })} min={0} max={100} step={5} showButtons /></ControlGroup>
+          <SliderInput label={`Speed`} value={[wavesConfig.speed]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, speed: val })} min={0} max={2} step={0.1} />
+          <SliderInput label={`Blur`} value={[wavesConfig.blur]} onValueChange={([val]) => setWavesConfig({ ...wavesConfig, blur: val })} min={0} max={100} step={5} />
         </div>
       )
     case 'ribbon-background':
@@ -320,25 +296,25 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog, onApplyDialog
     case 'ribbon-shape':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Ribbon Count`}><NumberInput value={[ribbonConfig.ribbonCount]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, ribbonCount: val })} min={2} max={10} step={1} showButtons /></ControlGroup>
-          <ControlGroup label={`Thickness`}><NumberInput value={[ribbonConfig.thickness]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, thickness: val })} min={0.1} max={1} step={0.05} showButtons /></ControlGroup>
-          <ControlGroup label={`Taper`}><NumberInput value={[ribbonConfig.taper]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, taper: val })} min={-1} max={1} step={0.1} showButtons /></ControlGroup>
-          <ControlGroup label={`Spread`}><NumberInput value={[ribbonConfig.spread]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, spread: val })} min={0.5} max={3} step={0.1} showButtons /></ControlGroup>
+          <SliderInput label={`Ribbon Count`} value={[ribbonConfig.ribbonCount]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, ribbonCount: val })} min={2} max={10} step={1} />
+          <SliderInput label={`Thickness`} value={[ribbonConfig.thickness]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, thickness: val })} min={0.1} max={1} step={0.05} />
+          <SliderInput label={`Taper`} value={[ribbonConfig.taper]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, taper: val })} min={-1} max={1} step={0.1} />
+          <SliderInput label={`Spread`} value={[ribbonConfig.spread]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, spread: val })} min={0.5} max={3} step={0.1} />
         </div>
       )
     case 'ribbon-motion':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Amplitude`}><NumberInput value={[ribbonConfig.amplitude]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, amplitude: val })} min={0.1} max={3} step={0.1} showButtons /></ControlGroup>
-          <ControlGroup label={`Rotation (°)`}><NumberInput value={[ribbonConfig.rotation]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, rotation: val })} min={-90} max={90} step={5} showButtons /></ControlGroup>
-          <ControlGroup label={`Noise`}><NumberInput value={[ribbonConfig.noise]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, noise: val })} min={0} max={2} step={0.1} showButtons /></ControlGroup>
+          <SliderInput label={`Amplitude`} value={[ribbonConfig.amplitude]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, amplitude: val })} min={0.1} max={3} step={0.1} />
+          <SliderInput label={`Rotation (°)`} value={[ribbonConfig.rotation]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, rotation: val })} min={-90} max={90} step={5} />
+          <SliderInput label={`Noise`} value={[ribbonConfig.noise]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, noise: val })} min={0} max={2} step={0.1} />
         </div>
       )
     case 'ribbon-animation':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Speed`}><NumberInput value={[ribbonConfig.speed]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, speed: val })} min={0.1} max={2} step={0.1} showButtons /></ControlGroup>
-          <ControlGroup label={`Opacity`}><NumberInput value={[ribbonConfig.opacity]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, opacity: val })} min={0.1} max={1} step={0.05} showButtons /></ControlGroup>
+          <SliderInput label={`Speed`} value={[ribbonConfig.speed]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, speed: val })} min={0.1} max={2} step={0.1} />
+          <SliderInput label={`Opacity`} value={[ribbonConfig.opacity]} onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, opacity: val })} min={0.1} max={1} step={0.05} />
         </div>
       )
     case 'dandelion-background': {
@@ -365,23 +341,23 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog, onApplyDialog
     case 'dandelion-lines':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Line Count`}><NumberInput value={[dandelionConfig.lineCount]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, lineCount: val })} min={20} max={3000} step={50} showButtons /></ControlGroup>
-          <ControlGroup label={`Thickness`}><NumberInput value={[dandelionConfig.thickness]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, thickness: val })} min={0.5} max={5} step={0.5} showButtons /></ControlGroup>
-          <ControlGroup label={`Dot Size`}><NumberInput value={[dandelionConfig.dotSize]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, dotSize: val })} min={1} max={8} step={0.5} showButtons /></ControlGroup>
+          <SliderInput label={`Line Count`} value={[dandelionConfig.lineCount]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, lineCount: val })} min={20} max={3000} step={50} />
+          <SliderInput label={`Thickness`} value={[dandelionConfig.thickness]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, thickness: val })} min={0.5} max={5} step={0.5} />
+          <SliderInput label={`Dot Size`} value={[dandelionConfig.dotSize]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, dotSize: val })} min={1} max={8} step={0.5} />
         </div>
       )
     case 'dandelion-shape':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Min Radius`}><NumberInput value={[dandelionConfig.radiusMin]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, radiusMin: val })} min={0.05} max={0.5} step={0.05} showButtons /></ControlGroup>
-          <ControlGroup label={`Max Radius`}><NumberInput value={[dandelionConfig.radiusMax]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, radiusMax: val })} min={0.2} max={0.8} step={0.05} showButtons /></ControlGroup>
-          <ControlGroup label={`Spread`}><NumberInput value={[dandelionConfig.spread]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, spread: val })} min={0.1} max={1} step={0.1} showButtons /></ControlGroup>
-          <ControlGroup label={`Center Y`}><NumberInput value={[dandelionConfig.centerY]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, centerY: val })} min={0.5} max={1.2} step={0.05} showButtons /></ControlGroup>
+          <SliderInput label={`Min Radius`} value={[dandelionConfig.radiusMin]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, radiusMin: val })} min={0.05} max={0.5} step={0.05} />
+          <SliderInput label={`Max Radius`} value={[dandelionConfig.radiusMax]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, radiusMax: val })} min={0.2} max={0.8} step={0.05} />
+          <SliderInput label={`Spread`} value={[dandelionConfig.spread]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, spread: val })} min={0.1} max={1} step={0.1} />
+          <SliderInput label={`Center Y`} value={[dandelionConfig.centerY]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, centerY: val })} min={0.5} max={1.2} step={0.05} />
         </div>
       )
     case 'dandelion-animation':
       return (
-        <ControlGroup label={`Sway Speed`}><NumberInput value={[dandelionConfig.speed]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, speed: val })} min={0} max={2} step={0.1} showButtons /></ControlGroup>
+        <SliderInput label={`Sway Speed`} value={[dandelionConfig.speed]} onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, speed: val })} min={0} max={2} step={0.1} />
       )
     case 'particleRing-background': {
       const particleRingColors = particleRingConfig.radialGradientColors || [
@@ -407,30 +383,30 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog, onApplyDialog
     case 'particleRing-ring':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Particle Count`}><NumberInput value={[particleRingConfig.particleCount]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, particleCount: val })} min={100} max={2000} step={50} showButtons /></ControlGroup>
-          <ControlGroup label={`Ring Radius`}><NumberInput value={[particleRingConfig.ringRadius]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, ringRadius: val })} min={0.1} max={0.8} step={0.05} showButtons /></ControlGroup>
-          <ControlGroup label={`Ring Width`}><NumberInput value={[particleRingConfig.ringWidth]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, ringWidth: val })} min={0.05} max={0.4} step={0.05} showButtons /></ControlGroup>
+          <SliderInput label={`Particle Count`} value={[particleRingConfig.particleCount]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, particleCount: val })} min={100} max={2000} step={50} />
+          <SliderInput label={`Ring Radius`} value={[particleRingConfig.ringRadius]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, ringRadius: val })} min={0.1} max={0.8} step={0.05} />
+          <SliderInput label={`Ring Width`} value={[particleRingConfig.ringWidth]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, ringWidth: val })} min={0.05} max={0.4} step={0.05} />
         </div>
       )
     case 'particleRing-particles':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Particle Size`}><NumberInput value={[particleRingConfig.particleSize]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, particleSize: val })} min={1} max={8} step={0.5} showButtons /></ControlGroup>
-          <ControlGroup label={`Dispersion`}><NumberInput value={[particleRingConfig.dispersion]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, dispersion: val })} min={0} max={0.5} step={0.05} showButtons /></ControlGroup>
+          <SliderInput label={`Particle Size`} value={[particleRingConfig.particleSize]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, particleSize: val })} min={1} max={8} step={0.5} />
+          <SliderInput label={`Dispersion`} value={[particleRingConfig.dispersion]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, dispersion: val })} min={0} max={0.5} step={0.05} />
         </div>
       )
     case 'particleRing-animation':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Pulse Speed`}><NumberInput value={[particleRingConfig.speed]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, speed: val })} min={0} max={2} step={0.1} showButtons /></ControlGroup>
-          <ControlGroup label={`Rotation Speed`}><NumberInput value={[particleRingConfig.rotationSpeed]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, rotationSpeed: val })} min={0} max={1} step={0.05} showButtons /></ControlGroup>
+          <SliderInput label={`Pulse Speed`} value={[particleRingConfig.speed]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, speed: val })} min={0} max={2} step={0.1} />
+          <SliderInput label={`Rotation Speed`} value={[particleRingConfig.rotationSpeed]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, rotationSpeed: val })} min={0} max={1} step={0.05} />
         </div>
       )
     case 'particleRing-tilt':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Tilt X`}><NumberInput value={[particleRingConfig.tiltX ?? 0]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, tiltX: val })} min={-90} max={90} step={5} showButtons /></ControlGroup>
-          <ControlGroup label={`Tilt Z`}><NumberInput value={[particleRingConfig.tiltZ ?? 0]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, tiltZ: val })} min={-90} max={90} step={5} showButtons /></ControlGroup>
+          <SliderInput label={`Tilt X`} value={[particleRingConfig.tiltX ?? 0]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, tiltX: val })} min={-90} max={90} step={5} />
+          <SliderInput label={`Tilt Z`} value={[particleRingConfig.tiltZ ?? 0]} onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, tiltZ: val })} min={-90} max={90} step={5} />
         </div>
       )
     case 'guilloche-background': {
@@ -466,31 +442,31 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog, onApplyDialog
               </SelectContent>
             </Select>
           </ControlGroup>
-          <ControlGroup label={`Scale`}><NumberInput value={[guillocheConfig.scale ?? 0.85]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, scale: val })} min={0.2} max={2} step={0.05} showButtons /></ControlGroup>
-          <ControlGroup label={`Depth`}><NumberInput value={[guillocheConfig.depth ?? 1.8]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, depth: val })} min={0} max={5} step={0.1} showButtons /></ControlGroup>
-          <ControlGroup label={`Line Opacity`}><NumberInput value={[guillocheConfig.lineOpacity ?? 0.55]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, lineOpacity: val })} min={0.05} max={1} step={0.05} showButtons /></ControlGroup>
+          <SliderInput label={`Scale`} value={[guillocheConfig.scale ?? 0.85]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, scale: val })} min={0.2} max={2} step={0.05} />
+          <SliderInput label={`Depth`} value={[guillocheConfig.depth ?? 1.8]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, depth: val })} min={0} max={5} step={0.1} />
+          <SliderInput label={`Line Opacity`} value={[guillocheConfig.lineOpacity ?? 0.55]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, lineOpacity: val })} min={0.05} max={1} step={0.05} />
         </div>
       )
     case 'guilloche-pattern':
       return (guillocheConfig.motif || 'rosette') === 'rosette' ? (
         <div className="space-y-2">
-          <ControlGroup label={`Angle A`}><NumberInput value={[guillocheConfig.angleA ?? 1]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, angleA: val })} min={-72} max={72} step={1} showButtons /></ControlGroup>
-          <ControlGroup label={`Angle B`}><NumberInput value={[guillocheConfig.angleB ?? 6]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, angleB: val })} min={-72} max={72} step={1} showButtons /></ControlGroup>
-          <ControlGroup label={`Angle C`}><NumberInput value={[guillocheConfig.angleC ?? -4]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, angleC: val })} min={-72} max={72} step={1} showButtons /></ControlGroup>
-          <ControlGroup label={`Angle D`}><NumberInput value={[guillocheConfig.angleD ?? 9]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, angleD: val })} min={-72} max={72} step={1} showButtons /></ControlGroup>
-          <ControlGroup label={`Scale A`}><NumberInput value={[guillocheConfig.scaleA ?? 110]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, scaleA: val })} min={-360} max={360} step={5} showButtons /></ControlGroup>
-          <ControlGroup label={`Scale B`}><NumberInput value={[guillocheConfig.scaleB ?? 70]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, scaleB: val })} min={-360} max={360} step={5} showButtons /></ControlGroup>
-          <ControlGroup label={`Scale C`}><NumberInput value={[guillocheConfig.scaleC ?? 45]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, scaleC: val })} min={-360} max={360} step={5} showButtons /></ControlGroup>
-          <ControlGroup label={`Scale D`}><NumberInput value={[guillocheConfig.scaleD ?? 28]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, scaleD: val })} min={-360} max={360} step={5} showButtons /></ControlGroup>
-          <ControlGroup label={`Phase Offset`}><NumberInput value={[guillocheConfig.offset ?? 0]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, offset: val })} min={0} max={360} step={5} showButtons /></ControlGroup>
-          <ControlGroup label={`Repeat Offset`}><NumberInput value={[guillocheConfig.repeatOffset ?? 4]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, repeatOffset: val })} min={-20} max={20} step={0.5} showButtons /></ControlGroup>
-          <ControlGroup label={`Repeat Count`}><NumberInput value={[guillocheConfig.repeatCount ?? 18]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, repeatCount: val })} min={1} max={50} step={1} showButtons /></ControlGroup>
+          <SliderInput label={`Angle A`} value={[guillocheConfig.angleA ?? 1]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, angleA: val })} min={-72} max={72} step={1} />
+          <SliderInput label={`Angle B`} value={[guillocheConfig.angleB ?? 6]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, angleB: val })} min={-72} max={72} step={1} />
+          <SliderInput label={`Angle C`} value={[guillocheConfig.angleC ?? -4]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, angleC: val })} min={-72} max={72} step={1} />
+          <SliderInput label={`Angle D`} value={[guillocheConfig.angleD ?? 9]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, angleD: val })} min={-72} max={72} step={1} />
+          <SliderInput label={`Scale A`} value={[guillocheConfig.scaleA ?? 110]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, scaleA: val })} min={-360} max={360} step={5} />
+          <SliderInput label={`Scale B`} value={[guillocheConfig.scaleB ?? 70]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, scaleB: val })} min={-360} max={360} step={5} />
+          <SliderInput label={`Scale C`} value={[guillocheConfig.scaleC ?? 45]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, scaleC: val })} min={-360} max={360} step={5} />
+          <SliderInput label={`Scale D`} value={[guillocheConfig.scaleD ?? 28]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, scaleD: val })} min={-360} max={360} step={5} />
+          <SliderInput label={`Phase Offset`} value={[guillocheConfig.offset ?? 0]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, offset: val })} min={0} max={360} step={5} />
+          <SliderInput label={`Repeat Offset`} value={[guillocheConfig.repeatOffset ?? 4]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, repeatOffset: val })} min={-20} max={20} step={0.5} />
+          <SliderInput label={`Repeat Count`} value={[guillocheConfig.repeatCount ?? 18]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, repeatCount: val })} min={1} max={50} step={1} />
         </div>
       ) : (
         <div className="space-y-2">
-          <ControlGroup label={`Wave Rows`}><NumberInput value={[guillocheConfig.waveRows ?? 22]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, waveRows: val })} min={4} max={48} step={1} showButtons /></ControlGroup>
-          <ControlGroup label={`Wave Amplitude`}><NumberInput value={[guillocheConfig.waveAmplitude ?? 22]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, waveAmplitude: val })} min={0} max={80} step={1} showButtons /></ControlGroup>
-          <ControlGroup label={`Wave Frequency`}><NumberInput value={[guillocheConfig.waveFrequency ?? 1]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, waveFrequency: val })} min={0.2} max={4} step={0.1} showButtons /></ControlGroup>
+          <SliderInput label={`Wave Rows`} value={[guillocheConfig.waveRows ?? 22]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, waveRows: val })} min={4} max={48} step={1} />
+          <SliderInput label={`Wave Amplitude`} value={[guillocheConfig.waveAmplitude ?? 22]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, waveAmplitude: val })} min={0} max={80} step={1} />
+          <SliderInput label={`Wave Frequency`} value={[guillocheConfig.waveFrequency ?? 1]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, waveFrequency: val })} min={0.2} max={4} step={0.1} />
           <ControlGroup label="Start Shape">
             <Select value={guillocheConfig.rippleStartShape || 'ellipse'} onValueChange={(value) => setGuillocheConfig({ ...guillocheConfig, rippleStartShape: value })}>
               <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
@@ -511,24 +487,24 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog, onApplyDialog
               </SelectContent>
             </Select>
           </ControlGroup>
-          <ControlGroup label={`Ripple Steps`}><NumberInput value={[guillocheConfig.rippleSteps ?? 16]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, rippleSteps: val })} min={2} max={40} step={1} showButtons /></ControlGroup>
-          <ControlGroup label={`Start Scale`}><NumberInput value={[guillocheConfig.rippleStartScale ?? 0.3]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, rippleStartScale: val })} min={0.05} max={2} step={0.05} showButtons /></ControlGroup>
-          <ControlGroup label={`End Scale`}><NumberInput value={[guillocheConfig.rippleEndScale ?? 1.25]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, rippleEndScale: val })} min={0.05} max={2} step={0.05} showButtons /></ControlGroup>
-          <ControlGroup label={`Morph Rotation`}><NumberInput value={[guillocheConfig.rippleRotation ?? 60]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, rippleRotation: val })} min={-360} max={360} step={5} showButtons /></ControlGroup>
+          <SliderInput label={`Ripple Steps`} value={[guillocheConfig.rippleSteps ?? 16]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, rippleSteps: val })} min={2} max={40} step={1} />
+          <SliderInput label={`Start Scale`} value={[guillocheConfig.rippleStartScale ?? 0.3]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, rippleStartScale: val })} min={0.05} max={2} step={0.05} />
+          <SliderInput label={`End Scale`} value={[guillocheConfig.rippleEndScale ?? 1.25]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, rippleEndScale: val })} min={0.05} max={2} step={0.05} />
+          <SliderInput label={`Morph Rotation`} value={[guillocheConfig.rippleRotation ?? 60]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, rippleRotation: val })} min={-360} max={360} step={5} />
         </div>
       )
     case 'guilloche-animation':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Speed`}><NumberInput value={[guillocheConfig.speed ?? 0.5]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, speed: val })} min={0} max={2} step={0.05} showButtons /></ControlGroup>
-          <ControlGroup label={`Rotation Speed`}><NumberInput value={[guillocheConfig.rotationSpeed ?? 0.1]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, rotationSpeed: val })} min={0} max={1} step={0.05} showButtons /></ControlGroup>
+          <SliderInput label={`Speed`} value={[guillocheConfig.speed ?? 0.5]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, speed: val })} min={0} max={2} step={0.05} />
+          <SliderInput label={`Rotation Speed`} value={[guillocheConfig.rotationSpeed ?? 0.1]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, rotationSpeed: val })} min={0} max={1} step={0.05} />
         </div>
       )
     case 'guilloche-tilt':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Tilt X`}><NumberInput value={[guillocheConfig.tiltX ?? 0]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, tiltX: val })} min={-90} max={90} step={5} showButtons /></ControlGroup>
-          <ControlGroup label={`Tilt Z`}><NumberInput value={[guillocheConfig.tiltZ ?? 0]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, tiltZ: val })} min={-90} max={90} step={5} showButtons /></ControlGroup>
+          <SliderInput label={`Tilt X`} value={[guillocheConfig.tiltX ?? 0]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, tiltX: val })} min={-90} max={90} step={5} />
+          <SliderInput label={`Tilt Z`} value={[guillocheConfig.tiltZ ?? 0]} onValueChange={([val]) => setGuillocheConfig({ ...guillocheConfig, tiltZ: val })} min={-90} max={90} step={5} />
         </div>
       )
     case 'pattern-icon':
@@ -540,26 +516,26 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog, onApplyDialog
               onChange={(v) => setTessellationConfig({ ...tessellationConfig, icon: v })}
             />
           </ControlGroup>
-          <ControlGroup label={`Size`}><NumberInput value={[tessellationConfig.size]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, size: val })} min={8} max={100} step={4} showButtons /></ControlGroup>
+          <SliderInput label={`Size`} value={[tessellationConfig.size]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, size: val })} min={8} max={100} step={4} />
           <ControlGroup label="Color">
             <div className="flex items-center gap-2">
               <PaletteColorPicker value={tessellationConfig.color} onChange={(newColor) => setTessellationConfig({ ...tessellationConfig, color: newColor })} palette={parsedPalette} className="w-10 h-10" />
               <Input value={tessellationConfig.color} onChange={(e) => setTessellationConfig({ ...tessellationConfig, color: e.target.value })} className="h-9 font-mono text-xs flex-1" />
             </div>
           </ControlGroup>
-          <ControlGroup label={`Opacity`}><NumberInput value={[tessellationConfig.opacity]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, opacity: val })} max={1} step={0.05} showButtons /></ControlGroup>
-          <ControlGroup label={`Rotation`}><NumberInput value={[tessellationConfig.rotation]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, rotation: val })} max={360} step={15} showButtons /></ControlGroup>
+          <SliderInput label={`Opacity`} value={[tessellationConfig.opacity]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, opacity: val })} max={1} step={0.05} />
+          <SliderInput label={`Rotation`} value={[tessellationConfig.rotation]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, rotation: val })} max={360} step={15} />
         </div>
       )
     case 'pattern-spacing':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Row Gap`}><NumberInput value={[tessellationConfig.rowGap]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, rowGap: val })} min={20} max={200} step={10} showButtons /></ControlGroup>
-          <ControlGroup label={`Col Gap`}><NumberInput value={[tessellationConfig.colGap]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, colGap: val })} min={20} max={200} step={10} showButtons /></ControlGroup>
+          <SliderInput label={`Row Gap`} value={[tessellationConfig.rowGap]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, rowGap: val })} min={20} max={200} step={10} />
+          <SliderInput label={`Col Gap`} value={[tessellationConfig.colGap]} onValueChange={([val]) => setTessellationConfig({ ...tessellationConfig, colGap: val })} min={20} max={200} step={10} />
         </div>
       )
     case 'effects-blur':
-      return <ControlGroup label={`Blur`}><NumberInput value={[effectsConfig.blur]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, blur: val })} max={50} step={2} showButtons /></ControlGroup>
+      return <SliderInput label={`Blur`} value={[effectsConfig.blur]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, blur: val })} max={50} step={2} />
     case 'effects-texture':
       return (
         <div className="space-y-2">
@@ -578,8 +554,8 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog, onApplyDialog
           </ControlGroup>
           {effectsConfig.texture !== 'none' && (
             <>
-              <ControlGroup label={`Size`}><NumberInput value={[effectsConfig.textureSize]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, textureSize: val })} min={4} max={100} step={2} showButtons /></ControlGroup>
-              <ControlGroup label={`Opacity`}><NumberInput value={[effectsConfig.textureOpacity]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, textureOpacity: val })} max={1} step={0.05} showButtons /></ControlGroup>
+              <SliderInput label={`Size`} value={[effectsConfig.textureSize]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, textureSize: val })} min={4} max={100} step={2} />
+              <SliderInput label={`Opacity`} value={[effectsConfig.textureOpacity]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, textureOpacity: val })} max={1} step={0.05} />
               <ControlGroup label="Blend Mode">
                 <Select value={effectsConfig.textureBlendMode} onValueChange={(v) => setEffectsConfig({ ...effectsConfig, textureBlendMode: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
@@ -621,13 +597,13 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog, onApplyDialog
         </ControlGroup>
       )
     case 'effects-vignette':
-      return <ControlGroup label={`Intensity`}><NumberInput value={[effectsConfig.vignetteIntensity]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, vignetteIntensity: val })} max={1} step={0.05} showButtons /></ControlGroup>
+      return <SliderInput label={`Intensity`} value={[effectsConfig.vignetteIntensity]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, vignetteIntensity: val })} max={1} step={0.05} />
     case 'effects-color':
       return (
         <div className="space-y-2">
-          <ControlGroup label={`Saturation`}><NumberInput value={[effectsConfig.saturation]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, saturation: val })} max={200} step={10} showButtons /></ControlGroup>
-          <ControlGroup label={`Contrast`}><NumberInput value={[effectsConfig.contrast]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, contrast: val })} min={50} max={150} step={5} showButtons /></ControlGroup>
-          <ControlGroup label={`Brightness`}><NumberInput value={[effectsConfig.brightness]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, brightness: val })} min={50} max={150} step={5} showButtons /></ControlGroup>
+          <SliderInput label={`Saturation`} value={[effectsConfig.saturation]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, saturation: val })} max={200} step={10} />
+          <SliderInput label={`Contrast`} value={[effectsConfig.contrast]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, contrast: val })} min={50} max={150} step={5} />
+          <SliderInput label={`Brightness`} value={[effectsConfig.brightness]} onValueChange={([val]) => setEffectsConfig({ ...effectsConfig, brightness: val })} min={50} max={150} step={5} />
         </div>
       )
     case 'effects-fluted':
@@ -645,76 +621,69 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog, onApplyDialog
           </div>
           {effectsConfig.flutedGlass?.enabled && (
             <>
-              <ControlGroup label={`Ridges / Segments`}>
-                <NumberInput
-                  value={[effectsConfig.flutedGlass?.segments ?? 80]}
-                  onValueChange={([val]) => setEffectsConfig({
-                    ...effectsConfig,
-                    flutedGlass: { ...effectsConfig.flutedGlass, segments: val }
-                  })}
-                  min={5} max={300} step={5} showButtons
-                />
-              </ControlGroup>
-              <ControlGroup label={`Distortion`}>
-                <NumberInput
-                  value={[effectsConfig.flutedGlass?.distortionStrength ?? 0.02]}
-                  onValueChange={([val]) => setEffectsConfig({
-                    ...effectsConfig,
-                    flutedGlass: { ...effectsConfig.flutedGlass, distortionStrength: val }
-                  })}
-                  min={0} max={0.1} step={0.01} showButtons
-                />
-              </ControlGroup>
-              <ControlGroup label={`Wave Frequency`}>
-                <NumberInput
-                  value={[effectsConfig.flutedGlass?.waveFrequency ?? 1]}
-                  onValueChange={([val]) => setEffectsConfig({
-                    ...effectsConfig,
-                    flutedGlass: { ...effectsConfig.flutedGlass, waveFrequency: val }
-                  })}
-                  min={0.5} max={5} step={0.5} showButtons
-                />
-              </ControlGroup>
-              <ControlGroup label={`Rotation (°)`}>
-                <NumberInput
-                  value={[effectsConfig.flutedGlass?.rotation ?? 0]}
-                  onValueChange={([val]) => setEffectsConfig({
-                    ...effectsConfig,
-                    flutedGlass: { ...effectsConfig.flutedGlass, rotation: val }
-                  })}
-                  min={0} max={180} step={5} showButtons
-                />
-              </ControlGroup>
-              <ControlGroup label={`Motion Value`}>
-                <NumberInput
-                  value={[effectsConfig.flutedGlass?.motionValue ?? 0.5]}
-                  onValueChange={([val]) => setEffectsConfig({
-                    ...effectsConfig,
-                    flutedGlass: { ...effectsConfig.flutedGlass, motionValue: val }
-                  })}
-                  min={0} max={2} step={0.1} showButtons
-                />
-              </ControlGroup>
-              <ControlGroup label={`Motion Speed`}>
-                <NumberInput
-                  value={[effectsConfig.flutedGlass?.motionSpeed ?? 0.5]}
-                  onValueChange={([val]) => setEffectsConfig({
-                    ...effectsConfig,
-                    flutedGlass: { ...effectsConfig.flutedGlass, motionSpeed: val }
-                  })}
-                  min={0} max={3} step={0.1} showButtons
-                />
-              </ControlGroup>
-              <ControlGroup label={`3D Overlay`}>
-                <NumberInput
-                  value={[effectsConfig.flutedGlass?.overlayOpacity ?? 0]}
-                  onValueChange={([val]) => setEffectsConfig({
-                    ...effectsConfig,
-                    flutedGlass: { ...effectsConfig.flutedGlass, overlayOpacity: val }
-                  })}
-                  min={0} max={100} step={5} showButtons
-                />
-              </ControlGroup>
+              <SliderInput
+                label={`Ridges / Segments`}
+                value={[effectsConfig.flutedGlass?.segments ?? 80]}
+                onValueChange={([val]) => setEffectsConfig({
+                  ...effectsConfig,
+                  flutedGlass: { ...effectsConfig.flutedGlass, segments: val }
+                })}
+                min={5} max={300} step={5}
+              />
+              <SliderInput
+                label={`Distortion`}
+                value={[effectsConfig.flutedGlass?.distortionStrength ?? 0.02]}
+                onValueChange={([val]) => setEffectsConfig({
+                  ...effectsConfig,
+                  flutedGlass: { ...effectsConfig.flutedGlass, distortionStrength: val }
+                })}
+                min={0} max={0.1} step={0.01}
+              />
+              <SliderInput
+                label={`Wave Frequency`}
+                value={[effectsConfig.flutedGlass?.waveFrequency ?? 1]}
+                onValueChange={([val]) => setEffectsConfig({
+                  ...effectsConfig,
+                  flutedGlass: { ...effectsConfig.flutedGlass, waveFrequency: val }
+                })}
+                min={0.5} max={5} step={0.5}
+              />
+              <SliderInput
+                label={`Rotation (°)`}
+                value={[effectsConfig.flutedGlass?.rotation ?? 0]}
+                onValueChange={([val]) => setEffectsConfig({
+                  ...effectsConfig,
+                  flutedGlass: { ...effectsConfig.flutedGlass, rotation: val }
+                })}
+                min={0} max={180} step={5}
+              />
+              <SliderInput
+                label={`Motion Value`}
+                value={[effectsConfig.flutedGlass?.motionValue ?? 0.5]}
+                onValueChange={([val]) => setEffectsConfig({
+                  ...effectsConfig,
+                  flutedGlass: { ...effectsConfig.flutedGlass, motionValue: val }
+                })}
+                min={0} max={2} step={0.1}
+              />
+              <SliderInput
+                label={`Motion Speed`}
+                value={[effectsConfig.flutedGlass?.motionSpeed ?? 0.5]}
+                onValueChange={([val]) => setEffectsConfig({
+                  ...effectsConfig,
+                  flutedGlass: { ...effectsConfig.flutedGlass, motionSpeed: val }
+                })}
+                min={0} max={3} step={0.1}
+              />
+              <SliderInput
+                label={`3D Overlay`}
+                value={[effectsConfig.flutedGlass?.overlayOpacity ?? 0]}
+                onValueChange={([val]) => setEffectsConfig({
+                  ...effectsConfig,
+                  flutedGlass: { ...effectsConfig.flutedGlass, overlayOpacity: val }
+                })}
+                min={0} max={100} step={5}
+              />
             </>
           )}
         </div>
@@ -725,8 +694,8 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog, onApplyDialog
           <ControlGroup label="Text Color">
             <ContrastAwarePaletteColorPicker value={textConfig.color} onChange={(newColor) => setTextConfig({ ...textConfig, color: newColor })} palette={parsedPalette} gradientColors={gradientConfig.colors} className="w-16 h-8" />
           </ControlGroup>
-          <ControlGroup label="Text Opacity"><NumberInput value={[textConfig.opacity]} onValueChange={([val]) => setTextConfig({ ...textConfig, opacity: val })} min={0} max={1} step={0.05} showButtons={true} /></ControlGroup>
-          <ControlGroup label="Section Gap"><NumberInput value={[textGap]} onValueChange={([val]) => setTextGap(val)} min={0} max={100} step={4} showButtons={true} /></ControlGroup>
+          <SliderInput label="Text Opacity" value={[textConfig.opacity]} onValueChange={([val]) => setTextConfig({ ...textConfig, opacity: val })} min={0} max={1} step={0.05} />
+          <SliderInput label="Section Gap" value={[textGap]} onValueChange={([val]) => setTextGap(val)} min={0} max={100} step={4} />
         </div>
       )
     default:
@@ -738,7 +707,7 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog, onApplyDialog
           return (
             <div className="space-y-2">
               <Input value={section.text} onChange={(e) => updateTextSection(section.id, 'text', e.target.value)} className="h-11 text-base" placeholder="Enter text..." />
-              <ControlGroup label="Size (in px)"><NumberInput value={[section.size]} onValueChange={([val]) => updateTextSection(section.id, 'size', val)} min={12} max={200} step={4} showButtons={true} /></ControlGroup>
+              <SliderInput label="Size (in px)" value={[section.size]} onValueChange={([val]) => updateTextSection(section.id, 'size', val)} min={12} max={200} step={4} />
               <ControlGroup label="Font">
                 <Select value={section.font || 'sans-serif'} onValueChange={(value) => updateTextSection(section.id, 'font', value)}>
                   <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
@@ -774,7 +743,7 @@ export const MobileDialogContent = ({ activeDialog, onCloseDialog, onApplyDialog
                   </SelectContent>
                 </Select>
               </ControlGroup>
-              <ControlGroup label="Spacing (in em)"><NumberInput value={[section.spacing]} onValueChange={([val]) => updateTextSection(section.id, 'spacing', val)} min={-0.1} max={0.5} step={0.01} showButtons={true} /></ControlGroup>
+              <SliderInput label="Spacing (in em)" value={[section.spacing]} onValueChange={([val]) => updateTextSection(section.id, 'spacing', val)} min={-0.1} max={0.5} step={0.01} />
               <Button variant="destructive" className="w-full mt-4" onClick={() => { removeTextSection(section.id); if (onApplyDialog) onApplyDialog() }} disabled={textSections.length <= 1}>
                 <Trash size={16} className="mr-2" />Delete Section
               </Button>

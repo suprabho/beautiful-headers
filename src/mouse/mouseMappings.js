@@ -42,6 +42,13 @@ export const MOUSE_MAPPINGS = {
       { param: 'tiltZ', type: 'tilt', axis: 'x', strength: 0.35 },
     ],
   },
+  // Studio shader types: palette-space parallax, applied in StudioGradientLayer
+  ...Object.fromEntries(['sky', 'watercolor', 'glow', 'forms', 'prism'].map((t) => [t, {
+    lerpFactor: 0.08,
+    effects: [
+      { param: 'u_mouse', type: 'positionOffset', axis: 'both', strength: 0.05 },
+    ],
+  }])),
   aurora: {
     lerpFactor: 0.05, // uses 1 - decaySpeed internally
     effects: [

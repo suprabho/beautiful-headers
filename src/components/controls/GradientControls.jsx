@@ -1,10 +1,11 @@
 import { useRef, useState, useCallback, useEffect } from 'react'
 import { Plus, Trash, ArrowLeft, ArrowRight } from '@phosphor-icons/react'
-import { ControlGroup, NumberInput, PaletteColorPicker } from './SharedControls'
+import { ControlGroup, PaletteColorPicker, SliderInput } from './SharedControls'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { TypePicker, StudioControls, SectionLabel, isStudioType } from './StudioControls'
 
 // ============================================
 // COLORS SECTION - Shared by all background types
@@ -47,8 +48,8 @@ export const ColorsSection = ({
   }
 
   return (
-    <div className="flex flex-col gap-3 pb-2 border-b border-border/50">
-      <Label className="text-sm md:text-xs md:uppercase tracking-wide font-medium md:font-semibold">Background Colors</Label>
+    <div className="flex flex-col gap-3 pb-2">
+      <SectionLabel hint="tap a swatch to pick">Colours</SectionLabel>
 
       {/* Color grid */}
       <div className="flex flex-wrap w-full flex-1 gap-2 px-1">
@@ -278,25 +279,23 @@ export const RadialGradientSection = ({
       )}
 
       {/* End X / End Y position controls */}
-      <div className="flex flex-col lg:flex-row gap-4 justify-between">
-        <ControlGroup label="End X (in %)">
-          <NumberInput
-            value={[endX]}
-            onValueChange={([val]) => onEndXChange(val)}
-            min={0}
-            max={200}
-            step={10}
-          />
-        </ControlGroup>
-        <ControlGroup label="End Y (in %)">
-          <NumberInput
-            value={[endY]}
-            onValueChange={([val]) => onEndYChange(val)}
-            min={0}
-            max={200}
-            step={10}
-          />
-        </ControlGroup>
+      <div className="flex flex-col lg:flex-row gap-2 justify-between">
+        <SliderInput
+          label="End X (in %)"
+          value={[endX]}
+          onValueChange={([val]) => onEndXChange(val)}
+          min={0}
+          max={200}
+          step={10}
+        />
+        <SliderInput
+          label="End Y (in %)"
+          value={[endY]}
+          onValueChange={([val]) => onEndYChange(val)}
+          min={0}
+          max={200}
+          step={10}
+        />
       </div>
     </div>
   )
@@ -467,58 +466,54 @@ export const SimpleControls = ({
       </ControlGroup>
 
       {/* Position Controls */}
-      <div className="grid grid-cols-2 gap-4">
-        <ControlGroup label={`Start X (in %)`}>
-          <NumberInput
-            value={[gradientConfig.startPos.x]}
-            onValueChange={([val]) => setGradientConfig({
-              ...gradientConfig,
-              startPos: { ...gradientConfig.startPos, x: val }
-            })}
-            min={-100}
-            max={200}
-            step={10}
-          />
-        </ControlGroup>
-        <ControlGroup label={`Start Y (in %)`}>
-          <NumberInput
-            value={[gradientConfig.startPos.y]}
-            onValueChange={([val]) => setGradientConfig({
-              ...gradientConfig,
-              startPos: { ...gradientConfig.startPos, y: val }
-            })}
-            min={-100}
-            max={200}
-            step={10}
-          />
-        </ControlGroup>
+      <div className="grid grid-cols-2 gap-2">
+        <SliderInput
+          label={`Start X (in %)`}
+          value={[gradientConfig.startPos.x]}
+          onValueChange={([val]) => setGradientConfig({
+            ...gradientConfig,
+            startPos: { ...gradientConfig.startPos, x: val }
+          })}
+          min={-100}
+          max={200}
+          step={10}
+        />
+        <SliderInput
+          label={`Start Y (in %)`}
+          value={[gradientConfig.startPos.y]}
+          onValueChange={([val]) => setGradientConfig({
+            ...gradientConfig,
+            startPos: { ...gradientConfig.startPos, y: val }
+          })}
+          min={-100}
+          max={200}
+          step={10}
+        />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <ControlGroup label={`End X (in %)`}>
-          <NumberInput
-            value={[gradientConfig.endPos.x]}
-            onValueChange={([val]) => setGradientConfig({
-              ...gradientConfig,
-              endPos: { ...gradientConfig.endPos, x: val }
-            })}
-            min={-100}
-            max={200}
-            step={10}
-          />
-        </ControlGroup>
-        <ControlGroup label={`End Y (in %)`}>
-          <NumberInput
-            value={[gradientConfig.endPos.y]}
-            onValueChange={([val]) => setGradientConfig({
-              ...gradientConfig,
-              endPos: { ...gradientConfig.endPos, y: val }
-            })}
-            min={-100}
-            max={200}
-            step={10}
-          />
-        </ControlGroup>
+      <div className="grid grid-cols-2 gap-2">
+        <SliderInput
+          label={`End X (in %)`}
+          value={[gradientConfig.endPos.x]}
+          onValueChange={([val]) => setGradientConfig({
+            ...gradientConfig,
+            endPos: { ...gradientConfig.endPos, x: val }
+          })}
+          min={-100}
+          max={200}
+          step={10}
+        />
+        <SliderInput
+          label={`End Y (in %)`}
+          value={[gradientConfig.endPos.y]}
+          onValueChange={([val]) => setGradientConfig({
+            ...gradientConfig,
+            endPos: { ...gradientConfig.endPos, y: val }
+          })}
+          min={-100}
+          max={200}
+          step={10}
+        />
       </div>
     </>
   )
@@ -558,86 +553,80 @@ export const LiquidControls = ({
       </ControlGroup>
 
       {/* Position Controls */}
-      <div className="grid grid-cols-2 gap-4">
-        <ControlGroup label={`Start X (in %)`}>
-          <NumberInput
-            value={[gradientConfig.startPos.x]}
-            onValueChange={([val]) => setGradientConfig({
-              ...gradientConfig,
-              startPos: { ...gradientConfig.startPos, x: val }
-            })}
-            min={-100}
-            max={100}
-            step={10}
-          />
-        </ControlGroup>
-        <ControlGroup label={`Start Y (in %)`}>
-          <NumberInput
-            value={[gradientConfig.startPos.y]}
-            onValueChange={([val]) => setGradientConfig({
-              ...gradientConfig,
-              startPos: { ...gradientConfig.startPos, y: val }
-            })}
-            min={-100}
-            max={100}
-            step={10}
-          />
-        </ControlGroup>
+      <div className="grid grid-cols-2 gap-2">
+        <SliderInput
+          label={`Start X (in %)`}
+          value={[gradientConfig.startPos.x]}
+          onValueChange={([val]) => setGradientConfig({
+            ...gradientConfig,
+            startPos: { ...gradientConfig.startPos, x: val }
+          })}
+          min={-100}
+          max={100}
+          step={10}
+        />
+        <SliderInput
+          label={`Start Y (in %)`}
+          value={[gradientConfig.startPos.y]}
+          onValueChange={([val]) => setGradientConfig({
+            ...gradientConfig,
+            startPos: { ...gradientConfig.startPos, y: val }
+          })}
+          min={-100}
+          max={100}
+          step={10}
+        />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <ControlGroup label={`End X (in %)`}>
-          <NumberInput
-            value={[gradientConfig.endPos.x]}
-            onValueChange={([val]) => setGradientConfig({
-              ...gradientConfig,
-              endPos: { ...gradientConfig.endPos, x: val }
-            })}
-            min={-100}
-            max={100}
-            step={10}
-          />
-        </ControlGroup>
-        <ControlGroup label={`End Y (in %)`}>
-          <NumberInput
-            value={[gradientConfig.endPos.y]}
-            onValueChange={([val]) => setGradientConfig({
-              ...gradientConfig,
-              endPos: { ...gradientConfig.endPos, y: val }
-            })}
-            min={-100}
-            max={100}
-            step={10}
-          />
-        </ControlGroup>
+      <div className="grid grid-cols-2 gap-2">
+        <SliderInput
+          label={`End X (in %)`}
+          value={[gradientConfig.endPos.x]}
+          onValueChange={([val]) => setGradientConfig({
+            ...gradientConfig,
+            endPos: { ...gradientConfig.endPos, x: val }
+          })}
+          min={-100}
+          max={100}
+          step={10}
+        />
+        <SliderInput
+          label={`End Y (in %)`}
+          value={[gradientConfig.endPos.y]}
+          onValueChange={([val]) => setGradientConfig({
+            ...gradientConfig,
+            endPos: { ...gradientConfig.endPos, y: val }
+          })}
+          min={-100}
+          max={100}
+          step={10}
+        />
       </div>
 
       {/* Wave Intensity */}
-      <ControlGroup label={`Wave Intensity`}>
-        <NumberInput
-          value={[Math.round(gradientConfig.waveIntensity * 100) / 100]}
-          onValueChange={([val]) => setGradientConfig({
-            ...gradientConfig,
-            waveIntensity: val
-          })}
-          max={1}
-          step={0.01}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Wave Intensity`}
+        value={[Math.round(gradientConfig.waveIntensity * 100) / 100]}
+        onValueChange={([val]) => setGradientConfig({
+          ...gradientConfig,
+          waveIntensity: val
+        })}
+        max={1}
+        step={0.01}
+      />
 
       {/* Wave 1 Settings */}
-      <div className="grid grid-cols-2 gap-4">
-        <ControlGroup label={`Wave 1`}>
-          <NumberInput
-            value={[Math.round(gradientConfig.wave1Speed * 100) / 100]}
-            onValueChange={([val]) => setGradientConfig({
-              ...gradientConfig,
-              wave1Speed: val
-            })}
-            max={0.5}
-            step={0.01}
-          />
-        </ControlGroup>
+      <div className="grid grid-cols-2 gap-2">
+        <SliderInput
+          label={`Wave 1`}
+          value={[Math.round(gradientConfig.wave1Speed * 100) / 100]}
+          onValueChange={([val]) => setGradientConfig({
+            ...gradientConfig,
+            wave1Speed: val
+          })}
+          max={0.5}
+          step={0.01}
+        />
         <ControlGroup label="Direction">
           <Button
             variant="outline"
@@ -657,18 +646,17 @@ export const LiquidControls = ({
         </ControlGroup>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <ControlGroup label={`Wave 2`}>
-          <NumberInput
-            value={[Math.round(gradientConfig.wave2Speed * 100) / 100]}
-            onValueChange={([val]) => setGradientConfig({
-              ...gradientConfig,
-              wave2Speed: val
-            })}
-            max={0.5}
-            step={0.01}
-          />
-        </ControlGroup>
+      <div className="grid grid-cols-2 gap-2">
+        <SliderInput
+          label={`Wave 2`}
+          value={[Math.round(gradientConfig.wave2Speed * 100) / 100]}
+          onValueChange={([val]) => setGradientConfig({
+            ...gradientConfig,
+            wave2Speed: val
+          })}
+          max={0.5}
+          step={0.01}
+        />
         <ControlGroup label="Direction">
           <Button
             variant="outline"
@@ -688,18 +676,17 @@ export const LiquidControls = ({
         </ControlGroup>
       </div>
 
-      <ControlGroup label={`Decay Speed`}>
-        <NumberInput
-          value={[Math.round(gradientConfig.decaySpeed * 100) / 100]}
-          onValueChange={([val]) => setGradientConfig({
-            ...gradientConfig,
-            decaySpeed: val
-          })}
-          min={0.8}
-          max={0.99}
-          step={0.01}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Decay Speed`}
+        value={[Math.round(gradientConfig.decaySpeed * 100) / 100]}
+        onValueChange={([val]) => setGradientConfig({
+          ...gradientConfig,
+          decaySpeed: val
+        })}
+        min={0.8}
+        max={0.99}
+        step={0.01}
+      />
     </>
   )
 }
@@ -738,88 +725,82 @@ export const AuroraControls = ({
       </ControlGroup>
 
       {/* Line Width */}
-      <ControlGroup label={`Width`}>
-        <NumberInput
-          value={[auroraConfig.width]}
-          onValueChange={([val]) => setAuroraConfig({
-            ...auroraConfig,
-            width: val
-          })}
-          min={1}
-          max={100}
-          step={5}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Width`}
+        value={[auroraConfig.width]}
+        onValueChange={([val]) => setAuroraConfig({
+          ...auroraConfig,
+          width: val
+        })}
+        min={1}
+        max={100}
+        step={5}
+      />
 
       {/* Line Height */}
-      <div className="grid grid-cols-2 gap-4">
-        <ControlGroup label={`Min Height`}>
-          <NumberInput
-            value={[auroraConfig.minHeight]}
-            onValueChange={([val]) => setAuroraConfig({
-              ...auroraConfig,
-              minHeight: val
-            })}
-            min={50}
-            max={1000}
-            step={50}
-          />
-        </ControlGroup>
-        <ControlGroup label={`Max Height`}>
-          <NumberInput
-            value={[auroraConfig.maxHeight]}
-            onValueChange={([val]) => setAuroraConfig({
-              ...auroraConfig,
-              maxHeight: val
-            })}
-            min={50}
-            max={1000}
-            step={50}
-          />
-        </ControlGroup>
+      <div className="grid grid-cols-2 gap-2">
+        <SliderInput
+          label={`Min Height`}
+          value={[auroraConfig.minHeight]}
+          onValueChange={([val]) => setAuroraConfig({
+            ...auroraConfig,
+            minHeight: val
+          })}
+          min={50}
+          max={1000}
+          step={50}
+        />
+        <SliderInput
+          label={`Max Height`}
+          value={[auroraConfig.maxHeight]}
+          onValueChange={([val]) => setAuroraConfig({
+            ...auroraConfig,
+            maxHeight: val
+          })}
+          min={50}
+          max={1000}
+          step={50}
+        />
       </div>
 
       {/* Animation Speed (TTL) */}
-      <ControlGroup label={`TTL`}>
-        <NumberInput
-          value={[auroraConfig.ttl]}
-          onValueChange={([val]) => setAuroraConfig({
-            ...auroraConfig,
-            ttl: val
-          })}
-          min={10}
-          max={500}
-          step={10}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`TTL`}
+        value={[auroraConfig.ttl]}
+        onValueChange={([val]) => setAuroraConfig({
+          ...auroraConfig,
+          ttl: val
+        })}
+        min={10}
+        max={500}
+        step={10}
+      />
 
       {/* Blur Amount */}
-      <ControlGroup label={`Blur Amount`}>
-        <NumberInput
-          value={[auroraConfig.blurAmount]}
-          onValueChange={([val]) => setAuroraConfig({
-            ...auroraConfig,
-            blurAmount: val
-          })}
-          min={0}
-          max={50}
-          step={1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Blur Amount`}
+        value={[auroraConfig.blurAmount]}
+        onValueChange={([val]) => setAuroraConfig({
+          ...auroraConfig,
+          blurAmount: val
+        })}
+        min={0}
+        max={50}
+        step={1}
+      />
 
       {/* Line Count */}
-      <ControlGroup label={`Line Count (0 = auto)`}>
-        <NumberInput
-          value={[auroraConfig.lineCount]}
-          onValueChange={([val]) => setAuroraConfig({
-            ...auroraConfig,
-            lineCount: val
-          })}
-          min={0}
-          max={500}
-          step={10}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Line Count (0 = auto)`}
+        value={[auroraConfig.lineCount]}
+        onValueChange={([val]) => setAuroraConfig({
+          ...auroraConfig,
+          lineCount: val
+        })}
+        min={0}
+        max={500}
+        step={10}
+      />
     </>
   )
 }
@@ -858,60 +839,56 @@ export const FluidControls = ({
       </ControlGroup>
 
       {/* Animation Speed */}
-      <ControlGroup label={`Animation Speed`}>
-        <NumberInput
-          value={[fluidConfig.speed]}
-          onValueChange={([val]) => setFluidConfig({
-            ...fluidConfig,
-            speed: val
-          })}
-          min={0.1}
-          max={3}
-          step={0.1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Animation Speed`}
+        value={[fluidConfig.speed]}
+        onValueChange={([val]) => setFluidConfig({
+          ...fluidConfig,
+          speed: val
+        })}
+        min={0.1}
+        max={3}
+        step={0.1}
+      />
 
       {/* Gradient Intensity */}
-      <ControlGroup label={`Gradient Intensity`}>
-        <NumberInput
-          value={[fluidConfig.intensity]}
-          onValueChange={([val]) => setFluidConfig({
-            ...fluidConfig,
-            intensity: val
-          })}
-          min={0.5}
-          max={2}
-          step={0.1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Gradient Intensity`}
+        value={[fluidConfig.intensity]}
+        onValueChange={([val]) => setFluidConfig({
+          ...fluidConfig,
+          intensity: val
+        })}
+        min={0.5}
+        max={2}
+        step={0.1}
+      />
 
       {/* Scale */}
-      <ControlGroup label={`Scale`}>
-        <NumberInput
-          value={[fluidConfig.scale]}
-          onValueChange={([val]) => setFluidConfig({
-            ...fluidConfig,
-            scale: val
-          })}
-          min={0.1}
-          max={10}
-          step={0.1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Scale`}
+        value={[fluidConfig.scale ?? 1]}
+        onValueChange={([val]) => setFluidConfig({
+          ...fluidConfig,
+          scale: val
+        })}
+        min={0.1}
+        max={10}
+        step={0.1}
+      />
 
       {/* Blur Amount */}
-      <ControlGroup label={`Blur Amount`}>
-        <NumberInput
-          value={[fluidConfig.blurAmount]}
-          onValueChange={([val]) => setFluidConfig({
-            ...fluidConfig,
-            blurAmount: val
-          })}
-          min={0}
-          max={100}
-          step={1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Blur Amount`}
+        value={[fluidConfig.blurAmount]}
+        onValueChange={([val]) => setFluidConfig({
+          ...fluidConfig,
+          blurAmount: val
+        })}
+        min={0}
+        max={100}
+        step={1}
+      />
     </>
   )
 }
@@ -950,102 +927,95 @@ export const BlobControls = ({
       </ControlGroup>
 
       {/* Blob Count */}
-      <ControlGroup label={`Blob Count`}>
-        <NumberInput
-          value={[blobConfig.blobCount]}
-          onValueChange={([val]) => setBlobConfig({
-            ...blobConfig,
-            blobCount: val
-          })}
-          min={2}
-          max={20}
-          step={1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Blob Count`}
+        value={[blobConfig.blobCount]}
+        onValueChange={([val]) => setBlobConfig({
+          ...blobConfig,
+          blobCount: val
+        })}
+        min={2}
+        max={20}
+        step={1}
+      />
 
       {/* Blob Size Range */}
-      <div className="grid grid-cols-2 gap-4">
-        <ControlGroup label={`Min Radius`}>
-          <NumberInput
-            value={[blobConfig.minRadius]}
-            onValueChange={([val]) => setBlobConfig({
-              ...blobConfig,
-              minRadius: val
-            })}
-            min={10}
-            max={200}
-            step={10}
-          />
-        </ControlGroup>
-        <ControlGroup label={`Max Radius`}>
-          <NumberInput
-            value={[blobConfig.maxRadius]}
-            onValueChange={([val]) => setBlobConfig({
-              ...blobConfig,
-              maxRadius: val
-            })}
-            min={10}
-            max={300}
-            step={10}
-          />
-        </ControlGroup>
+      <div className="grid grid-cols-2 gap-2">
+        <SliderInput
+          label={`Min Radius`}
+          value={[blobConfig.minRadius]}
+          onValueChange={([val]) => setBlobConfig({
+            ...blobConfig,
+            minRadius: val
+          })}
+          min={10}
+          max={200}
+          step={10}
+        />
+        <SliderInput
+          label={`Max Radius`}
+          value={[blobConfig.maxRadius]}
+          onValueChange={([val]) => setBlobConfig({
+            ...blobConfig,
+            maxRadius: val
+          })}
+          min={10}
+          max={300}
+          step={10}
+        />
       </div>
 
       {/* Orbit Radius (position spread) */}
-      <ControlGroup label={`Orbit Radius`}>
-        <NumberInput
-          value={[blobConfig.orbitRadius]}
-          onValueChange={([val]) => setBlobConfig({
-            ...blobConfig,
-            orbitRadius: val
-          })}
-          min={50}
-          max={500}
-          step={25}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Orbit Radius`}
+        value={[blobConfig.orbitRadius]}
+        onValueChange={([val]) => setBlobConfig({
+          ...blobConfig,
+          orbitRadius: val
+        })}
+        min={50}
+        max={500}
+        step={25}
+      />
 
       {/* Animation Speed */}
-      <ControlGroup label={`Speed`}>
-        <NumberInput
-          value={[blobConfig.speed]}
-          onValueChange={([val]) => setBlobConfig({
-            ...blobConfig,
-            speed: val
-          })}
-          min={0.1}
-          max={2}
-          step={0.1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Speed`}
+        value={[blobConfig.speed]}
+        onValueChange={([val]) => setBlobConfig({
+          ...blobConfig,
+          speed: val
+        })}
+        min={0.1}
+        max={2}
+        step={0.1}
+      />
 
       {/* Blur Amount */}
-      <ControlGroup label={`Blur Amount`}>
-        <NumberInput
-          value={[blobConfig.blurAmount]}
-          onValueChange={([val]) => setBlobConfig({
-            ...blobConfig,
-            blurAmount: val
-          })}
-          min={5}
-          max={50}
-          step={1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Blur Amount`}
+        value={[blobConfig.blurAmount]}
+        onValueChange={([val]) => setBlobConfig({
+          ...blobConfig,
+          blurAmount: val
+        })}
+        min={5}
+        max={50}
+        step={1}
+      />
 
       {/* Threshold (gooey strength) */}
-      <ControlGroup label={`Gooey Threshold`}>
-        <NumberInput
-          value={[blobConfig.threshold]}
-          onValueChange={([val]) => setBlobConfig({
-            ...blobConfig,
-            threshold: val
-          })}
-          min={100}
-          max={250}
-          step={10}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Gooey Threshold`}
+        value={[blobConfig.threshold]}
+        onValueChange={([val]) => setBlobConfig({
+          ...blobConfig,
+          threshold: val
+        })}
+        min={100}
+        max={250}
+        step={10}
+      />
 
     </>
   )
@@ -1061,102 +1031,95 @@ export const WavesControls = ({
   return (
     <>
       {/* Wave Height */}
-      <ControlGroup label={`Wave Height`}>
-        <NumberInput
-          value={[wavesConfig.waveHeight]}
-          onValueChange={([val]) => setWavesConfig({
-            ...wavesConfig,
-            waveHeight: val
-          })}
-          min={0.05}
-          max={0.5}
-          step={0.05}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Wave Height`}
+        value={[wavesConfig.waveHeight]}
+        onValueChange={([val]) => setWavesConfig({
+          ...wavesConfig,
+          waveHeight: val
+        })}
+        min={0.05}
+        max={0.5}
+        step={0.05}
+      />
 
       {/* Wave Frequency */}
-      <ControlGroup label={`Wave Frequency`}>
-        <NumberInput
-          value={[wavesConfig.waveFrequency]}
-          onValueChange={([val]) => setWavesConfig({
-            ...wavesConfig,
-            waveFrequency: val
-          })}
-          min={1}
-          max={10}
-          step={0.5}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Wave Frequency`}
+        value={[wavesConfig.waveFrequency]}
+        onValueChange={([val]) => setWavesConfig({
+          ...wavesConfig,
+          waveFrequency: val
+        })}
+        min={1}
+        max={10}
+        step={0.5}
+      />
 
       {/* Rotation */}
-      <ControlGroup label={`Rotation (°)`}>
-        <NumberInput
-          value={[wavesConfig.rotation]}
-          onValueChange={([val]) => setWavesConfig({
-            ...wavesConfig,
-            rotation: val
-          })}
-          min={-180}
-          max={180}
-          step={15}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Rotation (°)`}
+        value={[wavesConfig.rotation]}
+        onValueChange={([val]) => setWavesConfig({
+          ...wavesConfig,
+          rotation: val
+        })}
+        min={-180}
+        max={180}
+        step={15}
+      />
 
       {/* Animation Speed */}
-      <ControlGroup label={`Speed`}>
-        <NumberInput
-          value={[wavesConfig.speed]}
-          onValueChange={([val]) => setWavesConfig({
-            ...wavesConfig,
-            speed: val
-          })}
-          min={0}
-          max={2}
-          step={0.1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Speed`}
+        value={[wavesConfig.speed]}
+        onValueChange={([val]) => setWavesConfig({
+          ...wavesConfig,
+          speed: val
+        })}
+        min={0}
+        max={2}
+        step={0.1}
+      />
 
       {/* Wave Layers */}
-      <ControlGroup label={`Layers`}>
-        <NumberInput
-          value={[wavesConfig.layers]}
-          onValueChange={([val]) => setWavesConfig({
-            ...wavesConfig,
-            layers: val
-          })}
-          min={2}
-          max={8}
-          step={1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Layers`}
+        value={[wavesConfig.layers]}
+        onValueChange={([val]) => setWavesConfig({
+          ...wavesConfig,
+          layers: val
+        })}
+        min={2}
+        max={8}
+        step={1}
+      />
 
       {/* Blur Amount */}
-      <ControlGroup label={`Blur`}>
-        <NumberInput
-          value={[wavesConfig.blur]}
-          onValueChange={([val]) => setWavesConfig({
-            ...wavesConfig,
-            blur: val
-          })}
-          min={0}
-          max={100}
-          step={5}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Blur`}
+        value={[wavesConfig.blur]}
+        onValueChange={([val]) => setWavesConfig({
+          ...wavesConfig,
+          blur: val
+        })}
+        min={0}
+        max={100}
+        step={5}
+      />
 
       {/* Phase Offset */}
-      <ControlGroup label={`Phase Offset`}>
-        <NumberInput
-          value={[wavesConfig.phaseOffset ?? 0]}
-          onValueChange={([val]) => setWavesConfig({
-            ...wavesConfig,
-            phaseOffset: val
-          })}
-          min={0}
-          max={2}
-          step={0.1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Phase Offset`}
+        value={[wavesConfig.phaseOffset ?? 0]}
+        onValueChange={([val]) => setWavesConfig({
+          ...wavesConfig,
+          phaseOffset: val
+        })}
+        min={0}
+        max={2}
+        step={0.1}
+      />
     </>
   )
 }
@@ -1185,103 +1148,94 @@ const RibbonControls = ({ ribbonConfig, setRibbonConfig, parsedPalette }) => {
       </ControlGroup>
 
       {/* Ribbon Count */}
-      <ControlGroup label="Ribbon Count">
-        <NumberInput
-          value={[ribbonConfig.ribbonCount]}
-          onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, ribbonCount: val })}
-          min={2}
-          max={10}
-          step={1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Ribbon Count"
+        value={[ribbonConfig.ribbonCount]}
+        onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, ribbonCount: val })}
+        min={2}
+        max={10}
+        step={1}
+      />
 
       {/* Speed */}
-      <ControlGroup label="Speed">
-        <NumberInput
-          value={[ribbonConfig.speed]}
-          onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, speed: val })}
-          min={0.1}
-          max={2}
-          step={0.1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Speed"
+        value={[ribbonConfig.speed]}
+        onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, speed: val })}
+        min={0.1}
+        max={2}
+        step={0.1}
+      />
 
       {/* Amplitude */}
-      <ControlGroup label="Amplitude">
-        <NumberInput
-          value={[ribbonConfig.amplitude]}
-          onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, amplitude: val })}
-          min={0.1}
-          max={3}
-          step={0.1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Amplitude"
+        value={[ribbonConfig.amplitude]}
+        onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, amplitude: val })}
+        min={0.1}
+        max={3}
+        step={0.1}
+      />
 
       {/* Spread */}
-      <ControlGroup label="Spread">
-        <NumberInput
-          value={[ribbonConfig.spread]}
-          onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, spread: val })}
-          min={0.5}
-          max={3}
-          step={0.1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Spread"
+        value={[ribbonConfig.spread]}
+        onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, spread: val })}
+        min={0.5}
+        max={3}
+        step={0.1}
+      />
 
       {/* Rotation */}
-      <ControlGroup label={`Rotation (\u00B0)`}>
-        <NumberInput
-          value={[ribbonConfig.rotation]}
-          onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, rotation: val })}
-          min={-90}
-          max={90}
-          step={5}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Rotation (\u00B0)`}
+        value={[ribbonConfig.rotation]}
+        onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, rotation: val })}
+        min={-90}
+        max={90}
+        step={5}
+      />
 
       {/* Thickness */}
-      <ControlGroup label="Thickness">
-        <NumberInput
-          value={[ribbonConfig.thickness]}
-          onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, thickness: val })}
-          min={0.1}
-          max={1}
-          step={0.05}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Thickness"
+        value={[ribbonConfig.thickness]}
+        onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, thickness: val })}
+        min={0.1}
+        max={1}
+        step={0.05}
+      />
 
       {/* Taper */}
-      <ControlGroup label="Taper">
-        <NumberInput
-          value={[ribbonConfig.taper]}
-          onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, taper: val })}
-          min={-1}
-          max={1}
-          step={0.1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Taper"
+        value={[ribbonConfig.taper]}
+        onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, taper: val })}
+        min={-1}
+        max={1}
+        step={0.1}
+      />
 
       {/* Noise */}
-      <ControlGroup label="Noise">
-        <NumberInput
-          value={[ribbonConfig.noise]}
-          onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, noise: val })}
-          min={0}
-          max={2}
-          step={0.1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Noise"
+        value={[ribbonConfig.noise]}
+        onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, noise: val })}
+        min={0}
+        max={2}
+        step={0.1}
+      />
 
       {/* Opacity */}
-      <ControlGroup label="Opacity">
-        <NumberInput
-          value={[ribbonConfig.opacity]}
-          onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, opacity: val })}
-          min={0.1}
-          max={1}
-          step={0.05}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Opacity"
+        value={[ribbonConfig.opacity]}
+        onValueChange={([val]) => setRibbonConfig({ ...ribbonConfig, opacity: val })}
+        min={0.1}
+        max={1}
+        step={0.05}
+      />
     </>
   )
 }
@@ -1314,92 +1268,84 @@ export const DandelionControls = ({ dandelionConfig, setDandelionConfig, parsedP
       />
 
       {/* Line Count */}
-      <ControlGroup label="Line Count">
-        <NumberInput
-          value={[dandelionConfig.lineCount]}
-          onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, lineCount: val })}
-          min={20}
-          max={3000}
-          step={50}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Line Count"
+        value={[dandelionConfig.lineCount]}
+        onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, lineCount: val })}
+        min={20}
+        max={3000}
+        step={50}
+      />
 
       {/* Radius Range */}
-      <div className="grid grid-cols-2 gap-4">
-        <ControlGroup label="Min Radius">
-          <NumberInput
-            value={[dandelionConfig.radiusMin]}
-            onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, radiusMin: val })}
-            min={0.05}
-            max={0.5}
-            step={0.05}
-          />
-        </ControlGroup>
-        <ControlGroup label="Max Radius">
-          <NumberInput
-            value={[dandelionConfig.radiusMax]}
-            onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, radiusMax: val })}
-            min={0.2}
-            max={0.8}
-            step={0.05}
-          />
-        </ControlGroup>
+      <div className="grid grid-cols-2 gap-2">
+        <SliderInput
+          label="Min Radius"
+          value={[dandelionConfig.radiusMin]}
+          onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, radiusMin: val })}
+          min={0.05}
+          max={0.5}
+          step={0.05}
+        />
+        <SliderInput
+          label="Max Radius"
+          value={[dandelionConfig.radiusMax]}
+          onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, radiusMax: val })}
+          min={0.2}
+          max={0.8}
+          step={0.05}
+        />
       </div>
 
       {/* Speed */}
-      <ControlGroup label="Sway Speed">
-        <NumberInput
-          value={[dandelionConfig.speed]}
-          onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, speed: val })}
-          min={0}
-          max={2}
-          step={0.1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Sway Speed"
+        value={[dandelionConfig.speed]}
+        onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, speed: val })}
+        min={0}
+        max={2}
+        step={0.1}
+      />
 
       {/* Thickness */}
-      <ControlGroup label="Line Thickness">
-        <NumberInput
-          value={[dandelionConfig.thickness]}
-          onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, thickness: val })}
-          min={0.5}
-          max={5}
-          step={0.5}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Line Thickness"
+        value={[dandelionConfig.thickness]}
+        onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, thickness: val })}
+        min={0.5}
+        max={5}
+        step={0.5}
+      />
 
       {/* Dot Size */}
-      <ControlGroup label="Dot Size">
-        <NumberInput
-          value={[dandelionConfig.dotSize]}
-          onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, dotSize: val })}
-          min={1}
-          max={8}
-          step={0.5}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Dot Size"
+        value={[dandelionConfig.dotSize]}
+        onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, dotSize: val })}
+        min={1}
+        max={8}
+        step={0.5}
+      />
 
       {/* Spread */}
-      <ControlGroup label="Spread Angle">
-        <NumberInput
-          value={[dandelionConfig.spread]}
-          onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, spread: val })}
-          min={0.1}
-          max={1}
-          step={0.1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Spread Angle"
+        value={[dandelionConfig.spread]}
+        onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, spread: val })}
+        min={0.1}
+        max={1}
+        step={0.1}
+      />
 
       {/* Center Y Position */}
-      <ControlGroup label="Center Y Position">
-        <NumberInput
-          value={[dandelionConfig.centerY]}
-          onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, centerY: val })}
-          min={0.5}
-          max={1.2}
-          step={0.05}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Center Y Position"
+        value={[dandelionConfig.centerY]}
+        onValueChange={([val]) => setDandelionConfig({ ...dandelionConfig, centerY: val })}
+        min={0.5}
+        max={1.2}
+        step={0.05}
+      />
     </>
   )
 }
@@ -1432,103 +1378,94 @@ export const ParticleRingControls = ({ particleRingConfig, setParticleRingConfig
       />
 
       {/* Particle Count */}
-      <ControlGroup label="Particle Count">
-        <NumberInput
-          value={[particleRingConfig.particleCount]}
-          onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, particleCount: val })}
-          min={100}
-          max={2000}
-          step={50}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Particle Count"
+        value={[particleRingConfig.particleCount]}
+        onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, particleCount: val })}
+        min={100}
+        max={2000}
+        step={50}
+      />
 
       {/* Ring Radius */}
-      <ControlGroup label="Ring Radius">
-        <NumberInput
-          value={[particleRingConfig.ringRadius]}
-          onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, ringRadius: val })}
-          min={0.1}
-          max={0.8}
-          step={0.05}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Ring Radius"
+        value={[particleRingConfig.ringRadius]}
+        onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, ringRadius: val })}
+        min={0.1}
+        max={0.8}
+        step={0.05}
+      />
 
       {/* Ring Width */}
-      <ControlGroup label="Ring Width">
-        <NumberInput
-          value={[particleRingConfig.ringWidth]}
-          onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, ringWidth: val })}
-          min={0.05}
-          max={0.4}
-          step={0.05}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Ring Width"
+        value={[particleRingConfig.ringWidth]}
+        onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, ringWidth: val })}
+        min={0.05}
+        max={0.4}
+        step={0.05}
+      />
 
       {/* Animation Speed */}
-      <ControlGroup label="Pulse Speed">
-        <NumberInput
-          value={[particleRingConfig.speed]}
-          onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, speed: val })}
-          min={0}
-          max={2}
-          step={0.1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Pulse Speed"
+        value={[particleRingConfig.speed]}
+        onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, speed: val })}
+        min={0}
+        max={2}
+        step={0.1}
+      />
 
       {/* Particle Size */}
-      <ControlGroup label="Particle Size">
-        <NumberInput
-          value={[particleRingConfig.particleSize]}
-          onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, particleSize: val })}
-          min={1}
-          max={8}
-          step={0.5}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Particle Size"
+        value={[particleRingConfig.particleSize]}
+        onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, particleSize: val })}
+        min={1}
+        max={8}
+        step={0.5}
+      />
 
       {/* Dispersion */}
-      <ControlGroup label="Dispersion">
-        <NumberInput
-          value={[particleRingConfig.dispersion]}
-          onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, dispersion: val })}
-          min={0}
-          max={0.5}
-          step={0.05}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Dispersion"
+        value={[particleRingConfig.dispersion]}
+        onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, dispersion: val })}
+        min={0}
+        max={0.5}
+        step={0.05}
+      />
 
       {/* Rotation Speed */}
-      <ControlGroup label="Rotation Speed">
-        <NumberInput
-          value={[particleRingConfig.rotationSpeed]}
-          onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, rotationSpeed: val })}
-          min={0}
-          max={1}
-          step={0.05}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Rotation Speed"
+        value={[particleRingConfig.rotationSpeed]}
+        onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, rotationSpeed: val })}
+        min={0}
+        max={1}
+        step={0.05}
+      />
 
       {/* Tilt X */}
-      <ControlGroup label="Tilt X">
-        <NumberInput
-          value={[particleRingConfig.tiltX ?? 0]}
-          onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, tiltX: val })}
-          min={-90}
-          max={90}
-          step={5}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Tilt X"
+        value={[particleRingConfig.tiltX ?? 0]}
+        onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, tiltX: val })}
+        min={-90}
+        max={90}
+        step={5}
+      />
 
       {/* Tilt Z */}
-      <ControlGroup label="Tilt Z">
-        <NumberInput
-          value={[particleRingConfig.tiltZ ?? 0]}
-          onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, tiltZ: val })}
-          min={-90}
-          max={90}
-          step={5}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Tilt Z"
+        value={[particleRingConfig.tiltZ ?? 0]}
+        onValueChange={([val]) => setParticleRingConfig({ ...particleRingConfig, tiltZ: val })}
+        min={-90}
+        max={90}
+        step={5}
+      />
     </>
   )
 }
@@ -1578,66 +1515,30 @@ export const GuillocheControls = ({ guillocheConfig, setGuillocheConfig, parsedP
       </ControlGroup>
 
       {/* Shared 3D controls */}
-      <ControlGroup label="Scale">
-        <NumberInput value={[guillocheConfig.scale ?? 0.85]} onValueChange={([val]) => upd({ scale: val })} min={0.2} max={2} step={0.05} />
-      </ControlGroup>
-      <ControlGroup label="Depth">
-        <NumberInput value={[guillocheConfig.depth ?? 1.8]} onValueChange={([val]) => upd({ depth: val })} min={0} max={5} step={0.1} />
-      </ControlGroup>
-      <ControlGroup label="Line Opacity">
-        <NumberInput value={[guillocheConfig.lineOpacity ?? 0.55]} onValueChange={([val]) => upd({ lineOpacity: val })} min={0.05} max={1} step={0.05} />
-      </ControlGroup>
-      <ControlGroup label="Speed">
-        <NumberInput value={[guillocheConfig.speed ?? 0.5]} onValueChange={([val]) => upd({ speed: val })} min={0} max={2} step={0.05} />
-      </ControlGroup>
-      <ControlGroup label="Rotation Speed">
-        <NumberInput value={[guillocheConfig.rotationSpeed ?? 0.1]} onValueChange={([val]) => upd({ rotationSpeed: val })} min={0} max={1} step={0.05} />
-      </ControlGroup>
-      <ControlGroup label="Tilt X">
-        <NumberInput value={[guillocheConfig.tiltX ?? 0]} onValueChange={([val]) => upd({ tiltX: val })} min={-90} max={90} step={5} />
-      </ControlGroup>
-      <ControlGroup label="Tilt Z">
-        <NumberInput value={[guillocheConfig.tiltZ ?? 0]} onValueChange={([val]) => upd({ tiltZ: val })} min={-90} max={90} step={5} />
-      </ControlGroup>
+      <SliderInput label="Scale" value={[guillocheConfig.scale ?? 0.85]} onValueChange={([val]) => upd({ scale: val })} min={0.2} max={2} step={0.05} />
+      <SliderInput label="Depth" value={[guillocheConfig.depth ?? 1.8]} onValueChange={([val]) => upd({ depth: val })} min={0} max={5} step={0.1} />
+      <SliderInput label="Line Opacity" value={[guillocheConfig.lineOpacity ?? 0.55]} onValueChange={([val]) => upd({ lineOpacity: val })} min={0.05} max={1} step={0.05} />
+      <SliderInput label="Speed" value={[guillocheConfig.speed ?? 0.5]} onValueChange={([val]) => upd({ speed: val })} min={0} max={2} step={0.05} />
+      <SliderInput label="Rotation Speed" value={[guillocheConfig.rotationSpeed ?? 0.1]} onValueChange={([val]) => upd({ rotationSpeed: val })} min={0} max={1} step={0.05} />
+      <SliderInput label="Tilt X" value={[guillocheConfig.tiltX ?? 0]} onValueChange={([val]) => upd({ tiltX: val })} min={-90} max={90} step={5} />
+      <SliderInput label="Tilt Z" value={[guillocheConfig.tiltZ ?? 0]} onValueChange={([val]) => upd({ tiltZ: val })} min={-90} max={90} step={5} />
 
       {/* Rosette — four-harmonic spirograph terms */}
       {motif === 'rosette' && (
         <>
           <div className="h-px bg-border my-2" />
           <Label className="text-xs uppercase tracking-wide font-semibold">Spirograph Harmonics</Label>
-          <ControlGroup label="Angle A">
-            <NumberInput value={[guillocheConfig.angleA ?? 1]} onValueChange={([val]) => upd({ angleA: val })} min={-72} max={72} step={1} />
-          </ControlGroup>
-          <ControlGroup label="Angle B">
-            <NumberInput value={[guillocheConfig.angleB ?? 6]} onValueChange={([val]) => upd({ angleB: val })} min={-72} max={72} step={1} />
-          </ControlGroup>
-          <ControlGroup label="Angle C">
-            <NumberInput value={[guillocheConfig.angleC ?? -4]} onValueChange={([val]) => upd({ angleC: val })} min={-72} max={72} step={1} />
-          </ControlGroup>
-          <ControlGroup label="Angle D">
-            <NumberInput value={[guillocheConfig.angleD ?? 9]} onValueChange={([val]) => upd({ angleD: val })} min={-72} max={72} step={1} />
-          </ControlGroup>
-          <ControlGroup label="Scale A">
-            <NumberInput value={[guillocheConfig.scaleA ?? 110]} onValueChange={([val]) => upd({ scaleA: val })} min={-360} max={360} step={5} />
-          </ControlGroup>
-          <ControlGroup label="Scale B">
-            <NumberInput value={[guillocheConfig.scaleB ?? 70]} onValueChange={([val]) => upd({ scaleB: val })} min={-360} max={360} step={5} />
-          </ControlGroup>
-          <ControlGroup label="Scale C">
-            <NumberInput value={[guillocheConfig.scaleC ?? 45]} onValueChange={([val]) => upd({ scaleC: val })} min={-360} max={360} step={5} />
-          </ControlGroup>
-          <ControlGroup label="Scale D">
-            <NumberInput value={[guillocheConfig.scaleD ?? 28]} onValueChange={([val]) => upd({ scaleD: val })} min={-360} max={360} step={5} />
-          </ControlGroup>
-          <ControlGroup label="Phase Offset">
-            <NumberInput value={[guillocheConfig.offset ?? 0]} onValueChange={([val]) => upd({ offset: val })} min={0} max={360} step={5} />
-          </ControlGroup>
-          <ControlGroup label="Repeat Offset">
-            <NumberInput value={[guillocheConfig.repeatOffset ?? 4]} onValueChange={([val]) => upd({ repeatOffset: val })} min={-20} max={20} step={0.5} />
-          </ControlGroup>
-          <ControlGroup label="Repeat Count">
-            <NumberInput value={[guillocheConfig.repeatCount ?? 18]} onValueChange={([val]) => upd({ repeatCount: val })} min={1} max={50} step={1} />
-          </ControlGroup>
+          <SliderInput label="Angle A" value={[guillocheConfig.angleA ?? 1]} onValueChange={([val]) => upd({ angleA: val })} min={-72} max={72} step={1} />
+          <SliderInput label="Angle B" value={[guillocheConfig.angleB ?? 6]} onValueChange={([val]) => upd({ angleB: val })} min={-72} max={72} step={1} />
+          <SliderInput label="Angle C" value={[guillocheConfig.angleC ?? -4]} onValueChange={([val]) => upd({ angleC: val })} min={-72} max={72} step={1} />
+          <SliderInput label="Angle D" value={[guillocheConfig.angleD ?? 9]} onValueChange={([val]) => upd({ angleD: val })} min={-72} max={72} step={1} />
+          <SliderInput label="Scale A" value={[guillocheConfig.scaleA ?? 110]} onValueChange={([val]) => upd({ scaleA: val })} min={-360} max={360} step={5} />
+          <SliderInput label="Scale B" value={[guillocheConfig.scaleB ?? 70]} onValueChange={([val]) => upd({ scaleB: val })} min={-360} max={360} step={5} />
+          <SliderInput label="Scale C" value={[guillocheConfig.scaleC ?? 45]} onValueChange={([val]) => upd({ scaleC: val })} min={-360} max={360} step={5} />
+          <SliderInput label="Scale D" value={[guillocheConfig.scaleD ?? 28]} onValueChange={([val]) => upd({ scaleD: val })} min={-360} max={360} step={5} />
+          <SliderInput label="Phase Offset" value={[guillocheConfig.offset ?? 0]} onValueChange={([val]) => upd({ offset: val })} min={0} max={360} step={5} />
+          <SliderInput label="Repeat Offset" value={[guillocheConfig.repeatOffset ?? 4]} onValueChange={([val]) => upd({ repeatOffset: val })} min={-20} max={20} step={0.5} />
+          <SliderInput label="Repeat Count" value={[guillocheConfig.repeatCount ?? 18]} onValueChange={([val]) => upd({ repeatCount: val })} min={1} max={50} step={1} />
         </>
       )}
 
@@ -1646,15 +1547,9 @@ export const GuillocheControls = ({ guillocheConfig, setGuillocheConfig, parsedP
         <>
           <div className="h-px bg-border my-2" />
           <Label className="text-xs uppercase tracking-wide font-semibold">Engraved Waves</Label>
-          <ControlGroup label="Wave Rows">
-            <NumberInput value={[guillocheConfig.waveRows ?? 22]} onValueChange={([val]) => upd({ waveRows: val })} min={4} max={48} step={1} />
-          </ControlGroup>
-          <ControlGroup label="Wave Amplitude">
-            <NumberInput value={[guillocheConfig.waveAmplitude ?? 22]} onValueChange={([val]) => upd({ waveAmplitude: val })} min={0} max={80} step={1} />
-          </ControlGroup>
-          <ControlGroup label="Wave Frequency">
-            <NumberInput value={[guillocheConfig.waveFrequency ?? 1]} onValueChange={([val]) => upd({ waveFrequency: val })} min={0.2} max={4} step={0.1} />
-          </ControlGroup>
+          <SliderInput label="Wave Rows" value={[guillocheConfig.waveRows ?? 22]} onValueChange={([val]) => upd({ waveRows: val })} min={4} max={48} step={1} />
+          <SliderInput label="Wave Amplitude" value={[guillocheConfig.waveAmplitude ?? 22]} onValueChange={([val]) => upd({ waveAmplitude: val })} min={0} max={80} step={1} />
+          <SliderInput label="Wave Frequency" value={[guillocheConfig.waveFrequency ?? 1]} onValueChange={([val]) => upd({ waveFrequency: val })} min={0.2} max={4} step={0.1} />
 
           <div className="h-px bg-border my-2" />
           <Label className="text-xs uppercase tracking-wide font-semibold">Ripple Morph</Label>
@@ -1678,18 +1573,10 @@ export const GuillocheControls = ({ guillocheConfig, setGuillocheConfig, parsedP
               </SelectContent>
             </Select>
           </ControlGroup>
-          <ControlGroup label="Ripple Steps">
-            <NumberInput value={[guillocheConfig.rippleSteps ?? 16]} onValueChange={([val]) => upd({ rippleSteps: val })} min={2} max={40} step={1} />
-          </ControlGroup>
-          <ControlGroup label="Start Scale">
-            <NumberInput value={[guillocheConfig.rippleStartScale ?? 0.3]} onValueChange={([val]) => upd({ rippleStartScale: val })} min={0.05} max={2} step={0.05} />
-          </ControlGroup>
-          <ControlGroup label="End Scale">
-            <NumberInput value={[guillocheConfig.rippleEndScale ?? 1.25]} onValueChange={([val]) => upd({ rippleEndScale: val })} min={0.05} max={2} step={0.05} />
-          </ControlGroup>
-          <ControlGroup label="Morph Rotation">
-            <NumberInput value={[guillocheConfig.rippleRotation ?? 60]} onValueChange={([val]) => upd({ rippleRotation: val })} min={-360} max={360} step={5} />
-          </ControlGroup>
+          <SliderInput label="Ripple Steps" value={[guillocheConfig.rippleSteps ?? 16]} onValueChange={([val]) => upd({ rippleSteps: val })} min={2} max={40} step={1} />
+          <SliderInput label="Start Scale" value={[guillocheConfig.rippleStartScale ?? 0.3]} onValueChange={([val]) => upd({ rippleStartScale: val })} min={0.05} max={2} step={0.05} />
+          <SliderInput label="End Scale" value={[guillocheConfig.rippleEndScale ?? 1.25]} onValueChange={([val]) => upd({ rippleEndScale: val })} min={0.05} max={2} step={0.05} />
+          <SliderInput label="Morph Rotation" value={[guillocheConfig.rippleRotation ?? 60]} onValueChange={([val]) => upd({ rippleRotation: val })} min={-360} max={360} step={5} />
         </>
       )}
     </>
@@ -1862,103 +1749,94 @@ export const ShapeTrailControls = ({ shapeTrailConfig, setShapeTrailConfig, pars
       </ControlGroup>
 
       {/* Scale Range */}
-      <div className="grid grid-cols-2 gap-4">
-        <ControlGroup label="Start Scale">
-          <NumberInput
-            value={[shapeTrailConfig.startScale]}
-            onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, startScale: val })}
-            min={100}
-            max={1000}
-            step={100}
-          />
-        </ControlGroup>
-        <ControlGroup label="End Scale">
-          <NumberInput
-            value={[shapeTrailConfig.endScale]}
-            onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, endScale: val })}
-            min={100}
-            max={2000}
-            step={100}
-          />
-        </ControlGroup>
+      <div className="grid grid-cols-2 gap-2">
+        <SliderInput
+          label="Start Scale"
+          value={[shapeTrailConfig.startScale]}
+          onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, startScale: val })}
+          min={100}
+          max={1000}
+          step={100}
+        />
+        <SliderInput
+          label="End Scale"
+          value={[shapeTrailConfig.endScale]}
+          onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, endScale: val })}
+          min={100}
+          max={2000}
+          step={100}
+        />
       </div>
 
       {/* Size Cycles */}
-      <ControlGroup label="Size Cycles">
-        <NumberInput
-          value={[shapeTrailConfig.sizeCycles ?? 1]}
-          onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, sizeCycles: val })}
-          min={1}
-          max={100}
-          step={1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Size Cycles"
+        value={[shapeTrailConfig.sizeCycles ?? 1]}
+        onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, sizeCycles: val })}
+        min={1}
+        max={100}
+        step={1}
+      />
 
       {/* Gap */}
-      <ControlGroup label="Gap">
-        <NumberInput
-          value={[shapeTrailConfig.gap]}
-          onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, gap: val })}
-          min={5}
-          max={100}
-          step={5}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Gap"
+        value={[shapeTrailConfig.gap]}
+        onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, gap: val })}
+        min={5}
+        max={100}
+        step={5}
+      />
 
       {/* Rotation Offset */}
-      <ControlGroup label={`Rotation Offset (\u00B0)`}>
-        <NumberInput
-          value={[shapeTrailConfig.rotationOffset]}
-          onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, rotationOffset: val })}
-          min={0}
-          max={180}
-          step={5}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Rotation Offset (\u00B0)`}
+        value={[shapeTrailConfig.rotationOffset]}
+        onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, rotationOffset: val })}
+        min={0}
+        max={180}
+        step={5}
+      />
 
       {/* Trail Count */}
-      <ControlGroup label="Trail Count">
-        <NumberInput
-          value={[shapeTrailConfig.trailCount]}
-          onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, trailCount: val })}
-          min={1}
-          max={8}
-          step={1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Trail Count"
+        value={[shapeTrailConfig.trailCount]}
+        onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, trailCount: val })}
+        min={1}
+        max={8}
+        step={1}
+      />
 
       {/* Path Complexity */}
-      <ControlGroup label="Path Complexity">
-        <NumberInput
-          value={[shapeTrailConfig.pathComplexity]}
-          onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, pathComplexity: val })}
-          min={3}
-          max={8}
-          step={1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Path Complexity"
+        value={[shapeTrailConfig.pathComplexity]}
+        onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, pathComplexity: val })}
+        min={3}
+        max={8}
+        step={1}
+      />
 
       {/* Speed */}
-      <ControlGroup label="Speed">
-        <NumberInput
-          value={[shapeTrailConfig.speed]}
-          onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, speed: val })}
-          min={0}
-          max={2}
-          step={0.1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Speed"
+        value={[shapeTrailConfig.speed]}
+        onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, speed: val })}
+        min={0}
+        max={2}
+        step={0.1}
+      />
 
       {/* Opacity */}
-      <ControlGroup label="Opacity">
-        <NumberInput
-          value={[shapeTrailConfig.opacity]}
-          onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, opacity: val })}
-          min={0.1}
-          max={1}
-          step={0.05}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Opacity"
+        value={[shapeTrailConfig.opacity]}
+        onValueChange={([val]) => setShapeTrailConfig({ ...shapeTrailConfig, opacity: val })}
+        min={0.1}
+        max={1}
+        step={0.05}
+      />
 
     </>
   )
@@ -1988,43 +1866,38 @@ export const GradientPanel = ({
   setParticleRingConfig,
   guillocheConfig,
   setGuillocheConfig,
+  studioConfig,
+  setStudioConfig,
   parsedPalette,
 }) => {
   return (
-    <div className="space-y-0">
-      {/* SECTION 1: Background Colors - Always visible */}
+    <div className="flex flex-col gap-5">
+      {/* SECTION 1: Background Type */}
+      <div className="flex flex-col gap-2.5">
+        <SectionLabel>Type</SectionLabel>
+        <TypePicker value={backgroundType} onChange={setBackgroundType} />
+      </div>
+
+      {/* SECTION 2: Studio presets + shape & motion */}
+      {isStudioType(backgroundType) && (
+        <StudioControls
+          backgroundType={backgroundType}
+          studioConfig={studioConfig}
+          setStudioConfig={setStudioConfig}
+          gradientConfig={gradientConfig}
+          setGradientConfig={setGradientConfig}
+        />
+      )}
+
+      {/* SECTION 3: Colours - always visible */}
       <ColorsSection
         gradientConfig={gradientConfig}
         setGradientConfig={setGradientConfig}
         parsedPalette={parsedPalette}
       />
 
-      <div className="h-px bg-border my-2" />
-
-      {/* SECTION 2: Background Type Selector */}
-      <ControlGroup label="Background Type">
-        <Select
-          value={backgroundType}
-          onValueChange={(value) => setBackgroundType(value)}
-        >
-          <SelectTrigger className="h-9">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="simple">Simple</SelectItem>
-            <SelectItem value="liquid">Fog</SelectItem>
-            <SelectItem value="aurora">Aurora</SelectItem>
-            <SelectItem value="fluid">Mesh</SelectItem>
-            <SelectItem value="waves">Waves</SelectItem>
-            <SelectItem value="ribbon">Ribbon</SelectItem>
-            <SelectItem value="dandelion">Dandelion</SelectItem>
-            <SelectItem value="particleRing">Particle Ring</SelectItem>
-            <SelectItem value="guilloche">Guilloché</SelectItem>
-          </SelectContent>
-        </Select>
-      </ControlGroup>
-
-      {/* SECTION 3: Type-specific controls */}
+      {/* SECTION 4: Legacy type-specific controls */}
+      <div className="flex flex-col gap-2 empty:hidden">
       {backgroundType === 'simple' && (
         <SimpleControls
           gradientConfig={gradientConfig}
@@ -2085,6 +1958,7 @@ export const GradientPanel = ({
           parsedPalette={parsedPalette}
         />
       )}
+      </div>
     </div>
   )
 }

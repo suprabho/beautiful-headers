@@ -1,4 +1,4 @@
-import { useState, memo, useCallback } from 'react'
+import { useState, memo, useCallback, useRef } from 'react'
 import { Plus, Minus, Eyedropper } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
 import { checkContrastAgainstGradient, filterPaletteByContrast } from '@/lib/colorConversion'
@@ -367,3 +367,124 @@ export const ContrastAwarePaletteColorPicker = memo(({ value, onChange, palette,
 ContrastAwarePaletteColorPicker.displayName = 'ContrastAwarePaletteColorPicker'
 
 
+
+const decimalsFor = (step) => {
+  const str = String(step)
+  return str.includes('.') ? str.split('.')[1].length : 0
+}
+
+// Filled pill track with a label and value, dragged like a slider. Tap the
+// value to type an exact number. `inline` puts the label inside the track.
+export const PillSlider = memo(({ label, value, min = 0, max = 1, step = 0.01, onChange, format, unit = '', inline = false }) => {
+  const trackRef = useRef(null)
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState('')
+  const safe = Number.isFinite(value) ? value : min
+  const pct = Math.max(0, Math.min(1, (safe - min) / (max - min)))
+  const decimals = decimalsFor(step)
+  const clamp = (v) => Math.max(min, Math.min(max, v))
+  const round = (v) => Number(v.toFixed(Math.max(decimals, 0)))
+
+  const setFromClientX = useCallback((clientX) => {
+    const rect = trackRef.current.getBoundingClientRect()
+    const r = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width))
+    const raw = min + r * (max - min)
+    const snapped = min + Math.round((raw - min) / step) * step
+    onChange(Number(Math.max(min, Math.min(max, snapped)).toFixed(decimals)))
+  }, [min, max, step, decimals, onChange])
+
+  const onPointerDown = (e) => {
+    if (editing) return
+    e.currentTarget.setPointerCapture(e.pointerId)
+    setFromClientX(e.clientX)
+  }
+  const onPointerMove = (e) => {
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) setFromClientX(e.clientX)
+  }
+  const onKeyDown = (e) => {
+    if (editing) return
+    const dir = e.key === 'ArrowRight' || e.key === 'ArrowUp' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowDown' ? -1 : 0
+    if (!dir) return
+    e.preventDefault()
+    onChange(round(clamp(safe + dir * step)))
+  }
+  const commit = () => {
+    const v = parseFloat(draft)
+    if (!Number.isNaN(v)) onChange(round(clamp(v)))
+    setEditing(false)
+  }
+
+  const display = format ? format(safe) : `${safe.toFixed(decimals)}${unit}`
+
+  return (
+    <div className="flex min-w-0 items-center gap-3">
+      {!inline && (
+        <span className="w-16 shrink-0 text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground/80">{label}</span>
+      )}
+      <div
+        ref={trackRef}
+        role="slider"
+        tabIndex={0}
+        aria-label={label}
+        aria-valuemin={min}
+        aria-valuemax={max}
+        aria-valuenow={safe}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onKeyDown={onKeyDown}
+        className="relative h-8 min-w-0 flex-1 cursor-ew-resize touch-none select-none overflow-hidden rounded-full bg-muted outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        <div className="absolute inset-y-0 left-0 rounded-full bg-foreground/25" style={{ width: `${pct * 100}%` }} />
+        {inline && (
+          <span className="pointer-events-none absolute inset-y-0 left-3 right-16 flex items-center truncate text-[12px] font-medium">
+            {label}
+          </span>
+        )}
+        {editing ? (
+          <input
+            autoFocus
+            type="number"
+            value={draft}
+            step={step}
+            onChange={(e) => setDraft(e.target.value)}
+            onBlur={commit}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') commit()
+              if (e.key === 'Escape') setEditing(false)
+            }}
+            onPointerDown={(e) => e.stopPropagation()}
+            className="absolute inset-y-1 right-1 w-16 rounded-full bg-background px-2 text-right text-xs font-semibold tabular-nums outline-none ring-1 ring-ring [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+          />
+        ) : (
+          <button
+            type="button"
+            title="Type a value"
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={() => { setDraft(String(safe)); setEditing(true) }}
+            className="absolute inset-y-0 right-0 flex cursor-text items-center rounded-full px-3 text-xs font-semibold tabular-nums hover:bg-foreground/10"
+          >
+            {display}
+          </button>
+        )}
+      </div>
+    </div>
+  )
+})
+PillSlider.displayName = 'PillSlider'
+
+// Drop-in replacement for <ControlGroup><NumberInput/></ControlGroup>: same
+// value/onValueChange array API, label inside the pill, unit parsed from a
+// trailing "(in px)" / "(°)" in the label.
+export const SliderInput = memo(({ label, value, onValueChange, min = 0, max = 100, step = 1, className }) => {
+  const match = String(label).match(/^(.*?)\s*\((?:in\s+)?([^)]+)\)\s*$/)
+  const text = match ? match[1] : label
+  const rawUnit = match ? match[2] : ''
+  const unit = rawUnit === 'degrees' ? '°' : rawUnit === 'em' ? 'em' : rawUnit
+  const handle = useCallback((v) => onValueChange([v]), [onValueChange])
+  return (
+    <div className={cn('w-full min-w-0', className)}>
+      <PillSlider inline label={text} value={value[0]} min={min} max={max} step={step} unit={unit} onChange={handle} />
+    </div>
+  )
+})
+SliderInput.displayName = 'SliderInput'

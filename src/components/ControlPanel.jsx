@@ -11,6 +11,7 @@ import { CaptureModal } from './controls/CaptureModal'
 import { SaveSceneDialog } from './controls/SaveSceneDialog'
 import { ColorPaletteDialog } from './controls'
 import { AboutAuraModal } from './about/AboutAuraModal'
+import { CanvasOverlay } from './controls/CanvasOverlay'
 
 const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
   // Minimal store subscriptions — only what the orchestrator needs
@@ -77,6 +78,8 @@ const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
           audioAnalyser={audioAnalyser}
         />
       ) : (
+        <>
+        <CanvasOverlay />
         <DesktopPanel
           panelRef={panelRef}
           position={position}
@@ -90,6 +93,7 @@ const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
           onShowAbout={() => setShowAboutModal(true)}
           audioAnalyser={audioAnalyser}
         />
+        </>
       )}
 
       <CaptureModal

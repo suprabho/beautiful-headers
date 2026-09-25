@@ -1,4 +1,4 @@
-import { ControlGroup, NumberInput } from './SharedControls'
+import { ControlGroup, SliderInput } from './SharedControls'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@radix-ui/react-collapsible'
@@ -49,18 +49,17 @@ export const EffectsPanel = ({
           Reset
         </Button>
       </div>
-      <ControlGroup label={`Background Blur`}>
-        <NumberInput
-          value={[effectsConfig.blur]}
-          onValueChange={([val]) => setEffectsConfig({
-            ...effectsConfig,
-            blur: val
-          })}
-          min={0}
-          max={50}
-          step={2}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Background Blur`}
+        value={[effectsConfig.blur]}
+        onValueChange={([val]) => setEffectsConfig({
+          ...effectsConfig,
+          blur: val
+        })}
+        min={0}
+        max={50}
+        step={2}
+      />
 
       <ControlGroup label="Texture">
         <Select
@@ -86,30 +85,28 @@ export const EffectsPanel = ({
 
       {effectsConfig.texture !== 'none' && (
         <>
-          <ControlGroup label={`Size`}>
-            <NumberInput
-              value={[effectsConfig.textureSize]}
-              onValueChange={([val]) => setEffectsConfig({
-                ...effectsConfig,
-                textureSize: val
-              })}
-              min={4}
-              max={100}
-              step={2}
-            />
-          </ControlGroup>
-          <ControlGroup label={`Opacity`}>
-            <NumberInput
-              value={[effectsConfig.textureOpacity]}
-              onValueChange={([val]) => setEffectsConfig({
-                ...effectsConfig,
-                textureOpacity: val
-              })}
-              min={0}
-              max={1}
-              step={0.05}
-            />
-          </ControlGroup>
+          <SliderInput
+            label={`Size`}
+            value={[effectsConfig.textureSize]}
+            onValueChange={([val]) => setEffectsConfig({
+              ...effectsConfig,
+              textureSize: val
+            })}
+            min={4}
+            max={100}
+            step={2}
+          />
+          <SliderInput
+            label={`Opacity`}
+            value={[effectsConfig.textureOpacity]}
+            onValueChange={([val]) => setEffectsConfig({
+              ...effectsConfig,
+              textureOpacity: val
+            })}
+            min={0}
+            max={1}
+            step={0.05}
+          />
           <ControlGroup label="Blend Mode">
             <Select
               value={effectsConfig.textureBlendMode}
@@ -163,57 +160,53 @@ export const EffectsPanel = ({
         </Select>
       </ControlGroup>
 
-      <ControlGroup label={`Vignette`}>
-        <NumberInput
-          value={[effectsConfig.vignetteIntensity]}
-          onValueChange={([val]) => setEffectsConfig({
-            ...effectsConfig,
-            vignetteIntensity: val
-          })}
-          min={0}
-          max={1}
-          step={0.05}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Vignette`}
+        value={[effectsConfig.vignetteIntensity]}
+        onValueChange={([val]) => setEffectsConfig({
+          ...effectsConfig,
+          vignetteIntensity: val
+        })}
+        min={0}
+        max={1}
+        step={0.05}
+      />
 
-      <ControlGroup label={`Saturation`}>
-        <NumberInput
-          value={[effectsConfig.saturation]}
-          onValueChange={([val]) => setEffectsConfig({
-            ...effectsConfig,
-            saturation: val
-          })}
-          min={0}
-          max={200}
-          step={5}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Saturation`}
+        value={[effectsConfig.saturation]}
+        onValueChange={([val]) => setEffectsConfig({
+          ...effectsConfig,
+          saturation: val
+        })}
+        min={0}
+        max={200}
+        step={5}
+      />
 
-      <ControlGroup label={`Contrast`}>
-        <NumberInput
-          value={[effectsConfig.contrast]}
-          onValueChange={([val]) => setEffectsConfig({
-            ...effectsConfig,
-            contrast: val
-          })}
-          min={50}
-          max={150}
-          step={5}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Contrast`}
+        value={[effectsConfig.contrast]}
+        onValueChange={([val]) => setEffectsConfig({
+          ...effectsConfig,
+          contrast: val
+        })}
+        min={50}
+        max={150}
+        step={5}
+      />
 
-      <ControlGroup label={`Brightness`}>
-        <NumberInput
-          value={[effectsConfig.brightness]}
-          onValueChange={([val]) => setEffectsConfig({
-            ...effectsConfig,
-            brightness: val
-          })}
-          min={50}
-          max={150}
-          step={5}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Brightness`}
+        value={[effectsConfig.brightness]}
+        onValueChange={([val]) => setEffectsConfig({
+          ...effectsConfig,
+          brightness: val
+        })}
+        min={50}
+        max={150}
+        step={5}
+      />
 
       {/* Fluted Glass Section */}
       <div className="h-px bg-border my-4" />
@@ -240,117 +233,110 @@ export const EffectsPanel = ({
         <CollapsibleContent className="space-y-3">
           {effectsConfig.flutedGlass?.enabled && (
             <>
-              <ControlGroup label={`Ridges / Segments`}>
-                <NumberInput
-                  value={[effectsConfig.flutedGlass?.segments ?? 80]}
-                  onValueChange={([val]) => setEffectsConfig({
-                    ...effectsConfig,
-                    flutedGlass: {
-                      ...effectsConfig.flutedGlass,
-                      segments: val
-                    }
-                  })}
-                  min={5}
-                  max={300}
-                  step={5}
-                />
-              </ControlGroup>
+              <SliderInput
+                label={`Ridges / Segments`}
+                value={[effectsConfig.flutedGlass?.segments ?? 80]}
+                onValueChange={([val]) => setEffectsConfig({
+                  ...effectsConfig,
+                  flutedGlass: {
+                    ...effectsConfig.flutedGlass,
+                    segments: val
+                  }
+                })}
+                min={5}
+                max={300}
+                step={5}
+              />
 
-              <ControlGroup label={`Distortion`}>
-                <NumberInput
-                  value={[effectsConfig.flutedGlass?.distortionStrength ?? 0.02]}
-                  onValueChange={([val]) => setEffectsConfig({
-                    ...effectsConfig,
-                    flutedGlass: {
-                      ...effectsConfig.flutedGlass,
-                      distortionStrength: val
-                    }
-                  })}
-                  min={0}
-                  max={0.1}
-                  step={0.01}
-                />
-              </ControlGroup>
+              <SliderInput
+                label={`Distortion`}
+                value={[effectsConfig.flutedGlass?.distortionStrength ?? 0.02]}
+                onValueChange={([val]) => setEffectsConfig({
+                  ...effectsConfig,
+                  flutedGlass: {
+                    ...effectsConfig.flutedGlass,
+                    distortionStrength: val
+                  }
+                })}
+                min={0}
+                max={0.1}
+                step={0.01}
+              />
 
-              <ControlGroup label={`Wave Frequency`}>
-                <NumberInput
-                  value={[effectsConfig.flutedGlass?.waveFrequency ?? 1]}
-                  onValueChange={([val]) => setEffectsConfig({
-                    ...effectsConfig,
-                    flutedGlass: {
-                      ...effectsConfig.flutedGlass,
-                      waveFrequency: val
-                    }
-                  })}
-                  min={0.5}
-                  max={5}
-                  step={0.5}
-                />
-              </ControlGroup>
+              <SliderInput
+                label={`Wave Frequency`}
+                value={[effectsConfig.flutedGlass?.waveFrequency ?? 1]}
+                onValueChange={([val]) => setEffectsConfig({
+                  ...effectsConfig,
+                  flutedGlass: {
+                    ...effectsConfig.flutedGlass,
+                    waveFrequency: val
+                  }
+                })}
+                min={0.5}
+                max={5}
+                step={0.5}
+              />
 
-              <ControlGroup label={`Rotation (°)`}>
-                <NumberInput
-                  value={[effectsConfig.flutedGlass?.rotation ?? 0]}
-                  onValueChange={([val]) => setEffectsConfig({
-                    ...effectsConfig,
-                    flutedGlass: {
-                      ...effectsConfig.flutedGlass,
-                      rotation: val
-                    }
-                  })}
-                  min={0}
-                  max={180}
-                  step={5}
-                />
-              </ControlGroup>
+              <SliderInput
+                label={`Rotation (°)`}
+                value={[effectsConfig.flutedGlass?.rotation ?? 0]}
+                onValueChange={([val]) => setEffectsConfig({
+                  ...effectsConfig,
+                  flutedGlass: {
+                    ...effectsConfig.flutedGlass,
+                    rotation: val
+                  }
+                })}
+                min={0}
+                max={180}
+                step={5}
+              />
 
-              <ControlGroup label={`Motion Value`}>
-                <NumberInput
-                  value={[effectsConfig.flutedGlass?.motionValue ?? 0.5]}
-                  onValueChange={([val]) => setEffectsConfig({
-                    ...effectsConfig,
-                    flutedGlass: {
-                      ...effectsConfig.flutedGlass,
-                      motionValue: val
-                    }
-                  })}
-                  min={0}
-                  max={2}
-                  step={0.1}
-                />
-              </ControlGroup>
+              <SliderInput
+                label={`Motion Value`}
+                value={[effectsConfig.flutedGlass?.motionValue ?? 0.5]}
+                onValueChange={([val]) => setEffectsConfig({
+                  ...effectsConfig,
+                  flutedGlass: {
+                    ...effectsConfig.flutedGlass,
+                    motionValue: val
+                  }
+                })}
+                min={0}
+                max={2}
+                step={0.1}
+              />
 
-              <ControlGroup label={`Motion Speed`}>
-                <NumberInput
-                  value={[effectsConfig.flutedGlass?.motionSpeed ?? 0.5]}
-                  onValueChange={([val]) => setEffectsConfig({
-                    ...effectsConfig,
-                    flutedGlass: {
-                      ...effectsConfig.flutedGlass,
-                      motionSpeed: val
-                    }
-                  })}
-                  min={0}
-                  max={3}
-                  step={0.1}
-                />
-              </ControlGroup>
+              <SliderInput
+                label={`Motion Speed`}
+                value={[effectsConfig.flutedGlass?.motionSpeed ?? 0.5]}
+                onValueChange={([val]) => setEffectsConfig({
+                  ...effectsConfig,
+                  flutedGlass: {
+                    ...effectsConfig.flutedGlass,
+                    motionSpeed: val
+                  }
+                })}
+                min={0}
+                max={3}
+                step={0.1}
+              />
 
-              <ControlGroup label={`3D Overlay`}>
-                <NumberInput
-                  value={[effectsConfig.flutedGlass?.overlayOpacity ?? 0]}
-                  onValueChange={([val]) => setEffectsConfig({
-                    ...effectsConfig,
-                    flutedGlass: {
-                      ...effectsConfig.flutedGlass,
-                      overlayOpacity: val
-                    }
-                  })}
-                  min={0}
-                  max={100}
-                  step={5}
-                />
-              </ControlGroup>
+              <SliderInput
+                label={`3D Overlay`}
+                value={[effectsConfig.flutedGlass?.overlayOpacity ?? 0]}
+                onValueChange={([val]) => setEffectsConfig({
+                  ...effectsConfig,
+                  flutedGlass: {
+                    ...effectsConfig.flutedGlass,
+                    overlayOpacity: val
+                  }
+                })}
+                min={0}
+                max={100}
+                step={5}
+              />
             </>
           )}
         </CollapsibleContent>

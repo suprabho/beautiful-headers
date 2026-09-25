@@ -8,6 +8,8 @@ import RibbonLayer from '../RibbonLayer'
 import DandelionLayer from '../DandelionLayer'
 import ParticleRingLayer from '../ParticleRingLayer'
 import GuillocheLayer from '../GuillocheLayer'
+import StudioGradientLayer from '../StudioGradientLayer'
+import { STUDIO_TYPES } from '@/lib/studioShaders'
 import TessellationLayer from '../TessellationLayer'
 import EffectsLayer from '../EffectsLayer'
 import TextLayer from '../TextLayer'
@@ -26,6 +28,7 @@ export function MiniSceneRenderer({
   dandelionConfig,
   particleRingConfig,
   guillocheConfig,
+  studioConfig,
   tessellationConfig,
   effectsConfig,
   textConfig,
@@ -131,6 +134,9 @@ export function MiniSceneRenderer({
             )}
             {backgroundType === 'guilloche' && (
               <GuillocheLayer config={guillocheConfig || {}} paletteColors={paletteColors} effectsConfig={effectsConfig || {}} isPaused={false} mousePos={mousePos} mouseIntensity={intensity} />
+            )}
+            {STUDIO_TYPES.includes(backgroundType) && (
+              <StudioGradientLayer type={backgroundType} config={studioConfig || {}} paletteColors={paletteColors} colorStops={gradientConfig?.colorStops} effectsConfig={effectsConfig || {}} isPaused={false} mousePos={mousePos} mouseIntensity={intensity} />
             )}
           </div>
 

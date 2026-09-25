@@ -1,5 +1,5 @@
 import { AVAILABLE_ICONS, ICON_PATHS } from '../TessellationLayer'
-import { ControlGroup, NumberInput, PaletteColorPicker } from './SharedControls'
+import { ControlGroup, SliderInput, PaletteColorPicker } from './SharedControls'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
@@ -96,69 +96,64 @@ export const PatternPanel = ({
         />
       </ControlGroup>
 
-      <div className="grid grid-cols-2 gap-4">
-        <ControlGroup label={`Row Gap (in px)`}>
-          <NumberInput
-            value={[tessellationConfig.rowGap]}
-            onValueChange={([val]) => setTessellationConfig({
-              ...tessellationConfig,
-              rowGap: val
-            })}
-            min={20}
-            max={200}
-            step={10}
-          />
-        </ControlGroup>
-        <ControlGroup label={`Col Gap (in px)`}>
-          <NumberInput
-            value={[tessellationConfig.colGap]}
-            onValueChange={([val]) => setTessellationConfig({
-              ...tessellationConfig,
-              colGap: val
-            })}
-            min={20}
-            max={200}
-            step={10}
-          />
-        </ControlGroup>
+      <div className="grid grid-cols-2 gap-2">
+        <SliderInput
+          label={`Row Gap (in px)`}
+          value={[tessellationConfig.rowGap]}
+          onValueChange={([val]) => setTessellationConfig({
+            ...tessellationConfig,
+            rowGap: val
+          })}
+          min={20}
+          max={200}
+          step={10}
+        />
+        <SliderInput
+          label={`Col Gap (in px)`}
+          value={[tessellationConfig.colGap]}
+          onValueChange={([val]) => setTessellationConfig({
+            ...tessellationConfig,
+            colGap: val
+          })}
+          min={20}
+          max={200}
+          step={10}
+        />
       </div>
 
-      <ControlGroup label={`Icon Size (in px)`}>
-        <NumberInput
-          value={[tessellationConfig.size]}
-          onValueChange={([val]) => setTessellationConfig({
-            ...tessellationConfig,
-            size: val
-          })}
-          min={8}
-          max={100}
-          step={4}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Icon Size (in px)`}
+        value={[tessellationConfig.size]}
+        onValueChange={([val]) => setTessellationConfig({
+          ...tessellationConfig,
+          size: val
+        })}
+        min={8}
+        max={100}
+        step={4}
+      />
 
-      <ControlGroup label={`Opacity`}>
-        <NumberInput
-          value={[Math.round(tessellationConfig.opacity * 100) / 100]}
-          onValueChange={([val]) => setTessellationConfig({
-            ...tessellationConfig,
-            opacity: val
-          })}
-          max={1}
-          step={0.01}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Opacity`}
+        value={[Math.round(tessellationConfig.opacity * 100) / 100]}
+        onValueChange={([val]) => setTessellationConfig({
+          ...tessellationConfig,
+          opacity: val
+        })}
+        max={1}
+        step={0.01}
+      />
 
-      <ControlGroup label={`Rotation (in degrees)`}>
-        <NumberInput
-          value={[tessellationConfig.rotation]}
-          onValueChange={([val]) => setTessellationConfig({
-            ...tessellationConfig,
-            rotation: val
-          })}
-          max={360}
-          step={1}
-        />
-      </ControlGroup>
+      <SliderInput
+        label={`Rotation (in degrees)`}
+        value={[tessellationConfig.rotation]}
+        onValueChange={([val]) => setTessellationConfig({
+          ...tessellationConfig,
+          rotation: val
+        })}
+        max={360}
+        step={1}
+      />
 
       <ControlGroup label="Color">
         <div className="flex items-center gap-2">
