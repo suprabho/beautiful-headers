@@ -482,7 +482,7 @@ export const SliderInput = memo(({ label, value, onValueChange, min = 0, max = 1
   const unit = rawUnit === 'degrees' ? '°' : rawUnit === 'em' ? 'em' : rawUnit
   const handle = useCallback((v) => onValueChange([v]), [onValueChange])
   return (
-    <div className={className}>
+    <div className={cn('w-full min-w-0', className)}>
       <PillSlider inline label={text} value={value[0]} min={min} max={max} step={step} unit={unit} onChange={handle} />
     </div>
   )

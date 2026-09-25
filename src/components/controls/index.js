@@ -2,6 +2,8 @@
 export {
   ControlGroup,
   NumberInput,
+  SliderInput,
+  PillSlider,
   SubsectionButton,
   PaletteColorPicker,
   ContrastAwarePaletteColorPicker,

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react'
-import { ControlGroup, NumberInput } from './SharedControls'
+import { ControlGroup, SliderInput } from './SharedControls'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { CursorClick, Microphone, MusicNote, Play, Pause, Upload } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
@@ -167,15 +167,13 @@ export const InputPanel = ({ loadAudioFile, playAudio, pauseAudio, audioElement 
             <p className="text-xs text-muted-foreground mt-3">
               Move your cursor to influence the background effects.
             </p>
-            <ControlGroup label="Intensity">
-              <NumberInput
-                value={[mouseConfig.intensity]}
-                onValueChange={([val]) => setMouseConfig({ ...mouseConfig, intensity: val })}
-                max={1}
-                step={0.05}
-                showButtons
-              />
-            </ControlGroup>
+            <SliderInput
+              label="Intensity"
+              value={[mouseConfig.intensity]}
+              onValueChange={([val]) => setMouseConfig({ ...mouseConfig, intensity: val })}
+              max={1}
+              step={0.05}
+            />
           </>
         )}
 
@@ -220,26 +218,24 @@ export const InputPanel = ({ loadAudioFile, playAudio, pauseAudio, audioElement 
             )}
 
             {/* Sensitivity */}
-            <ControlGroup label="Sensitivity">
-              <NumberInput
-                value={[audioConfig.sensitivity]}
-                onValueChange={([val]) => updateAudioConfig({ sensitivity: val })}
-                min={0.1}
-                max={3}
-                step={0.1}
-              />
-            </ControlGroup>
+            <SliderInput
+              label="Sensitivity"
+              value={[audioConfig.sensitivity]}
+              onValueChange={([val]) => updateAudioConfig({ sensitivity: val })}
+              min={0.1}
+              max={3}
+              step={0.1}
+            />
 
             {/* Smoothing */}
-            <ControlGroup label="Smoothing">
-              <NumberInput
-                value={[audioConfig.smoothing]}
-                onValueChange={([val]) => updateAudioConfig({ smoothing: val })}
-                min={0}
-                max={0.95}
-                step={0.05}
-              />
-            </ControlGroup>
+            <SliderInput
+              label="Smoothing"
+              value={[audioConfig.smoothing]}
+              onValueChange={([val]) => updateAudioConfig({ smoothing: val })}
+              min={0}
+              max={0.95}
+              step={0.05}
+            />
           </>
         )}
       </div>
