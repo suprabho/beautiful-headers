@@ -1,10 +1,13 @@
-import { memo, useRef, useState, useCallback, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { Star, Leaf, Rows, Cube, Triangle, Shuffle } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
+import { PillSlider } from './SharedControls'
 import { STUDIO_TYPES } from '@/lib/studioShaders'
 import {
   STUDIO_DEFAULTS, STUDIO_PALETTES, GLOW_SHAPE_LABELS, FORM_SHAPE_LABELS, evenStops,
 } from '@/lib/studioPresets'
+
+export { PillSlider }
 
 // ============================================
 // TYPE CATALOGUE
@@ -36,58 +39,6 @@ export const SectionLabel = ({ children, hint, action }) => (
   </div>
 )
 
-// Filled pill track with a label and value, dragged like a slider
-export const PillSlider = memo(({ label, value, min = 0, max = 1, step = 0.01, onChange, format }) => {
-  const trackRef = useRef(null)
-  const pct = Math.max(0, Math.min(1, (value - min) / (max - min)))
-
-  const setFromClientX = useCallback((clientX) => {
-    const rect = trackRef.current.getBoundingClientRect()
-    const r = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width))
-    const raw = min + r * (max - min)
-    const snapped = Math.round(raw / step) * step
-    onChange(Math.round(snapped * 1000) / 1000)
-  }, [min, max, step, onChange])
-
-  const onPointerDown = (e) => {
-    e.currentTarget.setPointerCapture(e.pointerId)
-    setFromClientX(e.clientX)
-  }
-  const onPointerMove = (e) => {
-    if (e.currentTarget.hasPointerCapture(e.pointerId)) setFromClientX(e.clientX)
-  }
-  const onKeyDown = (e) => {
-    const dir = e.key === 'ArrowRight' || e.key === 'ArrowUp' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowDown' ? -1 : 0
-    if (!dir) return
-    e.preventDefault()
-    onChange(Math.max(min, Math.min(max, Math.round((value + dir * step) * 1000) / 1000)))
-  }
-
-  return (
-    <div className="flex items-center gap-3">
-      <span className="w-16 shrink-0 text-[11px] font-semibold uppercase tracking-[0.08em] text-foreground/80">{label}</span>
-      <div
-        ref={trackRef}
-        role="slider"
-        tabIndex={0}
-        aria-label={label}
-        aria-valuemin={min}
-        aria-valuemax={max}
-        aria-valuenow={value}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onKeyDown={onKeyDown}
-        className="relative h-8 flex-1 cursor-ew-resize touch-none select-none overflow-hidden rounded-full bg-muted outline-none focus-visible:ring-2 focus-visible:ring-ring"
-      >
-        <div className="absolute inset-y-0 left-0 rounded-full bg-foreground/25" style={{ width: `${pct * 100}%` }} />
-        <span className="absolute inset-y-0 right-3 flex items-center text-xs font-semibold tabular-nums">
-          {format ? format(value) : `${Math.round(pct * 100)}%`}
-        </span>
-      </div>
-    </div>
-  )
-})
-PillSlider.displayName = 'PillSlider'
 
 export const Segmented = ({ options, value, onChange, className }) => (
   <div className={cn('flex rounded-full bg-muted p-1', className)}>

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Plus, Trash, CaretRight } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
-import { ControlGroup, NumberInput, ContrastAwarePaletteColorPicker } from './SharedControls'
+import { ControlGroup, SliderInput, ContrastAwarePaletteColorPicker } from './SharedControls'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -65,27 +65,23 @@ export const TextPanel = ({
         />
       </ControlGroup>
 
-      <ControlGroup label="Text Opacity">
-        <NumberInput
-          value={[textConfig.opacity]}
-          onValueChange={([val]) => setTextConfig({ ...textConfig, opacity: val })}
-          min={0}
-          max={1}
-          step={0.05}
-          showButtons={true}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Text Opacity"
+        value={[textConfig.opacity]}
+        onValueChange={([val]) => setTextConfig({ ...textConfig, opacity: val })}
+        min={0}
+        max={1}
+        step={0.05}
+      />
 
-      <ControlGroup label="Section Gap">
-        <NumberInput
-          value={[textGap]}
-          onValueChange={([val]) => setTextGap(val)}
-          min={0}
-          max={100}
-          step={4}
-          showButtons={true}
-        />
-      </ControlGroup>
+      <SliderInput
+        label="Section Gap"
+        value={[textGap]}
+        onValueChange={([val]) => setTextGap(val)}
+        min={0}
+        max={100}
+        step={4}
+      />
 
       {textSections.map((section, index) => (
         <div key={section.id} className="rounded-lg bg-muted/50 overflow-hidden">
@@ -135,16 +131,14 @@ export const TextPanel = ({
                   placeholder="Enter text..."
                 />
 
-                <ControlGroup label="Size (in px)">
-                  <NumberInput
-                    value={[section.size]}
-                    onValueChange={([val]) => updateTextSection(section.id, 'size', val)}
-                    min={12}
-                    max={200}
-                    step={4}
-                    showButtons={true}
-                  />
-                </ControlGroup>
+                <SliderInput
+                  label="Size (in px)"
+                  value={[section.size]}
+                  onValueChange={([val]) => updateTextSection(section.id, 'size', val)}
+                  min={12}
+                  max={200}
+                  step={4}
+                />
 
                 <ControlGroup label="Font">
                   <Select
@@ -200,16 +194,14 @@ export const TextPanel = ({
                   </Select>
                 </ControlGroup>
 
-                <ControlGroup label="Spacing (in em)">
-                  <NumberInput
-                    value={[section.spacing]}
-                    onValueChange={([val]) => updateTextSection(section.id, 'spacing', parseFloat(val.toFixed(3)))}
-                    min={-0.1}
-                    max={0.5}
-                    step={0.01}
-                    showButtons={true}
-                  />
-                </ControlGroup>
+                <SliderInput
+                  label="Spacing (in em)"
+                  value={[section.spacing]}
+                  onValueChange={([val]) => updateTextSection(section.id, 'spacing', parseFloat(val.toFixed(3)))}
+                  min={-0.1}
+                  max={0.5}
+                  step={0.01}
+                />
               </div>
             </div>
           </div>
