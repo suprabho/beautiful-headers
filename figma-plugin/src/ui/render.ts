@@ -1,9 +1,11 @@
-// Drives a render: paints the scene's thumbnail into the layers straight away
-// (captures take a few seconds on a cache miss), then swaps in the real render
-// at each layer's exact size. Layers that share a size share one request.
+// Drives a render: paints the scene's thumbnail into the layers straight away,
+// then swaps in the real render at each layer's exact size. Scenes render
+// locally in an embed iframe first, with the capture endpoint as a fallback.
+// Layers that share a size share one render.
 
 import type { AuraNodeData, Target, UiToMain } from '../shared'
 import { captureUrl, fetchBytes } from './api'
+import { renderLocally } from './localRender'
 
 export function postToMain(msg: UiToMain) {
   parent.postMessage({ pluginMessage: msg }, '*')
@@ -20,10 +22,12 @@ export async function renderToLayers(
   { targets, data, previewUrl }: RenderJob,
   onProgress?: (done: number, total: number) => void,
 ): Promise<{ failed: number; errors: string[] }> {
-  const groups = new Map<string, string[]>()
+  const groups = new Map<string, { width: number; height: number; nodeIds: string[] }>()
   for (const t of targets) {
     const url = captureUrl(data.slug, t.width, t.height, data.options)
-    groups.set(url, [...(groups.get(url) || []), t.id])
+    const group = groups.get(url) || { width: t.width, height: t.height, nodeIds: [] }
+    group.nodeIds.push(t.id)
+    groups.set(url, group)
   }
 
   // Renders start right away; each one waits for the preview to land before
@@ -42,9 +46,12 @@ export async function renderToLayers(
   const errors: string[] = []
   onProgress?.(0, groups.size)
   await Promise.all(
-    [...groups].map(async ([url, nodeIds]) => {
+    [...groups].map(async ([url, { width, height, nodeIds }]) => {
       try {
-        const bytes = await fetchBytes(url)
+        const bytes = await renderLocally(data.slug, width, height, data.options).catch((err) => {
+          console.warn(`[aura] local render failed (${(err as Error).message}); using the capture endpoint`)
+          return fetchBytes(url)
+        })
         await preview
         postToMain({ type: 'apply-image', nodeIds, bytes, data, preview: false })
       } catch (err) {

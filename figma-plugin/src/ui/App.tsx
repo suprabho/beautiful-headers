@@ -88,6 +88,8 @@ export default function App() {
   const [targets, setTargets] = useState<Target[]>([])
   const [unsupported, setUnsupported] = useState(0)
   const [status, setStatus] = useState<Status>({ kind: 'idle' })
+  // Launched from a layer's "Re-render" relaunch button: only a status line shows.
+  const [relaunch, setRelaunch] = useState(false)
 
   const debouncedSearch = useDebounced(search, 300)
   const requestId = useRef(0)
@@ -139,6 +141,7 @@ export default function App() {
         setTargets(msg.targets)
         setUnsupported(msg.unsupported)
       } else if (msg.type === 'refresh') {
+        setRelaunch(true)
         await runRefresh(msg.targets)
       }
     }
@@ -227,6 +230,14 @@ export default function App() {
   )
   const embedSrc =
     view === 'create' ? embedUrl(DRAFT_SLUG, options) : selected ? embedUrl(selected.slug, options) : null
+
+  if (relaunch) {
+    return (
+      <div className="flex h-screen items-center justify-center gap-2 bg-bg text-fg-2">
+        <CircleNotch size={14} className="animate-spin" /> Re-rendering…
+      </div>
+    )
+  }
 
   return (
     <div className="flex h-screen bg-bg text-fg">

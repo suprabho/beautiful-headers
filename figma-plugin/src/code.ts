@@ -129,7 +129,9 @@ if (figma.command === 'refresh') {
   if (targets.length === 0) {
     figma.closePlugin('Select a layer with an Aura background to refresh.')
   } else {
-    figma.showUI(__html__, { visible: false })
+    // Visible (just a status line): scenes render in a WebGL iframe inside the
+    // UI, which a hidden plugin window may never paint.
+    figma.showUI(__html__, { width: 240, height: 56, themeColors: true, title: 'Aura Backgrounds' })
   }
 } else {
   figma.showUI(__html__, { width: 720, height: 600, themeColors: true, title: 'Aura Backgrounds' })

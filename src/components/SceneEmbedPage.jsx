@@ -177,8 +177,11 @@ function SceneEmbedPage() {
     const onMessage = async (e) => {
       if (e.data?.type !== 'promad-aura:capture') return
       const { requestId, pixelRatio = 2 } = e.data
+      // Sandboxed parents (e.g. the Figma plugin UI) have an opaque "null"
+      // origin, which isn't a valid targetOrigin — reply to that exact window.
+      const targetOrigin = e.origin === 'null' ? '*' : e.origin
       const reply = (payload) =>
-        e.source?.postMessage({ type: 'promad-aura:capture-result', requestId, ...payload }, e.origin)
+        e.source?.postMessage({ type: 'promad-aura:capture-result', requestId, ...payload }, targetOrigin)
       try {
         reply({ dataUrl: await captureToDataUrl(pixelRatio) })
       } catch (err) {
@@ -368,7 +371,10 @@ function SceneEmbedPage() {
       try { await fontsPromiseRef.current } catch { /* ignore */ }
       try { if (document.fonts?.ready) await document.fonts.ready } catch { /* ignore */ }
       await new Promise((r) => setTimeout(r, 1200)) // WebGL warm-up / settle
-      if (!cancelled) window.__auraCaptureReady = true
+      if (cancelled) return
+      window.__auraCaptureReady = true
+      // Cross-origin hosts can't read the flag; tell the parent frame instead.
+      if (window.parent !== window) window.parent.postMessage({ type: 'promad-aura:ready' }, '*')
     }
     run()
     return () => { cancelled = true; window.__auraCaptureReady = false }
