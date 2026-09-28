@@ -17,7 +17,7 @@ import {
 import type { MainToUi, RenderOptions, Target } from '../shared'
 import { fetchScenes, sceneUrl, type Scene } from './api'
 import { createScene } from './newScene'
-import { initialDraft, NewScenePanel, type SceneDraft } from './NewScenePanel'
+import { DraftPreview, initialDraft, NewScenePanel, type SceneDraft } from './NewScenePanel'
 import { postToMain, renderToLayers, rerenderLayers } from './render'
 
 const BACKGROUND_TYPES = [
@@ -211,9 +211,12 @@ export default function App() {
 
   const extent = targets.length === 1 ? `${Math.round(targets[0].width)} × ${Math.round(targets[0].height)}` : null
   const auraTargets = targets.filter((t) => t.aura)
+  // The frame the render will land in: the (first) selected layer, or the new-frame preset.
+  const frameSize = targets.length > 0 ? targets[0] : FRAME_PRESETS[preset]
 
   return (
-    <div className="flex h-screen flex-col bg-bg text-fg">
+    <div className="flex h-screen bg-bg text-fg">
+      <div className="flex min-w-0 flex-1 flex-col">
       {/* Gallery / New scene switch */}
       <div className="flex gap-1 border-b border-line px-3 pt-2">
         <Tab active={view === 'gallery'} onClick={() => setView('gallery')} icon={<SquaresFour size={12} />}>
@@ -302,9 +305,23 @@ export default function App() {
       </div>
       </>
       )}
+      </div>
 
-      {/* Action panel */}
-      <div className="space-y-3 border-t border-line p-3">
+      {/* Render panel */}
+      <div className="flex w-[300px] shrink-0 flex-col gap-3 overflow-y-auto border-l border-line p-3">
+        <FramePreview width={frameSize.width} height={frameSize.height}>
+          {view === 'create' ? (
+            <DraftPreview draft={draft} />
+          ) : selected?.thumb.large || selected?.thumb.small ? (
+            <img src={selected.thumb.large || selected.thumb.small || undefined} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full items-center justify-center text-fg-3">
+              <ImageSquare size={20} />
+            </div>
+          )}
+        </FramePreview>
+        {view === 'create' && <div className="-mt-1 text-fg-3">Palette preview — the render is animated</div>}
+
         {view === 'create' ? null : selected ? (
           <div className="flex items-center justify-between gap-2">
             <div className="min-w-0">
@@ -386,7 +403,7 @@ export default function App() {
         <button
           onClick={() => (view === 'create' ? createAndApply() : apply())}
           disabled={view === 'create' ? busy || !draft.title.trim() : !selected || busy}
-          className="flex h-8 w-full items-center justify-center gap-2 rounded-md bg-brand font-semibold text-on-brand hover:bg-brand-hover disabled:opacity-40"
+          className="mt-auto flex h-8 w-full shrink-0 items-center justify-center gap-2 rounded-md bg-brand font-semibold text-on-brand hover:bg-brand-hover disabled:opacity-40"
         >
           {status.kind === 'saving' ? (
             <>
@@ -425,6 +442,28 @@ export default function App() {
 async function runRefresh(targets: Target[]) {
   const errors = await rerenderLayers(targets)
   postToMain({ type: 'done', message: errors.length ? `Aura: ${errors[0]}` : 'Aura background re-rendered' })
+}
+
+/** A box with the target frame's aspect ratio, fitted inside a fixed preview area. */
+function FramePreview({ width, height, children }: { width: number; height: number; children: React.ReactNode }) {
+  const AREA_W = 276
+  const AREA_H = 180
+  const scale = Math.min(AREA_W / width, AREA_H / height)
+  return (
+    <div className="shrink-0 space-y-1">
+      <div className="flex items-center justify-center rounded-md bg-bg-2" style={{ height: AREA_H }}>
+        <div
+          className="relative overflow-hidden rounded border border-line"
+          style={{ width: Math.max(8, Math.round(width * scale)), height: Math.max(8, Math.round(height * scale)) }}
+        >
+          {children}
+        </div>
+      </div>
+      <div className="text-center text-fg-3">
+        {Math.round(width)} × {Math.round(height)}
+      </div>
+    </div>
+  )
 }
 
 function Tab({

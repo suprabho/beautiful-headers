@@ -13,6 +13,22 @@ export function initialDraft(): SceneDraft {
   return { title: '', type: t.value, colors: [...t.palette], background: t.background || '#000000' }
 }
 
+/** Gradient approximation of a draft's palette, drawn over its backdrop when the type has one. */
+export function DraftPreview({ draft }: { draft: SceneDraft }) {
+  const type = NEW_SCENE_TYPES.find((t) => t.value === draft.type) || NEW_SCENE_TYPES[0]
+  return (
+    <div className="absolute inset-0" style={{ background: type.background ? draft.background : undefined }}>
+      <div
+        className="absolute inset-0"
+        style={{
+          background: `linear-gradient(135deg, ${draft.colors.join(', ')})`,
+          opacity: type.background ? 0.85 : 1,
+        }}
+      />
+    </div>
+  )
+}
+
 /** Form for a brand-new scene: background type, palette, backdrop and name. */
 export function NewScenePanel({ draft, onChange }: { draft: SceneDraft; onChange: (d: SceneDraft) => void }) {
   const type = NEW_SCENE_TYPES.find((t) => t.value === draft.type) || NEW_SCENE_TYPES[0]
@@ -28,20 +44,8 @@ export function NewScenePanel({ draft, onChange }: { draft: SceneDraft; onChange
     set({ colors: [...options[Math.floor(Math.random() * options.length)]] })
   }
 
-  const preview = `linear-gradient(135deg, ${draft.colors.join(', ')})`
-
   return (
     <div className="space-y-4">
-      <div
-        className="relative h-20 w-full overflow-hidden rounded-md border border-line"
-        style={{ background: type.background ? draft.background : undefined }}
-      >
-        <div className="absolute inset-0" style={{ background: preview, opacity: type.background ? 0.85 : 1 }} />
-        <div className="absolute bottom-1.5 left-2 rounded bg-black/40 px-1.5 text-white">
-          Palette preview — the render is animated
-        </div>
-      </div>
-
       <Field label="Name">
         <input
           value={draft.title}
