@@ -5,8 +5,8 @@
 import type { RenderOptions } from '../shared'
 
 export const AURA_ORIGIN = 'https://aura.promad.design'
-const SUPABASE_URL = 'https://grbrfpaznehikakupavx.supabase.co'
-const SUPABASE_KEY = 'sb_publishable_nFT6O21VoCZSKs7lQe-UaA_tSkoc4su'
+export const SUPABASE_URL = 'https://grbrfpaznehikakupavx.supabase.co'
+export const SUPABASE_KEY = 'sb_publishable_nFT6O21VoCZSKs7lQe-UaA_tSkoc4su'
 
 export interface Scene {
   id: number
@@ -29,7 +29,7 @@ interface SceneRow {
 }
 
 // Mirrors titleToSlug in src/lib/scenesApi.js — older rows have no slug column.
-function titleToSlug(title: string) {
+export function titleToSlug(title: string) {
   return title
     .toLowerCase()
     .trim()

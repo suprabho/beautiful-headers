@@ -8,12 +8,16 @@ import {
   ImageSquare,
   MagnifyingGlass,
   Moon,
+  Plus,
+  SquaresFour,
   Sun,
   WarningCircle,
   X,
 } from '@phosphor-icons/react'
 import type { MainToUi, RenderOptions, Target } from '../shared'
 import { fetchScenes, sceneUrl, type Scene } from './api'
+import { createScene } from './newScene'
+import { initialDraft, NewScenePanel, type SceneDraft } from './NewScenePanel'
 import { postToMain, renderToLayers, rerenderLayers } from './render'
 
 const BACKGROUND_TYPES = [
@@ -47,6 +51,7 @@ const DEFAULT_OPTIONS: RenderOptions = { hideText: true, hideIcons: false, theme
 
 type Status =
   | { kind: 'idle' }
+  | { kind: 'saving' }
   | { kind: 'rendering'; done: number; total: number }
   | { kind: 'done'; message: string }
   | { kind: 'error'; message: string }
@@ -61,6 +66,8 @@ function useDebounced<T>(value: T, ms: number) {
 }
 
 export default function App() {
+  const [view, setView] = useState<'gallery' | 'create'>('gallery')
+  const [draft, setDraft] = useState<SceneDraft>(initialDraft)
   const [search, setSearch] = useState('')
   const [bgType, setBgType] = useState<string | null>(null)
   const [scenes, setScenes] = useState<Scene[]>([])
@@ -145,21 +152,23 @@ export default function App() {
       window.addEventListener('message', handler)
     })
 
-  const apply = async () => {
-    if (!selected || status.kind === 'rendering') return
+  const busy = status.kind === 'rendering' || status.kind === 'saving'
+
+  const apply = async (scene: Scene | null = selected) => {
+    if (!scene || busy) return
     let jobTargets = targets
     if (jobTargets.length === 0) {
       const p = FRAME_PRESETS[preset]
       const created = waitForFrame()
-      postToMain({ type: 'create-frame', width: p.width, height: p.height, name: `${selected.title} — ${p.label}` })
+      postToMain({ type: 'create-frame', width: p.width, height: p.height, name: `${scene.title} — ${p.label}` })
       jobTargets = [await created]
     }
     setStatus({ kind: 'rendering', done: 0, total: 1 })
     const { failed, errors } = await renderToLayers(
       {
         targets: jobTargets,
-        data: { slug: selected.slug, title: selected.title, options },
-        previewUrl: selected.thumb.large,
+        data: { slug: scene.slug, title: scene.title, options },
+        previewUrl: scene.thumb.large,
       },
       (done, total) => setStatus({ kind: 'rendering', done, total }),
     )
@@ -172,8 +181,29 @@ export default function App() {
     }
   }
 
+  // Save the draft as a new gallery scene, then render it like any other.
+  const createAndApply = async () => {
+    if (busy) return
+    setStatus({ kind: 'saving' })
+    let scene: Scene
+    try {
+      scene = await createScene(draft)
+    } catch (err) {
+      const message = (err as Error).message
+      setStatus({ kind: 'error', message })
+      postToMain({ type: 'notify', message: `Aura: ${message}`, error: true })
+      return
+    }
+    setScenes((prev) => [scene, ...prev.filter((s) => s.id !== scene.id)])
+    setSelected(scene)
+    setDraft(initialDraft())
+    setView('gallery')
+    postToMain({ type: 'notify', message: `Aura: created "${scene.title}"` })
+    await apply(scene)
+  }
+
   const refreshSelection = async () => {
-    if (status.kind === 'rendering') return
+    if (busy) return
     setStatus({ kind: 'rendering', done: 0, total: 1 })
     const errors = await rerenderLayers(targets)
     setStatus(errors.length ? { kind: 'error', message: errors[0] } : { kind: 'done', message: 'Re-rendered' })
@@ -184,6 +214,22 @@ export default function App() {
 
   return (
     <div className="flex h-screen flex-col bg-bg text-fg">
+      {/* Gallery / New scene switch */}
+      <div className="flex gap-1 border-b border-line px-3 pt-2">
+        <Tab active={view === 'gallery'} onClick={() => setView('gallery')} icon={<SquaresFour size={12} />}>
+          Gallery
+        </Tab>
+        <Tab active={view === 'create'} onClick={() => setView('create')} icon={<Plus size={12} />}>
+          New scene
+        </Tab>
+      </div>
+
+      {view === 'create' ? (
+        <div className="flex-1 overflow-y-auto p-3">
+          <NewScenePanel draft={draft} onChange={setDraft} />
+        </div>
+      ) : (
+      <>
       {/* Search + filters */}
       <div className="space-y-2 border-b border-line p-3">
         <label className="flex h-8 items-center gap-2 rounded-md border border-line bg-bg-2 px-2 focus-within:border-brand">
@@ -247,13 +293,19 @@ export default function App() {
               <WarningCircle size={14} /> {loadError} — retry
             </button>
           )}
-          {!loading && !loadError && scenes.length === 0 && 'No scenes match'}
+          {!loading && !loadError && scenes.length === 0 && (
+            <button onClick={() => setView('create')} className="flex items-center gap-1 text-brand hover:underline">
+              No scenes match — create one <Plus size={12} />
+            </button>
+          )}
         </div>
       </div>
+      </>
+      )}
 
       {/* Action panel */}
       <div className="space-y-3 border-t border-line p-3">
-        {selected ? (
+        {view === 'create' ? null : selected ? (
           <div className="flex items-center justify-between gap-2">
             <div className="min-w-0">
               <div className="truncate font-semibold">{selected.title}</div>
@@ -332,15 +384,22 @@ export default function App() {
         )}
 
         <button
-          onClick={apply}
-          disabled={!selected || status.kind === 'rendering'}
+          onClick={() => (view === 'create' ? createAndApply() : apply())}
+          disabled={view === 'create' ? busy || !draft.title.trim() : !selected || busy}
           className="flex h-8 w-full items-center justify-center gap-2 rounded-md bg-brand font-semibold text-on-brand hover:bg-brand-hover disabled:opacity-40"
         >
-          {status.kind === 'rendering' ? (
+          {status.kind === 'saving' ? (
+            <>
+              <CircleNotch size={14} className="animate-spin" />
+              Saving scene…
+            </>
+          ) : status.kind === 'rendering' ? (
             <>
               <CircleNotch size={14} className="animate-spin" />
               Rendering{status.total > 1 ? ` ${status.done}/${status.total}` : '…'}
             </>
+          ) : view === 'create' ? (
+            targets.length > 0 ? 'Create & apply' : 'Create & insert frame'
           ) : targets.length > 0 ? (
             `Apply to ${targets.length === 1 ? 'selection' : `${targets.length} layers`}`
           ) : (
@@ -366,6 +425,31 @@ export default function App() {
 async function runRefresh(targets: Target[]) {
   const errors = await rerenderLayers(targets)
   postToMain({ type: 'done', message: errors.length ? `Aura: ${errors[0]}` : 'Aura background re-rendered' })
+}
+
+function Tab({
+  active,
+  onClick,
+  icon,
+  children,
+}: {
+  active: boolean
+  onClick: () => void
+  icon: React.ReactNode
+  children: React.ReactNode
+}) {
+  return (
+    <button
+      onClick={onClick}
+      aria-pressed={active}
+      className={`-mb-px flex items-center gap-1 border-b-2 px-2 pb-2 font-semibold ${
+        active ? 'border-brand text-fg' : 'border-transparent text-fg-2 hover:text-fg'
+      }`}
+    >
+      {icon}
+      {children}
+    </button>
+  )
 }
 
 function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (v: boolean) => void }) {
