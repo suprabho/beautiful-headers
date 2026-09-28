@@ -15,7 +15,7 @@ import {
   X,
 } from '@phosphor-icons/react'
 import type { MainToUi, RenderOptions, Target } from '../shared'
-import { fetchScenes, sceneUrl, type Scene } from './api'
+import { captureUrl, fetchScenes, sceneUrl, type Scene } from './api'
 import { createScene } from './newScene'
 import { DraftPreview, initialDraft, NewScenePanel, type SceneDraft } from './NewScenePanel'
 import { postToMain, renderToLayers, rerenderLayers } from './render'
@@ -213,6 +213,12 @@ export default function App() {
   const auraTargets = targets.filter((t) => t.aura)
   // The frame the render will land in: the (first) selected layer, or the new-frame preset.
   const frameSize = targets.length > 0 ? targets[0] : FRAME_PRESETS[preset]
+  // Live preview: the scene actually rendered at the frame's size (1x, so it's
+  // quick), debounced so resizing a layer doesn't fire a render per nodechange.
+  const previewKey = useDebounced(
+    selected ? captureUrl(selected.slug, frameSize.width, frameSize.height, { ...options, dpr: 1 }) : null,
+    500,
+  )
 
   return (
     <div className="flex h-screen bg-bg text-fg">
@@ -312,8 +318,8 @@ export default function App() {
         <FramePreview width={frameSize.width} height={frameSize.height}>
           {view === 'create' ? (
             <DraftPreview draft={draft} />
-          ) : selected?.thumb.large || selected?.thumb.small ? (
-            <img src={selected.thumb.large || selected.thumb.small || undefined} alt="" className="h-full w-full object-cover" />
+          ) : selected ? (
+            <LivePreview key={selected.id} src={previewKey} fallback={selected.thumb.large || selected.thumb.small} />
           ) : (
             <div className="flex h-full items-center justify-center text-fg-3">
               <ImageSquare size={20} />
@@ -463,6 +469,36 @@ function FramePreview({ width, height, children }: { width: number; height: numb
         {Math.round(width)} × {Math.round(height)}
       </div>
     </div>
+  )
+}
+
+/**
+ * The frame-sized render, with the gallery thumbnail shown underneath until it
+ * arrives (and kept visible while a new size is rendering).
+ */
+function LivePreview({ src, fallback }: { src: string | null; fallback: string | null }) {
+  const [loaded, setLoaded] = useState<string | null>(null)
+  const [failed, setFailed] = useState<string | null>(null)
+  const pending = src !== null && src !== loaded && src !== failed
+  return (
+    <>
+      {fallback && <img src={fallback} alt="" className="absolute inset-0 h-full w-full object-cover" />}
+      {loaded && <img src={loaded} alt="" className="absolute inset-0 h-full w-full object-cover" />}
+      {pending && (
+        <img
+          src={src}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover opacity-0"
+          onLoad={() => setLoaded(src)}
+          onError={() => setFailed(src)}
+        />
+      )}
+      {pending && (
+        <div className="absolute right-1 bottom-1 rounded bg-black/50 p-0.5 text-white">
+          <CircleNotch size={12} className="animate-spin" />
+        </div>
+      )}
+    </>
   )
 }
 
