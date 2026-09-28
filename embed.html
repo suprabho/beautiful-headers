@@ -55,6 +55,7 @@
       var match = location.pathname.match(/^\/embed\/([^/?#]+)/)
       if (!match) return
       var slug = decodeURIComponent(match[1])
+      if (slug === '__preview') return // unsaved scene, sent by the parent frame
       var columns = 'id,title,slug,scene_data,thumbnail,short_description,long_description'
 
       // The scene JSON is tiny and low priority, so request it right away and

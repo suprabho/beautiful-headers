@@ -128,6 +128,14 @@ export function captureUrl(slug: string, width: number, height: number, options:
   return `${AURA_ORIGIN}/scenes/${encodeURIComponent(slug)}/capture.png?${params}`
 }
 
+/** The live embed, with the same text/icon/theme options the render uses. */
+export function embedUrl(slug: string, options: RenderOptions) {
+  const params = new URLSearchParams({ input: 'off', theme: options.theme })
+  if (options.hideText) params.set('hideText', 'true')
+  if (options.hideIcons) params.set('hideIcons', 'true')
+  return `${AURA_ORIGIN}/embed/${encodeURIComponent(slug)}?${params}`
+}
+
 export async function fetchBytes(url: string, signal?: AbortSignal): Promise<Uint8Array> {
   const res = await fetch(url, { signal })
   if (!res.ok) {

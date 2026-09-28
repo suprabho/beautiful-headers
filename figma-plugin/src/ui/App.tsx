@@ -15,9 +15,9 @@ import {
   X,
 } from '@phosphor-icons/react'
 import type { MainToUi, RenderOptions, Target } from '../shared'
-import { captureUrl, fetchScenes, sceneUrl, type Scene } from './api'
-import { createScene } from './newScene'
-import { DraftPreview, initialDraft, NewScenePanel, type SceneDraft } from './NewScenePanel'
+import { AURA_ORIGIN, embedUrl, fetchScenes, sceneUrl, type Scene } from './api'
+import { buildSceneData, createScene } from './newScene'
+import { initialDraft, NewScenePanel, type SceneDraft } from './NewScenePanel'
 import { postToMain, renderToLayers, rerenderLayers } from './render'
 
 const BACKGROUND_TYPES = [
@@ -46,6 +46,12 @@ const FRAME_PRESETS = [
   { label: 'Square post', width: 1080, height: 1080 },
   { label: 'Story', width: 1080, height: 1920 },
 ]
+
+/** Longest side (CSS px) the live preview lays out at; covers every frame preset exactly. */
+const PREVIEW_MAX = 1920
+
+/** Reserved embed slug that renders an unsaved scene posted in by message. */
+const DRAFT_SLUG = '__preview'
 
 const DEFAULT_OPTIONS: RenderOptions = { hideText: true, hideIcons: false, theme: 'dark', dpr: 2 }
 
@@ -213,12 +219,14 @@ export default function App() {
   const auraTargets = targets.filter((t) => t.aura)
   // The frame the render will land in: the (first) selected layer, or the new-frame preset.
   const frameSize = targets.length > 0 ? targets[0] : FRAME_PRESETS[preset]
-  // Live preview: the scene actually rendered at the frame's size (1x, so it's
-  // quick), debounced so resizing a layer doesn't fire a render per nodechange.
-  const previewKey = useDebounced(
-    selected ? captureUrl(selected.slug, frameSize.width, frameSize.height, { ...options, dpr: 1 }) : null,
-    500,
+  // Live preview: the Aura embed itself, laid out at the frame's size (debounced
+  // so resizing a layer doesn't reload it on every nodechange).
+  const previewSize = useDebounced(
+    { width: Math.round(frameSize.width), height: Math.round(frameSize.height) },
+    400,
   )
+  const embedSrc =
+    view === 'create' ? embedUrl(DRAFT_SLUG, options) : selected ? embedUrl(selected.slug, options) : null
 
   return (
     <div className="flex h-screen bg-bg text-fg">
@@ -316,17 +324,19 @@ export default function App() {
       {/* Render panel */}
       <div className="flex w-[300px] shrink-0 flex-col gap-3 overflow-y-auto border-l border-line p-3">
         <FramePreview width={frameSize.width} height={frameSize.height}>
-          {view === 'create' ? (
-            <DraftPreview draft={draft} />
-          ) : selected ? (
-            <LivePreview key={selected.id} src={previewKey} fallback={selected.thumb.large || selected.thumb.small} />
+          {embedSrc ? (
+            <EmbedPreview
+              src={embedSrc}
+              width={previewSize.width}
+              height={previewSize.height}
+              draft={view === 'create' ? draft : null}
+            />
           ) : (
             <div className="flex h-full items-center justify-center text-fg-3">
               <ImageSquare size={20} />
             </div>
           )}
         </FramePreview>
-        {view === 'create' && <div className="-mt-1 text-fg-3">Palette preview — the render is animated</div>}
 
         {view === 'create' ? null : selected ? (
           <div className="flex items-center justify-between gap-2">
@@ -473,32 +483,80 @@ function FramePreview({ width, height, children }: { width: number; height: numb
 }
 
 /**
- * The frame-sized render, with the gallery thumbnail shown underneath until it
- * arrives (and kept visible while a new size is rendering).
+ * The live, animated Aura embed laid out at the frame's own size (so it composes
+ * exactly as the render will) and scaled down to fit the preview box. Frames
+ * larger than PREVIEW_MAX are laid out at a proportionally smaller size.
+ * With a draft, the embed's reserved preview slug renders the unsaved scene,
+ * which is posted in (and re-posted on every edit).
  */
-function LivePreview({ src, fallback }: { src: string | null; fallback: string | null }) {
-  const [loaded, setLoaded] = useState<string | null>(null)
-  const [failed, setFailed] = useState<string | null>(null)
-  const pending = src !== null && src !== loaded && src !== failed
+function EmbedPreview({
+  src,
+  width,
+  height,
+  draft,
+}: {
+  src: string
+  width: number
+  height: number
+  draft: SceneDraft | null
+}) {
+  const box = useRef<HTMLDivElement>(null)
+  const frame = useRef<HTMLIFrameElement>(null)
+  const [boxWidth, setBoxWidth] = useState(0)
+  const [loaded, setLoaded] = useState(false)
+
+  const down = Math.min(1, PREVIEW_MAX / Math.max(width, height))
+  const w = Math.max(16, Math.round(width * down))
+  const h = Math.max(16, Math.round(height * down))
+
+  useEffect(() => {
+    const el = box.current
+    if (!el) return
+    const ro = new ResizeObserver(() => setBoxWidth(el.clientWidth))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
+  useEffect(() => setLoaded(false), [src, w, h])
+
+  // Push the draft into the embed: when it announces it's ready, and on edits.
+  const debouncedDraft = useDebounced(draft, 250)
+  const draftRef = useRef(debouncedDraft)
+  draftRef.current = debouncedDraft
+  const sendDraft = useCallback(() => {
+    const d = draftRef.current
+    if (!d) return
+    const scene = { title: d.title || 'Untitled scene', scene_data: buildSceneData({ ...d, title: d.title || ' ' }) }
+    frame.current?.contentWindow?.postMessage({ type: 'promad-aura:set-scene', scene }, AURA_ORIGIN)
+  }, [])
+  useEffect(sendDraft, [debouncedDraft, sendDraft])
+  useEffect(() => {
+    const onMessage = (e: MessageEvent) => {
+      if (e.source === frame.current?.contentWindow && e.data?.type === 'promad-aura:preview-ready') sendDraft()
+    }
+    window.addEventListener('message', onMessage)
+    return () => window.removeEventListener('message', onMessage)
+  }, [sendDraft])
+
   return (
-    <>
-      {fallback && <img src={fallback} alt="" className="absolute inset-0 h-full w-full object-cover" />}
-      {loaded && <img src={loaded} alt="" className="absolute inset-0 h-full w-full object-cover" />}
-      {pending && (
-        <img
+    <div ref={box} className="absolute inset-0 bg-black">
+      {boxWidth > 0 && (
+        <iframe
+          ref={frame}
+          key={`${src}|${w}x${h}`}
           src={src}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover opacity-0"
-          onLoad={() => setLoaded(src)}
-          onError={() => setFailed(src)}
+          title="Aura preview"
+          onLoad={() => setLoaded(true)}
+          className="pointer-events-none absolute top-0 left-0 origin-top-left border-0"
+          style={{ width: w, height: h, transform: `scale(${boxWidth / w})` }}
         />
       )}
-      {pending && (
-        <div className="absolute right-1 bottom-1 rounded bg-black/50 p-0.5 text-white">
-          <CircleNotch size={12} className="animate-spin" />
+      {!loaded && (
+        <div className="absolute right-1 bottom-1 flex items-center gap-1 rounded bg-black/60 px-1 text-white">
+          <CircleNotch size={12} className="animate-spin" /> Loading
         </div>
       )}
-    </>
+    </div>
   )
 }
 
