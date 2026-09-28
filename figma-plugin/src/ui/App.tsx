@@ -15,8 +15,8 @@ import {
   X,
 } from '@phosphor-icons/react'
 import type { MainToUi, RenderOptions, Target } from '../shared'
-import { fetchScenes, sceneUrl, type Scene } from './api'
-import { createScene } from './newScene'
+import { AURA_ORIGIN, embedUrl, fetchScenes, sceneUrl, type Scene } from './api'
+import { buildSceneData, createScene } from './newScene'
 import { initialDraft, NewScenePanel, type SceneDraft } from './NewScenePanel'
 import { postToMain, renderToLayers, rerenderLayers } from './render'
 
@@ -46,6 +46,12 @@ const FRAME_PRESETS = [
   { label: 'Square post', width: 1080, height: 1080 },
   { label: 'Story', width: 1080, height: 1920 },
 ]
+
+/** Longest side (CSS px) the live preview lays out at; covers every frame preset exactly. */
+const PREVIEW_MAX = 1920
+
+/** Reserved embed slug that renders an unsaved scene posted in by message. */
+const DRAFT_SLUG = '__preview'
 
 const DEFAULT_OPTIONS: RenderOptions = { hideText: true, hideIcons: false, theme: 'dark', dpr: 2 }
 
@@ -82,6 +88,8 @@ export default function App() {
   const [targets, setTargets] = useState<Target[]>([])
   const [unsupported, setUnsupported] = useState(0)
   const [status, setStatus] = useState<Status>({ kind: 'idle' })
+  // Launched from a layer's "Re-render" relaunch button: only a status line shows.
+  const [relaunch, setRelaunch] = useState(false)
 
   const debouncedSearch = useDebounced(search, 300)
   const requestId = useRef(0)
@@ -133,6 +141,7 @@ export default function App() {
         setTargets(msg.targets)
         setUnsupported(msg.unsupported)
       } else if (msg.type === 'refresh') {
+        setRelaunch(true)
         await runRefresh(msg.targets)
       }
     }
@@ -211,9 +220,28 @@ export default function App() {
 
   const extent = targets.length === 1 ? `${Math.round(targets[0].width)} × ${Math.round(targets[0].height)}` : null
   const auraTargets = targets.filter((t) => t.aura)
+  // The frame the render will land in: the (first) selected layer, or the new-frame preset.
+  const frameSize = targets.length > 0 ? targets[0] : FRAME_PRESETS[preset]
+  // Live preview: the Aura embed itself, laid out at the frame's size (debounced
+  // so resizing a layer doesn't reload it on every nodechange).
+  const previewSize = useDebounced(
+    { width: Math.round(frameSize.width), height: Math.round(frameSize.height) },
+    400,
+  )
+  const embedSrc =
+    view === 'create' ? embedUrl(DRAFT_SLUG, options) : selected ? embedUrl(selected.slug, options) : null
+
+  if (relaunch) {
+    return (
+      <div className="flex h-screen items-center justify-center gap-2 bg-bg text-fg-2">
+        <CircleNotch size={14} className="animate-spin" /> Re-rendering…
+      </div>
+    )
+  }
 
   return (
-    <div className="flex h-screen flex-col bg-bg text-fg">
+    <div className="flex h-screen bg-bg text-fg">
+      <div className="flex min-w-0 flex-1 flex-col">
       {/* Gallery / New scene switch */}
       <div className="flex gap-1 border-b border-line px-3 pt-2">
         <Tab active={view === 'gallery'} onClick={() => setView('gallery')} icon={<SquaresFour size={12} />}>
@@ -302,9 +330,25 @@ export default function App() {
       </div>
       </>
       )}
+      </div>
 
-      {/* Action panel */}
-      <div className="space-y-3 border-t border-line p-3">
+      {/* Render panel */}
+      <div className="flex w-[300px] shrink-0 flex-col gap-3 overflow-y-auto border-l border-line p-3">
+        <FramePreview width={frameSize.width} height={frameSize.height}>
+          {embedSrc ? (
+            <EmbedPreview
+              src={embedSrc}
+              width={previewSize.width}
+              height={previewSize.height}
+              draft={view === 'create' ? draft : null}
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center text-fg-3">
+              <ImageSquare size={20} />
+            </div>
+          )}
+        </FramePreview>
+
         {view === 'create' ? null : selected ? (
           <div className="flex items-center justify-between gap-2">
             <div className="min-w-0">
@@ -386,7 +430,7 @@ export default function App() {
         <button
           onClick={() => (view === 'create' ? createAndApply() : apply())}
           disabled={view === 'create' ? busy || !draft.title.trim() : !selected || busy}
-          className="flex h-8 w-full items-center justify-center gap-2 rounded-md bg-brand font-semibold text-on-brand hover:bg-brand-hover disabled:opacity-40"
+          className="mt-auto flex h-8 w-full shrink-0 items-center justify-center gap-2 rounded-md bg-brand font-semibold text-on-brand hover:bg-brand-hover disabled:opacity-40"
         >
           {status.kind === 'saving' ? (
             <>
@@ -425,6 +469,106 @@ export default function App() {
 async function runRefresh(targets: Target[]) {
   const errors = await rerenderLayers(targets)
   postToMain({ type: 'done', message: errors.length ? `Aura: ${errors[0]}` : 'Aura background re-rendered' })
+}
+
+/** A box with the target frame's aspect ratio, fitted inside a fixed preview area. */
+function FramePreview({ width, height, children }: { width: number; height: number; children: React.ReactNode }) {
+  const AREA_W = 276
+  const AREA_H = 180
+  const scale = Math.min(AREA_W / width, AREA_H / height)
+  return (
+    <div className="shrink-0 space-y-1">
+      <div className="flex items-center justify-center rounded-md bg-bg-2" style={{ height: AREA_H }}>
+        <div
+          className="relative overflow-hidden rounded border border-line"
+          style={{ width: Math.max(8, Math.round(width * scale)), height: Math.max(8, Math.round(height * scale)) }}
+        >
+          {children}
+        </div>
+      </div>
+      <div className="text-center text-fg-3">
+        {Math.round(width)} × {Math.round(height)}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * The live, animated Aura embed laid out at the frame's own size (so it composes
+ * exactly as the render will) and scaled down to fit the preview box. Frames
+ * larger than PREVIEW_MAX are laid out at a proportionally smaller size.
+ * With a draft, the embed's reserved preview slug renders the unsaved scene,
+ * which is posted in (and re-posted on every edit).
+ */
+function EmbedPreview({
+  src,
+  width,
+  height,
+  draft,
+}: {
+  src: string
+  width: number
+  height: number
+  draft: SceneDraft | null
+}) {
+  const box = useRef<HTMLDivElement>(null)
+  const frame = useRef<HTMLIFrameElement>(null)
+  const [boxWidth, setBoxWidth] = useState(0)
+  const [loaded, setLoaded] = useState(false)
+
+  const down = Math.min(1, PREVIEW_MAX / Math.max(width, height))
+  const w = Math.max(16, Math.round(width * down))
+  const h = Math.max(16, Math.round(height * down))
+
+  useEffect(() => {
+    const el = box.current
+    if (!el) return
+    const ro = new ResizeObserver(() => setBoxWidth(el.clientWidth))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
+  useEffect(() => setLoaded(false), [src, w, h])
+
+  // Push the draft into the embed: when it announces it's ready, and on edits.
+  const debouncedDraft = useDebounced(draft, 250)
+  const draftRef = useRef(debouncedDraft)
+  draftRef.current = debouncedDraft
+  const sendDraft = useCallback(() => {
+    const d = draftRef.current
+    if (!d) return
+    const scene = { title: d.title || 'Untitled scene', scene_data: buildSceneData({ ...d, title: d.title || ' ' }) }
+    frame.current?.contentWindow?.postMessage({ type: 'promad-aura:set-scene', scene }, AURA_ORIGIN)
+  }, [])
+  useEffect(sendDraft, [debouncedDraft, sendDraft])
+  useEffect(() => {
+    const onMessage = (e: MessageEvent) => {
+      if (e.source === frame.current?.contentWindow && e.data?.type === 'promad-aura:preview-ready') sendDraft()
+    }
+    window.addEventListener('message', onMessage)
+    return () => window.removeEventListener('message', onMessage)
+  }, [sendDraft])
+
+  return (
+    <div ref={box} className="absolute inset-0 bg-black">
+      {boxWidth > 0 && (
+        <iframe
+          ref={frame}
+          key={`${src}|${w}x${h}`}
+          src={src}
+          title="Aura preview"
+          onLoad={() => setLoaded(true)}
+          className="pointer-events-none absolute top-0 left-0 origin-top-left border-0"
+          style={{ width: w, height: h, transform: `scale(${boxWidth / w})` }}
+        />
+      )}
+      {!loaded && (
+        <div className="absolute right-1 bottom-1 flex items-center gap-1 rounded bg-black/60 px-1 text-white">
+          <CircleNotch size={12} className="animate-spin" /> Loading
+        </div>
+      )}
+    </div>
+  )
 }
 
 function Tab({

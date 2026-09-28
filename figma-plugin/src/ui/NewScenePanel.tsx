@@ -28,20 +28,8 @@ export function NewScenePanel({ draft, onChange }: { draft: SceneDraft; onChange
     set({ colors: [...options[Math.floor(Math.random() * options.length)]] })
   }
 
-  const preview = `linear-gradient(135deg, ${draft.colors.join(', ')})`
-
   return (
     <div className="space-y-4">
-      <div
-        className="relative h-20 w-full overflow-hidden rounded-md border border-line"
-        style={{ background: type.background ? draft.background : undefined }}
-      >
-        <div className="absolute inset-0" style={{ background: preview, opacity: type.background ? 0.85 : 1 }} />
-        <div className="absolute bottom-1.5 left-2 rounded bg-black/40 px-1.5 text-white">
-          Palette preview — the render is animated
-        </div>
-      </div>
-
       <Field label="Name">
         <input
           value={draft.title}

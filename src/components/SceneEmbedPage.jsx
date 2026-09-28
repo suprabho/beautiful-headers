@@ -45,6 +45,9 @@ const GuillocheLayer = lazy(LAYER_LOADERS.guilloche)
 const StudioGradientLayer = lazy(LAYER_LOADERS.sky)
 const TessellationLayer = lazy(() => import('./TessellationLayer'))
 
+// Reserved slug for unsaved scenes posted in by the parent frame.
+const PREVIEW_SLUG = '__preview'
+
 // The page runs both as its own entry (embed.html, no router) and as a
 // fallback route inside the studio app, so it reads the slug and the query
 // straight from the location rather than from react-router.
@@ -174,8 +177,11 @@ function SceneEmbedPage() {
     const onMessage = async (e) => {
       if (e.data?.type !== 'promad-aura:capture') return
       const { requestId, pixelRatio = 2 } = e.data
+      // Sandboxed parents (e.g. the Figma plugin UI) have an opaque "null"
+      // origin, which isn't a valid targetOrigin — reply to that exact window.
+      const targetOrigin = e.origin === 'null' ? '*' : e.origin
       const reply = (payload) =>
-        e.source?.postMessage({ type: 'promad-aura:capture-result', requestId, ...payload }, e.origin)
+        e.source?.postMessage({ type: 'promad-aura:capture-result', requestId, ...payload }, targetOrigin)
       try {
         reply({ dataUrl: await captureToDataUrl(pixelRatio) })
       } catch (err) {
@@ -279,12 +285,30 @@ function SceneEmbedPage() {
     }
   }, [inputMode])
 
+  // Draft preview: /embed/__preview renders an unsaved scene that the parent
+  // frame (the Figma plugin's "New scene" form) sends by message, and re-renders
+  // whenever it sends a new one. Contract:
+  //   embed  → parent { type: 'promad-aura:preview-ready' }   (on load)
+  //   parent → embed  { type: 'promad-aura:set-scene', scene: { title, scene_data } }
+  useEffect(() => {
+    if (slug !== PREVIEW_SLUG) return
+    const onMessage = (e) => {
+      if (e.data?.type !== 'promad-aura:set-scene' || !e.data.scene?.scene_data) return
+      setScene({ ...e.data.scene, slug: PREVIEW_SLUG })
+      setIsLoading(false)
+    }
+    window.addEventListener('message', onMessage)
+    window.parent?.postMessage({ type: 'promad-aura:preview-ready' }, '*')
+    return () => window.removeEventListener('message', onMessage)
+  }, [slug])
+
   useEffect(() => {
     if (!slug) {
       setError('Scene not found')
       setIsLoading(false)
       return
     }
+    if (slug === PREVIEW_SLUG) return // scene arrives by message (above)
     if (earlyScene(slug)) return // already seeded from the inline bootstrap
 
     let cancelled = false
@@ -347,7 +371,10 @@ function SceneEmbedPage() {
       try { await fontsPromiseRef.current } catch { /* ignore */ }
       try { if (document.fonts?.ready) await document.fonts.ready } catch { /* ignore */ }
       await new Promise((r) => setTimeout(r, 1200)) // WebGL warm-up / settle
-      if (!cancelled) window.__auraCaptureReady = true
+      if (cancelled) return
+      window.__auraCaptureReady = true
+      // Cross-origin hosts can't read the flag; tell the parent frame instead.
+      if (window.parent !== window) window.parent.postMessage({ type: 'promad-aura:ready' }, '*')
     }
     run()
     return () => { cancelled = true; window.__auraCaptureReady = false }
