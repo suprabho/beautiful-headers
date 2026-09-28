@@ -1,0 +1,21 @@
+{
+  "name": "Aura Backgrounds",
+  "id": "aura-backgrounds",
+  "api": "1.0.0",
+  "main": "dist/code.js",
+  "ui": "dist/index.html",
+  "editorType": ["figma"],
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": [
+      "https://aura.promad.design",
+      "https://grbrfpaznehikakupavx.supabase.co",
+      "https://thumbnails.promad.design"
+    ],
+    "reasoning": "Loads the public Aura scene gallery and renders scenes to PNG via aura.promad.design."
+  },
+  "relaunchButtons": [
+    { "command": "refresh", "name": "Re-render Aura background", "multipleSelection": true },
+    { "command": "open", "name": "Change Aura background" }
+  ]
+}

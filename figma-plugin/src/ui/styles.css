@@ -1,0 +1,39 @@
+@import 'tailwindcss';
+
+/*
+ * Figma injects --figma-color-* variables (themeColors: true) and toggles the
+ * `figma-dark` class on <html>, so mapping Tailwind's palette onto them makes
+ * the UI follow the editor's light/dark theme. Fallbacks cover a plain browser.
+ */
+@theme {
+  --color-bg: var(--figma-color-bg, #ffffff);
+  --color-bg-2: var(--figma-color-bg-secondary, #f5f5f5);
+  --color-fg: var(--figma-color-text, #1e1e1e);
+  --color-fg-2: var(--figma-color-text-secondary, #6b6b6b);
+  --color-fg-3: var(--figma-color-text-tertiary, #b3b3b3);
+  --color-line: var(--figma-color-border, #e6e6e6);
+  --color-brand: var(--figma-color-bg-brand, #0d99ff);
+  --color-brand-hover: var(--figma-color-bg-brand-hover, #007be5);
+  --color-on-brand: var(--figma-color-text-onbrand, #ffffff);
+  --color-danger: var(--figma-color-text-danger, #f24822);
+  --color-success: var(--figma-color-text-success, #14ae5c);
+  --font-sans: Inter, system-ui, sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+  font-size: 11px;
+  line-height: 16px;
+}
+
+body {
+  @apply bg-bg font-sans text-fg;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
