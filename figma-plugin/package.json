@@ -1,0 +1,32 @@
+{
+  "name": "aura-figma-plugin",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Figma plugin: fill frames with Aura animated-background scenes.",
+  "type": "module",
+  "scripts": {
+    "build": "npm run build:ui && npm run build:code",
+    "build:ui": "vite build",
+    "build:code": "esbuild src/code.ts --bundle --target=es2017 --outfile=dist/code.js",
+    "dev": "concurrently -k \"vite build --watch\" \"esbuild src/code.ts --bundle --target=es2017 --outfile=dist/code.js --watch\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.139.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "concurrently": "^10.0.5",
+    "esbuild": "^0.28.2",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.1",
+    "vite-plugin-singlefile": "^2.3.3"
+  }
+}
