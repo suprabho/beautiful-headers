@@ -6,9 +6,11 @@
 import type { RenderOptions } from '../shared'
 import { AURA_ORIGIN, captureSize } from './api'
 
-// Scene fetch + renderer chunk + fonts + the embed's settle delay.
-const READY_TIMEOUT = 25_000
-const CAPTURE_TIMEOUT = 20_000
+// Scene fetch + renderer chunk + fonts + the embed's settle delay: a few seconds
+// even on software WebGL, so past these something is wrong and the server
+// fallback should take over rather than keep the user waiting.
+const READY_TIMEOUT = 15_000
+const CAPTURE_TIMEOUT = 15_000
 
 // One embed at a time: each is a full WebGL page at up to 3840 px.
 let queue: Promise<unknown> = Promise.resolve()

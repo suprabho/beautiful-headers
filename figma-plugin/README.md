@@ -6,9 +6,21 @@ pixel-exact background.
 - **Gallery** — search by title and filter by background type (Aurora, Mesh,
   Fog, Waves, Ribbon, …), straight from the public `scenes` table.
 - **Apply to selection** — each selected frame / rectangle / shape is rendered
-  at its own size via `GET /scenes/:slug/capture.png` (see `../CAPTURE.md`) and
-  set as its image fill. The scene thumbnail shows instantly while the full
-  render arrives. Layers of the same size share one render.
+  at its own size and set as its image fill. Scenes render on the user's
+  device first (the embed in a hidden iframe), falling back to
+  `GET /scenes/:slug/capture.png` (see `../CAPTURE.md`). The scene thumbnail
+  shows instantly while the full render arrives. Layers of the same size share
+  one render.
+- **Shared server image** — with scene text off, the plugin also fetches one
+  1920 × 1080 (or 1080 × 1920) capture per scene, theme and icon setting. It
+  replaces the thumbnail as soon as it lands, and if the device render fails it
+  becomes the final image (the fill crops it to the layer), so the fallback
+  hits one cached URL instead of rendering every frame size. With scene text on,
+  the fallback renders the exact size, since text can't be cropped.
+- **Time limits** — every step gives up eventually (thumbnail 15 s, device
+  render 15 s to load + 15 s to capture, server 65 s). A render always ends in
+  an image or an error with a *Retry* button; the button reads *Rendering on
+  server…* while the fallback runs.
 - **Insert frame** — with nothing selected, creates a new frame from a preset
   (web header, OG image, desktop, mobile, square, story) and fills it.
 - **New scene** — build a scene from scratch in the *New scene* tab: name,
@@ -52,7 +64,9 @@ manifest…** and pick `figma-plugin/manifest.json`.
 - The UI talks to `aura.promad.design`, the Supabase project and
   `thumbnails.promad.design`; any new host must be added to
   `networkAccess.allowedDomains` in `manifest.json`.
-- A render on a cache miss takes a few seconds (software WebGL in a headless
-  browser); repeat renders at the same size are served from the CDN.
+- A server render on a cache miss takes 20–30 s (software WebGL in a headless
+  browser); repeat renders of the same URL are served from the CDN in under a
+  second. Larger shared images (e.g. 1920 × 1080 at 2×) run into the capture
+  function's 60 s limit.
 - Before publishing to the Community, replace `id` in `manifest.json` with the
   ID Figma assigns when you create the plugin.
