@@ -128,6 +128,25 @@ export function captureUrl(slug: string, width: number, height: number, options:
   return `${AURA_ORIGIN}/scenes/${encodeURIComponent(slug)}/capture.png?${params}`
 }
 
+// One shared, text-free render per scene, theme, icon setting and orientation.
+// Image fills crop it to cover the layer, so a single cached URL serves every
+// frame size — the server fallback uses it instead of an exact-size render
+// (far fewer cache misses), and it replaces the small thumbnail as soon as it
+// lands. 1920 × 1080 at 1× renders in ~30 s on a miss; 2× runs into the capture
+// function's 60 s limit.
+const MASTER_LONG = 1920
+const MASTER_SHORT = 1080
+
+/** The shared render for a layer of this size, or null when scene text is on (text can't be cropped). */
+export function masterUrl(slug: string, width: number, height: number, options: RenderOptions) {
+  if (!options.hideText) return null
+  const landscape = width >= height
+  return captureUrl(slug, landscape ? MASTER_LONG : MASTER_SHORT, landscape ? MASTER_SHORT : MASTER_LONG, {
+    ...options,
+    dpr: 1,
+  })
+}
+
 /** The live embed, with the same text/icon/theme options the render uses. */
 export function embedUrl(slug: string, options: RenderOptions) {
   const params = new URLSearchParams({ input: 'off', theme: options.theme })
@@ -136,18 +155,45 @@ export function embedUrl(slug: string, options: RenderOptions) {
   return `${AURA_ORIGIN}/embed/${encodeURIComponent(slug)}?${params}`
 }
 
-export async function fetchBytes(url: string, signal?: AbortSignal): Promise<Uint8Array> {
-  const res = await fetch(url, { signal })
-  if (!res.ok) {
-    let detail = ''
-    try {
-      detail = ((await res.json()) as { error?: string }).error || ''
-    } catch {
-      /* not JSON */
+/** A capture miss renders for up to ~60 s (the function's limit), plus the download. */
+export const SERVER_TIMEOUT = 65_000
+
+/**
+ * Download an image, giving up after `timeoutMs` (the body included) so a
+ * stalled server can never leave a render spinning.
+ */
+export async function fetchBytes(
+  url: string,
+  { signal, timeoutMs = SERVER_TIMEOUT }: { signal?: AbortSignal; timeoutMs?: number } = {},
+): Promise<Uint8Array> {
+  const controller = new AbortController()
+  let timedOut = false
+  const timer = setTimeout(() => {
+    timedOut = true
+    controller.abort()
+  }, timeoutMs)
+  const onAbort = () => controller.abort()
+  if (signal?.aborted) controller.abort()
+  signal?.addEventListener('abort', onAbort)
+  try {
+    const res = await fetch(url, { signal: controller.signal })
+    if (!res.ok) {
+      let detail = ''
+      try {
+        detail = ((await res.json()) as { error?: string }).error || ''
+      } catch {
+        /* not JSON */
+      }
+      throw new Error(detail || `Render failed (${res.status})`)
     }
-    throw new Error(detail || `Render failed (${res.status})`)
+    return new Uint8Array(await res.arrayBuffer())
+  } catch (err) {
+    if (timedOut) throw new Error('The server took too long to render this scene')
+    throw err
+  } finally {
+    clearTimeout(timer)
+    signal?.removeEventListener('abort', onAbort)
   }
-  return new Uint8Array(await res.arrayBuffer())
 }
 
 export function sceneUrl(slug: string) {

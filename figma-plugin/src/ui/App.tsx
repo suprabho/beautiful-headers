@@ -20,6 +20,9 @@ import { buildSceneData, createScene } from './newScene'
 import { initialDraft, NewScenePanel, type SceneDraft } from './NewScenePanel'
 import { postToMain, renderToLayers, rerenderLayers } from './render'
 
+/** Note on the success line when the device couldn't render and the shared server image was used. */
+const APPROXIMATE_NOTE = ' (server image, cropped to fit)'
+
 const BACKGROUND_TYPES = [
   { value: null, label: 'All' },
   { value: 'aurora', label: 'Aurora' },
@@ -58,9 +61,9 @@ const DEFAULT_OPTIONS: RenderOptions = { hideText: true, hideIcons: false, theme
 type Status =
   | { kind: 'idle' }
   | { kind: 'saving' }
-  | { kind: 'rendering'; done: number; total: number }
+  | { kind: 'rendering'; done: number; total: number; server?: boolean }
   | { kind: 'done'; message: string }
-  | { kind: 'error'; message: string }
+  | { kind: 'error'; message: string; retry?: () => void }
 
 function useDebounced<T>(value: T, ms: number) {
   const [debounced, setDebounced] = useState(value)
@@ -173,20 +176,24 @@ export default function App() {
       jobTargets = [await created]
     }
     setStatus({ kind: 'rendering', done: 0, total: 1 })
-    const { failed, errors } = await renderToLayers(
+    const { failed, errors, approximate } = await renderToLayers(
       {
         targets: jobTargets,
         data: { slug: scene.slug, title: scene.title, options },
         previewUrl: scene.thumb.large,
       },
-      (done, total) => setStatus({ kind: 'rendering', done, total }),
+      (progress) => setStatus({ kind: 'rendering', ...progress }),
     )
     if (failed) {
-      setStatus({ kind: 'error', message: errors[0] })
+      // Retry into the same layers (a new frame, if one was just made, is now selected).
+      setStatus({ kind: 'error', message: errors[0], retry: () => latest.current.apply(scene) })
       postToMain({ type: 'notify', message: `Aura: ${errors[0]}`, error: true })
     } else {
       const n = jobTargets.length
-      setStatus({ kind: 'done', message: `Applied to ${n} layer${n === 1 ? '' : 's'}` })
+      setStatus({
+        kind: 'done',
+        message: `Applied to ${n} layer${n === 1 ? '' : 's'}${approximate ? APPROXIMATE_NOTE : ''}`,
+      })
     }
   }
 
@@ -214,9 +221,19 @@ export default function App() {
   const refreshSelection = async () => {
     if (busy) return
     setStatus({ kind: 'rendering', done: 0, total: 1 })
-    const errors = await rerenderLayers(targets)
-    setStatus(errors.length ? { kind: 'error', message: errors[0] } : { kind: 'done', message: 'Re-rendered' })
+    const { errors, approximate } = await rerenderLayers(targets, ({ server }) =>
+      setStatus((s) => (s.kind === 'rendering' ? { ...s, server: s.server || server } : s)),
+    )
+    setStatus(
+      errors.length
+        ? { kind: 'error', message: errors[0], retry: () => latest.current.refreshSelection() }
+        : { kind: 'done', message: `Re-rendered${approximate ? APPROXIMATE_NOTE : ''}` },
+    )
   }
+
+  // Retry buttons call the current handlers, which see the current selection.
+  const latest = useRef({ apply, refreshSelection })
+  latest.current = { apply, refreshSelection }
 
   const extent = targets.length === 1 ? `${Math.round(targets[0].width)} × ${Math.round(targets[0].height)}` : null
   const auraTargets = targets.filter((t) => t.aura)
@@ -440,7 +457,8 @@ export default function App() {
           ) : status.kind === 'rendering' ? (
             <>
               <CircleNotch size={14} className="animate-spin" />
-              Rendering{status.total > 1 ? ` ${status.done}/${status.total}` : '…'}
+              {status.server ? 'Rendering on server' : 'Rendering'}
+              {status.total > 1 ? ` ${status.done}/${status.total}` : '…'}
             </>
           ) : view === 'create' ? (
             targets.length > 0 ? 'Create & apply' : 'Create & insert frame'
@@ -457,7 +475,16 @@ export default function App() {
         )}
         {status.kind === 'error' && (
           <div className="flex items-center gap-1 text-danger">
-            <WarningCircle size={14} className="shrink-0" /> {status.message}
+            <WarningCircle size={14} className="shrink-0" />
+            <span className="min-w-0 flex-1">{status.message}</span>
+            {status.retry && (
+              <button
+                onClick={status.retry}
+                className="flex shrink-0 items-center gap-1 rounded border border-line px-1.5 py-0.5 text-fg hover:border-fg-3"
+              >
+                <ArrowsClockwise size={12} /> Retry
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -467,7 +494,7 @@ export default function App() {
 
 /** Headless re-render from a layer's "Refresh" relaunch button. */
 async function runRefresh(targets: Target[]) {
-  const errors = await rerenderLayers(targets)
+  const { errors } = await rerenderLayers(targets)
   postToMain({ type: 'done', message: errors.length ? `Aura: ${errors[0]}` : 'Aura background re-rendered' })
 }
 
