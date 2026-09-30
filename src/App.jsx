@@ -19,6 +19,7 @@ import useStore from './store/useStore'
 import { useThemedConfig } from './hooks/useThemedConfig'
 import { getScenes, getScene } from './lib/scenesApi'
 import { fetchTextPairs } from './lib/gemini'
+import { isFigmaHost, figmaHostScene, useFigmaHost } from './lib/figmaHost'
 import './App.css'
 
 function App() {
@@ -54,6 +55,9 @@ function App() {
   // Audio analyser — writes to audioData singleton, read by layers
   const audioAnalyser = useAudioAnalyser()
 
+  // Inside the Figma plugin: stream the scene to the plugin, which previews it.
+  useFigmaHost()
+
   // Load a random saved scene on initial mount (only if no scene already loaded)
   useEffect(() => {
     // Skip if a scene was already loaded — either via "Edit Scene" (sets
@@ -61,6 +65,8 @@ function App() {
     // sceneLoaded). Without this second check, remixing would be clobbered by
     // a random scene on App mount.
     if (currentSceneId || sceneLoaded) return
+    // The Figma plugin asked for a specific scene; useFigmaHost loads it.
+    if (figmaHostScene) return
 
     const loadRandomScene = async () => {
       try {
@@ -164,6 +170,16 @@ function App() {
     }
 
     return filters.filter(Boolean).join(' ') || 'none'
+  }
+
+  // The Figma plugin previews the scene itself (at the frame's size), so the
+  // studio only provides its controls there.
+  if (isFigmaHost) {
+    return (
+      <div className="app app--figma">
+        <ControlPanel layersContainerRef={layersContainerRef} audioAnalyser={audioAnalyser} />
+      </div>
+    )
   }
 
   return (

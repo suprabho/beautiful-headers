@@ -12,6 +12,7 @@ import { SaveSceneDialog } from './controls/SaveSceneDialog'
 import { ColorPaletteDialog } from './controls'
 import { AboutAuraModal } from './about/AboutAuraModal'
 import { CanvasOverlay } from './controls/CanvasOverlay'
+import { isFigmaHost } from '../lib/figmaHost'
 
 const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
   // Minimal store subscriptions — only what the orchestrator needs
@@ -29,7 +30,8 @@ const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
   // Mobile detection
   const [isMobile, setIsMobile] = useState(false)
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    // The Figma plugin docks the desktop panel at whatever width its window has.
+    const checkMobile = () => setIsMobile(!isFigmaHost && window.innerWidth < 768)
     checkMobile()
     window.addEventListener('resize', checkMobile)
     return () => window.removeEventListener('resize', checkMobile)
@@ -41,7 +43,7 @@ const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
 
   // Compose hooks
   const { randomize } = useRandomize()
-  const { panelRef, position, isDragging, handleMouseDown } = usePanelDrag(isMobile)
+  const { panelRef, position, isDragging, handleMouseDown } = usePanelDrag(isMobile || isFigmaHost)
   const {
     showSaveDialog, setShowSaveDialog,
     isSaving, saveError, saveSuccess,
@@ -79,8 +81,9 @@ const ControlPanel = ({ layersContainerRef, audioAnalyser }) => {
         />
       ) : (
         <>
-        <CanvasOverlay />
+        {!isFigmaHost && <CanvasOverlay />}
         <DesktopPanel
+          docked={isFigmaHost}
           panelRef={panelRef}
           position={position}
           isDragging={isDragging}
