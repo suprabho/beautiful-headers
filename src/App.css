@@ -21,6 +21,10 @@ html, body {
   background: #000;
 }
 
+.app--figma {
+  background: transparent;
+}
+
 .layers-container {
   position: absolute;
   top: 0;

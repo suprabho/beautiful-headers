@@ -33,6 +33,10 @@ export const DesktopPanel = ({
   panelRef, position, isDragging, handleMouseDown,
   isCapturing, onRandomize, onShowPalette, onShowSave, onShowCapture, onShowAbout,
   audioAnalyser,
+  // Inside the Figma plugin: fills the window instead of floating over the
+  // canvas, and drops the controls the plugin handles itself (saving,
+  // capture, the preview theme) or that lead out of the editor.
+  docked = false,
 }) => {
   const navigate = useNavigate()
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -73,14 +77,18 @@ export const DesktopPanel = ({
     <div
       ref={panelRef}
       className={cn(
-        "fixed z-50 bg-card/85 backdrop-blur-2xl border border-border/70 rounded-[28px] w-[360px] max-h-[88vh]",
-        "shadow-2xl shadow-black/50 transition-shadow duration-200",
-        "text-foreground",
-        isDragging && "shadow-3xl shadow-black/60",
-        isCollapsed && "w-auto max-h-none overflow-hidden",
-        !isCollapsed && "flex flex-col overflow-hidden"
+        docked
+          ? "flex h-screen w-full flex-col overflow-hidden bg-card text-foreground"
+          : cn(
+              "fixed z-50 bg-card/85 backdrop-blur-2xl border border-border/70 rounded-[28px] w-[360px] max-h-[88vh]",
+              "shadow-2xl shadow-black/50 transition-shadow duration-200",
+              "text-foreground",
+              isDragging && "shadow-3xl shadow-black/60",
+              isCollapsed && "w-auto max-h-none overflow-hidden",
+              !isCollapsed && "flex flex-col overflow-hidden"
+            )
       )}
-      style={{
+      style={docked ? undefined : {
         left: `${position.x}px`,
         top: `${position.y}px`,
         cursor: isDragging ? 'grabbing' : 'default'
@@ -89,46 +97,54 @@ export const DesktopPanel = ({
       {/* Header */}
       <div
         className="flex items-center justify-between p-2 border-b border-border select-none"
-        onMouseDown={handleMouseDown}
-        style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
+        onMouseDown={docked ? undefined : handleMouseDown}
+        style={docked ? undefined : { cursor: isDragging ? 'grabbing' : 'grab' }}
       >
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" className="h-8 gap-1" onClick={() => setIsCollapsed(!isCollapsed)}>
-            {isCollapsed ? <ArrowsOutSimple size={12} /> : <ArrowsInSimple size={12} />}
-            <img src="/apple-touch-icon.png" alt="Logo" className="h-4 w-4 rounded-[4px]" />
-          </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate('/scenes')} title="Saved Scenes">
-            <Images size={16} />
-          </Button>
+          {!docked && (
+            <>
+              <Button variant="outline" size="sm" className="h-8 gap-1" onClick={() => setIsCollapsed(!isCollapsed)}>
+                {isCollapsed ? <ArrowsOutSimple size={12} /> : <ArrowsInSimple size={12} />}
+                <img src="/apple-touch-icon.png" alt="Logo" className="h-4 w-4 rounded-[4px]" />
+              </Button>
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => navigate('/scenes')} title="Saved Scenes">
+                <Images size={16} />
+              </Button>
+            </>
+          )}
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onShowPalette} title={colorPalette ? "Edit Palette" : "Upload Palette"}>
             <Palette size={16} weight={colorPalette ? 'fill' : 'regular'} />
           </Button>
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onRandomize} disabled={isCapturing} title="Shuffle Gradient">
             <Shuffle size={16} weight="regular" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsPaused(!isPaused)} title={isPaused ? "Resume Animations" : "Pause Animations"}>
-            {isPaused ? <Play size={16} weight="fill" /> : <Pause size={16} />}
-          </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onShowSave} title="Save Scene">
-            <FloppyDisk size={16} />
-          </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onShowCapture} disabled={isCapturing}>
-            <Camera size={16} weight={isCapturing ? 'fill' : 'regular'} />
-          </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onShowAbout} title="About Aura">
-            <Info size={16} />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={() => setEditorThemeMode(editorThemeMode === 'dark' ? 'light' : 'dark')}
-            title={editorThemeMode === 'dark' ? 'Preview Light Mode' : 'Preview Dark Mode'}
-          >
-            {editorThemeMode === 'dark' ? <Moon size={16} /> : <Sun size={16} weight="fill" />}
-          </Button>
+          {!docked && (
+            <>
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setIsPaused(!isPaused)} title={isPaused ? "Resume Animations" : "Pause Animations"}>
+                {isPaused ? <Play size={16} weight="fill" /> : <Pause size={16} />}
+              </Button>
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onShowSave} title="Save Scene">
+                <FloppyDisk size={16} />
+              </Button>
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onShowCapture} disabled={isCapturing}>
+                <Camera size={16} weight={isCapturing ? 'fill' : 'regular'} />
+              </Button>
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={onShowAbout} title="About Aura">
+                <Info size={16} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setEditorThemeMode(editorThemeMode === 'dark' ? 'light' : 'dark')}
+                title={editorThemeMode === 'dark' ? 'Preview Light Mode' : 'Preview Dark Mode'}
+              >
+                {editorThemeMode === 'dark' ? <Moon size={16} /> : <Sun size={16} weight="fill" />}
+              </Button>
+            </>
+          )}
         </div>
-        <div className="text-muted-foreground"><DotsSixVertical size={16} weight="bold" /></div>
+        {!docked && <div className="text-muted-foreground"><DotsSixVertical size={16} weight="bold" /></div>}
       </div>
 
       {!isCollapsed && currentSceneId && (
@@ -152,7 +168,7 @@ export const DesktopPanel = ({
       )}
 
       {!isCollapsed && (
-        <Tabs value={activePanel} onValueChange={setActivePanel} className="flex h-full flex-col flex-1 max-h-[calc(88vh-4rem)]">
+        <Tabs value={activePanel} onValueChange={setActivePanel} className={cn("flex h-full flex-col flex-1", docked ? "min-h-0" : "max-h-[calc(88vh-4rem)]")}>
           <TabsList className="mx-auto mt-3 w-auto rounded-full bg-muted p-1 gap-0.5 shrink-0">
             {tabs.map(tab => (
               <TabsTrigger

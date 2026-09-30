@@ -134,7 +134,7 @@ if (figma.command === 'refresh') {
     figma.showUI(__html__, { width: 240, height: 56, themeColors: true, title: 'Aura Backgrounds' })
   }
 } else {
-  figma.showUI(__html__, { width: 720, height: 600, themeColors: true, title: 'Aura Backgrounds' })
+  figma.showUI(__html__, { width: 840, height: 800, themeColors: true, title: 'Aura Backgrounds' })
   figma.on('selectionchange', postSelection)
   // Keep the reported sizes live while the user resizes the selected layers.
   const watchPage = () => figma.currentPage.on('nodechange', postSelection)

@@ -8,6 +8,24 @@ export const AURA_ORIGIN = 'https://aura.promad.design'
 export const SUPABASE_URL = 'https://grbrfpaznehikakupavx.supabase.co'
 export const SUPABASE_KEY = 'sb_publishable_nFT6O21VoCZSKs7lQe-UaA_tSkoc4su'
 
+export const BACKGROUND_TYPES = [
+  { value: null, label: 'All' },
+  { value: 'aurora', label: 'Aurora' },
+  { value: 'fluid', label: 'Mesh' },
+  { value: 'liquid', label: 'Fog' },
+  { value: 'waves', label: 'Waves' },
+  { value: 'ribbon', label: 'Ribbon' },
+  { value: 'simple', label: 'Simple' },
+  { value: 'dandelion', label: 'Dandelion' },
+  { value: 'particleRing', label: 'Particle Ring' },
+  { value: 'guilloche', label: 'Guilloché' },
+  { value: 'sky', label: 'Sky' },
+  { value: 'watercolor', label: 'Watercolors' },
+  { value: 'glow', label: 'Glow' },
+  { value: 'forms', label: 'Forms' },
+  { value: 'prism', label: 'Prism' },
+] as const
+
 export interface Scene {
   id: number
   title: string
@@ -153,6 +171,13 @@ export function embedUrl(slug: string, options: RenderOptions) {
   if (options.hideText) params.set('hideText', 'true')
   if (options.hideIcons) params.set('hideIcons', 'true')
   return `${AURA_ORIGIN}/embed/${encodeURIComponent(slug)}?${params}`
+}
+
+/** The Aura studio in Figma host mode: docked controls that stream the scene back. */
+export function studioUrl(slug: string | null) {
+  const params = new URLSearchParams({ host: 'figma' })
+  if (slug) params.set('scene', slug)
+  return `${AURA_ORIGIN}/?${params}`
 }
 
 /** A capture miss renders for up to ~60 s (the function's limit), plus the download. */
