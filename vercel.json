@@ -27,6 +27,10 @@
       "destination": "/api/about"
     },
     {
+      "source": "/dashboard",
+      "destination": "/index.html"
+    },
+    {
       "source": "/embed/:slug",
       "destination": "/embed.html"
     }
