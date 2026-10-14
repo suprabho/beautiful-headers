@@ -84,3 +84,28 @@ export function computeOverrideDiff(base, edited) {
   }
   return hasDiff ? diff : null
 }
+
+/**
+ * Fold an edit into an existing light override. Keys the edit sets back to
+ * the base value are dropped from the override (so the base shows through
+ * again); keys that differ are written; keys the edit doesn't mention are
+ * kept. Returns the new override, or null if nothing differs from the base.
+ */
+export function applyOverrideEdit(existing, base, edited) {
+  const result = isPlainObject(existing) ? { ...existing } : {}
+  for (const key of Object.keys(edited)) {
+    const baseVal = base?.[key]
+    const editVal = edited[key]
+    if (editVal === undefined) continue
+    if (isPlainObject(baseVal) && isPlainObject(editVal)) {
+      const sub = applyOverrideEdit(result[key], baseVal, editVal)
+      if (sub) result[key] = sub
+      else delete result[key]
+    } else if (Array.isArray(editVal) ? JSON.stringify(baseVal) === JSON.stringify(editVal) : baseVal === editVal) {
+      delete result[key]
+    } else {
+      result[key] = editVal
+    }
+  }
+  return Object.keys(result).length ? result : null
+}
