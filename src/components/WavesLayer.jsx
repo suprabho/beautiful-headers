@@ -1,6 +1,7 @@
 import { useRef, useEffect, useMemo, useState, memo, lazy, Suspense } from 'react'
 import { getAudioModulatedConfig } from '../audio/applyAudioModulation'
 import { smoothMouse, getMouseEffects } from '../mouse/applyMouseEffect'
+import { drawImageFit } from '../lib/backgroundImage'
 
 // WebGL glass overlay is loaded on demand so this Canvas2D layer never pulls
 // three.js into its chunk (only scenes with fluted glass enabled fetch it).
@@ -24,7 +25,7 @@ const hexToRgb = (hex) => {
   return rgb
 }
 
-const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1, frameloop = 'always' }) => {
+const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1, backgroundImage = null, frameloop = 'always' }) => {
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
   const tempCanvasRef = useRef(null)
@@ -33,6 +34,7 @@ const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, 
   const timeRef = useRef(0)
   const isVisibleRef = useRef(true)
   const isPausedRef = useRef(false)
+  const backgroundImageRef = useRef(backgroundImage)
   const targetMouseRef = useRef({ x: 0.5, y: 0.5 })
   const smoothedMouseRef = useRef({ x: 0.5, y: 0.5 })
   const mouseIntensityRef = useRef(mouseIntensity)
@@ -63,6 +65,10 @@ const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, 
   useEffect(() => {
     isPausedRef.current = isPaused
   }, [isPaused])
+
+  useEffect(() => {
+    backgroundImageRef.current = backgroundImage
+  }, [backgroundImage])
 
   useEffect(() => {
     if (mouseIntensity === 0) {
@@ -187,10 +193,14 @@ const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, 
       const offsetX = (width - extendedWidth) / 2
       const offsetY = (height - extendedHeight) / 2
 
-      // Background color (color 1) - fills top 50%
+      // Background color (color 1) - fills top 50%. With a base image it is
+      // drawn behind the waves after the blur instead, in screen space.
       const backgroundColor = currentColors[0] || '#06b6d4'
-      ctx.fillStyle = backgroundColor
-      ctx.fillRect(offsetX, offsetY, extendedWidth, extendedHeight)
+      const baseImage = backgroundImageRef.current
+      if (!baseImage) {
+        ctx.fillStyle = backgroundColor
+        ctx.fillRect(offsetX, offsetY, extendedWidth, extendedHeight)
+      }
 
       // Wave region starts at 50% of the extended height
       const waveRegionStart = offsetY + (extendedHeight * 0.5)
@@ -272,6 +282,17 @@ const WavesLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, 
         ctx.filter = `blur(${blur * dpr}px)`
         ctx.drawImage(tempCanvas, 0, 0)
         ctx.filter = 'none'
+        ctx.restore()
+      }
+
+      if (baseImage) {
+        ctx.save()
+        ctx.globalCompositeOperation = 'destination-over'
+        ctx.globalAlpha = baseImage.imageOpacity
+        drawImageFit(ctx, baseImage.image, width, height, baseImage.fit)
+        ctx.globalAlpha = 1
+        ctx.fillStyle = backgroundColor
+        ctx.fillRect(0, 0, width, height)
         ctx.restore()
       }
 

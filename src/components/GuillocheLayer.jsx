@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState, useMemo, memo } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
+import BaseImagePlane from './BaseImagePlane'
 import FlutedGlassCanvas from './FlutedGlassCanvas'
 import { audioData } from '../audio/audioData'
 import { getAudioModulatedConfig } from '../audio/applyAudioModulation'
@@ -370,7 +371,7 @@ function CanvasRefExporter({ canvasRef, onReady }) {
   return null
 }
 
-const GuillocheLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1, frameloop = 'always' }) => {
+const GuillocheLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1, backgroundImage = null, frameloop = 'always' }) => {
   const canvasRef = useRef(null)
   const [canvasReady, setCanvasReady] = useState(false)
   const configRef = useRef(config)
@@ -408,6 +409,7 @@ const GuillocheLayer = memo(({ config, paletteColors = [], effectsConfig, isPaus
       >
         <CanvasRefExporter canvasRef={canvasRef} onReady={handleCanvasReady} />
         <SceneSetup config={config} colors={colors} />
+        {backgroundImage && <BaseImagePlane backgroundImage={backgroundImage} />}
         <MouseEffects mousePos={mousePos} mouseIntensity={mouseIntensity} mouseStateRef={mouseStateRef} />
         {motif === 'rosette' ? (
           <RosetteLines

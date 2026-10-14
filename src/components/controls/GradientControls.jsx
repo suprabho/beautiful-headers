@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { TypePicker, StudioControls, SectionLabel, isStudioType } from './StudioControls'
+import { BackgroundImageControls } from './BackgroundImageControls'
 
 // ============================================
 // COLORS SECTION - Shared by all background types
@@ -1895,6 +1896,9 @@ export const GradientPanel = ({
         setGradientConfig={setGradientConfig}
         parsedPalette={parsedPalette}
       />
+
+      {/* Base image under the background */}
+      <BackgroundImageControls />
 
       {/* SECTION 4: Legacy type-specific controls */}
       <div className="flex flex-col gap-2 empty:hidden">

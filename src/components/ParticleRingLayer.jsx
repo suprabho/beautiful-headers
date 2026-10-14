@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState, useMemo, memo } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
+import BaseImagePlane from './BaseImagePlane'
 import FlutedGlassCanvas from './FlutedGlassCanvas'
 import { audioData } from '../audio/audioData'
 import { smoothMouse, getMouseEffects } from '../mouse/applyMouseEffect'
@@ -215,7 +216,7 @@ function ParticleRingMesh({ config, colors, isPaused, mousePos = { x: 0.5, y: 0.
   )
 }
 
-const ParticleRingLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1, frameloop = 'always' }) => {
+const ParticleRingLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1, backgroundImage = null, frameloop = 'always' }) => {
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
   const [canvasReady, setCanvasReady] = useState(false)
@@ -261,6 +262,7 @@ const ParticleRingLayer = memo(({ config, paletteColors = [], effectsConfig, isP
         frameloop={frameloop}
       >
         <SceneSetup config={config} colors={colors} />
+        {backgroundImage && <BaseImagePlane backgroundImage={backgroundImage} />}
         <ParticleRingMesh config={config} colors={colors} isPaused={isPaused} mousePos={mousePos} mouseIntensity={mouseIntensity} />
       </Canvas>
       {flutedEnabled && canvasReady && canvasRef.current && (

@@ -64,7 +64,7 @@ const darkenHex = (hex, amount = 0.7) => {
 // src/lib/auroraRenderer.js) and mounts the optional glass overlay.
 // `blurScale` ('auto' or a fraction) opts into the reduced-resolution blur
 // stage described in auroraScene.js; 1 renders exactly as before.
-const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig, isPaused, mouseIntensity = 1, frameloop = 'always', offscreen = false, blurScale = 1 }) => {
+const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig, isPaused, mouseIntensity = 1, frameloop = 'always', offscreen = false, blurScale = 1, backgroundImage = null }) => {
   const containerRef = useRef(null)
   const canvasBRef = useRef(null)
   const [canvasReady, setCanvasReady] = useState(false)
@@ -97,7 +97,7 @@ const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig,
   const flutedEnabled = effectsConfig?.flutedGlass?.enabled ?? false
   // The glass overlay samples the canvas on the main thread every frame, so
   // keep the drawing there too when it is on.
-  const wantsWorker = offscreen && !flutedEnabled
+  const wantsWorker = offscreen && !flutedEnabled && !backgroundImage
 
   stateRef.current = {
     config,
@@ -105,6 +105,7 @@ const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig,
     mouse: mouseIntensity === 0 ? null : mousePos,
     mouseIntensity,
     paused: !!isPaused,
+    backgroundImage,
   }
 
   // Forward prop changes to the running renderer (never restarts the animation).
@@ -127,6 +128,10 @@ const AuroraLayer = memo(({ config, mousePos, paletteColors = [], effectsConfig,
   useEffect(() => {
     rendererRef.current?.setMouseIntensity(mouseIntensity)
   }, [mouseIntensity])
+
+  useEffect(() => {
+    rendererRef.current?.setBackgroundImage(backgroundImage)
+  }, [backgroundImage])
 
   // Canvas + renderer setup - runs only once on mount
   useEffect(() => {

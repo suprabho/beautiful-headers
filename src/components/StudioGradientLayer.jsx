@@ -3,6 +3,7 @@ import { VERTEX_SHADER, FRAGMENT_SHADERS, GLOW_SHAPES, FORM_SHAPES } from '@/lib
 import { STUDIO_DEFAULTS, hexToOklab, evenStops } from '@/lib/studioPresets'
 import { colorToHex } from '@/lib/colorConversion'
 import { getAudioModulatedConfig } from '../audio/applyAudioModulation'
+import { blendModeIndex, createFittedImageCanvas } from '@/lib/backgroundImage'
 
 // WebGL glass overlay is loaded on demand, as in SimpleGradientLayer
 const FlutedGlassCanvas = lazy(() => import('./FlutedGlassCanvas'))
@@ -33,7 +34,8 @@ const createProgram = (gl, fragSrc) => {
     return null
   }
   const names = ['u_res', 'u_time', 'u_colors', 'u_stops', 'u_count', 'u_scale', 'u_grain',
-    'u_seed', 'u_amount', 'u_soft', 'u_shape', 'u_mouse']
+    'u_seed', 'u_amount', 'u_soft', 'u_shape', 'u_mouse',
+    'u_image', 'u_hasImage', 'u_imageOpacity', 'u_gradientOpacity', 'u_blendMode']
   const loc = Object.fromEntries(names.map((n) => [n, gl.getUniformLocation(program, n)]))
   return { program, loc }
 }
@@ -55,6 +57,31 @@ const buildPalette = (colors, stops) => {
   return { lab, stops: st, count: pairs.length }
 }
 
+const createTexture = (gl) => {
+  const tex = gl.createTexture()
+  gl.bindTexture(gl.TEXTURE_2D, tex)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4))
+  return tex
+}
+
+// Upload the base image fitted to the canvas, only when it or the size changed
+const syncImageTexture = (gl, s, canvas, backgroundImage) => {
+  if (!backgroundImage) return
+  const { image, fit } = backgroundImage
+  const key = s.imageKey
+  if (key && key.image === image && key.fit === fit && key.w === canvas.width && key.h === canvas.height) return
+  s.fitCanvas = createFittedImageCanvas(image, canvas.width, canvas.height, fit, s.fitCanvas)
+  gl.bindTexture(gl.TEXTURE_2D, s.imageTex)
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true)
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, s.fitCanvas)
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false)
+  s.imageKey = { image, fit, w: canvas.width, h: canvas.height }
+}
+
 /**
  * StudioGradientLayer - raw WebGL renderer for the sky, watercolor, glow,
  * forms and prism background types. Sized to its container (not the window)
@@ -69,6 +96,7 @@ const StudioGradientLayer = memo(({
   isPaused = false,
   mousePos,
   mouseIntensity = 0,
+  backgroundImage = null,
   frameloop = 'always',
 }) => {
   const canvasRef = useRef(null)
@@ -87,6 +115,7 @@ const StudioGradientLayer = memo(({
     mouse: mousePos
       ? [(mousePos.x - 0.5) * mouseIntensity, (0.5 - mousePos.y) * mouseIntensity]
       : [0, 0],
+    backgroundImage,
   }
 
   // GL setup — once per canvas
@@ -105,9 +134,12 @@ const StudioGradientLayer = memo(({
     s.programs = {}
     s.time = 0
     s.last = performance.now()
+    // One texture for the base image; it holds a blank pixel until one is set
+    s.imageTex = createTexture(gl)
+    s.imageKey = null
 
     s.draw = () => {
-      const { type: t, palette, mouse } = s.inputs
+      const { type: t, palette, mouse, backgroundImage: baseImage } = s.inputs
       const c = getAudioModulatedConfig(s.inputs.cfg, t)
       // Ease toward the pointer so parallax never jumps
       s.mouse = s.mouse || [0, 0]
@@ -132,6 +164,14 @@ const StudioGradientLayer = memo(({
       const shape = t === 'glow' ? GLOW_SHAPES.indexOf(c.glowShape) : t === 'forms' ? FORM_SHAPES.indexOf(c.formShape) : 0
       gl.uniform1i(loc.u_shape, Math.max(0, shape))
       gl.uniform2f(loc.u_mouse, s.mouse[0], s.mouse[1])
+      syncImageTexture(gl, s, canvas, baseImage)
+      gl.activeTexture(gl.TEXTURE0)
+      gl.bindTexture(gl.TEXTURE_2D, s.imageTex)
+      gl.uniform1i(loc.u_image, 0)
+      gl.uniform1f(loc.u_hasImage, baseImage ? 1 : 0)
+      gl.uniform1f(loc.u_imageOpacity, baseImage?.imageOpacity ?? 1)
+      gl.uniform1f(loc.u_gradientOpacity, baseImage?.gradientOpacity ?? 1)
+      gl.uniform1f(loc.u_blendMode, blendModeIndex(baseImage?.blendMode))
       gl.drawArrays(gl.TRIANGLES, 0, 3)
     }
 
@@ -155,6 +195,7 @@ const StudioGradientLayer = memo(({
       cancelAnimationFrame(s.raf)
       Object.values(s.programs).forEach((p) => p && gl.deleteProgram(p.program))
       gl.deleteBuffer(buf)
+      gl.deleteTexture(s.imageTex)
       s.gl = null
     }
   }, [])

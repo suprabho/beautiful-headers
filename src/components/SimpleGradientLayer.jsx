@@ -1,4 +1,5 @@
 import { memo, useRef, useEffect, useState, useCallback, lazy, Suspense } from 'react'
+import { drawImageFit, blendModeToComposite } from '../lib/backgroundImage'
 
 // WebGL glass overlay is loaded on demand so this Canvas2D layer never pulls
 // three.js into its chunk (only scenes with fluted glass enabled fetch it).
@@ -8,7 +9,7 @@ const FlutedGlassCanvas = lazy(() => import('./FlutedGlassCanvas'))
  * SimpleGradientLayer - Renders a gradient to canvas without any animated effects
  * Supports fluted glass overlay effect
  */
-const SimpleGradientLayer = memo(({ config, gradientColors, effectsConfig, frameloop = 'always' }) => {
+const SimpleGradientLayer = memo(({ config, gradientColors, effectsConfig, backgroundImage = null, frameloop = 'always' }) => {
   const canvasRef = useRef(null)
   const [canvasReady, setCanvasReady] = useState(false)
 
@@ -73,12 +74,22 @@ const SimpleGradientLayer = memo(({ config, gradientColors, effectsConfig, frame
       gradient.addColorStop(Math.max(0, Math.min(1, stop)), color)
     })
 
+    // The gradient is the whole frame, so a base image goes underneath and the
+    // gradient is laid over it with the chosen opacity and blend mode
+    ctx.save()
+    if (backgroundImage) {
+      drawImageFit(ctx, backgroundImage.image, width, height, backgroundImage.fit)
+      ctx.globalAlpha = backgroundImage.gradientOpacity
+      ctx.globalCompositeOperation = blendModeToComposite(backgroundImage.blendMode)
+    }
+
     // Fill with gradient
     ctx.fillStyle = gradient
     ctx.fillRect(0, 0, width, height)
+    ctx.restore()
 
     setCanvasReady(true)
-  }, [colors, colorStops, gradientType, startPos, endPos])
+  }, [colors, colorStops, gradientType, startPos, endPos, backgroundImage])
 
   // Initialize canvas size and draw
   useEffect(() => {

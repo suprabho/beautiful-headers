@@ -1,6 +1,7 @@
 import { useRef, useEffect, useMemo, useState, memo, lazy, Suspense } from 'react'
 import { getAudioModulatedConfig } from '../audio/applyAudioModulation'
 import { smoothMouse, getMouseEffects } from '../mouse/applyMouseEffect'
+import { drawImageFit, blendModeToComposite } from '../lib/backgroundImage'
 
 // WebGL glass overlay is loaded on demand so this Canvas2D layer never pulls
 // three.js into its chunk (only scenes with fluted glass enabled fetch it).
@@ -81,7 +82,7 @@ const interpolateValues = (values, progress) => {
   }
 }
 
-const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1, frameloop = 'always' }) => {
+const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1, backgroundImage = null, frameloop = 'always' }) => {
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
   const tempCanvasRef = useRef(null)
@@ -99,6 +100,7 @@ const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, is
   const gradientColorsRef = useRef([])
   const circleConfigsRef = useRef([])
   const bgColorRef = useRef('')
+  const backgroundImageRef = useRef(backgroundImage)
 
   const flutedEnabled = effectsConfig?.flutedGlass?.enabled ?? false
 
@@ -137,6 +139,10 @@ const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, is
   useEffect(() => {
     isPausedRef.current = isPaused
   }, [isPaused])
+
+  useEffect(() => {
+    backgroundImageRef.current = backgroundImage
+  }, [backgroundImage])
 
   useEffect(() => {
     if (mouseIntensity === 0) {
@@ -335,6 +341,29 @@ const FluidGradientLayer = memo(({ config, paletteColors = [], effectsConfig, is
         // Restore DPR transforms for next frame
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
         tempCtx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      }
+
+      // The blobs fill the frame, so a base image goes underneath the whole
+      // (blurred) picture, which is laid over it with the chosen opacity and
+      // blend mode. Drawn after the blur so the image stays sharp.
+      const baseImage = backgroundImageRef.current
+      if (baseImage) {
+        tempCtx.save()
+        tempCtx.setTransform(1, 0, 0, 1, 0, 0)
+        tempCtx.clearRect(0, 0, canvas.width, canvas.height)
+        tempCtx.drawImage(canvas, 0, 0)
+        tempCtx.restore()
+
+        ctx.save()
+        ctx.clearRect(0, 0, width, height)
+        ctx.fillStyle = background
+        ctx.fillRect(0, 0, width, height)
+        drawImageFit(ctx, baseImage.image, width, height, baseImage.fit)
+        ctx.setTransform(1, 0, 0, 1, 0, 0)
+        ctx.globalAlpha = baseImage.gradientOpacity
+        ctx.globalCompositeOperation = blendModeToComposite(baseImage.blendMode)
+        ctx.drawImage(tempCanvas, 0, 0)
+        ctx.restore()
       }
 
       animationRef.current = requestAnimationFrame(animate)

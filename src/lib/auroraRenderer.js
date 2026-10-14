@@ -55,6 +55,7 @@ export function createMainThreadRenderer({ canvas, dpr, state, blurScale = 1 }) 
   scene.setMouseIntensity(state.mouseIntensity)
   scene.setMouseTarget(state.mouse)
   scene.setPaused(state.paused)
+  scene.setBackgroundImage(state.backgroundImage)
 
   let raf = null
   let destroyed = false
@@ -83,6 +84,7 @@ export function createMainThreadRenderer({ canvas, dpr, state, blurScale = 1 }) 
     setMouseTarget: (p) => scene.setMouseTarget(p),
     setMouseIntensity: (v) => scene.setMouseIntensity(v),
     setPaused: (v) => scene.setPaused(v),
+    setBackgroundImage: (v) => scene.setBackgroundImage(v),
     /** Draw the first frame right away, then keep going on animation frames. */
     start: () => {
       if (raf === null) animate()
@@ -159,6 +161,9 @@ export function createWorkerRenderer({ canvas, dpr, state, blurScale = 1, onUnsu
     setMouseTarget: (p) => post({ type: 'mouse', pos: p ? { x: p.x, y: p.y } : null }),
     setMouseIntensity: (v) => post({ type: 'intensity', value: v }),
     setPaused: (v) => post({ type: 'paused', value: !!v }),
+    // An HTMLImageElement can't cross to the worker; the editor never runs
+    // the aurora in a worker, so the base image is main-thread only for now.
+    setBackgroundImage: () => {},
     start: () => {},
     destroy: () => {
       if (destroyed) return

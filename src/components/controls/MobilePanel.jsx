@@ -25,6 +25,7 @@ import {
 } from './index'
 import { InputPanel } from './InputControls'
 import { TypePicker, StudioControls, SectionLabel, Segmented, isStudioType, hasStudioShapes } from './StudioControls'
+import { BackgroundImageControls } from './BackgroundImageControls'
 import { MobileDialogContent, getDialogTitle } from './MobileDialogContent'
 import { useKeyboardOffset } from '../../hooks/useKeyboardOffset'
 
@@ -199,6 +200,7 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
                       setGradientConfig={setGradientConfig}
                       parsedPalette={parsedPalette}
                     />
+                    <BackgroundImageControls />
                     {isStudioType(backgroundType) && (
                       <div className="pb-3">
                         <StudioControls
