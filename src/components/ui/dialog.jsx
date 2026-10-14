@@ -24,7 +24,8 @@ function DialogOverlay({ className, ...props }) {
     <DialogPrimitive.Overlay
       data-slot="dialog-overlay"
       className={cn(
-        "fixed bg-black/80 backdrop-blur inset-0 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+        // Mobile bottom sheets keep the canvas fully visible; desktop modals dim + blur it
+        "fixed bg-transparent md:bg-black/80 md:backdrop-blur inset-0 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
         className
       )}
       style={{ zIndex: 9998 }}
