@@ -237,7 +237,14 @@ const SLIDER_LABELS = {
 
 export const isStudioType = (type) => STUDIO_TYPES.includes(type)
 
-export const StudioControls = ({ backgroundType, studioConfig, setStudioConfig, gradientConfig, setGradientConfig }) => {
+// Types with a dedicated shape picker (glow arrangements, form silhouettes)
+export const hasStudioShapes = (type) => type === 'glow' || type === 'forms'
+
+const ALL_SECTIONS = ['shape', 'palettes', 'adjust']
+
+// `sections` lets a caller render a subset (e.g. mobile sub-tabs); defaults to everything
+export const StudioControls = ({ backgroundType, studioConfig, setStudioConfig, gradientConfig, setGradientConfig, sections = ALL_SECTIONS }) => {
+  const show = (section) => sections.includes(section)
   const cfg = useMemo(() => ({ ...STUDIO_DEFAULTS, ...studioConfig }), [studioConfig])
   const update = (patch) => setStudioConfig({ ...cfg, ...patch })
   const labels = SLIDER_LABELS[backgroundType] || SLIDER_LABELS.sky
@@ -249,7 +256,7 @@ export const StudioControls = ({ backgroundType, studioConfig, setStudioConfig, 
 
   return (
     <div className="flex flex-col gap-5">
-      {backgroundType === 'glow' && (
+      {show('shape') && backgroundType === 'glow' && (
         <div className="flex flex-col gap-2.5">
           <SectionLabel hint="glowing shapes">Presets</SectionLabel>
           <div className="grid grid-cols-4 gap-2">
@@ -271,7 +278,7 @@ export const StudioControls = ({ backgroundType, studioConfig, setStudioConfig, 
         </div>
       )}
 
-      {backgroundType === 'forms' && (
+      {show('shape') && backgroundType === 'forms' && (
         <div className="flex flex-col gap-2.5">
           <SectionLabel hint="from the SVG set">Silhouettes</SectionLabel>
           <div className="grid grid-cols-6 gap-1.5">
@@ -293,7 +300,7 @@ export const StudioControls = ({ backgroundType, studioConfig, setStudioConfig, 
         </div>
       )}
 
-      {(backgroundType === 'watercolor' || backgroundType === 'sky') && (
+      {show('adjust') && (backgroundType === 'watercolor' || backgroundType === 'sky') && (
         <div className="flex flex-col gap-2.5">
           <SectionLabel>Motion</SectionLabel>
           <Segmented
@@ -304,7 +311,7 @@ export const StudioControls = ({ backgroundType, studioConfig, setStudioConfig, 
         </div>
       )}
 
-      {palettes.length > 0 && (
+      {show('palettes') && palettes.length > 0 && (
         <div className="flex flex-col gap-2.5">
           {backgroundType === 'forms' ? (
             <>
@@ -322,42 +329,44 @@ export const StudioControls = ({ backgroundType, studioConfig, setStudioConfig, 
         </div>
       )}
 
-      <div className="flex flex-col gap-2.5">
-        <SectionLabel
-          action={
-            <button
-              type="button"
-              title="New variation"
-              onClick={() => update({ seed: Math.round(Math.random() * 1000) / 10 })}
-              className="flex h-7 items-center gap-1 rounded-full bg-muted px-2.5 text-[11px] font-medium text-muted-foreground hover:text-foreground"
-            >
-              <Shuffle size={12} /> Vary
-            </button>
-          }
-        >
-          Shape &amp; Motion
-        </SectionLabel>
-        {!(backgroundType === 'watercolor' || backgroundType === 'sky') && (
-          <Segmented
-            value={cfg.motion}
-            onChange={(motion) => update({ motion })}
-            options={[{ value: false, label: 'Still' }, { value: true, label: 'Moving' }]}
+      {show('adjust') && (
+        <div className="flex flex-col gap-2.5">
+          <SectionLabel
+            action={
+              <button
+                type="button"
+                title="New variation"
+                onClick={() => update({ seed: Math.round(Math.random() * 1000) / 10 })}
+                className="flex h-7 items-center gap-1 rounded-full bg-muted px-2.5 text-[11px] font-medium text-muted-foreground hover:text-foreground"
+              >
+                <Shuffle size={12} /> Vary
+              </button>
+            }
+          >
+            Shape &amp; Motion
+          </SectionLabel>
+          {!(backgroundType === 'watercolor' || backgroundType === 'sky') && (
+            <Segmented
+              value={cfg.motion}
+              onChange={(motion) => update({ motion })}
+              options={[{ value: false, label: 'Still' }, { value: true, label: 'Moving' }]}
+            />
+          )}
+          <PillSlider label="Speed" value={cfg.speed} onChange={(speed) => update({ speed })} />
+          <PillSlider label={labels.amount} value={cfg.amount} onChange={(amount) => update({ amount })} />
+          <PillSlider label={labels.softness} value={cfg.softness} onChange={(softness) => update({ softness })} />
+          <PillSlider
+            label={labels.scale}
+            value={cfg.scale}
+            min={0.4}
+            max={2}
+            step={0.05}
+            onChange={(scale) => update({ scale })}
+            format={(v) => `${v.toFixed(2)}×`}
           />
-        )}
-        <PillSlider label="Speed" value={cfg.speed} onChange={(speed) => update({ speed })} />
-        <PillSlider label={labels.amount} value={cfg.amount} onChange={(amount) => update({ amount })} />
-        <PillSlider label={labels.softness} value={cfg.softness} onChange={(softness) => update({ softness })} />
-        <PillSlider
-          label={labels.scale}
-          value={cfg.scale}
-          min={0.4}
-          max={2}
-          step={0.05}
-          onChange={(scale) => update({ scale })}
-          format={(v) => `${v.toFixed(2)}×`}
-        />
-        <PillSlider label="Grain" value={cfg.grain} max={0.5} onChange={(grain) => update({ grain })} />
-      </div>
+          <PillSlider label="Grain" value={cfg.grain} max={0.5} onChange={(grain) => update({ grain })} />
+        </div>
+      )}
     </div>
   )
 }

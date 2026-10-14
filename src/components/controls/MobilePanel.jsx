@@ -24,7 +24,7 @@ import {
   DEFAULT_EFFECTS_CONFIG,
 } from './index'
 import { InputPanel } from './InputControls'
-import { TypePicker, StudioControls, SectionLabel, isStudioType } from './StudioControls'
+import { TypePicker, StudioControls, SectionLabel, Segmented, isStudioType, hasStudioShapes } from './StudioControls'
 import { MobileDialogContent, getDialogTitle } from './MobileDialogContent'
 import { useKeyboardOffset } from '../../hooks/useKeyboardOffset'
 
@@ -36,9 +36,18 @@ const tabs = [
   { id: 'audio', label: 'Input', icon: Waveform },
 ]
 
+// Background tab sub-tabs; "Shape" only exists for types with a shape picker
+const getBackgroundSubTabs = (backgroundType) => [
+  { value: 'type', label: 'Type' },
+  { value: 'colours', label: 'Colours' },
+  ...(hasStudioShapes(backgroundType) ? [{ value: 'shape', label: backgroundType === 'glow' ? 'Presets' : 'Shape' }] : []),
+  { value: 'adjust', label: 'Adjust' },
+]
+
 export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapture, onShowAbout, audioAnalyser }) => {
   const navigate = useNavigate()
   const [isMobileCollapsed, setIsMobileCollapsed] = useState(true)
+  const [backgroundSubTab, setBackgroundSubTab] = useState('type')
 
   const activePanel = useStore((state) => state.activePanel)
   const setActivePanel = useStore((state) => state.setActivePanel)
@@ -63,6 +72,10 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
   const exitSceneEdit = useStore((state) => state.exitSceneEdit)
 
   const parsedPalette = colorPalette ? parsePaletteJson(colorPalette) : null
+
+  const backgroundSubTabs = getBackgroundSubTabs(backgroundType)
+  // Fall back to Adjust when switching away from a type that had the Shape sub-tab
+  const activeBackgroundSubTab = backgroundSubTabs.some(t => t.value === backgroundSubTab) ? backgroundSubTab : 'adjust'
 
   const { activeDialog, openDialog, applyDialog, backDialog, resetDialog } = useMobileDialogs()
   const keyboardOffset = useKeyboardOffset()
@@ -165,25 +178,46 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
           </Button>
         </div>
 
+        {!isMobileCollapsed && activePanel === 'gradient' && (
+          <div className="px-3 pt-2">
+            <Segmented options={backgroundSubTabs} value={activeBackgroundSubTab} onChange={setBackgroundSubTab} />
+          </div>
+        )}
+
         {!isMobileCollapsed && (
           <ScrollArea className="max-h-[50vh] p-1 gap-2">
             {activePanel === 'gradient' && (
-              <div className="px-3 py-2 ">
-                <ColorsSection
-                  className="border-b border-border/50"
-                  gradientConfig={gradientConfig}
-                  setGradientConfig={setGradientConfig}
-                  parsedPalette={parsedPalette}
-                />
-                {/* Background Type Selector */}
-                <div className="flex flex-col gap-2 py-3">
-                  <SectionLabel>Type</SectionLabel>
+              <div className="px-3 py-2">
+                {activeBackgroundSubTab === 'type' && (
                   <TypePicker value={backgroundType} onChange={setBackgroundType} />
-                </div>
+                )}
 
-                {isStudioType(backgroundType) && (
+                {activeBackgroundSubTab === 'colours' && (
+                  <div className="flex flex-col gap-3">
+                    <ColorsSection
+                      gradientConfig={gradientConfig}
+                      setGradientConfig={setGradientConfig}
+                      parsedPalette={parsedPalette}
+                    />
+                    {isStudioType(backgroundType) && (
+                      <div className="pb-3">
+                        <StudioControls
+                          sections={['palettes']}
+                          backgroundType={backgroundType}
+                          studioConfig={studioConfig}
+                          setStudioConfig={setStudioConfig}
+                          gradientConfig={gradientConfig}
+                          setGradientConfig={setGradientConfig}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {activeBackgroundSubTab === 'shape' && (
                   <div className="pb-3">
                     <StudioControls
+                      sections={['shape']}
                       backgroundType={backgroundType}
                       studioConfig={studioConfig}
                       setStudioConfig={setStudioConfig}
@@ -193,78 +227,93 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
                   </div>
                 )}
 
-                {/* Type-specific settings */}
-                <div className="space-y-1 flex flex-row flex-wrap gap-1 px-1">
-                  {backgroundType === 'simple' && (
-                    <>
-                      <SubsectionButton title="Type" onClick={() => openDialog('simple-type')} />
-                      <SubsectionButton title="Position" onClick={() => openDialog('simple-position')} />
-                    </>
-                  )}
-                  {backgroundType === 'liquid' && (
-                    <>
-                      <SubsectionButton title="Type" onClick={() => openDialog('gradient-type')} />
-                      <SubsectionButton title="Stops" onClick={() => openDialog('gradient-stops')} />
-                      <SubsectionButton title="Wave" onClick={() => openDialog('gradient-wave')} />
-                      <SubsectionButton title="Decay" onClick={() => openDialog('gradient-mouse')} />
-                    </>
-                  )}
-                  {backgroundType === 'aurora' && (
-                    <>
-                      <SubsectionButton title="Background" onClick={() => openDialog('aurora-background')} />
-                      <SubsectionButton title="Lines" onClick={() => openDialog('aurora-lines')} />
-                      <SubsectionButton title="Animation" onClick={() => openDialog('aurora-animation')} />
-                    </>
-                  )}
-                  {backgroundType === 'fluid' && (
-                    <>
-                      <SubsectionButton title="Background" onClick={() => openDialog('fluid-background')} />
-                      <SubsectionButton title="Animation" onClick={() => openDialog('fluid-animation')} />
-                      <SubsectionButton title="Settings" onClick={() => openDialog('fluid-settings')} />
-                    </>
-                  )}
-                  {backgroundType === 'waves' && (
-                    <>
-                      <SubsectionButton title="Shape" onClick={() => openDialog('waves-shape')} />
-                      <SubsectionButton title="Position" onClick={() => openDialog('waves-position')} />
-                      <SubsectionButton title="Animation" onClick={() => openDialog('waves-animation')} />
-                    </>
-                  )}
-                  {backgroundType === 'ribbon' && (
-                    <>
-                      <SubsectionButton title="Background" onClick={() => openDialog('ribbon-background')} />
-                      <SubsectionButton title="Shape" onClick={() => openDialog('ribbon-shape')} />
-                      <SubsectionButton title="Motion" onClick={() => openDialog('ribbon-motion')} />
-                      <SubsectionButton title="Animation" onClick={() => openDialog('ribbon-animation')} />
-                    </>
-                  )}
-                  {backgroundType === 'dandelion' && (
-                    <>
-                      <SubsectionButton title="Background" onClick={() => openDialog('dandelion-background')} />
-                      <SubsectionButton title="Lines" onClick={() => openDialog('dandelion-lines')} />
-                      <SubsectionButton title="Shape" onClick={() => openDialog('dandelion-shape')} />
-                      <SubsectionButton title="Animation" onClick={() => openDialog('dandelion-animation')} />
-                    </>
-                  )}
-                  {backgroundType === 'particleRing' && (
-                    <>
-                      <SubsectionButton title="Background" onClick={() => openDialog('particleRing-background')} />
-                      <SubsectionButton title="Ring" onClick={() => openDialog('particleRing-ring')} />
-                      <SubsectionButton title="Particles" onClick={() => openDialog('particleRing-particles')} />
-                      <SubsectionButton title="Animation" onClick={() => openDialog('particleRing-animation')} />
-                      <SubsectionButton title="Tilt" onClick={() => openDialog('particleRing-tilt')} />
-                    </>
-                  )}
-                  {backgroundType === 'guilloche' && (
-                    <>
-                      <SubsectionButton title="Background" onClick={() => openDialog('guilloche-background')} />
-                      <SubsectionButton title="Motif" onClick={() => openDialog('guilloche-motif')} />
-                      <SubsectionButton title="Pattern" onClick={() => openDialog('guilloche-pattern')} />
-                      <SubsectionButton title="Animation" onClick={() => openDialog('guilloche-animation')} />
-                      <SubsectionButton title="Tilt" onClick={() => openDialog('guilloche-tilt')} />
-                    </>
-                  )}
-                </div>
+                {activeBackgroundSubTab === 'adjust' && (isStudioType(backgroundType) ? (
+                  <div className="pb-3">
+                    <StudioControls
+                      sections={['adjust']}
+                      backgroundType={backgroundType}
+                      studioConfig={studioConfig}
+                      setStudioConfig={setStudioConfig}
+                      gradientConfig={gradientConfig}
+                      setGradientConfig={setGradientConfig}
+                    />
+                  </div>
+                ) : (
+                  <>
+                    {/* Type-specific settings (legacy types open dialogs) */}
+                    <div className="space-y-1 flex flex-row flex-wrap gap-1 px-1">
+                      {backgroundType === 'simple' && (
+                        <>
+                          <SubsectionButton title="Type" onClick={() => openDialog('simple-type')} />
+                          <SubsectionButton title="Position" onClick={() => openDialog('simple-position')} />
+                        </>
+                      )}
+                      {backgroundType === 'liquid' && (
+                        <>
+                          <SubsectionButton title="Type" onClick={() => openDialog('gradient-type')} />
+                          <SubsectionButton title="Stops" onClick={() => openDialog('gradient-stops')} />
+                          <SubsectionButton title="Wave" onClick={() => openDialog('gradient-wave')} />
+                          <SubsectionButton title="Decay" onClick={() => openDialog('gradient-mouse')} />
+                        </>
+                      )}
+                      {backgroundType === 'aurora' && (
+                        <>
+                          <SubsectionButton title="Background" onClick={() => openDialog('aurora-background')} />
+                          <SubsectionButton title="Lines" onClick={() => openDialog('aurora-lines')} />
+                          <SubsectionButton title="Animation" onClick={() => openDialog('aurora-animation')} />
+                        </>
+                      )}
+                      {backgroundType === 'fluid' && (
+                        <>
+                          <SubsectionButton title="Background" onClick={() => openDialog('fluid-background')} />
+                          <SubsectionButton title="Animation" onClick={() => openDialog('fluid-animation')} />
+                          <SubsectionButton title="Settings" onClick={() => openDialog('fluid-settings')} />
+                        </>
+                      )}
+                      {backgroundType === 'waves' && (
+                        <>
+                          <SubsectionButton title="Shape" onClick={() => openDialog('waves-shape')} />
+                          <SubsectionButton title="Position" onClick={() => openDialog('waves-position')} />
+                          <SubsectionButton title="Animation" onClick={() => openDialog('waves-animation')} />
+                        </>
+                      )}
+                      {backgroundType === 'ribbon' && (
+                        <>
+                          <SubsectionButton title="Background" onClick={() => openDialog('ribbon-background')} />
+                          <SubsectionButton title="Shape" onClick={() => openDialog('ribbon-shape')} />
+                          <SubsectionButton title="Motion" onClick={() => openDialog('ribbon-motion')} />
+                          <SubsectionButton title="Animation" onClick={() => openDialog('ribbon-animation')} />
+                        </>
+                      )}
+                      {backgroundType === 'dandelion' && (
+                        <>
+                          <SubsectionButton title="Background" onClick={() => openDialog('dandelion-background')} />
+                          <SubsectionButton title="Lines" onClick={() => openDialog('dandelion-lines')} />
+                          <SubsectionButton title="Shape" onClick={() => openDialog('dandelion-shape')} />
+                          <SubsectionButton title="Animation" onClick={() => openDialog('dandelion-animation')} />
+                        </>
+                      )}
+                      {backgroundType === 'particleRing' && (
+                        <>
+                          <SubsectionButton title="Background" onClick={() => openDialog('particleRing-background')} />
+                          <SubsectionButton title="Ring" onClick={() => openDialog('particleRing-ring')} />
+                          <SubsectionButton title="Particles" onClick={() => openDialog('particleRing-particles')} />
+                          <SubsectionButton title="Animation" onClick={() => openDialog('particleRing-animation')} />
+                          <SubsectionButton title="Tilt" onClick={() => openDialog('particleRing-tilt')} />
+                        </>
+                      )}
+                      {backgroundType === 'guilloche' && (
+                        <>
+                          <SubsectionButton title="Background" onClick={() => openDialog('guilloche-background')} />
+                          <SubsectionButton title="Motif" onClick={() => openDialog('guilloche-motif')} />
+                          <SubsectionButton title="Pattern" onClick={() => openDialog('guilloche-pattern')} />
+                          <SubsectionButton title="Animation" onClick={() => openDialog('guilloche-animation')} />
+                          <SubsectionButton title="Tilt" onClick={() => openDialog('guilloche-tilt')} />
+                        </>
+                      )}
+                    </div>
+                  </>
+                ))}
               </div>
             )}
             {activePanel === 'tessellation' && (
