@@ -1,4 +1,4 @@
-import { useCallback, useRef, useEffect } from 'react'
+import { useCallback, useRef, useEffect, useMemo } from 'react'
 import { useAudioAnalyser } from './audio/useAudioAnalyser'
 import GradientLayer from './components/GradientLayer'
 import SimpleGradientLayer from './components/SimpleGradientLayer'
@@ -17,6 +17,7 @@ import TextLayer from './components/TextLayer'
 import ControlPanel from './components/ControlPanel'
 import useStore from './store/useStore'
 import { useThemedConfig } from './hooks/useThemedConfig'
+import { useBackgroundImage, toLayerImage } from './hooks/useBackgroundImage'
 import { getScenes, getScene } from './lib/scenesApi'
 import { fetchTextPairs } from './lib/gemini'
 import { isFigmaHost, figmaHostScene, useFigmaHost } from './lib/figmaHost'
@@ -51,6 +52,10 @@ function App() {
   const setTextPairs = useStore((state) => state.setTextPairs)
 
   const layersContainerRef = useRef(null)
+
+  // Base image, drawn by the active background type in place of its base fill
+  const baseImageState = useBackgroundImage()
+  const backgroundImage = useMemo(() => toLayerImage(baseImageState), [baseImageState])
 
   // Audio analyser — writes to audioData singleton, read by layers
   const audioAnalyser = useAudioAnalyser()
@@ -196,34 +201,34 @@ function App() {
           }}
         >
           {backgroundType === 'simple' && (
-            <SimpleGradientLayer config={gradientConfig} gradientColors={gradientConfig.colors} effectsConfig={effectsConfig} />
+            <SimpleGradientLayer config={gradientConfig} gradientColors={gradientConfig.colors} effectsConfig={effectsConfig} backgroundImage={backgroundImage} />
           )}
           {backgroundType === 'liquid' && (
-            <GradientLayer config={gradientConfig} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={isPaused} mouseIntensity={effectiveMouseIntensity} />
+            <GradientLayer config={gradientConfig} effectsConfig={effectsConfig} backgroundImage={backgroundImage} mousePos={mousePos} isPaused={isPaused} mouseIntensity={effectiveMouseIntensity} />
           )}
           {backgroundType === 'aurora' && (
-            <AuroraLayer config={auroraConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mouseIntensity={effectiveMouseIntensity} />
+            <AuroraLayer config={auroraConfig} mousePos={mousePos} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} backgroundImage={backgroundImage} isPaused={isPaused} mouseIntensity={effectiveMouseIntensity} />
           )}
           {backgroundType === 'fluid' && (
-            <FluidGradientLayer config={fluidConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
+            <FluidGradientLayer config={fluidConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} backgroundImage={backgroundImage} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
           )}
           {backgroundType === 'waves' && (
-            <WavesLayer config={wavesConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
+            <WavesLayer config={wavesConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} backgroundImage={backgroundImage} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
           )}
           {backgroundType === 'ribbon' && (
-            <RibbonLayer config={ribbonConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
+            <RibbonLayer config={ribbonConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} backgroundImage={backgroundImage} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
           )}
           {backgroundType === 'dandelion' && (
-            <DandelionLayer config={dandelionConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mouseEnabled={effectiveMouseEnabled} mouseIntensity={effectiveMouseIntensity} />
+            <DandelionLayer config={dandelionConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} backgroundImage={backgroundImage} isPaused={isPaused} mouseEnabled={effectiveMouseEnabled} mouseIntensity={effectiveMouseIntensity} />
           )}
           {backgroundType === 'particleRing' && (
-            <ParticleRingLayer config={particleRingConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
+            <ParticleRingLayer config={particleRingConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} backgroundImage={backgroundImage} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
           )}
           {backgroundType === 'guilloche' && (
-            <GuillocheLayer config={guillocheConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
+            <GuillocheLayer config={guillocheConfig} paletteColors={gradientConfig.colors} effectsConfig={effectsConfig} backgroundImage={backgroundImage} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
           )}
           {STUDIO_TYPES.includes(backgroundType) && (
-            <StudioGradientLayer type={backgroundType} config={studioConfig} paletteColors={gradientConfig.colors} colorStops={gradientConfig.colorStops} effectsConfig={effectsConfig} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
+            <StudioGradientLayer type={backgroundType} config={studioConfig} paletteColors={gradientConfig.colors} colorStops={gradientConfig.colorStops} effectsConfig={effectsConfig} backgroundImage={backgroundImage} isPaused={isPaused} mousePos={mousePos} mouseIntensity={effectiveMouseIntensity} />
           )}
         </div>
 

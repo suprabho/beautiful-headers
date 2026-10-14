@@ -4,6 +4,8 @@
 // ramp is blended in OKLab and converted to linear RGB, and every shader ends
 // with the same grain + sRGB encode.
 
+import { IMAGE_BLEND_GLSL } from './backgroundImage'
+
 export const STUDIO_TYPES = ['sky', 'watercolor', 'glow', 'forms', 'prism']
 
 export const GLOW_SHAPES = ['edge', 'circles', 'moons', 'pebbles', 'ellipses', 'halo', 'dunes', 'petals']
@@ -28,6 +30,10 @@ uniform float u_amount;
 uniform float u_soft;
 uniform int u_shape;
 uniform vec2 u_mouse;
+
+// Base image (see backgroundImage.js): sampled in linear light like pal()
+#define BASE_IMAGE_LINEAR
+${IMAGE_BLEND_GLSL}
 
 vec3 oklabToLinear(vec3 c) {
   float l_ = c.x + 0.3963377774 * c.y + 0.2158037573 * c.z;
@@ -139,7 +145,7 @@ void main() {
   vec2 p = centered() + u_mouse * 0.05;
   float t = u_time * 0.04;
 
-  vec3 sky = ramp(mix(u_count > 1 ? u_stops[1] : 0.0, 1.0, 1.0 - uv.y));
+  vec3 sky = applyImageBase(ramp(mix(u_count > 1 ? u_stops[1] : 0.0, 1.0, 1.0 - uv.y)), uv);
 
   vec2 q = p * (1.1 / u_scale) + vec2(u_seed * 3.1, 0.0);
   vec2 drift = vec2(t * 1.5, 0.0);
@@ -186,7 +192,7 @@ void main() {
   ink *= mix(1.0, 0.8, depth * 0.5 + edge);
 
   float fiber = fbm(gl_FragCoord.xy * 0.02) * 0.03;
-  vec3 paper = vec3(0.985, 0.985, 0.975) - fiber;
+  vec3 paper = applyImageBase(vec3(0.985, 0.985, 0.975), gl_FragCoord.xy / u_res) - fiber;
   vec3 col = mix(paper, ink, clamp(wash + edge * wash, 0.0, 1.0));
   gl_FragColor = finish(col, gl_FragCoord.xy);
 }
@@ -233,7 +239,7 @@ void main() {
   vec2 p = centered() / u_scale + u_mouse * 0.04;
   float a = u_res.x / u_res.y;
   float t = u_time * 0.25;
-  vec3 bg = pal(0);
+  vec3 bg = applyImageBase(pal(0), gl_FragCoord.xy / u_res);
   col = bg;
   bgLum = clamp(dot(bg, vec3(0.2126, 0.7152, 0.0722)) * 1.6, 0.0, 1.0);
   shapeIdx = 0.0;
@@ -346,7 +352,7 @@ float form(vec2 p, float t) {
 void main() {
   vec2 p = centered() / u_scale + u_mouse * 0.04;
   float t = u_time * 0.3;
-  vec3 bg = pal(0);
+  vec3 bg = applyImageBase(pal(0), gl_FragCoord.xy / u_res);
   float d = form(p, t);
 
   float feather = 0.006 + u_soft * 0.07;
@@ -393,7 +399,7 @@ void main() {
   float v = smoothstep(h, h - fade, uv.y);
   float haze = exp(-pow((uv.x - 0.5) * 2.2, 2.0)) * (1.0 - uv.y) * 0.35;
   float shade = 1.0 - 0.06 * smoothstep(0.0, 1.0, f);
-  vec3 col = ramp(clamp(max(v, haze), 0.0, 1.0)) * shade;
+  vec3 col = applyImageUnder(ramp(clamp(max(v, haze), 0.0, 1.0)) * shade, uv);
   gl_FragColor = finish(col, gl_FragCoord.xy);
 }
 `

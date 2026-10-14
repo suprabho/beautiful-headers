@@ -40,6 +40,7 @@
 
 import { AUDIO_MAPPINGS } from '../audio/audioMappings'
 import { MOUSE_MAPPINGS } from '../mouse/mouseMappings'
+import { drawImageFit } from './backgroundImage'
 
 // The two per-frame lookups the old loop did with Array.prototype.find.
 const AUDIO_WIDTH = AUDIO_MAPPINGS.aurora?.find((m) => m.param === 'width') || null
@@ -111,6 +112,7 @@ export function createAuroraScene({ canvas, createCanvas, dpr = 1, random = Math
 
   let config = {}
   let derived = null // { hues, backgroundColor } from the palette, or null
+  let baseImage = null // { image, fit, imageOpacity } drawn over the base colour, or null
   let mouseIntensity = 1
   let paused = false
   let audioWidthBoost = 0
@@ -259,6 +261,12 @@ export function createAuroraScene({ canvas, createCanvas, dpr = 1, random = Math
       dirty = true
     },
 
+    /** Base image (main thread only), or null for the plain base colour. */
+    setBackgroundImage(next) {
+      baseImage = next || null
+      dirty = true
+    },
+
     /** Normalised cursor position, or null to disable mouse interaction. */
     setMouseTarget(pos) {
       if (!pos) {
@@ -368,10 +376,18 @@ export function createAuroraScene({ canvas, createCanvas, dpr = 1, random = Math
 
       const background = config.backgroundColor ?? derived?.backgroundColor ?? '#000000'
       const blur = blurAmount()
+      const paintBase = (ctx) => {
+        ctx.fillStyle = background
+        ctx.fillRect(0, 0, logicalWidth, logicalHeight)
+        if (baseImage) {
+          ctx.globalAlpha = baseImage.imageOpacity
+          drawImageFit(ctx, baseImage.image, logicalWidth, logicalHeight, baseImage.fit)
+          ctx.globalAlpha = 1
+        }
+      }
       if (scale === 1) {
         ctxB.filter = 'none'
-        ctxB.fillStyle = background
-        ctxB.fillRect(0, 0, logicalWidth, logicalHeight)
+        paintBase(ctxB)
         ctxB.filter = `blur(${blur}px)`
         ctxB.drawImage(canvasA, 0, 0)
       } else {
@@ -381,12 +397,18 @@ export function createAuroraScene({ canvas, createCanvas, dpr = 1, random = Math
         // the visible region up onto B.
         const sA = dpr * scale
         ctxC.filter = 'none'
-        ctxC.fillStyle = background
-        ctxC.fillRect(0, 0, extW + 2, extH + 2)
+        if (baseImage) {
+          // The base goes straight onto B below, unblurred
+          ctxC.clearRect(0, 0, extW + 2, extH + 2)
+        } else {
+          ctxC.fillStyle = background
+          ctxC.fillRect(0, 0, extW + 2, extH + 2)
+        }
         ctxC.filter = `blur(${(blur * scale) / dpr}px)`
         // A's pixel size in logical units, so the copy is exactly 1:1.
         ctxC.drawImage(canvasA, 0, 0, canvasA.width / sA, canvasA.height / sA)
         ctxB.filter = 'none'
+        if (baseImage) paintBase(ctxB)
         ctxB.drawImage(canvasC, 0, 0, visW * sA, visH * sA, 0, 0, logicalWidth, logicalHeight)
       }
 

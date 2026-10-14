@@ -25,6 +25,7 @@ import {
 } from './index'
 import { InputPanel } from './InputControls'
 import { TypePicker, StudioControls, SectionLabel, isStudioType } from './StudioControls'
+import { BackgroundImageControls } from './BackgroundImageControls'
 import { MobileDialogContent, getDialogTitle } from './MobileDialogContent'
 import { useKeyboardOffset } from '../../hooks/useKeyboardOffset'
 
@@ -192,6 +193,10 @@ export const MobilePanel = ({ onRandomize, onShowPalette, onShowSave, onShowCapt
                     />
                   </div>
                 )}
+
+                <div className="pb-3">
+                  <BackgroundImageControls />
+                </div>
 
                 {/* Type-specific settings */}
                 <div className="space-y-1 flex flex-row flex-wrap gap-1 px-1">

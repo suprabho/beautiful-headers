@@ -5,6 +5,7 @@ import FlutedGlassCanvas from './FlutedGlassCanvas'
 import { audioData } from '../audio/audioData'
 import { AUDIO_MAPPINGS } from '../audio/audioMappings'
 import { smoothMouse, getMouseEffects } from '../mouse/applyMouseEffect'
+import BaseImagePlane from './BaseImagePlane'
 
 // Color cache for hex to RGB conversions
 const colorCache = new Map()
@@ -311,7 +312,7 @@ const Background = ({ color }) => {
   )
 }
 
-const RibbonScene = ({ config, paletteColors, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1 }) => {
+const RibbonScene = ({ config, paletteColors, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1, backgroundImage = null }) => {
   const isPausedRef = useRef(false)
   const smoothedMouseRef = useRef({ x: 0.5, y: 0.5 })
   const targetMouseRef = useRef({ x: 0.5, y: 0.5 })
@@ -356,6 +357,8 @@ const RibbonScene = ({ config, paletteColors, isPaused, mousePos = { x: 0.5, y: 
   return (
     <>
       <Background color={bgColor} />
+      {/* Between the background plane (z = -1) and the ribbons */}
+      {backgroundImage && <BaseImagePlane backgroundImage={backgroundImage} distance={5.9} />}
       {Array.from({ length: ribbonCount }).map((_, i) => (
         <Ribbon
           key={i}
@@ -372,7 +375,7 @@ const RibbonScene = ({ config, paletteColors, isPaused, mousePos = { x: 0.5, y: 
   )
 }
 
-const RibbonLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1, frameloop = 'always' }) => {
+const RibbonLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mousePos = { x: 0.5, y: 0.5 }, mouseIntensity = 1, backgroundImage = null, frameloop = 'always' }) => {
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
   const [canvasReady, setCanvasReady] = useState(false)
@@ -417,6 +420,7 @@ const RibbonLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused,
           isPaused={isPaused}
           mousePos={mousePos}
           mouseIntensity={mouseIntensity}
+          backgroundImage={backgroundImage}
         />
       </Canvas>
       {flutedEnabled && canvasReady && canvasRef.current && (

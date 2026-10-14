@@ -4,6 +4,7 @@ import { EffectComposer, BrightnessContrast, HueSaturation, Sepia } from '@react
 import * as THREE from 'three'
 import { audioData } from '../audio/audioData'
 import { AUDIO_MAPPINGS } from '../audio/audioMappings'
+import { IMAGE_BLEND_GLSL, blendModeIndex, createFittedImageCanvas } from '../lib/backgroundImage'
 
 // Color cache for hex to RGB conversions (PERFORMANCE OPTIMIZATION)
 const colorCache = new Map()
@@ -24,9 +25,9 @@ const hexToRgbCached = (hex) => {
 }
 
 // Custom shader material that combines gradient generation with fluted glass effect
-const FlutedGradientMaterial = ({ config, effectsConfig, mousePos, isPaused, mouseIntensity = 1 }) => {
+const FlutedGradientMaterial = ({ config, effectsConfig, mousePos, isPaused, mouseIntensity = 1, backgroundImage = null }) => {
   const materialRef = useRef()
-  const { size } = useThree()
+  const { size, viewport } = useThree()
   const timeRef = useRef(0)
   const currentMouseRef = useRef({ x: 0.5, y: 0.5 })
   const targetMouseRef = useRef({ x: 0.5, y: 0.5 })
@@ -53,6 +54,11 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos, isPaused, mou
   }, [isPaused])
 
   const uniforms = useMemo(() => ({
+    u_image: { value: null },
+    u_hasImage: { value: 0 },
+    u_imageOpacity: { value: 1 },
+    u_gradientOpacity: { value: 1 },
+    u_blendMode: { value: 0 },
     u_time: { value: 0 },
     u_mouse: { value: new THREE.Vector2(0.5, 0.5) },
     u_resolution: { value: new THREE.Vector2(1, 1) }, // Updated in useFrame
@@ -147,6 +153,9 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos, isPaused, mou
     uniform float u_distortionStrength;
     uniform float u_waveFrequency;
     uniform int u_lodLevel; // 0 = full quality, 1 = reduced, 2 = minimal
+
+    // Base image (gradient laid over it)
+    ${IMAGE_BLEND_GLSL}
 
     // Simplex noise functions
     vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
@@ -342,6 +351,9 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos, isPaused, mou
       // Add subtle shimmer (using aspect-corrected UV)
       float shimmer = snoise(vUv * aspect * 10.0 + u_time) * 0.05;
       color += shimmer;
+
+      // Base image under the gradient, sampled through the fluted glass
+      color = applyImageUnder(color, uv);
       
       // Vignette - only apply when fluted glass is disabled
       // When fluted glass is enabled, the distortion can push content to edges
@@ -396,6 +408,24 @@ const FlutedGradientMaterial = ({ config, effectsConfig, mousePos, isPaused, mou
 
     prevConfigRef.current = config
   }, [config])
+
+  // Base image texture, fitted to the canvas so it maps 1:1 onto vUv
+  const imageTexture = useMemo(() => {
+    if (!backgroundImage) return null
+    const { image, fit } = backgroundImage
+    return new THREE.CanvasTexture(createFittedImageCanvas(image, size.width * viewport.dpr, size.height * viewport.dpr, fit))
+  }, [backgroundImage?.image, backgroundImage?.fit, size.width, size.height, viewport.dpr])
+
+  useEffect(() => () => imageTexture?.dispose(), [imageTexture])
+
+  useEffect(() => {
+    if (!materialRef.current) return
+    const u = materialRef.current.uniforms
+    u.u_image.value = imageTexture
+    u.u_hasImage.value = imageTexture ? 1 : 0
+    u.u_gradientOpacity.value = backgroundImage?.gradientOpacity ?? 1
+    u.u_blendMode.value = blendModeIndex(backgroundImage?.blendMode)
+  }, [imageTexture, backgroundImage?.gradientOpacity, backgroundImage?.blendMode])
 
   // Update effects config uniforms only when effectsConfig changes (PERFORMANCE OPTIMIZATION)
   useEffect(() => {
@@ -566,19 +596,19 @@ const PostProcessingEffects = memo(({ effectsConfig }) => {
 
 PostProcessingEffects.displayName = 'PostProcessingEffects'
 
-const GradientScene = ({ config, effectsConfig, mousePos, isPaused, mouseIntensity }) => {
+const GradientScene = ({ config, effectsConfig, mousePos, isPaused, mouseIntensity, backgroundImage }) => {
   return (
     <>
       <mesh>
         <planeGeometry args={[2, 2]} />
-        <FlutedGradientMaterial config={config} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={isPaused} mouseIntensity={mouseIntensity} />
+        <FlutedGradientMaterial config={config} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={isPaused} mouseIntensity={mouseIntensity} backgroundImage={backgroundImage} />
       </mesh>
       <PostProcessingEffects effectsConfig={effectsConfig} />
     </>
   )
 }
 
-const GradientLayer = memo(({ config, effectsConfig, mousePos, isPaused, mouseIntensity = 1, frameloop = 'always' }) => {
+const GradientLayer = memo(({ config, effectsConfig, mousePos, isPaused, mouseIntensity = 1, backgroundImage = null, frameloop = 'always' }) => {
   return (
     <div
       className="gradient-layer"
@@ -601,7 +631,7 @@ const GradientLayer = memo(({ config, effectsConfig, mousePos, isPaused, mouseIn
         // skipped in useFrame when isPaused); embeds pass 'demand' when offscreen.
         frameloop={frameloop}
       >
-        <GradientScene config={config} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={isPaused} mouseIntensity={mouseIntensity} />
+        <GradientScene config={config} effectsConfig={effectsConfig} mousePos={mousePos} isPaused={isPaused} mouseIntensity={mouseIntensity} backgroundImage={backgroundImage} />
       </Canvas>
     </div>
   )

@@ -598,6 +598,24 @@ const useStore = create((set, get) => ({
     effectsConfig: { ...state.effectsConfig, ...updates }
   })),
 
+  // Base image drawn under the background type's foreground. Editor-only for
+  // now: not part of getSceneData (an uploaded file is a blob URL that would
+  // not survive a save), and kept across scene loads.
+  backgroundImageConfig: {
+    enabled: false,
+    src: null,
+    sourceKind: null, // 'upload' | 'url'
+    name: null,
+    fit: 'cover', // 'cover' | 'contain'
+    imageOpacity: 1, // base types: image over the base colour
+    gradientOpacity: 0.6, // full-field types: gradient over the image
+    blendMode: 'normal', // full-field types
+  },
+  setBackgroundImageConfig: (config) => set({ backgroundImageConfig: config }),
+  updateBackgroundImageConfig: (updates) => set((state) => ({
+    backgroundImageConfig: { ...state.backgroundImageConfig, ...updates }
+  })),
+
   // Text config
   textSections: [
     { id: 1, text: 'Aura', size: 120, weight: 900, spacing: -0.1, font: 'mono' },

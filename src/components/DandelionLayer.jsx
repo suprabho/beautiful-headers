@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState, useMemo, memo } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
+import BaseImagePlane from './BaseImagePlane'
 import FlutedGlassCanvas from './FlutedGlassCanvas'
 import { audioData } from '../audio/audioData'
 
@@ -325,7 +326,7 @@ function DandelionMesh({ config, colors, isPaused, mouseEnabled = true, mouseInt
   )
 }
 
-const DandelionLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mouseEnabled = true, mouseIntensity = 1, frameloop = 'always' }) => {
+const DandelionLayer = memo(({ config, paletteColors = [], effectsConfig, isPaused, mouseEnabled = true, mouseIntensity = 1, backgroundImage = null, frameloop = 'always' }) => {
   const containerRef = useRef(null)
   const canvasRef = useRef(null)
   const [canvasReady, setCanvasReady] = useState(false)
@@ -371,6 +372,7 @@ const DandelionLayer = memo(({ config, paletteColors = [], effectsConfig, isPaus
         frameloop={frameloop}
       >
         <SceneSetup config={config} colors={colors} />
+        {backgroundImage && <BaseImagePlane backgroundImage={backgroundImage} />}
         <DandelionMesh config={config} colors={colors} isPaused={isPaused} mouseEnabled={mouseEnabled} mouseIntensity={mouseIntensity} />
       </Canvas>
       {flutedEnabled && canvasReady && canvasRef.current && (
