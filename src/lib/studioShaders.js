@@ -207,7 +207,12 @@ float sdBox(vec2 p, vec2 c, vec2 b, float r) {
   return length(max(d, 0.0)) + min(max(d.x, d.y), 0.0) - r;
 }
 
-vec3 acc;
+// Seeded offset in [-0.5, 0.5]; zero at seed 0 so the default arrangement
+// matches the preset thumbnails and "Vary" perturbs from there
+float vary(float k) { return u_seed == 0.0 ? 0.0 : hash1(k + 40.0) - 0.5; }
+
+vec3 col;
+float bgLum;
 float shapeIdx;
 void light(float d) {
   float inner = u_soft * 0.2 + 0.05;
@@ -215,7 +220,12 @@ void light(float d) {
   float g = d < 0.0 ? exp(d / inner) : exp(-d / outer) * 0.9;
   int n = u_count - 1;
   float i = n > 0 ? mod(shapeIdx, float(n)) + 1.0 : 0.0;
-  acc += pal(int(i)) * g * (0.7 + u_amount * 0.9);
+  vec3 c = pal(int(i));
+  float e = g * (0.7 + u_amount * 0.9);
+  // Light adds on a dark backdrop; on a light one it would wash out to
+  // white, so there the rim tints the backdrop instead
+  col += c * e * (1.0 - bgLum);
+  col = mix(col, c, (1.0 - exp(-e * 1.5)) * bgLum);
   shapeIdx += 1.0;
 }
 
@@ -224,12 +234,13 @@ void main() {
   float a = u_res.x / u_res.y;
   float t = u_time * 0.25;
   vec3 bg = pal(0);
-  acc = vec3(0.0);
+  col = bg;
+  bgLum = clamp(dot(bg, vec3(0.2126, 0.7152, 0.0722)) * 1.6, 0.0, 1.0);
   shapeIdx = 0.0;
 
   if (u_shape == 0) {         // edge
-    light(sdCircle(p, vec2(0.45 * a + 0.05 * sin(t), 0.75), 0.95));
-    light(sdCircle(p, vec2(0.0, -1.55 + 0.03 * sin(t * 0.7)), 1.15));
+    light(sdCircle(p, vec2(0.45 * a + 0.05 * sin(t) + vary(1.0) * a * 0.8, 0.75 + vary(2.0) * 0.3), 0.95 + vary(3.0) * 0.4));
+    light(sdCircle(p, vec2(vary(4.0) * a * 0.9, -1.55 + 0.03 * sin(t * 0.7) + vary(5.0) * 0.3), 1.15 + vary(6.0) * 0.4));
   } else if (u_shape == 1) {  // circles
     for (int i = 0; i < 5; i++) {
       float fi = float(i);
@@ -256,12 +267,14 @@ void main() {
   } else if (u_shape == 4) {  // ellipses
     for (int i = 0; i < 3; i++) {
       float fi = float(i);
-      vec2 c = vec2((fi - 1.0) * 0.25 * a, 0.1 * sin(t + fi));
-      light(sdEllipse(p, c, vec2(0.45, 0.18), 0.7 + fi * 0.5 + t * 0.1));
+      vec2 c = vec2((fi - 1.0) * 0.25 * a + vary(fi) * 0.3, 0.1 * sin(t + fi) + vary(fi + 3.0) * 0.3);
+      vec2 r = vec2(0.45, 0.18) * (1.0 + vec2(vary(fi + 6.0), vary(fi + 9.0)) * 0.6);
+      light(sdEllipse(p, c, r, 0.7 + fi * 0.5 + t * 0.1 + vary(fi + 12.0) * 3.0));
     }
   } else if (u_shape == 5) {  // halo
-    light(abs(sdEllipse(p, vec2(0.0), vec2(0.42, 0.2), -0.35 + 0.05 * sin(t))) - 0.035);
-    light(sdCircle(p, vec2(0.05 * sin(t), 0.02), 0.07));
+    vec2 hc = vec2(vary(1.0) * a * 0.5, vary(2.0) * 0.3);
+    light(abs(sdEllipse(p, hc, vec2(0.42, 0.2) * (1.0 + vary(3.0) * 0.5), -0.35 + 0.05 * sin(t) + vary(4.0) * 2.0)) - 0.035);
+    light(sdCircle(p, hc + vec2(0.05 * sin(t) + vary(5.0) * 0.15, 0.02), 0.07 * (1.0 + vary(6.0))));
   } else if (u_shape == 6) {  // dunes
     for (int i = 0; i < 4; i++) {
       float fi = float(i);
@@ -271,13 +284,12 @@ void main() {
   } else {                    // petals
     for (int i = 0; i < 5; i++) {
       float fi = float(i);
-      float x = (fi - 2.0) * 0.18;
-      float h = 0.35 + 0.15 * (1.0 - abs(fi - 2.0) / 2.0);
+      float x = (fi - 2.0) * 0.18 * (1.0 + vary(20.0) * 0.8) + vary(21.0) * a * 0.3;
+      float h = (0.35 + 0.15 * (1.0 - abs(fi - 2.0) / 2.0)) * (1.0 + vary(fi) * 0.6);
       light(sdEllipse(p, vec2(x, -0.5 + h * 0.5 + 0.02 * sin(t + fi)), vec2(0.07, h), 0.0));
     }
   }
 
-  vec3 col = bg + acc;
   col = col / (1.0 + max(col - 1.0, 0.0));
   gl_FragColor = finish(col, gl_FragCoord.xy);
 }

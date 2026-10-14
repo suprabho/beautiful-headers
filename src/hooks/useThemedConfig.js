@@ -1,6 +1,6 @@
 import { useMemo, useCallback } from 'react'
 import useStore from '../store/useStore'
-import { deepMerge, computeOverrideDiff } from '../lib/themeUtils'
+import { deepMerge, applyOverrideEdit } from '../lib/themeUtils'
 
 /**
  * Hook that returns the effective config for a given config key
@@ -33,13 +33,10 @@ export function useThemedConfig(configKey) {
     if (editorThemeMode === 'dark') {
       baseSetter(newConfig)
     } else {
-      // Compute diff from base and store as override
-      const diff = computeOverrideDiff(baseConfig, newConfig)
-      if (diff) {
-        setLightOverride(configKey, diff)
-      }
+      // Fold the edit into the override; values set back to the base drop out
+      setLightOverride(configKey, applyOverrideEdit(lightOverrides, baseConfig, newConfig))
     }
-  }, [editorThemeMode, baseSetter, baseConfig, setLightOverride, configKey])
+  }, [editorThemeMode, baseSetter, baseConfig, lightOverrides, setLightOverride, configKey])
 
   return [effectiveConfig, setConfig]
 }

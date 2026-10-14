@@ -1,6 +1,5 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { deepMerge } from '../lib/themeUtils'
 import { STUDIO_DEFAULTS } from '../lib/studioPresets'
 
 // localStorage key for color palette
@@ -665,18 +664,16 @@ const useStore = create((set, get) => ({
   editorThemeMode: 'dark', // 'dark' | 'light' — which mode the editor previews
   setEditorThemeMode: (mode) => set({ editorThemeMode: mode }),
   setThemeOverrides: (overrides) => set({ themeOverrides: overrides }),
-  setLightOverride: (configKey, partialOverride) => set((state) => ({
-    themeOverrides: {
-      ...state.themeOverrides,
-      light: {
-        ...state.themeOverrides.light,
-        [configKey]: deepMerge(
-          state.themeOverrides.light[configKey] || {},
-          partialOverride
-        ),
+  // Replace the light override for one config slice (null removes it)
+  setLightOverride: (configKey, override) => set((state) => {
+    const { [configKey]: _, ...rest } = state.themeOverrides.light
+    return {
+      themeOverrides: {
+        ...state.themeOverrides,
+        light: override ? { ...rest, [configKey]: override } : rest,
       },
-    },
-  })),
+    }
+  }),
   clearLightOverride: (configKey) => set((state) => {
     const { [configKey]: _, ...rest } = state.themeOverrides.light
     return { themeOverrides: { ...state.themeOverrides, light: rest } }
